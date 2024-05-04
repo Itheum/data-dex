@@ -1,6 +1,6 @@
 import { DataNftMarket, MarketplaceRequirements, Offer } from "@itheum/sdk-mx-data-nft/out";
 import axios from "axios";
-import { backendApi } from "libs/utils";
+import { backendApi, convertEsdtToWei, tokenDecimals } from "libs/utils";
 import { IS_DEVNET, uxConfig } from ".";
 import { DataNftCollectionType, Favorite, TrendingNft } from "./types";
 
@@ -42,6 +42,87 @@ export async function addFavoriteToBackendApi(chainID: string, tokenIdentifier: 
       {
         identifier: tokenIdentifier,
       },
+      {
+        timeout: uxConfig.mxAPITimeoutMs,
+        headers: {
+          Authorization: `Bearer ${bearerToken}`,
+        },
+      }
+    );
+    return data;
+  } catch (error) {
+    console.error(error);
+    return {} as Favorite;
+  }
+}
+
+export async function getAddressBoughtOffersFromBackendApi(chainId: string, bearerToken: string): Promise<Array<string>> {
+  try {
+    const url = `${backendApi(chainId)}/addressBoughtOffers`;
+    const { data } = await axios.get<any>(url, {
+      timeout: uxConfig.mxAPITimeoutMs,
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+      },
+    });
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+export async function updateOfferSupplyOnBackend(chainID: string, bearerToken: string, index: number, supply: number) {
+  try {
+    const headers = {
+      Authorization: `Bearer ${bearerToken}`,
+      "Content-Type": "application/json",
+    };
+
+    const requestBody = { supply: supply };
+    const response = await fetch(`${backendApi(chainID)}/updateOffer/${index}`, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(requestBody),
+    });
+    updateAddressBoughtOfferToBackendApi(chainID, index, supply, bearerToken);
+    if (response.ok) {
+      console.log("Response:", response.ok);
+    }
+  } catch (error) {
+    console.log("Error:", error);
+  }
+}
+
+export async function updatePriceOnBackend(chainID: string, bearerToken: string, index: number, newPrice: string) {
+  try {
+    const headers = {
+      Authorization: `Bearer ${bearerToken}`,
+      "Content-Type": "application/json",
+    };
+
+    const requestBody = { price: newPrice };
+    const response = await fetch(`${backendApi(chainID)}/updateOffer/${index}`, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(requestBody),
+    });
+
+    if (response.ok) {
+      console.log("Response:", response.ok);
+    }
+  } catch (error) {
+    console.log("Error:", error);
+  }
+}
+
+export async function updateAddressBoughtOfferToBackendApi(chainID: string, offerId: number, amount: number, bearerToken: string): Promise<Favorite> {
+  try {
+    const url = `${backendApi(chainID)}/updateAddressBoughtOffer/${offerId}`;
+    const { data } = await axios.post<any>(
+      url,
+      { quantity: amount },
       {
         timeout: uxConfig.mxAPITimeoutMs,
         headers: {
@@ -185,7 +266,7 @@ export async function getOffersByIdAndNoncesFromBackendApi(
   const { data } = await axios.get<Offer[]>(url, {
     timeout: uxConfig.mxAPITimeoutMs,
   });
-
+  console.log(data);
   return data;
 }
 

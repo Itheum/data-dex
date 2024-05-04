@@ -7,6 +7,7 @@ import { useSearchParams } from "react-router-dom";
 import { GET_BITZ_TOKEN, IS_DEVNET, viewDataJSONCore } from "libs/config";
 import {
   contractsForChain,
+  getAddressBoughtOffersFromBackendApi,
   getFavoritesFromBackendApi,
   getHealthCheckFromBackendApi,
   getMarketplaceHealthCheckFromBackendApi,
@@ -40,6 +41,8 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const isApiUp = useMarketStore((state) => state.isApiUp);
   const updateIsApiUp = useMarketStore((state) => state.updateIsApiUp);
   const updateIsMarketplaceApiUp = useMarketStore((state) => state.updateIsMarketplaceApiUp);
+  const addressBoughtOffers = useMarketStore((state) => state.addressBoughtOffers);
+  const updateAddressBoughtOffers = useMarketStore((state) => state.updateAddressBoughtOffers);
 
   // MINT STORE
   const updateUserData = useMintStore((state) => state.updateUserData);
@@ -53,7 +56,6 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
     (async () => {
       if (bondingContract) {
         const bondingAmount = await bondingContract.viewLockPeriodsWithBonds();
-
         updateLockPeriodForBond(bondingAmount);
       }
     })();
@@ -194,6 +196,14 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
     }, 60_000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (address) {
+      getAddressBoughtOffersFromBackendApi(chainID, tokenLogin?.nativeAuthToken ?? "");
+    } else {
+      updateAddressBoughtOffers([]);
+    }
+  }, [address, hasPendingTransactions]);
 
   return <>{children}</>;
 };

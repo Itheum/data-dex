@@ -1,18 +1,18 @@
 import { MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 import { create } from "zustand";
-import { ExtendedOffer } from "libs/types";
+import { AddressBoughtOffer, ExtendedOffer } from "libs/types";
 
 type State = {
   itheumPrice: number;
   marketRequirements: MarketplaceRequirements;
   maxPaymentFeeMap: Record<string, number>;
   isMarketPaused: boolean;
-
   isApiUp: boolean;
   isMarketplaceApiUp: boolean;
   offers: Array<ExtendedOffer>;
   loadingOffers: boolean;
   pageCount: number;
+  addressBoughtOffers: Array<AddressBoughtOffer>;
 };
 
 type Action = {
@@ -26,6 +26,7 @@ type Action = {
   updateOffers: (offers: State["offers"]) => void;
   updateLoadingOffers: (loadingOffers: State["loadingOffers"]) => void;
   updatePageCount: (pageCount: State["pageCount"]) => void;
+  updateAddressBoughtOffers: (addressBoughtOffers: State["addressBoughtOffers"]) => void;
 };
 
 export const useMarketStore = create<State & Action>((set) => ({
@@ -38,6 +39,7 @@ export const useMarketStore = create<State & Action>((set) => ({
     "sellerTaxPercentage": 200,
     "buyerTaxPercentageDiscount": 0,
     "sellerTaxPercentageDiscount": 0,
+    "maxDefaultQuantity": 0,
   },
   maxPaymentFeeMap: {},
   isMarketPaused: false,
@@ -56,4 +58,7 @@ export const useMarketStore = create<State & Action>((set) => ({
   updateOffers: (value: Array<ExtendedOffer>) => set((state) => ({ ...state, offers: value })),
   updateLoadingOffers: (value: boolean) => set((state) => ({ ...state, loadingOffers: value })),
   updatePageCount: (value: number) => set((state) => ({ ...state, pageCount: value })),
+
+  addressBoughtOffers: [],
+  updateAddressBoughtOffers: (value: any) => set((state) => ({ ...state, addressBoughtOffers: value })),
 }));
