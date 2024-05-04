@@ -135,7 +135,14 @@ export class DataNftMarketContract {
     return { sessionId, error };
   }
 
-  async addToMarket(addTokenCollection: string, addTokenNonce: number, addTokenQuantity: number, price: BigNumber.Value, addressOfSender: string) {
+  async addToMarket(
+    addTokenCollection: string,
+    addTokenNonce: number,
+    addTokenQuantity: number,
+    price: BigNumber.Value,
+    addressOfSender: string,
+    maxQuantity = 0
+  ) {
     const addToMarketTx = this.contract.addOffer(
       new Address(addressOfSender),
       addTokenCollection,
@@ -144,7 +151,8 @@ export class DataNftMarketContract {
       this.itheumToken,
       0,
       new BigNumber(price).multipliedBy(10 ** 18),
-      0
+      0,
+      maxQuantity
     );
 
     await refreshAccount();
@@ -238,9 +246,9 @@ export class DataNftMarketContract {
     }
   }
 
-  async viewPagedOffers(startIndex: number, stopIndex: number, userAddress?: string): Promise<Offer[]> {
+  async viewPagedOffers(startIndex: number, stopIndex: number, userAddress?: Address): Promise<Offer[]> {
     try {
-      const pagedOffers = await this.contract.viewPagedOffers(startIndex, stopIndex, new Address(userAddress));
+      const pagedOffers = await this.contract.viewPagedOffers(startIndex, stopIndex, new Address(userAddress ?? ""));
 
       return pagedOffers;
     } catch (e) {

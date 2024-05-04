@@ -40,9 +40,10 @@ export type ListModalProps = {
   marketContract: DataNftMarketContract;
   amount: number;
   setAmount: (amount: number) => void;
+  maxPerAddress: number;
 };
 
-export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, offer, marketContract, amount, setAmount }: ListModalProps) {
+export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, offer, marketContract, amount, setAmount, maxPerAddress }: ListModalProps) {
   const { chainID } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -105,7 +106,8 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
       (Number(offer.wantedTokenAmount) + (Number(offer.wantedTokenAmount) * (marketRequirements.buyerTaxPercentage ?? 200)) / 10000) * Number(10 ** 18)
     ).toString(),
     quantity = amount * 1,
-    owner = address
+    owner = address,
+    maxQuantityPerAddress = maxPerAddress
   ) {
     const indexResponse = await axios.get(
       `https://${getApi(chainID)}/accounts/${contractsForChain(chainID).market}/transactions?hashes=${txHash}&status=success&withScResults=true&withLogs=true`
@@ -148,6 +150,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
         wantedTokenAmount,
         quantity,
         owner,
+        maxQuantityPerAddress,
       };
 
       const response = await fetch(`${backendUrl}/addOffer`, {
@@ -198,7 +201,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
       }
     }
 
-    const { sessionId } = await marketContract.addToMarket(nftData.collection, nftData.nonce, amount, offer.wantedTokenAmount ?? 0, address);
+    const { sessionId } = await marketContract.addToMarket(nftData.collection, nftData.nonce, amount, offer.wantedTokenAmount ?? 0, address, maxPerAddress);
     if (isWebWallet) {
       const price = Number(offer.wantedTokenAmount) + (Number(offer.wantedTokenAmount) * (marketRequirements.buyerTaxPercentage ?? 200)) / 10000;
       sessionStorage.setItem(
@@ -215,6 +218,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
           wantedTokenAmount: Number(price * Number(10 ** 18)).toString(),
           quantity: amount * 1,
           owner: address,
+          maxQuantityPerAddress: maxPerAddress,
         })
       );
     }

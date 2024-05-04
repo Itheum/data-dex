@@ -48,21 +48,21 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
     setHasRequestLoaded(true);
   };
   const freezeDataNft = async (creator: string, nonce: number, owner: string | undefined) => {
-    const tx = await nftMinter.freezeSingleNFT(new Address(address), nonce, new Address(owner));
+    const tx = await nftMinter.freezeSingleNFT(new Address(address), nonce, new Address(owner ?? ""));
     tx.setGasLimit(100000000);
     await sendTransactions({
       transactions: [tx],
     });
   };
   const unFreezeDataNft = async (creator: string, nonce: number, owner: string | undefined) => {
-    const tx = await nftMinter.unFreezeSingleNFT(new Address(address), nonce, new Address(owner));
+    const tx = await nftMinter.unFreezeSingleNFT(new Address(address), nonce, new Address(owner ?? ""));
     tx.setGasLimit(100000000);
     await sendTransactions({
       transactions: [tx],
     });
   };
   const wipeDataNft = async (creator: string, nonce: number, owner: string | undefined) => {
-    const tx = await nftMinter.wipeSingleNFT(new Address(address), nonce, new Address(owner));
+    const tx = await nftMinter.wipeSingleNFT(new Address(address), nonce, new Address(owner ?? ""));
     tx.setGasLimit(100000000);
     await sendTransactions({
       transactions: [tx],
