@@ -24,8 +24,8 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions, useGetSignedTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
-import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY, contractsForChain } from "libs/config";
-import { useLocalStorage } from "libs/hooks";
+import { contractsForChain } from "libs/config";
+import { updateOfferSupplyOnBackend, updatePriceOnBackend } from "libs/MultiversX";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import {
   convertToLocalString,
@@ -90,11 +90,14 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       const { type } = JSON.parse(sessionInfo);
       if (type == "delist-tx") {
         const { index, amount } = JSON.parse(sessionInfo);
-        updateOfferOnBackend(index, amount);
+        updateOfferSupplyOnBackend(chainID, tokenLogin?.nativeAuthToken ?? "", index, amount);
         sessionStorage.removeItem("web-wallet-tx");
       } else if (type == "update-price-tx") {
         const { index, price } = JSON.parse(sessionInfo);
-        updatePriceOnBackend(index, price);
+
+        const newPrice = price + (price * (marketRequirements.buyerTaxPercentage ?? 200)) / 10000;
+        const formattedPrice = convertEsdtToWei(newPrice, tokenDecimals(offer.wantedTokenIdentifier)).toFixed();
+        updatePriceOnBackend(chainID, tokenLogin?.nativeAuthToken ?? "", index, formattedPrice);
         sessionStorage.removeItem("web-wallet-tx");
       }
     }
@@ -121,63 +124,17 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
 
   useEffect(() => {
     if (updatePriceTxStatus && !isWebWallet) {
-      updatePriceOnBackend();
+      const price = newListingPrice + (newListingPrice * (marketRequirements.buyerTaxPercentage ?? 200)) / 10000;
+      const formattedPrice = convertEsdtToWei(price, tokenDecimals(offer.wantedTokenIdentifier)).toFixed();
+      updatePriceOnBackend(chainID, tokenLogin?.nativeAuthToken ?? "", offer.index, formattedPrice);
     }
   }, [updatePriceTxStatus]);
 
-  async function updatePriceOnBackend(index = offer.index, newPrice = newListingPrice) {
-    try {
-      const headers = {
-        Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
-        "Content-Type": "application/json",
-      };
-
-      const price = newPrice + (newPrice * (marketRequirements.buyerTaxPercentage ?? 200)) / 10000;
-
-      const requestBody = { price: convertEsdtToWei(price, tokenDecimals(offer.wantedTokenIdentifier)).toFixed() };
-      const response = await fetch(`${backendUrl}/updateOffer/${index}`, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(requestBody),
-      });
-
-      if (response.ok) {
-        console.log("Response:", response.ok);
-      }
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  }
-
-  async function updateOfferOnBackend(index = offer.index, supply = delistAmount) {
-    try {
-      const headers = {
-        Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
-        "Content-Type": "application/json",
-      };
-
-      const requestBody = { supply: supply };
-      const response = await fetch(`${backendApi(chainID)}/updateOffer/${index}`, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(requestBody),
-      });
-
-      if (response.ok) {
-        console.log("Response:", response.ok);
-      }
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  }
-
   useEffect(() => {
     if (delistTxStatus && !isWebWallet) {
-      updateOfferOnBackend();
+      updateOfferSupplyOnBackend(chainID, tokenLogin?.nativeAuthToken ?? "", offer.index, delistAmount);
     }
   }, [delistTxStatus]);
-
-  const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
   const fee =
     marketRequirements && offer

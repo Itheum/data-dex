@@ -87,6 +87,8 @@ export default function WalletDataNFTMX(item: any) {
   const [amountError, setAmountError] = useState("");
   const [price, setPrice] = useState(10);
   const [priceError, setPriceError] = useState("");
+  const [maxPerAddress, setMaxPerAddress] = useState(0);
+  const [maxPerAddressError, setMaxPerAddressError] = useState("");
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
   const [webWalletListTxHash, setWebWalletListTxHash] = useState("");
   const maxListLimit = import.meta.env.VITE_MAX_LIST_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_LIST_LIMIT_PER_SFT) : 0;
@@ -132,7 +134,8 @@ export default function WalletDataNFTMX(item: any) {
           txData.wantedTokenNonce,
           txData.wantedTokenAmount,
           txData.quantity,
-          txData.owner
+          txData.owner,
+          txData.maxQuantityPerAddress
         );
       }
       sessionStorage.removeItem("web-wallet-tx");
@@ -151,7 +154,8 @@ export default function WalletDataNFTMX(item: any) {
     wantedTokenNonce: string,
     wantedTokenAmount: string,
     quantity: number,
-    owner: string
+    owner: string,
+    maxQuantityPerAddress: number
   ) {
     try {
       let indexResponse;
@@ -207,6 +211,7 @@ export default function WalletDataNFTMX(item: any) {
           wantedTokenAmount: wantedTokenAmount,
           quantity: quantity,
           owner: owner,
+          maxQuantityPerAddress: maxQuantityPerAddress,
         };
 
         const response = await fetch(`${backendUrl}/addOffer`, {
@@ -321,7 +326,7 @@ export default function WalletDataNFTMX(item: any) {
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
       <Box
         w="275px"
-        h={item.isProfile === true ? "660px" : "900px"}
+        h={item.isProfile === true ? "660px" : "930px"}
         mx="3 !important"
         border="1px solid transparent"
         borderColor="#00C79740"
@@ -338,7 +343,7 @@ export default function WalletDataNFTMX(item: any) {
           openNftDetailsDrawer={() => item.openNftDetailsDrawer(item.id)}
         />
 
-        <Flex h="28rem" mx={6} my={3} direction="column" justify={item.isProfile === true ? "initial" : "space-between"}>
+        <Flex h="28rem" mx={6} my={2} direction="column" justify={item.isProfile === true ? "initial" : "space-between"}>
           <Text fontSize="md" color="#929497">
             <Link href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.tokenIdentifier}`} isExternal>
               {item.tokenName} <ExternalLinkIcon mx="2px" />
@@ -447,7 +452,7 @@ export default function WalletDataNFTMX(item: any) {
               {item.dataPreview && <PreviewDataButton previewDataURL={item.dataPreview} />}
             </HStack>
 
-            <Flex mt="7" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
+            <Flex mt="6" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
               <Text fontSize="md" color="#929497">
                 How many to list:{" "}
               </Text>
@@ -491,7 +496,7 @@ export default function WalletDataNFTMX(item: any) {
               )}
             </Box>
 
-            <Flex mt="5" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
+            <Flex mt="3" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
               <Tooltip label="This fee is what your dataset is advertised for on the marketplace">
                 <Text fontSize="md" color="#929497">
                   Access fee for each:
@@ -533,10 +538,55 @@ export default function WalletDataNFTMX(item: any) {
               )}
             </Box>
 
+            <Flex mt="3" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
+              <Tooltip label="This is a limit that you can impose in order to avoid someone buying your whole supply. Setting it to 0 will disable it">
+                <Text fontSize="md" color="#929497">
+                  Max buy per address:
+                </Text>
+              </Tooltip>
+              <NumberInput
+                size="sm"
+                borderRadius="4.65px !important"
+                maxW={20}
+                step={1}
+                defaultValue={0}
+                min={0}
+                max={Number(maxListNumber)}
+                isValidCharacter={isValidNumericCharacter}
+                value={maxPerAddress}
+                onChange={(value) => {
+                  let error = "";
+                  const valueAsNumber = Number(value);
+                  if (valueAsNumber < 0) {
+                    error = "Cannot be negative";
+                  } else if (valueAsNumber > item.balance) {
+                    error = "Cannot be higher than balance";
+                  } else if (maxListLimit > 0 && valueAsNumber > maxListLimit) {
+                    error = "Cannot exceed max list limit";
+                  }
+
+                  setMaxPerAddressError(error);
+                  setMaxPerAddress(valueAsNumber);
+                }}>
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+            </Flex>
+            <Box h={3}>
+              {maxPerAddressError && (
+                <Text color="red.400" fontSize="xs">
+                  {maxPerAddressError}
+                </Text>
+              )}
+            </Box>
+
             <Tooltip colorScheme="teal" hasArrow placement="top" label="Market is paused" isDisabled={!isMarketPaused}>
               <Button
                 size="sm"
-                mt={4}
+                mt={2}
                 width="215px"
                 display={item.isProfile === true ? "none" : "flex"}
                 colorScheme="teal"
@@ -574,6 +624,7 @@ export default function WalletDataNFTMX(item: any) {
             }}
             amount={amount}
             setAmount={setAmount}
+            maxPerAddress={maxPerAddress}
           />
         )}
 

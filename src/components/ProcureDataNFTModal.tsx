@@ -19,6 +19,7 @@ import { DataNft, Offer } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetSignedTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
+import { updateOfferSupplyOnBackend } from "libs/MultiversX";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import {
   backendApi,
@@ -54,7 +55,6 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
   const marketContract = new DataNftMarketContract(chainID);
   const { tokenLogin, loginMethod } = useGetLoginInfo();
   const isWebWallet = loginMethod === "wallet";
-  const backendUrl = backendApi(chainID);
   const feePrice = printPrice(
     convertWeiToEsdt(Number(offer.wantedTokenAmount) * amount, tokenDecimals(offer.wantedTokenIdentifier)).toNumber(),
     getTokenWantedRepresentation(offer.wantedTokenIdentifier, offer.wantedTokenNonce)
@@ -85,7 +85,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
     if (sessionInfo) {
       const { type, index, amount: amountt } = JSON.parse(sessionInfo);
       if (type == "purchase-tx") {
-        updateOfferOnBackend(index, amountt);
+        updateOfferSupplyOnBackend(chainID, tokenLogin?.nativeAuthToken ?? "", index, amountt);
         sessionStorage.removeItem("web-wallet-tx");
       }
     }
@@ -97,7 +97,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
 
   useEffect(() => {
     if (purchaseTxStatus && !isWebWallet) {
-      updateOfferOnBackend();
+      updateOfferSupplyOnBackend(chainID, tokenLogin?.nativeAuthToken ?? "", offer.index, amount);
     }
   }, [purchaseTxStatus]);
 
@@ -107,28 +107,6 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
       setReadTermsChecked(false);
     }
   }, [isOpen]);
-
-  async function updateOfferOnBackend(index = offer.index, supply = amount) {
-    try {
-      const headers = {
-        Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
-        "Content-Type": "application/json",
-      };
-
-      const requestBody = { supply: supply };
-      const response = await fetch(`${backendUrl}/updateOffer/${index}`, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(requestBody),
-      });
-
-      if (response.ok) {
-        console.log("Response:", response.ok);
-      }
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  }
 
   const showErrorToast = (title: string) => {
     toast({

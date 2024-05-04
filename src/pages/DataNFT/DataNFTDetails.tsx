@@ -105,8 +105,25 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const walletDrawer = "/datanfts/wallet";
   const { pathname } = useLocation();
   const [favouriteItems, setFavouriteItems] = React.useState<Array<string>>([]);
-  const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
-  const maxBuyNumber = offer && maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer?.quantity;
+  const maxBuyPerTransaction = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
+  const maxBuyPerAddress = offer ? offer.maxQuantityPerAddress : 0;
+
+  const maxBuyForOfferForAddress = computeMaxBuyForOfferForAddress();
+  const boughtByAddressAlreadyForThisOffer =
+    useMarketStore((state) => state.addressBoughtOffers).find((boughtOffer) => boughtOffer.offerId === (offer ? offer.index : -1))?.quantity ?? 0;
+
+  function computeMaxBuyForOfferForAddress() {
+    let mboa = offer ? offer.quantity : 0;
+    if (maxBuyPerTransaction > 0) {
+      mboa = Math.min(mboa, maxBuyPerTransaction);
+
+      if (maxBuyPerAddress > 0) {
+        mboa = Math.min(mboa, maxBuyPerAddress - boughtByAddressAlreadyForThisOffer);
+      }
+    }
+    return mboa;
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -398,7 +415,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                               maxW={24}
                               step={1}
                               min={1}
-                              max={maxBuyNumber}
+                              max={maxBuyForOfferForAddress}
                               isValidCharacter={isValidNumericCharacter}
                               value={amount}
                               defaultValue={1}
@@ -409,8 +426,10 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                   error = "Cannot be zero or negative";
                                 } else if (value > offer.quantity) {
                                   error = "Cannot exceed balance";
-                                } else if (maxBuyLimit > 0 && value > maxBuyLimit) {
+                                } else if (maxBuyPerTransaction > 0 && value > maxBuyPerTransaction) {
                                   error = "Cannot exceed max buy limit";
+                                } else if (maxBuyPerAddress > 0 && value > maxBuyPerAddress) {
+                                  error = "Cannot exceed max buy limit per address";
                                 }
                                 setAmountError(error);
                                 setAmount(value);
