@@ -56,7 +56,7 @@ const ProfileCard = ({
 
   const nftId = createNftId(collection, nonce);
   const imageUrl = collection ? `https://${getApi(chainID)}/nfts/${nftId}/thumbnail` : DEFAULT_NFT_IMAGE;
-
+  const parsedCreationTime = moment(creationTime);
   return (
     <Skeleton fitContent={true} isLoaded={hasLoaded} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box w="275px" h="30rem" mx="3 !important" borderWidth="0.5px" borderRadius="xl" borderColor="#00C79740" position="relative" mb="1rem">
@@ -155,7 +155,7 @@ const ProfileCard = ({
             <Flex>
               <Box color="#8c8f92d0">Creation Time:</Box>
               <Spacer />
-              <Box>{moment(creationTime).format(uxConfig.dateStr)}</Box>
+              {parsedCreationTime.isValid() && <Box>{parsedCreationTime.format(uxConfig.dateStr)}</Box>}
             </Flex>
           </Box>
         </Flex>

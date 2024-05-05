@@ -322,6 +322,9 @@ export default function WalletDataNFTMX(item: any) {
       return "Free";
     }
   };
+
+  const parsedCreationTime = moment(item.creationTime);
+
   return (
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
       <Box
@@ -387,9 +390,9 @@ export default function WalletDataNFTMX(item: any) {
               </Box>
             )}
 
-            {item.creationTime && (
+            {parsedCreationTime.isValid() && (
               <Box color="#8c8f92d0" fontSize="md">
-                Creation time: {moment(item.creationTime).format(uxConfig.dateStr)}
+                Creation time: {parsedCreationTime.format(uxConfig.dateStr)}
               </Box>
             )}
 

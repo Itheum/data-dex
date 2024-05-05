@@ -315,6 +315,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     return nftData.creator === offer?.owner;
   };
 
+  const parsedCreationTime = moment(nftData.creationTime);
+
   return (
     <Box mx={tokenIdParam ? { base: "5 !important", xl: "28 !important" } : 0}>
       {!isLoadingNftData() ? (
@@ -650,9 +652,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             </Box>
                           )}
                           <Box display="flex" justifyContent="flex-start" pb="14px">
-                            <Text color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light">{`Creation time: ${moment(
-                              nftData.creationTime
-                            ).format(uxConfig.dateStr)}`}</Text>
+                            {parsedCreationTime.isValid() && (
+                              <Text
+                                color={colorMode === "dark" ? "white" : "black"}
+                                fontSize="lg"
+                                fontWeight="light">{`Creation time: ${parsedCreationTime.format(uxConfig.dateStr)}`}</Text>
+                            )}
                           </Box>
                         </Flex>
                       </Flex>
