@@ -83,7 +83,7 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
 
   const nativeAuthProps: NativeAuthConfigType = {
     apiAddress: `https://${getApi(chainID)}`,
-    origin: "https://test.datadex.itheum.io",
+    // origin: "https://test.datadex.itheum.io",
     expirySeconds: 3600,
   };
   const commonProps = {

@@ -252,6 +252,7 @@ export default function WalletDataNFTMX(item: any) {
       };
       if (!dataNft.dataMarshal || dataNft.dataMarshal === "") {
         dataNft.updateDataNft({ dataMarshal: getApiDataMarshal(chainID) });
+        console.log(dataNft);
       }
       const res = await dataNft.viewDataViaMVXNativeAuth(arg);
 
