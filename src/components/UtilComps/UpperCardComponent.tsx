@@ -72,7 +72,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
       )
     : "";
   const fee = offer ? convertWeiToEsdt(offer.wantedTokenAmount as BigNumber.Value, tokenDecimals(offer.wantedTokenIdentifier)).toNumber() : 0;
-  const parsedCreationTime = moment(nftMetadata.creationTime);
+  const parsedCreationTime = moment(nftMetadata?.creationTime);
   return (
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box

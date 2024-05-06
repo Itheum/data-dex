@@ -50,6 +50,7 @@ export function contractsForChain(chainID: string): ContractsType {
             id: "FOOWLDMSC-5ee8ec",
             contract: new Address("erd1qqqqqqqqqqqqqpgqu0nxfwcnsaccu3sgt0a8u0sglmk6se9cu00s0zm03r"),
           },
+          { id: "DNFTPHMUS-73cde3", contract: new Address("") },
         ],
       };
     }
