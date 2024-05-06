@@ -40,7 +40,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ extendedOffer: of
   const isMyNft = offer.owner === address;
   const maxBuyPerTransaction = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyForOfferForAddress = computeMaxBuyForOfferForAddress();
-  const maxBuyPerAddress = offer.maxQuantityPerAddress;
+  const maxBuyPerAddress = offer?.maxQuantityPerAddress;
   const boughtByAddressAlreadyForThisOffer =
     useMarketStore((state) => state.addressBoughtOffers).find((boughtOffer) => boughtOffer.offerId === offer.index)?.quantity ?? 0;
 
