@@ -56,7 +56,7 @@ export const CompensationDashboard: React.FC<CompensationDashboardProps> = (prop
   useEffect(() => {
     (async () => {
       if (compensationBondNft.endDate === 0) return;
-      const data = await bondContract.viewAddressRefundForCompensation(new Address(address), compensationBondNft.tokenIdentifier, compensationBondNft.nonce);
+      const data = await bondContract.viewAddressRefund(new Address(address), compensationBondNft.tokenIdentifier, compensationBondNft.nonce);
       setAddressRefund(data);
     })();
   }, []);
@@ -93,7 +93,10 @@ export const CompensationDashboard: React.FC<CompensationDashboardProps> = (prop
                   <Flex justifyContent="space-between" py={10}>
                     <Flex flexDirection="column" w="50%">
                       <Text fontSize="1.5rem">{dataNft.tokenName}</Text>
-                      <Text fontSize="1.1rem">
+                      <Text fontSize="0.8rem">
+                        Title: {dataNft.title} | Nonce: {dataNft.nonce}
+                      </Text>
+                      <Text fontSize="0.8rem">
                         Creator: <ShortAddress address={dataNft.creator} fontSize="1.1rem" />
                       </Text>
                       {compensationBondNft.endDate * 1000 === 0 ? (

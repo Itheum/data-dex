@@ -126,9 +126,14 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
           {bondDataNft.map((dataNft, index) => {
             if (dataNft.tokenIdentifier === createTokenIdentifier(bondNft.tokenIdentifier, bondNft.nonce)) {
               return (
-                <Text fontSize="1.5rem" key={index}>
-                  {dataNft.tokenName}
-                </Text>
+                <>
+                  <Text fontSize="1.6rem" key={index}>
+                    {dataNft.tokenName}
+                  </Text>
+                  <Text fontSize="0.8rem" key={index}>
+                    Title: {dataNft.title} | Nonce: {dataNft.nonce}
+                  </Text>
+                </>
               );
             }
           })}
