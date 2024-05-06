@@ -71,14 +71,9 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
     handleSubmit,
     watch,
   } = useForm<CollectionDashboardFormType>({
-    defaultValues: {
-      enforceMinimumPenalty: 5,
-      endTimestampOfBond: allCompensation.endDate.toLocaleString(),
-    },
     mode: "onChange",
     resolver: yupResolver(validationSchema),
   });
-
   const enforceMinimumPenalty = watch("enforceMinimumPenalty");
   const endTimestampOfBond = watch("endTimestampOfBond");
 
@@ -118,25 +113,22 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
       transactions: [tx],
     });
   };
-
   return (
     <Flex flexDirection="column" w="full" gap={5}>
       <Flex flexDirection="row" w="full" gap={5} justifyContent="space-between">
         <Box>
-          {bondDataNft.map((dataNft, index) => {
-            if (dataNft.tokenIdentifier === createTokenIdentifier(bondNft.tokenIdentifier, bondNft.nonce)) {
+          {bondDataNft
+            .filter((dataNft) => dataNft.tokenIdentifier === createTokenIdentifier(bondNft.tokenIdentifier, bondNft.nonce))
+            .map((dataNft, index) => {
               return (
-                <>
-                  <Text fontSize="1.6rem" key={index}>
-                    {dataNft.tokenName}
-                  </Text>
-                  <Text fontSize="0.8rem" key={index}>
+                <div key={index}>
+                  <Text fontSize="1.6rem">{dataNft.tokenName}</Text>
+                  <Text fontSize="0.8rem">
                     Title: {dataNft.title} | Nonce: {dataNft.nonce}
                   </Text>
-                </>
+                </div>
               );
-            }
-          })}
+            })}
           <Flex flexDirection="row" gap={4}>
             <Text fontSize=".75rem" textColor="teal.200">
               {BigNumber(bondNft.bondAmount)
@@ -177,6 +169,7 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
                               mt="1 !important"
                               id="enforceMinimumPenalty"
                               w="25%"
+                              defaultValue={5}
                               onChange={(event) => {
                                 onChange(event.target.value);
                               }}
@@ -239,6 +232,7 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
                             id="endTimestampOfBond"
                             type="datetime-local"
                             w="70%"
+                            defaultValue={new Date(new Date().getTime() + new Date().getTimezoneOffset() * -60 * 1000).toISOString().slice(0, 16)}
                             onChange={(event) => {
                               onChange(event.target.value);
                             }}
@@ -252,6 +246,12 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
                         GO!
                       </Button>
                     </Flex>
+                    {allCompensation.endDate > 0 && (
+                      <Text marginTop={1} fontSize="0.6rem">
+                        Current end date:{" "}
+                        {new Date(allCompensation.endDate * 1000 + new Date().getTimezoneOffset() * -60 * 1000).toISOString().slice(0, 16).replace("T", " ")}
+                      </Text>
+                    )}
                   </FormControl>
                 </form>
               </Flex>
