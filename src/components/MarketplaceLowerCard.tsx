@@ -18,7 +18,7 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import { ExtendedOffer } from "libs/types";
-import { isValidNumericCharacter } from "libs/utils";
+import { computeMaxBuyForOfferForAddress, isValidNumericCharacter } from "libs/utils";
 import { useMarketStore } from "store";
 import { LivelinessScore } from "./Liveliness/LivelinessScore";
 import PreviewDataButton from "./PreviewDataButton";
@@ -39,22 +39,10 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ extendedOffer: of
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const isMyNft = offer.owner === address;
   const maxBuyPerTransaction = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
-  const maxBuyForOfferForAddress = computeMaxBuyForOfferForAddress();
-  const maxBuyPerAddress = offer?.maxQuantityPerAddress;
+  const maxBuyPerAddress = offer ? offer.maxQuantityPerAddress : 0;
   const boughtByAddressAlreadyForThisOffer =
     useMarketStore((state) => state.addressBoughtOffers).find((boughtOffer) => boughtOffer.offerId === offer.index)?.quantity ?? 0;
-
-  function computeMaxBuyForOfferForAddress() {
-    let mboa = offer.quantity;
-    if (maxBuyPerTransaction > 0) {
-      mboa = Math.min(mboa, maxBuyPerTransaction);
-
-      if (maxBuyPerAddress > 0) {
-        mboa = Math.min(mboa, maxBuyPerAddress - boughtByAddressAlreadyForThisOffer);
-      }
-    }
-    return mboa;
-  }
+  const maxBuyForOfferForAddress = computeMaxBuyForOfferForAddress(offer, maxBuyPerTransaction, maxBuyPerAddress, boughtByAddressAlreadyForThisOffer);
 
   return (
     <>
