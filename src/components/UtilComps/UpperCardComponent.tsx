@@ -72,6 +72,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
       )
     : "";
   const fee = offer ? convertWeiToEsdt(offer.wantedTokenAmount as BigNumber.Value, tokenDecimals(offer.wantedTokenIdentifier)).toNumber() : 0;
+  const parsedCreationTime = moment(nftMetadata?.creationTime);
   return (
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box
@@ -169,7 +170,9 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
               </Flex>
 
               <Box display="flex" justifyContent="flex-start" mt="2">
-                <Text fontSize="md" fontWeight="medium" color="#929497">{`Creation time:   ${moment(nftMetadata.creationTime).format(uxConfig.dateStr)}`}</Text>
+                {parsedCreationTime.isValid() && (
+                  <Text fontSize="md" fontWeight="medium" color="#929497">{`Creation time:   ${parsedCreationTime.format(uxConfig.dateStr)}`}</Text>
+                )}
               </Box>
 
               {nftMetadata && (

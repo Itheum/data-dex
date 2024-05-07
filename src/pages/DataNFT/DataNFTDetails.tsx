@@ -49,6 +49,7 @@ import { getFavoritesFromBackendApi, getOffersByIdAndNoncesFromBackendApi } from
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import {
+  computeMaxBuyForOfferForAddress,
   convertToLocalString,
   convertWeiToEsdt,
   getTokenWantedRepresentation,
@@ -105,8 +106,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const walletDrawer = "/datanfts/wallet";
   const { pathname } = useLocation();
   const [favouriteItems, setFavouriteItems] = React.useState<Array<string>>([]);
-  const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
-  const maxBuyNumber = offer && maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer?.quantity;
+  const maxBuyPerTransaction = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
+  const maxBuyPerAddress = offer ? offer.maxQuantityPerAddress : 0;
+  const boughtByAddressAlreadyForThisOffer =
+    useMarketStore((state) => state.addressBoughtOffers).find((boughtOffer) => boughtOffer.offerId === (offer ? offer.index : -1))?.quantity ?? 0;
+
+  const maxBuyForOfferForAddress = computeMaxBuyForOfferForAddress(offer, maxBuyPerTransaction, maxBuyPerAddress, boughtByAddressAlreadyForThisOffer);
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -298,6 +304,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     return nftData.creator === offer?.owner;
   };
 
+  const parsedCreationTime = moment(nftData.creationTime);
+
   return (
     <Box mx={tokenIdParam ? { base: "5 !important", xl: "28 !important" } : 0}>
       {!isLoadingNftData() ? (
@@ -398,7 +406,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                               maxW={24}
                               step={1}
                               min={1}
-                              max={maxBuyNumber}
+                              max={maxBuyForOfferForAddress}
                               isValidCharacter={isValidNumericCharacter}
                               value={amount}
                               defaultValue={1}
@@ -409,8 +417,10 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                   error = "Cannot be zero or negative";
                                 } else if (value > offer.quantity) {
                                   error = "Cannot exceed balance";
-                                } else if (maxBuyLimit > 0 && value > maxBuyLimit) {
+                                } else if (maxBuyPerTransaction > 0 && value > maxBuyPerTransaction) {
                                   error = "Cannot exceed max buy limit";
+                                } else if (maxBuyPerAddress > 0 && value > maxBuyPerAddress) {
+                                  error = "Cannot exceed max buy limit per address";
                                 }
                                 setAmountError(error);
                                 setAmount(value);
@@ -631,9 +641,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             </Box>
                           )}
                           <Box display="flex" justifyContent="flex-start" pb="14px">
-                            <Text color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light">{`Creation time: ${moment(
-                              nftData.creationTime
-                            ).format(uxConfig.dateStr)}`}</Text>
+                            {parsedCreationTime.isValid() && (
+                              <Text
+                                color={colorMode === "dark" ? "white" : "black"}
+                                fontSize="lg"
+                                fontWeight="light">{`Creation time: ${parsedCreationTime.format(uxConfig.dateStr)}`}</Text>
+                            )}
                           </Box>
                         </Flex>
                       </Flex>
