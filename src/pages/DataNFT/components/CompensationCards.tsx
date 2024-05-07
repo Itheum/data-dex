@@ -60,7 +60,7 @@ export const CompensationCards: React.FC = () => {
         }
       }
       setCompensationRefund(refundObjT);
-      setCompensationPairs(compPairsT);
+      setCompensationPairs(compPairsT.filter((pair) => pair.compensation.endDate > 0));
     })();
   }, [hasPendingTransactions]);
 
@@ -86,73 +86,71 @@ export const CompensationCards: React.FC = () => {
           <Text>No compensation available</Text>
         ) : (
           <Flex flexDirection="column" gap={6} w="full" px={14}>
-            {compensationPairs
-              .filter((pair) => pair.compensation.endDate > 0)
-              .map((item, index) => {
-                const proofAmount = compensationRefund[item.compensation.compensationId]
-                  ? Number(compensationRefund[item.compensation.compensationId].proofOfRefund.amount)
-                  : 0;
-                return (
-                  <Flex key={index} w="full" flexDirection={{ base: "column", md: "row" }} alignItems="center" gap={6}>
-                    <img src={item.dataNft.nftImgUrl} alt="NFT" width="150rem" height="150rem" />
-                    <Flex flexDirection="column" gap={1}>
-                      <Text fontSize="2xl">
-                        {item.compensation.endDate * 1000 < new Date().getTime() ? (
-                          proofAmount === 0 ? (
-                            <>You were eligible for compensation, but you did not deposit the Data NFT for proof</>
-                          ) : (
-                            <> You have some $ITHEUM compensation to claim on this Data NFT!</>
-                          )
+            {compensationPairs.map((item, index) => {
+              const proofAmount = compensationRefund[item.compensation.compensationId]
+                ? Number(compensationRefund[item.compensation.compensationId].proofOfRefund.amount)
+                : 0;
+              return (
+                <Flex key={index} w="full" flexDirection={{ base: "column", md: "row" }} alignItems="center" gap={6}>
+                  <img src={item.dataNft.nftImgUrl} alt="NFT" width="150rem" height="150rem" />
+                  <Flex flexDirection="column" gap={1}>
+                    <Text fontSize="2xl">
+                      {item.compensation.endDate * 1000 < new Date().getTime() ? (
+                        proofAmount === 0 ? (
+                          <>You were eligible for compensation, but you did not deposit the Data NFT for proof</>
                         ) : (
-                          <>You can deposit this Data NFT as proof for your $ITHEUM compensation</>
-                        )}
+                          <> You have some $ITHEUM compensation to claim on this Data NFT!</>
+                        )
+                      ) : (
+                        <>You can deposit this Data NFT as proof for your $ITHEUM compensation</>
+                      )}
+                    </Text>
+                    <Flex gap={2} alignItems="center">
+                      <Text fontSize="2xl">Token Name:</Text>
+                      <Text fontSize="xl" textColor="teal.200">
+                        {item.dataNft.tokenName}
                       </Text>
-                      <Flex gap={2} alignItems="center">
-                        <Text fontSize="2xl">Token Name:</Text>
-                        <Text fontSize="xl" textColor="teal.200">
-                          {item.dataNft.tokenName}
-                        </Text>
-                      </Flex>
-                      <Flex gap={2} alignItems="center">
-                        <Text fontSize="2xl">Supply:</Text>
-                        <Text fontSize="xl" textColor="teal.200">
-                          {Number(item.dataNft.balance)}
-                        </Text>
-                      </Flex>
-                      <Flex gap={2} alignItems="center">
-                        <Text fontSize="2xl">Deposit this Data NFT before: </Text>
-                        <Text fontSize="xl" textColor="teal.200">
-                          {new Date(item.compensation.endDate * 1000).toLocaleString()}
-                        </Text>
-                      </Flex>
-                      <Flex gap={3} flexDirection={{ base: "column", md: "row" }}>
-                        <Button
-                          variant="outline"
-                          colorScheme="teal"
-                          isDisabled={item.compensation.endDate * 1000 < new Date().getTime()}
-                          onClick={() => handleDeposit(item.dataNft.collection, item.dataNft.nonce, item.dataNft.balance)}>
-                          Deposit all Data NFTs to claim $ITHEUM
-                        </Button>
-                        <Button
-                          variant="outline"
-                          colorScheme="teal"
-                          isDisabled={havePassed24h(item.compensation.endDate) || proofAmount === 0}
-                          onClick={() => handleClaim(item.dataNft.collection, item.dataNft.nonce)}>
-                          Claim back your Data NFT +&nbsp;
-                          {Number(item.compensation.accumulatedAmount) !== 0 && Number(item.compensation.proofAmount) !== 0
-                            ? (BigNumber(item.compensation.accumulatedAmount)
-                                .dividedBy(10 ** 18)
-                                .toNumber() /
-                                Number(item.compensation.proofAmount)) *
-                              proofAmount
-                            : 0}
-                          &nbsp;$ITHEUM
-                        </Button>
-                      </Flex>
+                    </Flex>
+                    <Flex gap={2} alignItems="center">
+                      <Text fontSize="2xl">Supply:</Text>
+                      <Text fontSize="xl" textColor="teal.200">
+                        {Number(item.dataNft.balance)}
+                      </Text>
+                    </Flex>
+                    <Flex gap={2} alignItems="center">
+                      <Text fontSize="2xl">Deposit this Data NFT before: </Text>
+                      <Text fontSize="xl" textColor="teal.200">
+                        {new Date(item.compensation.endDate * 1000).toLocaleString()}
+                      </Text>
+                    </Flex>
+                    <Flex gap={3} flexDirection={{ base: "column", md: "row" }}>
+                      <Button
+                        variant="outline"
+                        colorScheme="teal"
+                        isDisabled={item.compensation.endDate * 1000 < new Date().getTime()}
+                        onClick={() => handleDeposit(item.dataNft.collection, item.dataNft.nonce, item.dataNft.balance)}>
+                        Deposit all Data NFTs to claim $ITHEUM
+                      </Button>
+                      <Button
+                        variant="outline"
+                        colorScheme="teal"
+                        isDisabled={havePassed24h(item.compensation.endDate) || proofAmount === 0}
+                        onClick={() => handleClaim(item.dataNft.collection, item.dataNft.nonce)}>
+                        Claim back your Data NFT +&nbsp;
+                        {Number(item.compensation.accumulatedAmount) !== 0 && Number(item.compensation.proofAmount) !== 0
+                          ? (BigNumber(item.compensation.accumulatedAmount)
+                              .dividedBy(10 ** 18)
+                              .toNumber() /
+                              Number(item.compensation.proofAmount)) *
+                            proofAmount
+                          : 0}
+                        &nbsp;$ITHEUM
+                      </Button>
                     </Flex>
                   </Flex>
-                );
-              })}
+                </Flex>
+              );
+            })}
           </Flex>
         )}
       </Flex>
