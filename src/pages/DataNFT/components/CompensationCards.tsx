@@ -34,7 +34,7 @@ export const CompensationCards: React.FC = () => {
       const dataNftTicker = contractsForChain(chainID).dataNftTokens[0].id;
       const dataNfts: DataNft[] = await DataNft.ownedByAddress(address, [dataNftTicker]);
 
-      const compensationsT = await getLoggedAddressCompensations(bondContract, contractBonds, address);
+      const compensationsT = await getCompensationsFromBondSc(bondContract, contractBonds);
 
       const { compsInScT, compPairsT }: { compsInScT: Compensation[]; compPairsT: CompensationNftPair[] } = getNftsForCompensations(compensationsT, dataNfts);
 
@@ -43,14 +43,20 @@ export const CompensationCards: React.FC = () => {
       const nftsInScT = compsInScT.map((comp) => {
         return { nonce: comp.nonce, tokenIdentifier: comp.tokenIdentifier };
       });
-      const dataNftsInScT = await DataNft.createManyFromApi(nftsInScT);
+      const dataNftsInScT = [];
+      for (let i = 0; i < nftsInScT.length; i += 50) {
+        const dataNftsInScTChunk = await DataNft.createManyFromApi(nftsInScT.slice(i, i + 50));
+        dataNftsInScT.push(...dataNftsInScTChunk);
+      }
       for (const compT of compsInScT) {
         const dataNftForComp = dataNftsInScT.find((dataNft) => dataNft.nonce === compT.nonce && dataNft.collection === compT.tokenIdentifier);
         if (dataNftForComp) {
           const refundForComp = refundObjT[compT.compensationId];
-          dataNftForComp.updateDataNft({ balance: Number(refundForComp.proofOfRefund.amount) });
-          const compNftPair: CompensationNftPair = { compensation: compT, dataNft: dataNftForComp };
-          compPairsT.push(compNftPair);
+          if (refundForComp) {
+            dataNftForComp.updateDataNft({ balance: Number(refundForComp.proofOfRefund.amount) });
+            const compNftPair: CompensationNftPair = { compensation: compT, dataNft: dataNftForComp };
+            compPairsT.push(compNftPair);
+          }
         }
       }
       setCompensationRefund(refundObjT);
@@ -180,12 +186,10 @@ function getNftsForCompensations(compensationsT: Compensation[], dataNfts: DataN
   return { compsInScT, compPairsT };
 }
 
-async function getLoggedAddressCompensations(bondContract: BondContract, contractBonds: Bond[], address: string) {
+async function getCompensationsFromBondSc(bondContract: BondContract, contractBonds: Bond[]) {
   return await bondContract.viewCompensations(
-    contractBonds
-      .filter((bond) => bond.address === address)
-      .map((bond) => {
-        return { nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier };
-      })
+    contractBonds.map((bond) => {
+      return { nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier };
+    })
   );
 }
