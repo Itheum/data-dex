@@ -38,6 +38,7 @@ export const useMarketStore = create<State & Action>((set) => ({
     "sellerTaxPercentage": 200,
     "buyerTaxPercentageDiscount": 0,
     "sellerTaxPercentageDiscount": 0,
+    "maxDefaultQuantity": 0,
   },
   maxPaymentFeeMap: {},
   isMarketPaused: false,

@@ -144,6 +144,7 @@ export class DataNftMarketContract {
       this.itheumToken,
       0,
       new BigNumber(price).multipliedBy(10 ** 18),
+      0,
       0
     );
 
