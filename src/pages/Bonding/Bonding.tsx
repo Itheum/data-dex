@@ -166,7 +166,7 @@ export const Bonding: React.FC = () => {
                   <NoDataHere />
                 ) : (
                   contractBonds.map((bond, index) => (
-                    <Fragment key={index}>
+                    <Fragment key={bond.bondId}>
                       <CollectionDashboard bondNft={bond} bondDataNft={bondingDataNfts} />
                     </Fragment>
                   ))
@@ -208,7 +208,7 @@ export const Bonding: React.FC = () => {
                   <NoDataHere />
                 ) : (
                   allCompensation.map((compensation, index) => (
-                    <Fragment key={index}>
+                    <Fragment key={compensation.compensationId}>
                       <CompensationDashboard compensationBondNft={compensation} bondDataNft={compensationDataNfts} />
                     </Fragment>
                   ))

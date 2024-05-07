@@ -121,7 +121,7 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
             .filter((dataNft) => dataNft.tokenIdentifier === createTokenIdentifier(bondNft.tokenIdentifier, bondNft.nonce))
             .map((dataNft, index) => {
               return (
-                <div key={index}>
+                <div key={dataNft.tokenIdentifier}>
                   <Text fontSize="1.6rem">{dataNft.tokenName}</Text>
                   <Text fontSize="0.8rem">
                     Title: {dataNft.title} | Nonce: {dataNft.nonce}
