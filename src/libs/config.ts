@@ -31,30 +31,6 @@ export function contractsForChain(chainID: string): ContractsType {
             contract: new Address(dataNftMintContractAddress_Mx_Devnet),
           },
           {
-            id: "BIGBANG-6b34db",
-            contract: new Address("erd1qqqqqqqqqqqqqpgqdsf80w35nqlxfd34z0cd9n60vwlkdj9a8yps3t6x4m"),
-          },
-          {
-            id: "BETATOK-5b7317",
-            contract: new Address("erd1qqqqqqqqqqqqqpgqjk0cxzm79qzced5sevmnn6swgp3jjch88ypsfd068q"),
-          },
-          {
-            id: "COLNAMA-539838",
-            contract: new Address("erd1qqqqqqqqqqqqqpgqnf8lrjy9efepss09qm3a3q9za9ahtcah8ypsnd6lqd"),
-          },
-          {
-            id: "ALPHADATA-b3f6d0",
-            contract: new Address("erd1qqqqqqqqqqqqqpgqcaqv55lrfjuvspgrhezvqrag4gq3qdxu8ypsx9f0ar"),
-          },
-          {
-            id: "NEWDNFT-3a8caa",
-            contract: new Address("erd1qqqqqqqqqqqqqpgq69lkfnnzgvqpjzze690rl4lmqtmvnccsw3wqhvsacl"),
-          },
-          {
-            id: "FOOA-141164",
-            contract: new Address("erd1qqqqqqqqqqqqqpgqteqgaxcel2zjkrsm27szjlptemqk0sdpu00sp49kss"),
-          },
-          {
             id: "DNFTPHMA-9e2b1c",
             contract: new Address("erd1qqqqqqqqqqqqqpgq5hsq5z09zv3g0lsxs3y6q2x0qvlhzugpu00sevtqsw"),
           },
@@ -70,6 +46,11 @@ export function contractsForChain(chainID: string): ContractsType {
             id: "OASMUSICPL-47b186",
             contract: new Address("erd1qqqqqqqqqqqqqpgq30mwjcjmy7l7p4v0ytf2pmcmj95u9l8xu00sku2n5h"),
           },
+          {
+            id: "FOOWLDMSC-5ee8ec",
+            contract: new Address("erd1qqqqqqqqqqqqqpgqu0nxfwcnsaccu3sgt0a8u0sglmk6se9cu00s0zm03r"),
+          },
+          { id: "DNFTPHMUS-73cde3", contract: new Address("") },
         ],
       };
     }
@@ -127,7 +108,7 @@ export const MENU = {
   CLAIMS: 15,
   LANDING: 16,
   NFTDETAILS: 17,
-  GETWHITELISTED: 18,
+  GETVERIFIED: 18,
   DATACAT: 19,
   PROFILE: 20,
   GUARDRAILS: 21,
@@ -152,7 +133,7 @@ export const PATHS = {
   personaldataproof: [13, [0]],
   nftdetails: [17, [4]],
   offer: [17, [4]],
-  getwhitelisted: [18, [-1]],
+  getverified: [18, [-1]],
 };
 
 export const CHAINS = {
@@ -519,6 +500,7 @@ export const EXPLORER_APP_SUPPORTED_TOKENS: any = {
     "nftunes": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 2 }],
     "timecapsule": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 57 }],
     "bitzgame": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 198 }],
+    "bobergameroom": [],
   },
   "1": {
     "trailblazer": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 1 }],
@@ -527,6 +509,7 @@ export const EXPLORER_APP_SUPPORTED_TOKENS: any = {
     "nftunes": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 4 }],
     "timecapsule": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 5 }],
     "bitzgame": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 7 }],
+    "bobergameroom": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 8 }],
   },
 };
 
@@ -538,6 +521,7 @@ export const EXPLORER_APP_FOR_TOKEN: Record<string, Record<string, string>> = {
     "nftunes": "https://test.explorer.itheum.io/nftunes",
     "timecapsule": "https://test.explorer.itheum.io/timecapsule",
     "bitzgame": "https://test.explorer.itheum.io/getbitz",
+    "bobergameroom": "https://test.explorer.itheum.io/bobergameroom",
   },
   "1": {
     "trailblazer": "https://explorer.itheum.io/project-trailblazer",
@@ -546,5 +530,8 @@ export const EXPLORER_APP_FOR_TOKEN: Record<string, Record<string, string>> = {
     "nftunes": "https://explorer.itheum.io/nftunes",
     "timecapsule": "https://explorer.itheum.io/timecapsule",
     "bitzgame": "https://explorer.itheum.io/getbitz",
+    "bobergameroom": "https://explorer.itheum.io/bobergameroom",
   },
 };
+
+export const PEERME_TEAM_NAME: string = IS_DEVNET ? "itheum-dao" : "itheum-trailblazer-dao";

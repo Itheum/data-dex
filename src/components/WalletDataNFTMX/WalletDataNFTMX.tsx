@@ -6,7 +6,6 @@ import {
   Button,
   Flex,
   HStack,
-  Image,
   Link,
   NumberDecrementStepper,
   NumberIncrementStepper,
@@ -31,11 +30,11 @@ import {
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions, useGetSignedTransactions } from "@multiversx/sdk-dapp/hooks";
 import axios from "axios";
-import { motion } from "framer-motion";
 import moment from "moment";
 import { MdOutlineInfo } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import FrozenOverlay from "components/FrozenOverlay";
+import ImageSlider from "components/ImageSlider";
 import PreviewDataButton from "components/PreviewDataButton";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
@@ -88,6 +87,8 @@ export default function WalletDataNFTMX(item: any) {
   const [amountError, setAmountError] = useState("");
   const [price, setPrice] = useState(10);
   const [priceError, setPriceError] = useState("");
+  const [maxPerAddress, setMaxPerAddress] = useState(0);
+  const [maxPerAddressError, setMaxPerAddressError] = useState("");
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
   const [webWalletListTxHash, setWebWalletListTxHash] = useState("");
   const maxListLimit = import.meta.env.VITE_MAX_LIST_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_LIST_LIMIT_PER_SFT) : 0;
@@ -133,7 +134,8 @@ export default function WalletDataNFTMX(item: any) {
           txData.wantedTokenNonce,
           txData.wantedTokenAmount,
           txData.quantity,
-          txData.owner
+          txData.owner,
+          txData.maxQuantityPerAddress
         );
       }
       sessionStorage.removeItem("web-wallet-tx");
@@ -152,7 +154,8 @@ export default function WalletDataNFTMX(item: any) {
     wantedTokenNonce: string,
     wantedTokenAmount: string,
     quantity: number,
-    owner: string
+    owner: string,
+    maxQuantityPerAddress: number
   ) {
     try {
       let indexResponse;
@@ -208,6 +211,7 @@ export default function WalletDataNFTMX(item: any) {
           wantedTokenAmount: wantedTokenAmount,
           quantity: quantity,
           owner: owner,
+          maxQuantityPerAddress: maxQuantityPerAddress,
         };
 
         const response = await fetch(`${backendUrl}/addOffer`, {
@@ -217,7 +221,7 @@ export default function WalletDataNFTMX(item: any) {
         });
       }
     } catch (error) {
-      console.log("Error:", error);
+      console.error("Error:", error);
     }
   }
 
@@ -273,7 +277,7 @@ export default function WalletDataNFTMX(item: any) {
         s3: 1,
       }));
     } catch (e: any) {
-      console.log(e);
+      console.error(e);
       if (e.includes("403") && (nonce === 7 || nonce === 198)) {
         return;
       } else {
@@ -319,58 +323,30 @@ export default function WalletDataNFTMX(item: any) {
     }
   };
 
+  const parsedCreationTime = moment(item.creationTime);
+
   return (
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
       <Box
         w="275px"
-        h={item.isProfile === true ? "660px" : "840px"}
+        h={item.isProfile === true ? "660px" : "930px"}
         mx="3 !important"
         border="1px solid transparent"
         borderColor="#00C79740"
         borderRadius="16px"
         mb="1rem"
         position="relative">
-        <Flex justifyContent="center">
-          <Image
-            src={item.nftImgUrl}
-            alt={item.dataPreview}
-            h={236}
-            w={236}
-            mx={6}
-            mt={6}
-            borderRadius="32px"
-            onLoad={() => item.setHasLoaded(true)}
-            onClick={() => item.openNftDetailsDrawer(item.id)}
-          />
-          <motion.button
-            style={{
-              position: "absolute",
-              zIndex: "1",
-              top: "0",
-              bottom: "0",
-              right: "0",
-              left: "0",
-              height: "236px",
-              width: "236px",
-              marginInlineStart: "1.2rem",
-              marginInlineEnd: "1.2rem",
-              marginTop: "1.5rem",
-              borderRadius: "32px",
-              cursor: "pointer",
-              opacity: 0,
-            }}
-            onLoad={() => item.setHasLoaded(true)}
-            onClick={() => item.openNftDetailsDrawer(item.id)}
-            whileHover={{ opacity: 1, backdropFilter: "blur(1px)", backgroundColor: "#1b1b1ba0" }}>
-            <Text as="div" border="1px solid" borderColor="teal.400" borderRadius="5px" variant="outline" w={20} h={8} textAlign="center" mx="20">
-              <Text as="p" mt={1} fontWeight="400" textColor="white">
-                Details
-              </Text>
-            </Text>
-          </motion.button>
-        </Flex>
+        <ImageSlider
+          imageUrls={item.media?.map((mediaObj: any) => mediaObj.url) ?? [item.nftImgUrl]}
+          autoSlide
+          imageHeight="236px"
+          imageWidth="236px"
+          autoSlideInterval={Math.floor(Math.random() * 6000 + 6000)} // random number between 6 and 12 seconds
+          onLoad={() => item.setHasLoaded(true)}
+          openNftDetailsDrawer={() => item.openNftDetailsDrawer(item.id)}
+        />
 
-        <Flex h="28rem" mx={6} my={3} direction="column" justify={item.isProfile === true ? "initial" : "space-between"}>
+        <Flex h="28rem" mx={6} my={2} direction="column" justify={item.isProfile === true ? "initial" : "space-between"}>
           <Text fontSize="md" color="#929497">
             <Link href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.tokenIdentifier}`} isExternal>
               {item.tokenName} <ExternalLinkIcon mx="2px" />
@@ -414,9 +390,9 @@ export default function WalletDataNFTMX(item: any) {
               </Box>
             )}
 
-            {item.creationTime && (
+            {parsedCreationTime.isValid() && (
               <Box color="#8c8f92d0" fontSize="md">
-                Creation time: {moment(item.creationTime).format(uxConfig.dateStr)}
+                Creation time: {parsedCreationTime.format(uxConfig.dateStr)}
               </Box>
             )}
 
@@ -479,7 +455,7 @@ export default function WalletDataNFTMX(item: any) {
               {item.dataPreview && <PreviewDataButton previewDataURL={item.dataPreview} />}
             </HStack>
 
-            <Flex mt="7" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
+            <Flex mt="6" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
               <Text fontSize="md" color="#929497">
                 How many to list:{" "}
               </Text>
@@ -523,7 +499,7 @@ export default function WalletDataNFTMX(item: any) {
               )}
             </Box>
 
-            <Flex mt="5" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
+            <Flex mt="3" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
               <Tooltip label="This fee is what your dataset is advertised for on the marketplace">
                 <Text fontSize="md" color="#929497">
                   Access fee for each:
@@ -565,10 +541,55 @@ export default function WalletDataNFTMX(item: any) {
               )}
             </Box>
 
+            <Flex mt="3" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
+              <Tooltip label="This is a limit that you can impose in order to avoid someone buying your whole supply. Setting it to 0 will disable it">
+                <Text fontSize="md" color="#929497">
+                  Max buy per address:
+                </Text>
+              </Tooltip>
+              <NumberInput
+                size="sm"
+                borderRadius="4.65px !important"
+                maxW={20}
+                step={1}
+                defaultValue={0}
+                min={0}
+                max={Number(maxListNumber)}
+                isValidCharacter={isValidNumericCharacter}
+                value={maxPerAddress}
+                onChange={(value) => {
+                  let error = "";
+                  const valueAsNumber = Number(value);
+                  if (valueAsNumber < 0) {
+                    error = "Cannot be negative";
+                  } else if (valueAsNumber > item.balance) {
+                    error = "Cannot be higher than balance";
+                  } else if (maxListLimit > 0 && valueAsNumber > maxListLimit) {
+                    error = "Cannot exceed max list limit";
+                  }
+
+                  setMaxPerAddressError(error);
+                  setMaxPerAddress(valueAsNumber);
+                }}>
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+            </Flex>
+            <Box h={3}>
+              {maxPerAddressError && (
+                <Text color="red.400" fontSize="xs">
+                  {maxPerAddressError}
+                </Text>
+              )}
+            </Box>
+
             <Tooltip colorScheme="teal" hasArrow placement="top" label="Market is paused" isDisabled={!isMarketPaused}>
               <Button
                 size="sm"
-                mt={4}
+                mt={2}
                 width="215px"
                 display={item.isProfile === true ? "none" : "flex"}
                 colorScheme="teal"
@@ -606,6 +627,7 @@ export default function WalletDataNFTMX(item: any) {
             }}
             amount={amount}
             setAmount={setAmount}
+            maxPerAddress={maxPerAddress}
           />
         )}
 

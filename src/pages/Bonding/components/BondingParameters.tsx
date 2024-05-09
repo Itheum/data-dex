@@ -21,13 +21,16 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { BondConfiguration, BondContract, State } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
+import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
+import { ProposalDeepLinkBuilder } from "@peerme/sdk";
 import BigNumber from "bignumber.js";
 import { Controller, useForm } from "react-hook-form";
 import { AiFillPauseCircle, AiFillPlayCircle } from "react-icons/ai";
 import * as Yup from "yup";
-import { IS_DEVNET } from "libs/config";
+import { IS_DEVNET, PEERME_TEAM_NAME } from "libs/config";
+import { timeUntil } from "../../../libs/utils";
 
 type BondingParametersFormType = {
   minimumLockPeriodInSeconds: number;
@@ -40,6 +43,7 @@ type BondingParametersFormType = {
 export const BondingParameters: React.FC = () => {
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
+  const { tokenLogin } = useGetLoginInfo();
   const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   const [onChangeMinimumLockPeriodIndex, setOnChangeMinimumLockPeriodIndex] = useState<number>(0);
   const [contractConfiguration, setContractConfiguration] = useState<BondConfiguration>({
@@ -56,6 +60,7 @@ export const BondingParameters: React.FC = () => {
     withdrawPenalty: 0,
     acceptedCallers: [""],
   });
+  const [constructedDeeplinkURL, setConstructedDeeplinkURL] = useState<string>("");
 
   useEffect(() => {
     (async () => {
@@ -72,11 +77,13 @@ export const BondingParameters: React.FC = () => {
     earlyWithdrawPenaltyInPercentage: Yup.number().typeError("Minimum penalty in % must be a number.").required("Required"),
   });
 
-  // TODO: default values get from bonding contract
   const {
     control,
     formState: { errors },
     handleSubmit,
+    watch,
+    getFieldState,
+    formState,
   } = useForm<BondingParametersFormType>({
     defaultValues: {
       minimumLockPeriodInSeconds: 604800,
@@ -88,6 +95,48 @@ export const BondingParameters: React.FC = () => {
     mode: "onChange",
     resolver: yupResolver(validationSchema),
   });
+
+  const minLockPeriod = watch("minimumLockPeriodInSeconds");
+  const minSBond = watch("minimumSBond");
+
+  const { isDirty: isMinLockPeriodTouched } = getFieldState("minimumLockPeriodInSeconds");
+  const { isDirty: isMinAmountTouched } = getFieldState("minimumSBond");
+
+  const earlyWithdrawalDeeplinkUrl = (newEarlyWithdrawalValue: number) => {
+    const url = new ProposalDeepLinkBuilder(PEERME_TEAM_NAME, { network: IS_DEVNET ? "devnet" : "mainnet" })
+      .authenticate(tokenLogin?.nativeAuthToken ?? "")
+      .setTitle("Set Withdrawal Penalty")
+      .setDescription(
+        `This is to propose a change in the Early Withdrawal Penalty from ${contractConfiguration.withdrawPenalty / 100} to ${newEarlyWithdrawalValue}`
+      )
+      .addAction(bondContract.getContractAddress().bech32(), "setWithdrawPenalty", 0, [newEarlyWithdrawalValue * 100], [])
+      .build();
+    return setConstructedDeeplinkURL(url);
+  };
+
+  const addBondDeeplinkUrl = (addNewPeriodBond: { bondPeriod: number; bondAmount: number }) => {
+    const period = addNewPeriodBond.bondPeriod;
+    const amount = addNewPeriodBond.bondAmount;
+    const amountOfTimeAfter = timeUntil(period);
+    const url = new ProposalDeepLinkBuilder(PEERME_TEAM_NAME, { network: IS_DEVNET ? "devnet" : "mainnet" })
+      .authenticate(tokenLogin?.nativeAuthToken ?? "")
+      .setTitle(amount != 0 ? "Set New Period Bond" : "Delete Period Bond")
+      .setDescription(
+        amount != 0
+          ? `This is to propose a bonding period of ${amountOfTimeAfter.count} ${amountOfTimeAfter.unit} and ${amount} ITHEUM `
+          : `This is to propose deleting the period ${amountOfTimeAfter.count} ${amountOfTimeAfter.unit}`
+      )
+      .addAction(
+        bondContract.getContractAddress().bech32(),
+        amount != 0 ? "addPeriodsBonds" : "removePeriodsBonds",
+        0,
+        amount != 0 ? [period, BigInt(amount) * BigInt("1000000000000000000")] : [period],
+        []
+      )
+      .build();
+    setConstructedDeeplinkURL(url);
+    return window.open(url, "_blank");
+  };
 
   const onSetPeriodBonds = async (formData: Partial<BondingParametersFormType>) => {
     if (formData.minimumLockPeriodInSeconds && formData.minimumSBond && formData.minimumSBond > 0) {
@@ -215,6 +264,15 @@ export const BondingParameters: React.FC = () => {
                     </Flex>
                     <Button type="submit" mt={5} colorScheme="teal">
                       Add
+                    </Button>
+                    <Button
+                      type="button"
+                      mt={5}
+                      ml={3}
+                      colorScheme="teal"
+                      isDisabled={!isMinLockPeriodTouched || !isMinAmountTouched}
+                      onClick={() => addBondDeeplinkUrl({ bondAmount: minSBond, bondPeriod: minLockPeriod })}>
+                      Proposal
                     </Button>
                   </form>
                 </TabPanel>
@@ -378,6 +436,7 @@ export const BondingParameters: React.FC = () => {
                         type="number"
                         onChange={(event) => {
                           onChange(event.target.value);
+                          earlyWithdrawalDeeplinkUrl(Number(event.target.value));
                         }}
                       />
                     )}
@@ -386,6 +445,11 @@ export const BondingParameters: React.FC = () => {
                   <FormErrorMessage>{errors?.earlyWithdrawPenaltyInPercentage?.message}</FormErrorMessage>
 
                   <Button type="submit">Set</Button>
+                  <a href={constructedDeeplinkURL} target="_blank" rel="noreferrer">
+                    <Button type="button" ml={2}>
+                      Propose
+                    </Button>
+                  </a>
                 </FormControl>
               </form>
             </GridItem>

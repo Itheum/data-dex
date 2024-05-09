@@ -16,16 +16,16 @@ import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import DataNFTMarketplaceMultiversX from "pages/DataNFT/DataNFTMarketplaceMultiversX";
 import DataNFTs from "pages/DataNFT/DataNFTs";
 import MyDataNFTsMx from "pages/DataNFT/MyDataNFTsMultiversX";
-import { GetWhitelist } from "pages/GetWhitelist";
+import { GetVerified } from "pages/GetVerified";
 import HomeMultiversX from "pages/Home/HomeMultiversX";
 import LandingPage from "pages/LandingPage";
 import { StoreProvider } from "store/StoreProvider";
 import { TradeData } from "../AdvertiseData/TradeData";
+import { Bonding } from "../Bonding/Bonding";
 import { MinterDashboard } from "../Enterprise/components/MinterDashboard";
 import { Enterprise } from "../Enterprise/Enterprise";
 import { GuardRails } from "../GuardRails/GuardRails";
 import { Profile } from "../Profile/Profile";
-import { Bonding } from "../Bonding/Bonding";
 
 const mxLogout = logout;
 
@@ -160,7 +160,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
 
   let bodyMinHeightLg = "1000px";
 
-  if (menuItem === MENU.GETWHITELISTED) {
+  if (menuItem === MENU.GETVERIFIED) {
     // whitelist page we need to reset this of bg looks bad
     bodyMinHeightLg = "lg";
   }
@@ -185,8 +185,8 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                   <Routes>
                     <Route path="/" element={<LandingPage />} />
 
-                    <Route path="getwhitelisted" element={<Outlet />}>
-                      <Route path="" element={<GetWhitelist />} />
+                    <Route path="getverified" element={<Outlet />}>
+                      <Route path="" element={<GetVerified />} />
                     </Route>
 
                     <Route path="guardrails" element={<Outlet />}>
@@ -200,18 +200,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                     </Route>
                     {/*{routing}*/}
 
-                    <Route
-                      path="dashboard"
-                      element={
-                        <HomeMultiversX
-                          key={rfKeys.tools}
-                          setMenuItem={setMenuItem}
-                          dataCATAccount={dataCATAccount}
-                          loadingDataCATAccount={loadingDataCATAccount}
-                          onDataCATAccount={linkOrRefreshDataDATAccount}
-                        />
-                      }
-                    />
+                    <Route path="dashboard" element={<HomeMultiversX key={rfKeys.tools} setMenuItem={setMenuItem} />} />
 
                     <Route path="mintdata" element={<TradeData />} />
                     {isMxLoggedIn ? (
@@ -230,6 +219,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                       <Route path="wallet/activity" element={<MyDataNFTsMx tabState={4} />} />
                       <Route path="wallet/favorite" element={<MyDataNFTsMx tabState={3} />} />
                       <Route path="wallet/bonding" element={<MyDataNFTsMx tabState={5} />} />
+                      <Route path="wallet/compensation" element={<MyDataNFTsMx tabState={6} />} />
                       <Route path="wallet/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={1} />} />
                       <Route path="wallet/purchased/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={2} />} />
                       <Route path="wallet/activity/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={4} />} />
@@ -241,7 +231,9 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                       <Route path="marketplace/my/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
                     </Route>
                     <Route path="bonding/" element={<Bonding />} />
-                    <Route path="bonding/:pageNumber" element={<Bonding />} />
+                    <Route path="bonding/:bondingPageNumber" element={<Bonding />}>
+                      <Route path="compensation/:compensationPageNumber" element={<Bonding />} />
+                    </Route>
                     <Route path="settings" element={<AppSettings />} />
                   </Routes>
                 </AuthenticatedRoutesWrapper>

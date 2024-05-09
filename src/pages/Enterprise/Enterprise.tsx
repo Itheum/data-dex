@@ -15,8 +15,8 @@ export const Enterprise: React.FC = () => {
   const [isWhitelistNeeded, setWhitelistNeeded] = useState<boolean>(false);
   const [factoryTaxPercentage, setFactoryTaxPercentage] = useState<number>(0);
   const [factoryVersions, setFactoryVersions] = useState<Array<string>>([]);
-  const [factoryTreasuryAddress, setFactoryTreasuryAddress] = useState<IAddress>(new Address());
-  const [claimsContractAddress, setClaimsContractAddress] = useState<IAddress>(new Address());
+  const [factoryTreasuryAddress, setFactoryTreasuryAddress] = useState<IAddress>(new Address(""));
+  const [claimsContractAddress, setClaimsContractAddress] = useState<IAddress>(new Address(""));
   const [claimsTokenIdentifier, setClaimsTokenIdentifier] = useState<string>("");
   const [viewAddressContracts, setViewAddressContracts] = useState<Array<DeployedContract>>([]);
   const [readTermsChecked, setReadTermsChecked] = useState<boolean>(false);

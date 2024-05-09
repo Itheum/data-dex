@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Button, Center, Flex, Heading, Image, Link, Text, useColorMode } from "@chakra-ui/react";
 import { FaDiscord, FaTelegramPlane, FaTwitter } from "react-icons/fa";
+import verifiedCreatorIcon from "assets/img/verified-creator-icon.png";
 import illustration from "assets/img/whitelist/getWhitelist.png";
 import { gtagGo } from "libs/utils";
 
@@ -15,7 +16,6 @@ export const LandingPage: React.FC = () => {
       bgPosition="bottom"
       bgRepeat="no-repeat"
       justifyContent="center"
-      backgroundColor="none"
       position="relative">
       <Center w={{ base: "95%", md: "89%", xl: "89%", "2xl": "95%" }}>
         <Flex
@@ -24,29 +24,30 @@ export const LandingPage: React.FC = () => {
           flexDirection={["column", null, "row"]}
           mx={{ base: 0, "2xl": 20 }}
           alignItems="center">
-          <Box
-            backgroundColor="none"
-            width={["100%", null, null, "500px", "650px"]}
-            textAlign={["center", null, null, "left", "left"]}
-            ml={{ xs: "auto", xl: 10 }}
-            pt={10}>
+          <Box width={["100%", null, null, "500px", "650px"]} textAlign={["center", null, null, "left", "left"]} ml={{ xs: "auto", xl: 10 }} pt={10}>
             <Heading as="h1" size="2xl" fontFamily="Clash-Medium" pt={20}>
-              Fully Unlock the Value from{" "}
+              <Image w={{ base: "50px", md: "50px", xl: "50px", "2xl": "50px" }} src={verifiedCreatorIcon} alt="Verified Tick" />
+              Mint{" "}
               <Text as="span" color="teal.200">
                 Your Data{" "}
               </Text>
-              by Minting it as a Data NFT
+              as a Verified Data NFT Creator
             </Heading>
 
-            <Text mt="1rem" fontSize="lg" fontWeight="400" lineHeight="25px" marginTop="2">
-              It’s time to own and trade your data.
-            </Text>
             <Text fontSize="lg" fontWeight="400" lineHeight="25px" my={4}>
               Whether you’re a data creator, musician, researcher, content creator, analyst, gamer, or a pioneering project - you have the power to redefine the
               value of your data. Transform your unique datasets into a new asset class by minting your very own Data NFTs.
             </Text>
-            <Text fontSize="lg" fontWeight="400" lineHeight="25px">
-              Don’t just be a part of the change, lead it.
+            <Text mt="1rem" fontSize="lg" fontWeight="400" lineHeight="25px" marginTop="2">
+              Anyone can bond ITHEUM tokens to prove public reputation and mint their Data NFTs, but{" "}
+              <Text as="span" fontWeight="bold">
+                Verified Creators
+              </Text>{" "}
+              get the official{" "}
+              <Text as="span" fontWeight="bold" color="teal.200">
+                Green Tick
+              </Text>{" "}
+              on their Creator pages and build more trust with their community.
             </Text>
             <Button
               as={Link}
@@ -61,11 +62,11 @@ export const LandingPage: React.FC = () => {
               }}
               href="https://share-eu1.hsforms.com/1h2V8AgnkQJKp3tstayTsEAf5yjc"
               isExternal>
-              Get Whitelisted Today
+              Get Verified Today
             </Button>
           </Box>
 
-          <Box backgroundColor="none">
+          <Box>
             <Image
               className="bounce-hero-img"
               marginLeft="15px"

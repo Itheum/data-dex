@@ -23,6 +23,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { Offer } from "@itheum/sdk-mx-data-nft/out";
+import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import axios from "axios";
@@ -32,6 +33,7 @@ import { MdFavoriteBorder, MdOutlineShoppingBag } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
 import { CustomPagination } from "components/CustomPagination";
 import ProfileCard from "components/ProfileCard";
+import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
 import useThrottle from "../../../components/UtilComps/UseThrottle";
 import { labels } from "../../../libs/language";
@@ -39,11 +41,9 @@ import { contractsForChain, getOffersCountFromBackendApi } from "../../../libs/M
 import { getNftsByIds, getNftsOfACollectionForAnAddress } from "../../../libs/MultiversX/api";
 import { DataNftMarketContract } from "../../../libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
-import { createDataNftType, DataNftMetadataType } from "../../../libs/MultiversX/types";
 import { backendApi, createNftId, sleep } from "../../../libs/utils";
 import { useMarketStore } from "../../../store";
-import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
-import { DataNft } from "@itheum/sdk-mx-data-nft/out";
+import { Address } from "@multiversx/sdk-core/out";
 
 interface PropsType {
   tabState: number;
@@ -72,7 +72,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const mintContract = new DataNftMintContract(chainID);
   const marketContract = new DataNftMarketContract(chainID);
 
-  const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
+  const [nftMetadatas, setNftMetadatas] = useState<DataNft[]>([]);
   // const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
   // const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
   // const marketRequirements = useMarketStore((state) => state.marketRequirements);
@@ -213,15 +213,15 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       // start loading offers
       setIsLoadingSecond(true);
 
-      const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, profileAddress);
+      const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, new Address(profileAddress));
       updateOffers(_offers);
 
       //
       const nftIds = _offers.map((offer) => createNftId(offer.offeredTokenIdentifier, offer.offeredTokenNonce));
       const _nfts = await getNftsByIds(nftIds, chainID);
-      const _metadatas: DataNftMetadataType[] = [];
+      const _metadatas: DataNft[] = [];
       for (let i = 0; i < _nfts.length; i++) {
-        _metadatas.push(mintContract.decodeNftAttributes(_nfts[i], i));
+        _metadatas.push(mintContract.decodeNftAttributes(_nfts[i]));
       }
       setNftMetadatas(_metadatas);
 
@@ -332,14 +332,14 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                       <ProfileCard
                         key={index}
                         index={index}
-                        collection={nftMetadatas[index].collection}
-                        nonce={nftMetadatas[index].nonce}
-                        tokenName={nftMetadatas[index].tokenName}
-                        title={nftMetadatas[index].title}
-                        description={nftMetadatas[index].description}
-                        supply={nftMetadatas[index].supply}
-                        royalties={nftMetadatas[index].royalties}
-                        creationTime={nftMetadatas[index].creationTime}
+                        collection={item.collection}
+                        nonce={item.nonce}
+                        tokenName={item.tokenName}
+                        title={item.title}
+                        description={item.description}
+                        supply={Number(item.supply)}
+                        royalties={item.royalties}
+                        creationTime={item.creationTime}
                         openNftDetailsDrawer={openNftDetailsModal}
                         hasLoaded={oneListedNFTImgLoaded && !isLoadingSecond}
                         setHasLoaded={setOneListedNFTImgLoaded}

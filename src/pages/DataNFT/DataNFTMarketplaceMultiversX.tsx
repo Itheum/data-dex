@@ -25,8 +25,8 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { Offer } from "@itheum/sdk-mx-data-nft/out";
-import { TransactionWatcher } from "@multiversx/sdk-core/out";
+import { DataNft, Offer } from "@itheum/sdk-mx-data-nft/out";
+import { Address, TransactionWatcher } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -47,7 +47,7 @@ import { getOfersAsCollectionFromBackendApi, getOffersCountFromBackendApi, getOf
 import { getApi, getNetworkProvider, getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
-import { DataNftCollectionType, DataNftMetadataType } from "libs/MultiversX/types";
+import { DataNftCollectionType } from "libs/MultiversX/types";
 import { convertWeiToEsdt, createNftId, hexZero, getBondsForOffers, sleep, tokenDecimals } from "libs/utils";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
@@ -83,7 +83,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const updatePageCount = useMarketStore((state) => state.updatePageCount);
   const pageSize = 8;
 
-  const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
+  const [nftMetadatas, setNftMetadatas] = useState<DataNft[]>([]);
   const [nftMetadatasLoading, setNftMetadatasLoading] = useState<boolean>(false);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
@@ -183,7 +183,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       if (isApiUp && isMarketplaceApiUp) {
         _offers = await getOffersFromBackendApi(chainID, start, pageSize, tabState === 1 ? undefined : address);
       } else {
-        _offers = await marketContract.viewPagedOffers(start, start + pageSize - 1, tabState === 1 ? "" : address);
+        _offers = await marketContract.viewPagedOffers(start, start + pageSize - 1, tabState === 1 ? undefined : new Address(address));
       }
       const settingExtendOffer = await getBondsForOffers(_offers);
 
@@ -192,9 +192,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       setNftMetadatasLoading(true);
       const nftIds = _offers.map((offer) => createNftId(offer.offeredTokenIdentifier, offer.offeredTokenNonce));
       const _nfts = await getNftsByIds(nftIds, chainID);
-      const _metadatas: DataNftMetadataType[] = [];
+      const _metadatas: DataNft[] = [];
+
       for (let i = 0; i < _nfts.length; i++) {
-        _metadatas.push(mintContract.decodeNftAttributes(_nfts[i], i));
+        _metadatas.push(mintContract.decodeNftAttributes(_nfts[i]));
       }
       setNftMetadatas(_metadatas);
       setNftMetadatasLoading(false);
@@ -254,7 +255,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     matches = matches.map((match) => match.slice(1, -1));
                   }
                 } catch (e) {
-                  console.log(e);
+                  console.error(e);
                 }
                 if (matches) {
                   const title =
@@ -297,6 +298,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       });
     }
   }, []);
+
   return (
     <>
       <Stack>
