@@ -21,11 +21,12 @@ export const CompensationCards: React.FC = () => {
   const [compensationPairs, setCompensationPairs] = useState<Array<CompensationNftPair>>([]);
   const [compensationRefund, setCompensationRefund] = useState<Record<number, Refund>>({});
 
-  const havePassed24h = (endDate: number) => {
+  const hasPassedSafeTime = (endDate: number) => {
     const currentTime = new Date().getTime();
     const endDateInMs = endDate * 1000;
     const differenceInMs = currentTime - endDateInMs;
-    return differenceInMs <= 86400000 || endDate === 0;
+    const safeTime = IS_DEVNET ? 300000 : 86400000;
+    return differenceInMs <= safeTime || endDate === 0;
   };
 
   useEffect(() => {
@@ -134,7 +135,7 @@ export const CompensationCards: React.FC = () => {
                       <Button
                         variant="outline"
                         colorScheme="teal"
-                        isDisabled={havePassed24h(item.compensation.endDate) || proofAmount === 0}
+                        isDisabled={hasPassedSafeTime(item.compensation.endDate) || proofAmount === 0}
                         onClick={() => handleClaim(item.dataNft.collection, item.dataNft.nonce)}>
                         Claim back your Data NFT +&nbsp;
                         {Number(item.compensation.accumulatedAmount) !== 0 && Number(item.compensation.proofAmount) !== 0
