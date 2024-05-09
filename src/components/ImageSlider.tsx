@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
-import { Box, Container, Flex, IconButton, Image, Text } from "@chakra-ui/react";
+import { Box, Container, Flex, IconButton, Image, AspectRatio, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import Card3DAnimation from "./Card3DAnimation";
@@ -70,16 +70,24 @@ const ImageSlider: React.FC<ImageSliderProps> = (props) => {
                     backfaceVisibility: "hidden",
                     position: "absolute",
                   }}>
-                  <Image
-                    w={imageWidth}
-                    h={imageHeight}
-                    borderRadius={"32px"}
-                    src={imageUrls[imageIndex]}
-                    onLoad={onLoad}
-                    onError={({ currentTarget }) => {
-                      currentTarget.src = DEFAULT_NFT_IMAGE;
-                    }}
-                  />
+                  {imageUrls[nextImageIndex].includes("mp4") ? (
+                    <Box width={imageWidth} height={imageHeight} as="div" borderRadius={"32px"} overflow={"hidden"}>
+                      <Box as="div" width={"420px"} height={"420px"} ml={"-92px"}>
+                        <video width={"420px"} height={"420px"} src={imageUrls[nextImageIndex]} autoPlay loop muted></video>
+                      </Box>{" "}
+                    </Box>
+                  ) : (
+                    <Image
+                      w={imageWidth}
+                      h={imageHeight}
+                      borderRadius={"32px"}
+                      src={imageUrls[imageIndex]}
+                      onLoad={onLoad}
+                      onError={({ currentTarget }) => {
+                        currentTarget.src = DEFAULT_NFT_IMAGE;
+                      }}
+                    />
+                  )}
                 </motion.div>
                 {makeFlip && (
                   <motion.div
@@ -98,16 +106,22 @@ const ImageSlider: React.FC<ImageSliderProps> = (props) => {
                     onAnimationComplete={() => {
                       setImageIndex(nextImageIndex);
                     }}>
-                    <Image
-                      w={imageWidth}
-                      h={imageHeight}
-                      borderRadius={"32px"}
-                      src={imageUrls[nextImageIndex]}
-                      onLoad={onLoad}
-                      onError={({ currentTarget }) => {
-                        currentTarget.src = DEFAULT_NFT_IMAGE;
-                      }}
-                    />
+                    {imageUrls[nextImageIndex].includes("mp4") ? (
+                      <AspectRatio w={imageWidth} h={imageHeight} borderRadius={"32px"} onLoad={onLoad}>
+                        <iframe title="Data Nft Video" src={imageUrls[nextImageIndex]} />
+                      </AspectRatio>
+                    ) : (
+                      <Image
+                        w={imageWidth}
+                        h={imageHeight}
+                        borderRadius={"32px"}
+                        src={imageUrls[nextImageIndex]}
+                        onLoad={onLoad}
+                        onError={({ currentTarget }) => {
+                          currentTarget.src = DEFAULT_NFT_IMAGE;
+                        }}
+                      />
+                    )}
                   </motion.div>
                 )}
               </div>
