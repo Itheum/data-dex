@@ -65,6 +65,8 @@ export function contractsForChain(chainID: string): ContractsType {
             id: dataNFTFTTicker_Mx_Mainnet,
             contract: new Address(dataNftMintContractAddress_Mx_Mainnet),
           },
+          //deep forest album
+          { id: "DFEE-72425b", contract: new Address("erd1qqqqqqqqqqqqqpgq0lcp4hrr2jg54e09cex3ema6h0rtakw2wgtst0krnk") },
         ],
       };
     }
@@ -506,7 +508,7 @@ export const EXPLORER_APP_SUPPORTED_TOKENS: any = {
     "trailblazer": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 1 }],
     "multiversxbubbles": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 2 }],
     "multiversxinfographics": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 3 }],
-    "nftunes": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 4 }],
+    "nftunes": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 4 }, ...Array.from({ length: 91 }, (_, i) => ({ tokenIdentifier: "DFEE-72425b", nonce: i }))],
     "timecapsule": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 5 }],
     "bitzgame": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 7 }],
     "bobergameroom": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 8 }],
