@@ -452,7 +452,7 @@ export default function WalletDataNFTMX(item: any) {
                 </Button>
               </Tooltip>
 
-              {item.dataPreview && <PreviewDataButton previewDataURL={item.dataPreview} />}
+              <PreviewDataButton previewDataURL={item.dataPreview} />
             </HStack>
 
             <Flex mt="6" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>

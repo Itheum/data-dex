@@ -460,9 +460,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           </Button>
                         </Tooltip>
 
-                        {nftData.dataPreview && (
-                          <PreviewDataButton previewDataURL={nftData.dataPreview} buttonSize={{ base: "sm", md: "md", xl: "lg" }} buttonWidth="unset" />
-                        )}
+                        <PreviewDataButton previewDataURL={nftData.dataPreview} buttonSize={{ base: "sm", md: "md", xl: "lg" }} buttonWidth="unset" />
+
                         <ExploreAppButton
                           collection={nftData.collection}
                           nonce={nftData.nonce}

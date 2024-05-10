@@ -282,7 +282,15 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
                       </Flex>
                     </Box>
                     <Box flex="1">
-                      <Image src={nftMetadata.nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
+                      {nftMetadata?.nftImgUrl.includes(".mp4") ? (
+                        <Box width={"100%"} height={"auto"} as="div" borderRadius={"32px"} overflow={"hidden"}>
+                          <Box as="div" width={"240px"} height={"full"} borderRadius={"32px"} mx={"-54px"}>
+                            <video src={nftMetadata?.nftImgUrl} autoPlay loop muted></video>
+                          </Box>
+                        </Box>
+                      ) : (
+                        <Image src={nftMetadata ? nftMetadata.nftImgUrl : ""} h="auto" w="100%" borderRadius="md" m="auto" />
+                      )}
                     </Box>
                   </HStack>
                   <Flex mt="40px" justifyContent="flex-start" alignItems="center">
@@ -353,7 +361,15 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
                       </Flex>
                     </Box>
                     <Box flex="1">
-                      <Image src={nftMetadata ? nftMetadata.nftImgUrl : ""} h="auto" w="100%" borderRadius="md" m="auto" />
+                      {nftMetadata?.nftImgUrl.includes(".mp4") ? (
+                        <Box width={"100%"} height={"auto"} as="div" borderRadius={"32px"} overflow={"hidden"}>
+                          <Box as="div" width={"240px"} height={"full"} borderRadius={"32px"} mx={"-54px"}>
+                            <video src={nftMetadata?.nftImgUrl} autoPlay loop muted></video>
+                          </Box>
+                        </Box>
+                      ) : (
+                        <Image src={nftMetadata ? nftMetadata.nftImgUrl : ""} h="auto" w="100%" borderRadius="md" m="auto" />
+                      )}
                     </Box>
                   </HStack>
                   <Text fontSize="md" mt="28px">
@@ -400,7 +416,15 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
                   </Flex>
                 </Box>
                 <Box flex="1">
-                  <Image src={nftMetadata.nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
+                  {nftMetadata?.nftImgUrl.includes(".mp4") ? (
+                    <Box width={"100%"} height={"auto"} as="div" borderRadius={"32px"} overflow={"hidden"}>
+                      <Box as="div" width={"240px"} height={"full"} borderRadius={"32px"} mx={"-54px"}>
+                        <video src={nftMetadata?.nftImgUrl} autoPlay loop muted></video>
+                      </Box>
+                    </Box>
+                  ) : (
+                    <Image src={nftMetadata.nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
+                  )}
                 </Box>
               </HStack>
               <Box mt="8">
