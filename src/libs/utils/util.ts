@@ -393,3 +393,20 @@ export const computeRemainingCooldown = (startTime: number, cooldown: number) =>
 
   return _cooldown > 0 ? _cooldown + Date.now() : 0;
 };
+
+export function computeMaxBuyForOfferForAddress(
+  offer: Offer | undefined,
+  maxBuyPerTransaction: number,
+  maxBuyPerAddress: number,
+  boughtByAddressAlreadyForThisOffer: number
+) {
+  let mboa = offer ? offer.quantity : 0;
+  if (maxBuyPerTransaction > 0) {
+    mboa = Math.min(mboa, maxBuyPerTransaction);
+
+    if (maxBuyPerAddress > 0) {
+      mboa = Math.min(mboa, maxBuyPerAddress - boughtByAddressAlreadyForThisOffer);
+    }
+  }
+  return mboa;
+}

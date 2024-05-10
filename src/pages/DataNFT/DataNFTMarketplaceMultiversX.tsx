@@ -26,7 +26,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { DataNft, Offer } from "@itheum/sdk-mx-data-nft/out";
-import { TransactionWatcher } from "@multiversx/sdk-core/out";
+import { Address, TransactionWatcher } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -183,7 +183,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       if (isApiUp && isMarketplaceApiUp) {
         _offers = await getOffersFromBackendApi(chainID, start, pageSize, tabState === 1 ? undefined : address);
       } else {
-        _offers = await marketContract.viewPagedOffers(start, start + pageSize - 1, tabState === 1 ? "" : address);
+        _offers = await marketContract.viewPagedOffers(start, start + pageSize - 1, tabState === 1 ? undefined : new Address(address));
       }
       const settingExtendOffer = await getBondsForOffers(_offers);
 

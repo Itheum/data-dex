@@ -236,13 +236,11 @@ body {
   color: var(--chakra-colors-chakra-body-text) !important;
 }
 
-.chakra-ui-dark
   .dapp-core-component__walletConnectLoginContainerStyles__xPortal-login-container
   .dapp-core-component__walletConnectLoginContainerStyles__xPortal-modal-dialog-content {
   background: var(--chakra-colors-gray-700) !important;
 }
 
-.chakra-ui-dark
   .dapp-core-component__dappModalStyles__dappModalCloseButton.dapp-core-component__main__btn.dapp-core-component__main__btn-light.dapp-core-component__walletConnectLoginContainerStyles__xPortal-modal-close-button {
   background: var(--chakra-colors-gray-700) !important;
   color: var(--chakra-colors-chakra-body-text) !important;
@@ -401,4 +399,8 @@ body {
   margin-bottom: 4rem !important;
   overflow-y: scroll !important;
   max-height: 100% !important;
+}
+
+.chakra-ui-dark {
+  background: #181818;
 }

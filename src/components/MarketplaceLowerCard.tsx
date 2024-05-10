@@ -18,7 +18,7 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import { ExtendedOffer } from "libs/types";
-import { isValidNumericCharacter } from "libs/utils";
+import { computeMaxBuyForOfferForAddress, isValidNumericCharacter } from "libs/utils";
 import { useMarketStore } from "store";
 import { LivelinessScore } from "./Liveliness/LivelinessScore";
 import PreviewDataButton from "./PreviewDataButton";
@@ -38,8 +38,11 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ extendedOffer: of
   const [amountError, setAmountError] = useState<string>("");
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const isMyNft = offer.owner === address;
-  const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
-  const maxBuyNumber = maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer.quantity;
+  const maxBuyPerTransaction = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
+  const maxBuyPerAddress = offer ? offer.maxQuantityPerAddress : 0;
+  const boughtByAddressAlreadyForThisOffer =
+    useMarketStore((state) => state.addressBoughtOffers).find((boughtOffer) => boughtOffer.offerId === offer.index)?.quantity ?? 0;
+  const maxBuyForOfferForAddress = computeMaxBuyForOfferForAddress(offer, maxBuyPerTransaction, maxBuyPerAddress, boughtByAddressAlreadyForThisOffer);
 
   return (
     <>
@@ -63,7 +66,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ extendedOffer: of
                   maxW="24"
                   step={1}
                   min={1}
-                  max={maxBuyNumber}
+                  max={maxBuyForOfferForAddress}
                   isValidCharacter={isValidNumericCharacter}
                   value={amount}
                   defaultValue={1}
@@ -74,10 +77,11 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ extendedOffer: of
                       error = "Cannot be zero or negative";
                     } else if (value > offer.quantity) {
                       error = "Cannot exceed listed amount";
-                    } else if (maxBuyLimit > 0 && value > maxBuyLimit) {
-                      error = "Cannot exceed max buy limit";
+                    } else if (maxBuyPerTransaction > 0 && value > maxBuyPerTransaction) {
+                      error = "Cannot exceed max buy limit per tx";
+                    } else if (maxBuyPerAddress > 0 && value > maxBuyPerAddress) {
+                      error = "Cannot exceed max buy limit per address";
                     }
-
                     setAmountError(error);
                     setAmount(value);
                   }}>

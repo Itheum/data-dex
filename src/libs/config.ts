@@ -31,30 +31,6 @@ export function contractsForChain(chainID: string): ContractsType {
             contract: new Address(dataNftMintContractAddress_Mx_Devnet),
           },
           {
-            id: "BIGBANG-6b34db",
-            contract: new Address("erd1qqqqqqqqqqqqqpgqdsf80w35nqlxfd34z0cd9n60vwlkdj9a8yps3t6x4m"),
-          },
-          {
-            id: "BETATOK-5b7317",
-            contract: new Address("erd1qqqqqqqqqqqqqpgqjk0cxzm79qzced5sevmnn6swgp3jjch88ypsfd068q"),
-          },
-          {
-            id: "COLNAMA-539838",
-            contract: new Address("erd1qqqqqqqqqqqqqpgqnf8lrjy9efepss09qm3a3q9za9ahtcah8ypsnd6lqd"),
-          },
-          {
-            id: "ALPHADATA-b3f6d0",
-            contract: new Address("erd1qqqqqqqqqqqqqpgqcaqv55lrfjuvspgrhezvqrag4gq3qdxu8ypsx9f0ar"),
-          },
-          {
-            id: "NEWDNFT-3a8caa",
-            contract: new Address("erd1qqqqqqqqqqqqqpgq69lkfnnzgvqpjzze690rl4lmqtmvnccsw3wqhvsacl"),
-          },
-          {
-            id: "FOOA-141164",
-            contract: new Address("erd1qqqqqqqqqqqqqpgqteqgaxcel2zjkrsm27szjlptemqk0sdpu00sp49kss"),
-          },
-          {
             id: "DNFTPHMA-9e2b1c",
             contract: new Address("erd1qqqqqqqqqqqqqpgq5hsq5z09zv3g0lsxs3y6q2x0qvlhzugpu00sevtqsw"),
           },
@@ -70,6 +46,11 @@ export function contractsForChain(chainID: string): ContractsType {
             id: "OASMUSICPL-47b186",
             contract: new Address("erd1qqqqqqqqqqqqqpgq30mwjcjmy7l7p4v0ytf2pmcmj95u9l8xu00sku2n5h"),
           },
+          {
+            id: "FOOWLDMSC-5ee8ec",
+            contract: new Address("erd1qqqqqqqqqqqqqpgqu0nxfwcnsaccu3sgt0a8u0sglmk6se9cu00s0zm03r"),
+          },
+          { id: "DNFTPHMUS-73cde3", contract: new Address("") },
         ],
       };
     }
@@ -84,6 +65,8 @@ export function contractsForChain(chainID: string): ContractsType {
             id: dataNFTFTTicker_Mx_Mainnet,
             contract: new Address(dataNftMintContractAddress_Mx_Mainnet),
           },
+          //deep forest album
+          { id: "DFEE-72425b", contract: new Address("erd1qqqqqqqqqqqqqpgq0lcp4hrr2jg54e09cex3ema6h0rtakw2wgtst0krnk") },
         ],
       };
     }
@@ -520,12 +503,14 @@ export const EXPLORER_APP_SUPPORTED_TOKENS: any = {
     "timecapsule": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 57 }],
     "bitzgame": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 198 }],
     "bobergameroom": [],
+    "deepforest": [],
   },
   "1": {
     "trailblazer": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 1 }],
     "multiversxbubbles": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 2 }],
     "multiversxinfographics": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 3 }],
     "nftunes": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 4 }],
+    "deepforest": [...Array.from({ length: 91 }, (_, i) => ({ tokenIdentifier: "DFEE-72425b", nonce: i }))],
     "timecapsule": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 5 }],
     "bitzgame": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 7 }],
     "bobergameroom": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 8 }],
@@ -547,6 +532,7 @@ export const EXPLORER_APP_FOR_TOKEN: Record<string, Record<string, string>> = {
     "multiversxbubbles": "https://explorer.itheum.io/multiversx-bubbles",
     "multiversxinfographics": "https://explorer.itheum.io/multiversx-infographics",
     "nftunes": "https://explorer.itheum.io/nftunes",
+    "deepforest": "https://explorer.itheum.io/deep-forest-music-data-nft",
     "timecapsule": "https://explorer.itheum.io/timecapsule",
     "bitzgame": "https://explorer.itheum.io/getbitz",
     "bobergameroom": "https://explorer.itheum.io/bobergameroom",

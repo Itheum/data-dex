@@ -74,7 +74,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const userData = useMintStore((state) => state.userData);
-
+  const nftParsedCreationTime = moment(nftMetadata[index].creationTime);
   return (
     <Skeleton isLoaded={nftMetadataLoading}>
       <Flex wrap="wrap" gap="5" key={index}>
@@ -161,7 +161,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                 </Flex>
 
                 <Box display="flex" justifyContent="flex-start" mt="2">
-                  <Text fontSize="xs">{`Creation time:   ${moment(nftMetadata[index].creationTime).format(uxConfig.dateStr)}`}</Text>
+                  {nftParsedCreationTime.isValid() && <Text fontSize="xs">{`Creation time:   ${nftParsedCreationTime.format(uxConfig.dateStr)}`}</Text>}
                 </Box>
 
                 <Box color="gray.600" fontSize="sm">

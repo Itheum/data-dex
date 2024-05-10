@@ -32,6 +32,13 @@ export interface DataNFTToken {
   contract: IAddress;
 }
 
+export type AddressBoughtOffer = {
+  id: number;
+  address: string;
+  offerId: number;
+  quantity: number;
+};
+
 export interface ExtendedOffer extends Offer, Partial<Bond> {}
 
 export enum BlobDataType {
