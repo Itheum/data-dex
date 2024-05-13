@@ -55,7 +55,7 @@ export const Bonding: React.FC = () => {
   });
 
   const onGotoPageCompensation = useThrottle((newPageIndex: number) => {
-    console.log("newPageIndex", newPageIndex);
+    // console.log("newPageIndex", newPageIndex);
     if (0 <= newPageIndex && newPageIndex < compensationPageCount) {
       setPageIndexCompensation(newPageIndex);
     }
@@ -94,9 +94,8 @@ export const Bonding: React.FC = () => {
       });
 
       const dataNfts: DataNft[] = await DataNft.createManyFromApi(pagedBonds.map((bond) => ({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier })));
-      setTotalAmountBondedForThisPage(_totalAmountBondedForThisPage);
+      // setTotalAmountBondedForThisPage(_totalAmountBondedForThisPage);
       setContractBonds(pagedBonds);
-      // console.log(pagedBonds, dataNfts);
       setBondingDataNfts(dataNfts);
     })();
   }, [hasPendingTransactions, bondingPageIndex]);
@@ -165,11 +164,11 @@ export const Bonding: React.FC = () => {
                 {contractBonds.length === 0 ? (
                   <NoDataHere />
                 ) : (
-                  contractBonds.map((bond, index) => (
-                    <Fragment key={bond.bondId}>
-                      <CollectionDashboard bondNft={bond} bondDataNft={bondingDataNfts} />
-                    </Fragment>
-                  ))
+                  // contractBonds.map((bond, index) => (
+                  <Fragment>
+                    <CollectionDashboard bondNft={contractBonds} bondDataNft={bondingDataNfts} />
+                  </Fragment>
+                  // ))
                 )}
 
                 {contractBonds.length > 0 && (
