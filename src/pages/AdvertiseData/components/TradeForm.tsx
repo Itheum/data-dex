@@ -34,6 +34,7 @@ import { useGetAccountInfo, useGetNetworkConfig, useTrackTransactionStatus } fro
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
 import BigNumber from "bignumber.js";
+import { File, NFTStorage } from "nft.storage";
 import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { MintingModal } from "./MintingModal";
@@ -366,10 +367,12 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     }
   };
 
-  const handleOnChainMint = async () => {
+  const handleOnChainMint = async ({ imageOnIpfsUrl, metadataOnIpfsUrl }: { imageOnIpfsUrl: string; metadataOnIpfsUrl: string }) => {
     const sftMinter = new SftMinter(IS_DEVNET ? "devnet" : "mainnet");
 
     const optionalSDKMintCallFields: Record<string, any> = {
+      imageUrl: imageOnIpfsUrl,
+      traitsUrl: metadataOnIpfsUrl,
       nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
       extraAssets: [],
     };
@@ -420,20 +423,72 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     onCancelled: mintTxCancelled,
   });
 
+  function createIpfsMetadata(traits: string) {
+    const metadata = {
+      description: `${getValues("datasetTitleForm")} : ${getValues("datasetDescriptionForm")}`,
+      attributes: [] as object[],
+    };
+
+    const attributes = traits.split(",").filter((element) => element.trim() !== "");
+    const metadataAttributes = [];
+
+    for (const attribute of attributes) {
+      const [key, value] = attribute.split(":");
+      const trait = { trait_type: key.trim(), value: value.trim() };
+      metadataAttributes.push(trait);
+    }
+
+    metadataAttributes.push({ trait_type: "Data Preview URL", value: dataNFTPreviewUrl });
+    metadataAttributes.push({ trait_type: "Creator", value: mxAddress });
+    metadata.attributes = metadataAttributes;
+
+    return metadata;
+  }
+
+  async function createFileFromUrl(url: string) {
+    const res = await fetch(url);
+    const data = await res.blob();
+    const _imageFile = new File([data], "image.png", { type: "image/png" });
+    const traits = createIpfsMetadata(res.headers.get("x-nft-traits") || "");
+    const _traitsFile = new File([JSON.stringify(traits)], "metadata.json", { type: "application/json" });
+    return { image: _imageFile, traits: _traitsFile };
+  }
+
   const buildUniqueImage = async ({ dataNFTHash }: { dataNFTHash: any }) => {
     await sleep(3);
 
-    // we don't need this as the Data NFT SDK makes it, but to show the image in the UI here, let's do this anyway for now
-    // ...  (@TODO remove once we fully user the SDK in Data DEX)
     const newNFTImg = `${getApiDataDex(chainID)}/v1/generateNFTArt?hash=${dataNFTHash}`;
 
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s2: 1 }));
+
+    let res;
+    try {
+      // catch IPFS error
+      const { image, traits } = await createFileFromUrl(newNFTImg);
+      const nftstorage = new NFTStorage({
+        token: import.meta.env.VITE_ENV_NFT_STORAGE_KEY || "",
+      });
+
+      res = await nftstorage.storeDirectory([image, traits]);
+    } catch (e) {
+      setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_FORM_NFT_IMG_GEN_AND_STORAGE_CATCH_HIT));
+      return;
+    }
+
+    if (!res) {
+      setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_FORM_NFT_IMG_GEN_ISSUE));
+      return;
+    }
+
+    const imageOnIpfsUrl = `https://ipfs.io/ipfs/${res}/image.png`;
+    const metadataOnIpfsUrl = `https://ipfs.io/ipfs/${res}/metadata.json`;
+
     setDataNFTImg(newNFTImg);
 
     await sleep(3);
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s3: 1 }));
 
-    handleOnChainMint();
+    handleOnChainMint({ imageOnIpfsUrl, metadataOnIpfsUrl });
   };
 
   const dataNFTSellSubmit = async () => {
