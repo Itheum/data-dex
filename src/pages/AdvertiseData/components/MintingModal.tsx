@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
-import { CheckCircleIcon } from "@chakra-ui/icons";
+import { CheckCircleIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Alert,
   AlertDescription,
@@ -11,6 +11,7 @@ import {
   CloseButton,
   HStack,
   Image,
+  Link,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -21,6 +22,7 @@ import {
   Spinner,
   Stack,
   Text,
+  VStack,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
@@ -29,13 +31,29 @@ type MintingModalProps = {
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   errDataNFTStreamGeneric: any;
   saveProgress: Record<any, any>;
+  setSaveProgress: any;
   dataNFTImg: string;
   closeProgressModal: () => void;
   mintingSuccessful: boolean;
+  imageUrl: string;
+  metadataUrl: string;
+  onChainMint: () => void;
 };
 
 export const MintingModal: React.FC<MintingModalProps> = (props) => {
-  const { isOpen, setIsOpen, errDataNFTStreamGeneric, saveProgress, dataNFTImg, closeProgressModal, mintingSuccessful } = props;
+  const {
+    isOpen,
+    setIsOpen,
+    errDataNFTStreamGeneric,
+    saveProgress,
+    dataNFTImg,
+    closeProgressModal,
+    mintingSuccessful,
+    setSaveProgress,
+    imageUrl,
+    metadataUrl,
+    onChainMint,
+  } = props;
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState<boolean>(false);
 
   const navigate = useNavigate();
@@ -78,8 +96,29 @@ export const MintingModal: React.FC<MintingModalProps> = (props) => {
               <Text>Saving NFT metadata to IPFS</Text>
             </HStack>
 
+            {!saveProgress.s4 && saveProgress.s3 && (
+              <VStack>
+                <HStack>
+                  <Link color="teal.500" fontSize="md" mb={1} href={imageUrl} isExternal>
+                    Image URL <ExternalLinkIcon mx="2px" />
+                  </Link>
+                  <Link color="teal.500" fontSize="md" mb={1} href={metadataUrl} isExternal>
+                    Metadata URL <ExternalLinkIcon mx="2px" />
+                  </Link>
+                </HStack>
+                <Button
+                  disabled={imageUrl === "" || metadataUrl === ""}
+                  onClick={() => {
+                    setSaveProgress((prev: any) => ({ ...prev, s4: 1 }));
+                    onChainMint();
+                  }}>
+                  Confirm you checked IPFS assets and they are available
+                </Button>
+              </VStack>
+            )}
+
             <HStack>
-              {(!saveProgress.s4 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
+              {(!saveProgress.s5 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
               <Text>Minting your new Data NFT on blockchain</Text>
             </HStack>
             {mintingSuccessful && (
