@@ -1,25 +1,34 @@
 import React, { useEffect, useState } from "react";
-import { Button, Flex, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Skeleton, SkeletonText, Text, Tooltip, useDisclosure } from "@chakra-ui/react";
 import { Bond, BondContract, Compensation, DataNft, Refund } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import BigNumber from "bignumber.js";
-import { IS_DEVNET, contractsForChain } from "../../../libs/config";
+import { FaCalculator } from "react-icons/fa";
+import { CalculateCompensationModal } from "./CalculateCompensationModal";
+import { contractsForChain, IS_DEVNET } from "../../../libs/config";
 
-type CompensationNftPair = {
+export type CompensationNftPair = {
   compensation: Compensation;
   dataNft: DataNft;
 };
 
 export const CompensationCards: React.FC = () => {
-  const { address } = useGetAccountInfo();
+  const { address: mxAddress } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   const [compensationPairs, setCompensationPairs] = useState<Array<CompensationNftPair>>([]);
   const [compensationRefund, setCompensationRefund] = useState<Record<number, Refund>>({});
+  const [isCompensationNftLoadig, setIsCompensationNftLoading] = useState<boolean>(true);
+  const [proofOfRefundAmount, setProofOfRefundAmount] = useState<number>(0);
+  const [totalProofOfRefundAmount, setTotalProofOfRefundAmount] = useState<number>(0);
+  const [accumulatedAmount, setAccumulatedAmount] = useState<number>(0);
+  const [blacklistedAddressesPerNft, setBlacklistedAddressesPerNft] = useState<Array<string>>([]);
+  const cardsForLoading = new Array(8).fill(1);
+  const { isOpen: isOpenCalculateCompensation, onOpen: onOpenCalculateCompensation, onClose: onCloseCalculateCompensation } = useDisclosure();
 
   const hasPassedSafeTime = (endDate: number) => {
     const currentTime = new Date().getTime();
@@ -29,17 +38,55 @@ export const CompensationCards: React.FC = () => {
     return differenceInMs <= safeTime || endDate === 0;
   };
 
+  const getRefundsObject = async (address: string, compsInScT: Compensation[]) => {
+    const refunds = await bondContract.viewAddressRefunds(
+      new Address(address),
+      compsInScT.map((comp) => comp.compensationId)
+    );
+    const refundObjT: Record<number, Refund> = {};
+    for (const refund of refunds) {
+      refundObjT[refund.compensationId] = refund;
+    }
+    return refundObjT;
+  };
+
+  const getNftsForCompensations = (compensationsT: Compensation[], dataNfts: DataNft[]) => {
+    const compPairsT: CompensationNftPair[] = [];
+    const compsInScT: Compensation[] = [];
+    for (const compT of compensationsT) {
+      const dataNftForComp = dataNfts.find((dataNft) => dataNft.nonce === compT.nonce && dataNft.collection === compT.tokenIdentifier);
+      if (dataNftForComp) {
+        const compNftPair: CompensationNftPair = { compensation: compT, dataNft: dataNftForComp };
+        compPairsT.push(compNftPair);
+      } else {
+        compsInScT.push(compT);
+      }
+    }
+    return { compsInScT, compPairsT };
+  };
+
+  const getCompensationsFromBondSc = async (contractBonds: Bond[]) => {
+    return await bondContract.viewCompensations(
+      contractBonds.map((bond) => {
+        return { nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier };
+      })
+    );
+  };
+
+  const getBlacklistNfts = async (compensationIds: number) => {
+    return await bondContract.viewCompensationBlacklist(compensationIds);
+  };
+
   useEffect(() => {
+    setIsCompensationNftLoading(false);
     (async () => {
       const contractBonds = await bondContract.viewAllBonds();
       const dataNftTicker = contractsForChain(chainID).dataNftTokens[0].id;
-      const dataNfts: DataNft[] = await DataNft.ownedByAddress(address, [dataNftTicker]);
+      const dataNfts: DataNft[] = await DataNft.ownedByAddress(mxAddress, [dataNftTicker]);
 
-      const compensationsT = await getCompensationsFromBondSc(bondContract, contractBonds);
-
+      const compensationsT = await getCompensationsFromBondSc(contractBonds);
       const { compsInScT, compPairsT }: { compsInScT: Compensation[]; compPairsT: CompensationNftPair[] } = getNftsForCompensations(compensationsT, dataNfts);
-
-      const refundObjT: Record<number, Refund> = await getRefundsObject(bondContract, address, compsInScT);
+      const refundObjT: Record<number, Refund> = await getRefundsObject(mxAddress, compsInScT);
 
       const nftsInScT = compsInScT.map((comp) => {
         return { nonce: comp.nonce, tokenIdentifier: comp.tokenIdentifier };
@@ -60,37 +107,49 @@ export const CompensationCards: React.FC = () => {
           }
         }
       }
+      console.log(refundObjT);
+
       setCompensationRefund(refundObjT);
       setCompensationPairs(compPairsT.filter((pair) => pair.compensation.endDate > 0));
+      setIsCompensationNftLoading(true);
     })();
   }, [hasPendingTransactions]);
 
   const handleDeposit = async (tokenIdentifier: string, nonce: number, amount: BigNumber.Value) => {
     const payments = { amount: amount, nonce: nonce, tokenIdentifier: tokenIdentifier };
-    const tx = bondContract.proof(new Address(address), payments);
+    const tx = bondContract.proof(new Address(mxAddress), payments);
     await sendTransactions({
       transactions: [tx],
     });
   };
 
   const handleClaim = async (tokenIdentifier: string, nonce: number) => {
-    const tx = bondContract.claimRefund(new Address(address), tokenIdentifier, nonce);
+    const tx = bondContract.claimRefund(new Address(mxAddress), tokenIdentifier, nonce);
     await sendTransactions({
       transactions: [tx],
     });
   };
 
+  console.log(blacklistedAddressesPerNft.includes(mxAddress), blacklistedAddressesPerNft, mxAddress);
   return (
     <>
-      <Flex>
+      <Flex flexDirection="column" gap={4}>
         {compensationPairs.length === 0 ? (
-          <Text>No compensation available</Text>
+          <>
+            {cardsForLoading.map((_, index) => (
+              <Box display="flex" gap={4} height="15dvh" w="full" key={index} px={3}>
+                <Skeleton height="15svh" w="15svh" rounded="3xl" isLoaded={isCompensationNftLoadig} />
+                <SkeletonText w="85%" mt="4" noOfLines={4} spacing="5" skeletonHeight="3" />
+              </Box>
+            ))}
+          </>
         ) : (
           <Flex flexDirection="column" gap={6} w="full" px={14}>
             {compensationPairs.map((item, index) => {
               const proofAmount = compensationRefund[item.compensation.compensationId]
                 ? Number(compensationRefund[item.compensation.compensationId].proofOfRefund.amount)
                 : 0;
+              console.log(proofAmount);
               return (
                 <Flex key={index} w="full" flexDirection={{ base: "column", md: "row" }} alignItems="center" gap={6}>
                   <img src={item.dataNft.nftImgUrl} alt="NFT" width="150rem" height="150rem" />
@@ -128,27 +187,64 @@ export const CompensationCards: React.FC = () => {
                       <Button
                         variant="outline"
                         colorScheme="teal"
-                        isDisabled={item.compensation.endDate * 1000 < new Date().getTime()}
+                        isDisabled={
+                          item.compensation.endDate * 1000 < new Date().getTime() ||
+                          BigNumber(item.compensation.accumulatedAmount)
+                            .dividedBy(10 ** 18)
+                            .toNumber() !== 0
+                        }
                         onClick={() => handleDeposit(item.dataNft.collection, item.dataNft.nonce, item.dataNft.balance)}>
-                        Deposit all Data NFTs to claim $ITHEUM
+                        Deposit Data NFTs
                       </Button>
                       <Button
                         variant="outline"
                         colorScheme="teal"
-                        isDisabled={hasPassedSafeTime(item.compensation.endDate) || proofAmount === 0}
+                        isDisabled={
+                          hasPassedSafeTime(item.compensation.endDate) ||
+                          proofAmount === 0 ||
+                          BigNumber(item.compensation.accumulatedAmount)
+                            .dividedBy(10 ** 18)
+                            .toNumber() === 0
+                        }
                         onClick={() => handleClaim(item.dataNft.collection, item.dataNft.nonce)}>
-                        Claim back your Data NFT +&nbsp;
-                        {Number(item.compensation.accumulatedAmount) !== 0 && Number(item.compensation.proofAmount) !== 0
-                          ? (BigNumber(item.compensation.accumulatedAmount)
-                              .dividedBy(10 ** 18)
-                              .toNumber() /
-                              Number(item.compensation.proofAmount)) *
-                            proofAmount
-                          : 0}
-                        &nbsp;$ITHEUM
+                        Claim
                       </Button>
+
+                      <Tooltip label="Calculate compensation reward">
+                        <Button
+                          colorScheme="teal"
+                          variant="outline"
+                          onClick={async () => {
+                            setProofOfRefundAmount(Number(item.compensation.proofAmount));
+                            setTotalProofOfRefundAmount(Number(compensationRefund[item.compensation.compensationId].proofOfRefund.amount));
+                            setAccumulatedAmount(
+                              BigNumber(item.compensation.accumulatedAmount)
+                                .dividedBy(10 ** 18)
+                                .toNumber()
+                            );
+                            const blacklistedAddresses = await getBlacklistNfts(item.compensation.compensationId);
+                            setBlacklistedAddressesPerNft(blacklistedAddresses);
+                            onOpenCalculateCompensation();
+                          }}
+                          isDisabled={
+                            proofAmount === 0 ||
+                            BigNumber(item.compensation.accumulatedAmount)
+                              .dividedBy(10 ** 18)
+                              .toNumber() === 0
+                          }>
+                          <FaCalculator />
+                        </Button>
+                      </Tooltip>
                     </Flex>
                   </Flex>
+                  <CalculateCompensationModal
+                    isModalOpen={isOpenCalculateCompensation}
+                    onModalClose={onCloseCalculateCompensation}
+                    proofOfRefundAmount={proofOfRefundAmount}
+                    totalProofOfRefundAmount={totalProofOfRefundAmount}
+                    accumulatedAmount={accumulatedAmount}
+                    blacklistStatus={blacklistedAddressesPerNft.includes(mxAddress)}
+                  />
                 </Flex>
               );
             })}
@@ -158,37 +254,3 @@ export const CompensationCards: React.FC = () => {
     </>
   );
 };
-async function getRefundsObject(bondContract: BondContract, address: string, compsInScT: Compensation[]) {
-  const refunds = await bondContract.viewAddressRefunds(
-    new Address(address),
-    compsInScT.map((comp) => comp.compensationId)
-  );
-  const refundObjT: Record<number, Refund> = {};
-  for (const refund of refunds) {
-    refundObjT[refund.compensationId] = refund;
-  }
-  return refundObjT;
-}
-
-function getNftsForCompensations(compensationsT: Compensation[], dataNfts: DataNft[]) {
-  const compPairsT: CompensationNftPair[] = [];
-  const compsInScT: Compensation[] = [];
-  for (const compT of compensationsT) {
-    const dataNftForComp = dataNfts.find((dataNft) => dataNft.nonce === compT.nonce && dataNft.collection === compT.tokenIdentifier);
-    if (dataNftForComp) {
-      const compNftPair: CompensationNftPair = { compensation: compT, dataNft: dataNftForComp };
-      compPairsT.push(compNftPair);
-    } else {
-      compsInScT.push(compT);
-    }
-  }
-  return { compsInScT, compPairsT };
-}
-
-async function getCompensationsFromBondSc(bondContract: BondContract, contractBonds: Bond[]) {
-  return await bondContract.viewCompensations(
-    contractBonds.map((bond) => {
-      return { nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier };
-    })
-  );
-}
