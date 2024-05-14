@@ -367,54 +367,55 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     }
   };
 
-  const handleOnChainMint = async ({ imageOnIpfsUrl, metadataOnIpfsUrl }: { imageOnIpfsUrl: string; metadataOnIpfsUrl: string }) => {
-    const sftMinter = new SftMinter(IS_DEVNET ? "devnet" : "mainnet");
+  const handleOnChainMint = async () =>
+    // { imageOnIpfsUrl, metadataOnIpfsUrl }
+    // : { imageOnIpfsUrl: string; metadataOnIpfsUrl: string }
+    {
+      const sftMinter = new SftMinter(IS_DEVNET ? "devnet" : "mainnet");
 
-    const optionalSDKMintCallFields: Record<string, any> = {
-      imageUrl: imageOnIpfsUrl,
-      traitsUrl: metadataOnIpfsUrl,
-      nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
-      extraAssets: [],
+      const optionalSDKMintCallFields: Record<string, any> = {
+        nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
+        extraAssets: [],
+      };
+
+      if (extraAssets && extraAssets.trim() !== "" && extraAssets.trim().toUpperCase() !== "NA") {
+        optionalSDKMintCallFields["extraAssets"] = [extraAssets.trim()];
+      }
+
+      const mintObject = await sftMinter.mint(
+        new Address(mxAddress),
+        dataNFTTokenName,
+        dataNFTMarshalService,
+        dataNFTStreamUrl,
+        dataNFTPreviewUrl,
+        Math.ceil(dataNFTRoyalties * 100),
+        Number(dataNFTCopies),
+        datasetTitle,
+        datasetDescription,
+        BigNumber(periods[0].amount).toNumber() + new BigNumber(antiSpamTax).multipliedBy(10 ** 18).toNumber(),
+        Number(periods[0].lockPeriod),
+        donatePercentage * 100,
+        optionalSDKMintCallFields
+      );
+
+      await sleep(3);
+      await refreshAccount();
+
+      const { sessionId, error } = await sendTransactions({
+        transactions: mintObject,
+        transactionsDisplayInfo: {
+          processingMessage: "Minting Data NFT Collection",
+          errorMessage: "Collection minting failed :(",
+          successMessage: "Collection minted successfully!",
+        },
+        redirectAfterSign: false,
+      });
+      if (error) {
+        setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_NO_TX));
+      }
+
+      setMintSessionId(sessionId);
     };
-
-    if (extraAssets && extraAssets.trim() !== "" && extraAssets.trim().toUpperCase() !== "NA") {
-      optionalSDKMintCallFields["extraAssets"] = [extraAssets.trim()];
-    }
-
-    const mintObject = await sftMinter.mint(
-      new Address(mxAddress),
-      dataNFTTokenName,
-      dataNFTMarshalService,
-      dataNFTStreamUrl,
-      dataNFTPreviewUrl,
-      Math.ceil(dataNFTRoyalties * 100),
-      Number(dataNFTCopies),
-      datasetTitle,
-      datasetDescription,
-      BigNumber(periods[0].amount).toNumber() + new BigNumber(antiSpamTax).multipliedBy(10 ** 18).toNumber(),
-      Number(periods[0].lockPeriod),
-      donatePercentage * 100,
-      optionalSDKMintCallFields
-    );
-
-    await sleep(3);
-    await refreshAccount();
-
-    const { sessionId, error } = await sendTransactions({
-      transactions: mintObject,
-      transactionsDisplayInfo: {
-        processingMessage: "Minting Data NFT Collection",
-        errorMessage: "Collection minting failed :(",
-        successMessage: "Collection minted successfully!",
-      },
-      redirectAfterSign: false,
-    });
-    if (error) {
-      setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_NO_TX));
-    }
-
-    setMintSessionId(sessionId);
-  };
 
   useTrackTransactionStatus({
     transactionId: mintSessionId,
@@ -461,34 +462,35 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s2: 1 }));
 
-    let res;
-    try {
-      // catch IPFS error
-      const { image, traits } = await createFileFromUrl(newNFTImg);
-      const nftstorage = new NFTStorage({
-        token: import.meta.env.VITE_ENV_NFT_STORAGE_KEY || "",
-      });
+    // let res;
+    // try {
+    //   // catch IPFS error
+    //   const { image, traits } = await createFileFromUrl(newNFTImg);
+    //   const nftstorage = new NFTStorage({
+    //     token: import.meta.env.VITE_ENV_NFT_STORAGE_KEY || "",
+    //   });
 
-      res = await nftstorage.storeDirectory([image, traits]);
-    } catch (e) {
-      setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_FORM_NFT_IMG_GEN_AND_STORAGE_CATCH_HIT));
-      return;
-    }
+    //   res = await nftstorage.storeDirectory([image, traits]);
+    // } catch (e) {
+    //   setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_FORM_NFT_IMG_GEN_AND_STORAGE_CATCH_HIT));
+    //   return;
+    // }
 
-    if (!res) {
-      setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_FORM_NFT_IMG_GEN_ISSUE));
-      return;
-    }
+    // if (!res) {
+    //   setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_FORM_NFT_IMG_GEN_ISSUE));
+    //   return;
+    // }
 
-    const imageOnIpfsUrl = `https://ipfs.io/ipfs/${res}/image.png`;
-    const metadataOnIpfsUrl = `https://ipfs.io/ipfs/${res}/metadata.json`;
+    // const imageOnIpfsUrl = `https://ipfs.io/ipfs/${res}/image.png`;
+    // const metadataOnIpfsUrl = `https://ipfs.io/ipfs/${res}/metadata.json`;
 
     setDataNFTImg(newNFTImg);
 
-    await sleep(3);
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s3: 1 }));
+    await sleep(3);
 
-    handleOnChainMint({ imageOnIpfsUrl, metadataOnIpfsUrl });
+    handleOnChainMint();
+    // { imageOnIpfsUrl, metadataOnIpfsUrl }
   };
 
   const dataNFTSellSubmit = async () => {
