@@ -29,7 +29,7 @@ import {
 } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { BondContract, SftMinter } from "@itheum/sdk-mx-data-nft/out";
-import { Address } from "@multiversx/sdk-core/out";
+import { Address, ITransaction, Transaction } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
@@ -89,6 +89,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     s2: 0,
     s3: 0,
     s4: 0,
+    s5: 0,
   });
 
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
@@ -107,6 +108,10 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   ]);
   const [previousDataNFTStreamUrl, setPreviousDataNFTStreamUrl] = useState<string>("");
   const [wasPreviousCheck200StreamSuccess, setWasPreviousCheck200StreamSuccess] = useState<boolean>(false);
+
+  const [imageUrl, setImageUrl] = useState("");
+  const [metadataUrl, setMetadataUrl] = useState("");
+  const [mintTx, setMintTx] = useState<any>(undefined);
 
   useEffect(() => {
     bond.viewLockPeriodsWithBonds().then((periodsT) => {
@@ -279,7 +284,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     }
     setIsMintingModalOpen(false);
 
-    setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
+    setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0, s5: 0 });
     setMintingSuccessful(false);
     setDataNFTImg("");
     closeTradeFormModal();
@@ -314,7 +319,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   };
 
   const mintTxSuccess = async (_foo: any) => {
-    setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s4: 1 }));
+    setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s5: 1 }));
     await sleep(3);
 
     setMintingSuccessful(true);
@@ -352,7 +357,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       if (data && data.encryptedMessage && data.messageHash) {
         setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s1: 1 }));
 
-        buildUniqueImage({
+        prepareMint({
           dataNFTHash: data.messageHash,
         });
       } else {
@@ -371,38 +376,11 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     // { imageOnIpfsUrl, metadataOnIpfsUrl }
     // : { imageOnIpfsUrl: string; metadataOnIpfsUrl: string }
     {
-      const sftMinter = new SftMinter(IS_DEVNET ? "devnet" : "mainnet");
-
-      const optionalSDKMintCallFields: Record<string, any> = {
-        nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
-        extraAssets: [],
-      };
-
-      if (extraAssets && extraAssets.trim() !== "" && extraAssets.trim().toUpperCase() !== "NA") {
-        optionalSDKMintCallFields["extraAssets"] = [extraAssets.trim()];
-      }
-
-      const mintObject = await sftMinter.mint(
-        new Address(mxAddress),
-        dataNFTTokenName,
-        dataNFTMarshalService,
-        dataNFTStreamUrl,
-        dataNFTPreviewUrl,
-        Math.ceil(dataNFTRoyalties * 100),
-        Number(dataNFTCopies),
-        datasetTitle,
-        datasetDescription,
-        BigNumber(periods[0].amount).toNumber() + new BigNumber(antiSpamTax).multipliedBy(10 ** 18).toNumber(),
-        Number(periods[0].lockPeriod),
-        donatePercentage * 100,
-        optionalSDKMintCallFields
-      );
-
-      await sleep(3);
+      await sleep(1);
       await refreshAccount();
 
       const { sessionId, error } = await sendTransactions({
-        transactions: mintObject,
+        transactions: mintTx,
         transactionsDisplayInfo: {
           processingMessage: "Minting Data NFT Collection",
           errorMessage: "Collection minting failed :(",
@@ -455,7 +433,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     return { image: _imageFile, traits: _traitsFile };
   }
 
-  const buildUniqueImage = async ({ dataNFTHash }: { dataNFTHash: any }) => {
+  const prepareMint = async ({ dataNFTHash }: { dataNFTHash: any }) => {
     await sleep(3);
 
     const newNFTImg = `${getApiDataDex(chainID)}/v1/generateNFTArt?hash=${dataNFTHash}`;
@@ -484,12 +462,41 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     // const imageOnIpfsUrl = `https://ipfs.io/ipfs/${res}/image.png`;
     // const metadataOnIpfsUrl = `https://ipfs.io/ipfs/${res}/metadata.json`;
 
+    const sftMinter = new SftMinter(IS_DEVNET ? "devnet" : "mainnet");
+
+    const optionalSDKMintCallFields: Record<string, any> = {
+      nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
+      extraAssets: [],
+    };
+
+    if (extraAssets && extraAssets.trim() !== "" && extraAssets.trim().toUpperCase() !== "NA") {
+      optionalSDKMintCallFields["extraAssets"] = [extraAssets.trim()];
+    }
+
+    const { imageUrl, metadataUrl, tx } = await sftMinter.mint(
+      new Address(mxAddress),
+      dataNFTTokenName,
+      dataNFTMarshalService,
+      dataNFTStreamUrl,
+      dataNFTPreviewUrl,
+      Math.ceil(dataNFTRoyalties * 100),
+      Number(dataNFTCopies),
+      datasetTitle,
+      datasetDescription,
+      BigNumber(periods[0].amount).toNumber() + new BigNumber(antiSpamTax).multipliedBy(10 ** 18).toNumber(),
+      Number(periods[0].lockPeriod),
+      donatePercentage * 100,
+      optionalSDKMintCallFields
+    );
+    setImageUrl(imageUrl);
+    setMetadataUrl(metadataUrl);
+    setMintTx(tx);
+
     setDataNFTImg(newNFTImg);
 
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s3: 1 }));
-    await sleep(3);
+    await sleep(1);
 
-    handleOnChainMint();
     // { imageOnIpfsUrl, metadataOnIpfsUrl }
   };
 
@@ -1065,9 +1072,13 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         setIsOpen={setIsMintingModalOpen}
         errDataNFTStreamGeneric={errDataNFTStreamGeneric}
         saveProgress={saveProgress}
+        imageUrl={imageUrl}
+        metadataUrl={metadataUrl}
+        setSaveProgress={setSaveProgress}
         dataNFTImg={dataNFTImg}
         closeProgressModal={closeProgressModal}
         mintingSuccessful={mintingSuccessful}
+        onChainMint={handleOnChainMint}
       />
     </form>
   );
