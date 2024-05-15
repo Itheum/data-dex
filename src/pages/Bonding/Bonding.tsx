@@ -55,7 +55,6 @@ export const Bonding: React.FC = () => {
   });
 
   const onGotoPageCompensation = useThrottle((newPageIndex: number) => {
-    console.log("newPageIndex", newPageIndex);
     if (0 <= newPageIndex && newPageIndex < compensationPageCount) {
       setPageIndexCompensation(newPageIndex);
     }
@@ -78,7 +77,6 @@ export const Bonding: React.FC = () => {
   useEffect(() => {
     (async () => {
       const totalNumberOfCompensation = await bondContract.viewTotalCompensations();
-      console.log("totalNumberOfCompensation", totalNumberOfCompensation);
       setCompensationPageCount(Math.ceil(totalNumberOfCompensation / pageSize));
     })();
   }, []);
@@ -96,7 +94,6 @@ export const Bonding: React.FC = () => {
       const dataNfts: DataNft[] = await DataNft.createManyFromApi(pagedBonds.map((bond) => ({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier })));
       setTotalAmountBondedForThisPage(_totalAmountBondedForThisPage);
       setContractBonds(pagedBonds);
-      // console.log(pagedBonds, dataNfts);
       setBondingDataNfts(dataNfts);
     })();
   }, [hasPendingTransactions, bondingPageIndex]);
@@ -116,7 +113,6 @@ export const Bonding: React.FC = () => {
         pagedCompensation.map((bond) => ({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier }))
       );
       setCompensationDataNfts(dataNfts.reverse());
-      console.log(pagedCompensation, dataNfts);
       setAllCompensation(pagedCompensation);
     })();
   }, [hasPendingTransactions, compensationPageIndex]);
