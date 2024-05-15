@@ -723,7 +723,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         </FormControl>
 
         <FormControl isInvalid={!!errors.donatePercentage} minH={"8.5rem"}>
-          <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
+          <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt={{ base: "1", md: "4" }}>
             Donate Percentage
           </Text>
 
@@ -761,7 +761,25 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           <Text color="gray.400" fontSize="sm" mt={"1"}>
             Min: 0%, Max: {userData && userData?.maxDonationPecentage / 100}%
           </Text>
+          {Math.floor(dataNFTCopies * (donatePercentage / 100)) === 0 && (
+            <Text color="indianred" fontSize="sm" mt={"1"}>
+              As the number of copies is low, no Data NFTs will be sent for donations
+            </Text>
+          )}
           <FormErrorMessage>{errors?.donatePercentage?.message}</FormErrorMessage>
+          <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="3 !important">
+            When you mint, you can optionally choose to donate a percentage of the total supply to the community treasury, which will then be used for community
+            airdrops to engaged community members who actively use the Itheum BiTz XP system. This is a great way to get an "engaged fanbase" for your new
+            collection and drive awareness. Learn more{" "}
+            <Link
+              href="https://docs.itheum.io/product-docs/product/data-dex/minting-a-data-nft/creator-donations-for-community-airdrops"
+              isExternal
+              rel="noreferrer"
+              color="teal.200">
+              here
+            </Link>
+            .
+          </Text>
         </FormControl>
       </>
 
