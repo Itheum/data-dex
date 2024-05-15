@@ -509,7 +509,11 @@ export const EXPLORER_APP_SUPPORTED_TOKENS: any = {
     "trailblazer": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 1 }],
     "multiversxbubbles": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 2 }],
     "multiversxinfographics": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 3 }],
-    "nftunes": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 4 }],
+    "nftunes": [
+      { tokenIdentifier: "DATANFTFT-e936d4", nonce: 4 },
+      { tokenIdentifier: "DATANFTFT-e936d4", nonce: 9 },
+      { tokenIdentifier: "DATANFTFT-e936d4", nonce: 10 },
+    ],
     "deepforest": [...Array.from({ length: 91 }, (_, i) => ({ tokenIdentifier: "DFEE-72425b", nonce: i }))],
     "timecapsule": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 5 }],
     "bitzgame": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 7 }],
