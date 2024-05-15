@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
-import { Box, Container, Flex, IconButton, Image, AspectRatio, Text } from "@chakra-ui/react";
+import { Box, Container, Flex, IconButton, Image, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import Card3DAnimation from "./Card3DAnimation";
-interface ImageSliderProps {
+interface NftMediaComponentProps {
   imageUrls: string[];
   autoSlide?: boolean;
   autoSlideInterval?: number;
   imageWidth?: string;
   imageHeight?: string;
+  marginTop?: string;
+  borderRadius?: string;
   onLoad?: () => void;
   openNftDetailsDrawer?: () => void;
 }
@@ -21,8 +23,18 @@ const spring = {
   damping: 40,
 };
 
-const ImageSlider: React.FC<ImageSliderProps> = (props) => {
-  const { imageUrls, autoSlide = false, autoSlideInterval = 6000, imageWidth = "210px", imageHeight = "210px", onLoad, openNftDetailsDrawer } = props;
+const NftMediaComponent: React.FC<NftMediaComponentProps> = (props) => {
+  const {
+    imageUrls,
+    autoSlide = false,
+    autoSlideInterval = 6000,
+    imageWidth = "210px",
+    imageHeight = "210px",
+    marginTop = "0px",
+    borderRadius = "32px",
+    onLoad,
+    openNftDetailsDrawer,
+  } = props;
   const [imageIndex, setImageIndex] = useState(0);
   const [switchedImageManually, setSwitchedImageManually] = useState(false);
   const [nextImageIndex, setNextImageIndex] = useState(0);
@@ -38,6 +50,19 @@ const ImageSlider: React.FC<ImageSliderProps> = (props) => {
     }
   }, [switchedImageManually]);
 
+  function transformSizeInNumber(input: string): number {
+    console.log("input", Number(input.replace(/\D+/g, "")));
+    return Number(input.replace(/\D+/g, ""));
+  }
+
+  function transformSizeAndDubleIt(input: string): string {
+    return input.replace(/\d+/g, (match) => String(Number(match) + Number(match)));
+  }
+
+  function computeLeftMargin(input: string): string {
+    return input.replace(/\d+/g, (match) => "-" + String(Math.floor(Number(match) / 2.1)));
+  }
+
   function goToPreviousImage(autoSwitch = false) {
     setNextImageIndex((prevIndex) => (prevIndex === 0 ? imageUrls.length - 1 : prevIndex - 1));
     setSwitchedImageManually(autoSwitch);
@@ -49,8 +74,8 @@ const ImageSlider: React.FC<ImageSliderProps> = (props) => {
   }
 
   return (
-    <Container justifyContent="center" mt={"0"} h={"290px"} position={"relative"}>
-      <Box style={{ marginTop: "1.5rem" }} alignItems={"center"} justifyContent={"center"}>
+    <Container justifyContent="center" mt={"0"} h={imageHeight ? String(transformSizeInNumber(imageHeight) + 25) + "px" : "290px"} position={"relative"}>
+      <Box style={{ marginTop: marginTop }} alignItems={"center"} justifyContent={"center"}>
         <Flex justifyContent={{ base: "center" }} alignItems={"center"} flexDirection="column">
           <Flex justifyContent="center">
             <Card3DAnimation onClick={() => goToNextImage(true)}>
@@ -71,16 +96,26 @@ const ImageSlider: React.FC<ImageSliderProps> = (props) => {
                     position: "absolute",
                   }}>
                   {imageUrls[nextImageIndex].includes("mp4") ? (
-                    <Box width={imageWidth} height={imageHeight} as="div" borderRadius={"32px"} overflow={"hidden"}>
-                      <Box as="div" width={"420px"} height={"420px"} ml={"-92px"}>
-                        <video width={"420px"} height={"420px"} src={imageUrls[nextImageIndex]} autoPlay loop muted></video>
-                      </Box>{" "}
+                    <Box width={imageWidth} height={imageHeight} as="div" borderRadius={borderRadius} overflow={"hidden"}>
+                      <Box
+                        as="div"
+                        width={transformSizeAndDubleIt(imageWidth)}
+                        height={transformSizeAndDubleIt(imageHeight)}
+                        ml={computeLeftMargin(imageWidth)}>
+                        <video
+                          width={transformSizeAndDubleIt(imageWidth)}
+                          height={transformSizeAndDubleIt(imageHeight)}
+                          src={imageUrls[nextImageIndex]}
+                          autoPlay
+                          loop
+                          muted></video>
+                      </Box>
                     </Box>
                   ) : (
                     <Image
                       w={imageWidth}
                       h={imageHeight}
-                      borderRadius={"32px"}
+                      borderRadius={borderRadius}
                       src={imageUrls[imageIndex]}
                       onLoad={onLoad}
                       onError={({ currentTarget }) => {
@@ -106,22 +141,16 @@ const ImageSlider: React.FC<ImageSliderProps> = (props) => {
                     onAnimationComplete={() => {
                       setImageIndex(nextImageIndex);
                     }}>
-                    {imageUrls[nextImageIndex].includes("mp4") ? (
-                      <AspectRatio w={imageWidth} h={imageHeight} borderRadius={"32px"} onLoad={onLoad}>
-                        <iframe title="Data Nft Video" src={imageUrls[nextImageIndex]} />
-                      </AspectRatio>
-                    ) : (
-                      <Image
-                        w={imageWidth}
-                        h={imageHeight}
-                        borderRadius={"32px"}
-                        src={imageUrls[nextImageIndex]}
-                        onLoad={onLoad}
-                        onError={({ currentTarget }) => {
-                          currentTarget.src = DEFAULT_NFT_IMAGE;
-                        }}
-                      />
-                    )}
+                    <Image
+                      w={imageWidth}
+                      h={imageHeight}
+                      borderRadius={borderRadius}
+                      src={imageUrls[nextImageIndex]}
+                      onLoad={onLoad}
+                      onError={({ currentTarget }) => {
+                        currentTarget.src = DEFAULT_NFT_IMAGE;
+                      }}
+                    />
                   </motion.div>
                 )}
               </div>
@@ -196,4 +225,4 @@ const ImageSlider: React.FC<ImageSliderProps> = (props) => {
   );
 };
 
-export default ImageSlider;
+export default NftMediaComponent;

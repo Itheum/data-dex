@@ -33,6 +33,7 @@ import {
   tokenDecimals,
 } from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
+import NftMediaComponent from "./ImageSlider";
 
 export interface ProcureAccessModalProps {
   isOpen: boolean;
@@ -220,7 +221,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
                 </Flex>
               </Box>
               <Box flex="1">
-                <Image src={nftData.nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
+                <NftMediaComponent imageUrls={[nftData?.nftImgUrl ?? ""]} imageHeight={"120px"} imageWidth="120px" borderRadius="md" />
               </Box>
             </HStack>
 
