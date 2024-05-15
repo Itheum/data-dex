@@ -30,6 +30,7 @@ import { sleep, printPrice, convertToLocalString, getTokenWantedRepresentation, 
 import { useMarketStore } from "store";
 import { labels } from "../libs/language";
 import { getOffersByIdAndNoncesFromBackendApi } from "../libs/MultiversX";
+import NftMediaComponent from "./ImageSlider";
 
 export type ListModalProps = {
   isOpen: boolean;
@@ -296,15 +297,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
                 </Flex>
               </Box>
               <Box flex="1">
-                {nftData.nftImgUrl.includes("mp4") ? (
-                  <Box width={"210px"} height={"210px"} as="div" borderRadius={"32px"} overflow={"hidden"}>
-                    <Box as="div" width={"420px"} height={"420px"} ml={"-92px"}>
-                      <video width={"420px"} height={"420px"} src={nftData.nftImgUrl} autoPlay loop muted></video>
-                    </Box>{" "}
-                  </Box>
-                ) : (
-                  <Image src={nftData.nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
-                )}
+                <NftMediaComponent imageUrls={[nftData?.nftImgUrl]} imageHeight={"120px"} imageWidth="120px" borderRadius="md" />
               </Box>
             </HStack>
 

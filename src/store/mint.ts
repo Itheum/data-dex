@@ -1,6 +1,6 @@
+import BigNumber from "bignumber.js";
 import { create } from "zustand";
 import { UserDataType } from "libs/MultiversX/types";
-import BigNumber from "bignumber.js";
 
 type State = {
   userData: UserDataType | undefined;

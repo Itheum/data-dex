@@ -7,6 +7,7 @@ import { Link as ReactRouterLink } from "react-router-dom";
 import { Favourite } from "../../../components/Favourite/Favourite";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
 import { IS_DEVNET, getFavoritesFromBackendApi } from "../../../libs/MultiversX";
+import NftMediaComponent from "components/ImageSlider";
 
 type FavoriteDataCreationNftsType = {
   nonce: number;
@@ -78,7 +79,7 @@ export const FavoriteCards: React.FC = () => {
                 <CardBody mb={9}>
                   <Skeleton height={skeletonHeight} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
                     <Link to={`/datanfts/marketplace/${dataNft.tokenIdentifier}`} as={ReactRouterLink}>
-                      <Image src={dataNft.nftImgUrl} alt="Data NFT Image" borderRadius="lg" boxSize={{ base: "150px", md: "200px" }} />
+                      <NftMediaComponent imageUrls={[dataNft.nftImgUrl]} imageHeight={"175px"} imageWidth="175px" borderRadius="lg" />
                     </Link>
                   </Skeleton>
                   <Skeleton height="76px" isLoaded={loadedOffers} fadeDuration={2}>
