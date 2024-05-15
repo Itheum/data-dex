@@ -21,6 +21,7 @@ import {
   Spinner,
   Stack,
   Text,
+  useColorMode,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
@@ -37,6 +38,7 @@ type MintingModalProps = {
 export const MintingModal: React.FC<MintingModalProps> = (props) => {
   const { isOpen, setIsOpen, errDataNFTStreamGeneric, saveProgress, dataNFTImg, closeProgressModal, mintingSuccessful } = props;
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState<boolean>(false);
+  const { colorMode } = useColorMode();
 
   const navigate = useNavigate();
   const onClose = () => {
@@ -45,7 +47,7 @@ export const MintingModal: React.FC<MintingModalProps> = (props) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false} blockScrollOnMount={false}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
         <ModalHeader>Data NFT Collection Minting Progress</ModalHeader>
         {!!errDataNFTStreamGeneric && <ModalCloseButton />}
         <ModalBody pb={6}>
