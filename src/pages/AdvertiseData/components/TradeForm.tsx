@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   Box,
   Button,
   Checkbox,
+  CloseButton,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -25,6 +30,7 @@ import {
   Textarea,
   Tooltip,
   useColorMode,
+  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -106,6 +112,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   ]);
   const [previousDataNFTStreamUrl, setPreviousDataNFTStreamUrl] = useState<string>("");
   const [wasPreviousCheck200StreamSuccess, setWasPreviousCheck200StreamSuccess] = useState<boolean>(false);
+  const { isOpen: isVisible, onClose, onOpen } = useDisclosure({ defaultIsOpen: true });
 
   useEffect(() => {
     bond.viewLockPeriodsWithBonds().then((periodsT) => {
@@ -477,10 +484,32 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           * &nbsp;Required fields
         </Text>
       </Flex>
+      {isVisible ? (
+        <Alert status="info" mt={3} rounded="lg">
+          <AlertIcon />
+          <Box display="flex" flexDirection="column" w="full">
+            <AlertTitle>Information!</AlertTitle>
+            <AlertDescription fontSize="md">In order to mint your Data NFT you will need:</AlertDescription>
+            <AlertDescription fontSize="md">• A small anti-spam fee({antiSpamTax < 0 ? "?" : antiSpamTax} $ITHEUM)</AlertDescription>
+            <AlertDescription fontSize="md">
+              • Lock an amount of ITHEUM tokens({bondingAmount} $ITHEUM) for a period of time({bondingPeriod} {amountOfTime.unit})
+            </AlertDescription>
+            <AlertDescription fontSize="md">• ~0.02 EGLD to cover the gas fees for the transaction.</AlertDescription>
+            <AlertDescription fontSize="md" display="flex" gap={1}>
+              Resulting in a total of <Text color="teal.200">{antiSpamTax + bondingAmount} $ITHEUM</Text> tokens and ~0.02 EGLD
+            </AlertDescription>
+          </Box>
+          <CloseButton alignSelf="flex-start" position="relative" right={-1} top={-1} onClick={onClose} />
+        </Alert>
+      ) : (
+        <Button onClick={onOpen} mt={3} size="sm" variant="outline">
+          Mint information
+        </Button>
+      )}
 
       <>
         <Flex flexDirection={"column"}>
-          <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important" mb={2}>
+          <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="2 !important" mb={2}>
             Data Asset Detail
           </Text>
           <Link
