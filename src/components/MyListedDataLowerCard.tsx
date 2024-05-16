@@ -39,7 +39,7 @@ import {
 } from "libs/utils";
 import { useMarketStore } from "store";
 import PreviewDataButton from "./PreviewDataButton";
-import NftMediaComponent from "./ImageSlider";
+import NftMediaComponent from "./NftMediaComponent";
 
 type MyListedDataLowerCardProps = {
   offer: Offer;

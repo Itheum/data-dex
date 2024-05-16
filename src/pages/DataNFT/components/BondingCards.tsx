@@ -9,7 +9,7 @@ import BigNumber from "bignumber.js";
 import { IS_DEVNET } from "libs/config";
 import { LivelinessScore } from "../../../components/Liveliness/LivelinessScore";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
-import NftMediaComponent from "components/ImageSlider";
+import NftMediaComponent from "components/NftMediaComponent";
 
 type CompensationNftsType = {
   nonce: number;

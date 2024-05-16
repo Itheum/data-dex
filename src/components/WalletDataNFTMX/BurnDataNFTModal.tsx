@@ -13,7 +13,7 @@ import { contractsForChain } from "libs/config";
 import { labels } from "libs/language";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { isValidNumericCharacter } from "libs/utils";
-import NftMediaComponent from "components/ImageSlider";
+import NftMediaComponent from "components/NftMediaComponent";
 
 type BurnDataNFTModalPropType = {
   isOpen: boolean;

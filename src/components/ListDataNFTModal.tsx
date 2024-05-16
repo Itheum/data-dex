@@ -30,7 +30,7 @@ import { sleep, printPrice, convertToLocalString, getTokenWantedRepresentation, 
 import { useMarketStore } from "store";
 import { labels } from "../libs/language";
 import { getOffersByIdAndNoncesFromBackendApi } from "../libs/MultiversX";
-import NftMediaComponent from "./ImageSlider";
+import NftMediaComponent from "./NftMediaComponent";
 
 export type ListModalProps = {
   isOpen: boolean;
