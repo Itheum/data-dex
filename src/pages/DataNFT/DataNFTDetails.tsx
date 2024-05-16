@@ -340,8 +340,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   w="full"
                   alignItems={{ base: "initial", md: "initial" }}
                   justifyContent={{ xl: "space-between" }}>
-                  <Box marginRight={"auto"}>
-                    <NftMediaComponent imageUrls={nftData.media?.map((mediaObj: any) => mediaObj.url) ?? [nftData.nftImgUrl]} autoSlide marginTop="1.5rem" />
+                  <Box marginRight={"auto"} mb={6}>
+                    <NftMediaComponent imageUrls={nftData.media?.map((mediaObj: any) => mediaObj.url) ?? [nftData.nftImgUrl]} autoSlide marginTop="1rem" />
                   </Box>
                   <Flex mr={tokenIdParam ? "75px" : "30px"}>
                     <Flex flexDirection="column" ml={5} h="250px" justifyContent="space-evenly">
