@@ -3,6 +3,7 @@ import axios from "axios";
 import { backendApi, convertEsdtToWei, tokenDecimals } from "libs/utils";
 import { IS_DEVNET, uxConfig } from ".";
 import { DataNftCollectionType, Favorite, TrendingNft } from "./types";
+import { DataNFTCollectionObject } from "libs/utils/types/marketplace";
 
 export async function getHealthCheckFromBackendApi(chainID: string): Promise<boolean> {
   try {
@@ -216,11 +217,11 @@ export async function getOffersFromBackendApi(chainID: string, from: number, siz
   }
 }
 
-export async function getOfersAsCollectionFromBackendApi(chainID: string): Promise<DataNftCollectionType[]> {
+export async function getOfersAsCollectionFromBackendApi(chainID: string): Promise<DataNFTCollectionObject[]> {
   try {
     const url = `${backendApi(chainID)}/data-nfts`;
 
-    const { data } = await axios.get<DataNftCollectionType[]>(url, {
+    const { data } = await axios.get<DataNFTCollectionObject[]>(url, {
       timeout: uxConfig.mxAPITimeoutMs,
     });
     return data;
