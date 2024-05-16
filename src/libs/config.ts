@@ -65,6 +65,8 @@ export function contractsForChain(chainID: string): ContractsType {
             id: dataNFTFTTicker_Mx_Mainnet,
             contract: new Address(dataNftMintContractAddress_Mx_Mainnet),
           },
+          //deep forest album
+          { id: "DFEE-72425b", contract: new Address("erd1qqqqqqqqqqqqqpgq0lcp4hrr2jg54e09cex3ema6h0rtakw2wgtst0krnk") },
         ],
       };
     }
@@ -501,12 +503,18 @@ export const EXPLORER_APP_SUPPORTED_TOKENS: any = {
     "timecapsule": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 57 }],
     "bitzgame": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 198 }],
     "bobergameroom": [],
+    "deepforest": [],
   },
   "1": {
     "trailblazer": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 1 }],
     "multiversxbubbles": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 2 }],
     "multiversxinfographics": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 3 }],
-    "nftunes": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 4 }],
+    "nftunes": [
+      { tokenIdentifier: "DATANFTFT-e936d4", nonce: 4 },
+      { tokenIdentifier: "DATANFTFT-e936d4", nonce: 9 },
+      { tokenIdentifier: "DATANFTFT-e936d4", nonce: 10 },
+    ],
+    "deepforest": [...Array.from({ length: 91 }, (_, i) => ({ tokenIdentifier: "DFEE-72425b", nonce: i }))],
     "timecapsule": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 5 }],
     "bitzgame": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 7 }],
     "bobergameroom": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 8 }],
@@ -528,6 +536,7 @@ export const EXPLORER_APP_FOR_TOKEN: Record<string, Record<string, string>> = {
     "multiversxbubbles": "https://explorer.itheum.io/multiversx-bubbles",
     "multiversxinfographics": "https://explorer.itheum.io/multiversx-infographics",
     "nftunes": "https://explorer.itheum.io/nftunes",
+    "deepforest": "https://explorer.itheum.io/deep-forest-music-data-nft",
     "timecapsule": "https://explorer.itheum.io/timecapsule",
     "bitzgame": "https://explorer.itheum.io/getbitz",
     "bobergameroom": "https://explorer.itheum.io/bobergameroom",
