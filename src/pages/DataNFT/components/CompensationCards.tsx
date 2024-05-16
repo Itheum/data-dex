@@ -130,7 +130,6 @@ export const CompensationCards: React.FC = () => {
     });
   };
 
-  console.log(blacklistedAddressesPerNft.includes(mxAddress), blacklistedAddressesPerNft, mxAddress);
   return (
     <>
       <Flex flexDirection="column" gap={4}>
@@ -149,7 +148,6 @@ export const CompensationCards: React.FC = () => {
               const proofAmount = compensationRefund[item.compensation.compensationId]
                 ? Number(compensationRefund[item.compensation.compensationId].proofOfRefund.amount)
                 : 0;
-              console.log(proofAmount);
               return (
                 <Flex key={index} w="full" flexDirection={{ base: "column", md: "row" }} alignItems="center" gap={6}>
                   <img src={item.dataNft.nftImgUrl} alt="NFT" width="150rem" height="150rem" />

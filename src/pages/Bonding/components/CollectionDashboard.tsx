@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { Box, Button, Flex, FormControl, FormErrorMessage, Input, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, FormControl, FormErrorMessage, Input, NumberInput, Text } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Bond, BondConfiguration, BondContract, Compensation, DataNft, createTokenIdentifier } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
@@ -12,6 +12,7 @@ import * as Yup from "yup";
 import { IS_DEVNET } from "libs/config";
 import { LivelinessScore } from "../../../components/Liveliness/LivelinessScore";
 import { useParams } from "react-router-dom";
+import { NumberInputField } from "@chakra-ui/number-input";
 
 type CollectionDashboardProps = {
   bondNft: Array<Bond>;
@@ -77,7 +78,7 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
   }, [hasPendingTransactions, bondNft, bondDataNft]);
 
   const validationSchema = Yup.object().shape({
-    enforceMinimumPenalty: Yup.number().required("Please select a value for enforce penalty"),
+    enforceMinimumPenalty: Yup.number().typeError("Value must be a number").required("Please select a value for enforce penalty"),
     endTimestampOfBond: Yup.string().required("Please select a value for claim date"),
   });
 
@@ -189,15 +190,19 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
                             <Controller
                               control={control}
                               render={({ field: { onChange } }) => (
-                                <Input
+                                <NumberInput
                                   mt="1 !important"
                                   id="enforceMinimumPenalty"
-                                  w="25%"
+                                  min={1}
+                                  max={contractConfiguration.maximumPenalty / 100}
+                                  w="30%"
                                   defaultValue={enforceMinimumPenalty}
                                   onChange={(event) => {
-                                    onChange(event.target.value);
-                                  }}
-                                />
+                                    onChange(event);
+                                    if (Number(event) < 1 || event == "") onChange(enforceMinimumPenalty);
+                                  }}>
+                                  <NumberInputField />
+                                </NumberInput>
                               )}
                               name={"enforceMinimumPenalty"}
                             />
