@@ -11,7 +11,7 @@
     "@itheum/sdk-mx-data-nft": "3.5.0-alpha.7",
     "@itheum/sdk-mx-enterprise": "0.3.0",
     "@multiversx/sdk-core": "13.0.1",
-    "@multiversx/sdk-dapp": "2.31.3",
+    "@multiversx/sdk-dapp": "2.29.2",
     "@multiversx/sdk-native-auth-client": "1.0.8",
     "@multiversx/sdk-network-providers": "2.4.3",
     "@peerme/sdk": "0.2.1",
