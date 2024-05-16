@@ -14,6 +14,11 @@ import {
   DrawerOverlay,
   Heading,
   HStack,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
   Stack,
   Text,
   useColorMode,
@@ -155,10 +160,10 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   };
 
   return (
-    <Drawer onClose={onClose} isOpen={isOpen} size="xl" closeOnEsc={true} closeOnOverlayClick={false} blockScrollOnMount={false}>
-      <DrawerOverlay backdropFilter="blur(10px)" />
-      <DrawerContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-        <DrawerHeader>
+    <Modal onClose={onClose} isOpen={isOpen} size="6xl" closeOnEsc={true} closeOnOverlayClick={false} blockScrollOnMount={false}>
+      <ModalOverlay backdropFilter="blur(10px)" />
+      <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+        <ModalHeader>
           <HStack spacing="5">
             <CloseButton
               size="lg"
@@ -170,9 +175,9 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
               Mint a Data Stream as a Data NFT-FT
             </Heading>
           </HStack>
-        </DrawerHeader>
+        </ModalHeader>
 
-        <DrawerBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"} overflowX={"hidden"}>
+        <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"} overflowX={"hidden"} maxH="85svh">
           <Stack spacing="5" mt="5">
             {(minRoyalties / 100 < 0 ||
               maxRoyalties / 100 < 0 ||
@@ -237,7 +242,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
             userData={userData}
             dataToPrefill={dataToPrefill}
           />
-        </DrawerBody>
+        </ModalBody>
         <Box
           position="absolute"
           top="5rem"
@@ -304,7 +309,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
             Refresh Data DEX
           </Button>
         </Box>
-      </DrawerContent>
-    </Drawer>
+      </ModalContent>
+    </Modal>
   );
 };
