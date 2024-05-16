@@ -25,6 +25,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import NftMediaComponent from "components/ImageSlider";
 
 type MintingModalProps = {
   isOpen: boolean;
@@ -82,7 +83,13 @@ export const MintingModal: React.FC<MintingModalProps> = (props) => {
               <>
                 <Skeleton isLoaded={oneNFTImgLoaded} h={200} margin="auto">
                   <Center>
-                    <Image src={dataNFTImg} h={200} w={200} borderRadius="md" onLoad={() => setOneNFTImgLoaded(true)} />
+                    <NftMediaComponent
+                      imageUrls={[dataNFTImg]}
+                      imageHeight={"200px"}
+                      imageWidth={"200px"}
+                      borderRadius="md"
+                      onLoad={() => setOneNFTImgLoaded(true)}
+                    />
                   </Center>
                 </Skeleton>
                 <Box textAlign="center">

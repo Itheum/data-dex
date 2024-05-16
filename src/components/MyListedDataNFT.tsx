@@ -30,6 +30,7 @@ import { convertWeiToEsdt, convertToLocalString, getTokenWantedRepresentation, h
 import { useMarketStore, useMintStore } from "store";
 import FrozenOverlay from "./FrozenOverlay";
 import PreviewDataButton from "./PreviewDataButton";
+import NftMediaComponent from "./ImageSlider";
 
 type MyListedDataNFTProps = {
   offer: Offer;
@@ -80,11 +81,10 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
       <Flex wrap="wrap" gap="5" key={index}>
         <Box maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">
           <Flex justifyContent="center" pt={5}>
-            <Image
-              src={`https://${getApi(chainID)}/nfts/${offer.offeredTokenIdentifier}-${hexZero(offer.offeredTokenNonce)}/thumbnail`}
-              alt={"item.dataPreview"}
-              h={200}
-              w={200}
+            <NftMediaComponent
+              imageUrls={[`https://${getApi(chainID)}/nfts/${offer.offeredTokenIdentifier}-${hexZero(offer.offeredTokenNonce)}/thumbnail`]}
+              imageHeight="200px"
+              imageWidth="200px"
               borderRadius="md"
               onLoad={() => setNftImageLoading(true)}
             />

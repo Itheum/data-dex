@@ -7,6 +7,7 @@ import { Link as ReactRouterLink } from "react-router-dom";
 import { Favourite } from "../../../components/Favourite/Favourite";
 import { IS_DEVNET, getFavoritesFromBackendApi, getTrendingFromBackendApi } from "../../../libs/MultiversX";
 import { useAccountStore } from "../../../store";
+import NftMediaComponent from "components/ImageSlider";
 
 type TrendingDataCreationNftsType = {
   nonce: number;
@@ -84,7 +85,7 @@ export const TrendingData: React.FC = () => {
               <CardBody>
                 <Skeleton height={skeletonHeight} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
                   <Link to={`/datanfts/marketplace/${trendingDataNft.tokenIdentifier}`} as={ReactRouterLink}>
-                    <Image src={trendingDataNft.nftImgUrl} alt="Data NFT Image" borderRadius="lg" h={{ base: "250px", md: "200px" }} />
+                    <NftMediaComponent imageUrls={[trendingDataNft.nftImgUrl]} imageHeight={"225px"} imageWidth="225px" borderRadius="lg" />
                   </Link>
                 </Skeleton>
                 <Skeleton height="76px" isLoaded={loadedOffers} fadeDuration={2}>
