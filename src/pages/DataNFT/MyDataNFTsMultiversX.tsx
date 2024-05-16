@@ -146,7 +146,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                 <Tab
                   key={index}
                   isDisabled={tab.isDisabled}
-                  p={{ base: "0", md: "initial" }}
+                  p={{ base: "3", md: "0" }}
                   _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
                   onClick={() => onChangeTab(index + 1)}
                   mx={"auto"}>
