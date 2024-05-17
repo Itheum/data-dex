@@ -66,7 +66,6 @@ export async function getAddressBoughtOffersFromBackendApi(chainId: string, bear
         Authorization: `Bearer ${bearerToken}`,
       },
     });
-    console.log(data);
     return data;
   } catch (error) {
     console.error(error);
@@ -267,7 +266,6 @@ export async function getOffersByIdAndNoncesFromBackendApi(
   const { data } = await axios.get<Offer[]>(url, {
     timeout: uxConfig.mxAPITimeoutMs,
   });
-  console.log(data);
   return data;
 }
 

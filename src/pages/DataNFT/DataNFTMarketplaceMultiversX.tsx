@@ -26,6 +26,8 @@ import {
   useColorMode,
   useDisclosure,
   useToast,
+  Wrap,
+  WrapItem,
 } from "@chakra-ui/react";
 import { DataNft, Offer } from "@itheum/sdk-mx-data-nft/out";
 import { Address, TransactionWatcher } from "@multiversx/sdk-core/out";
@@ -40,6 +42,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { CustomPagination } from "components/CustomPagination";
 import MarketplaceLowerCard from "components/MarketplaceLowerCard";
 import MyListedDataLowerCard from "components/MyListedDataLowerCard";
+import NftMediaComponent from "components/NftMediaComponent";
 import { NoDataHere } from "components/Sections/NoDataHere";
 import ConditionalRender from "components/UtilComps/ApiWrapper";
 import UpperCardComponent from "components/UtilComps/UpperCardComponent";
@@ -51,11 +54,10 @@ import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftCollectionType } from "libs/MultiversX/types";
 import { convertWeiToEsdt, createNftId, hexZero, getBondsForOffers, sleep, tokenDecimals } from "libs/utils";
+import { DataNFTCollectionObject } from "libs/utils/types/marketplace";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
 import { DataNftCollectionCard } from "./DataNftCollection";
-import { DataNFTCollectionObject } from "libs/utils/types/marketplace";
-import NftMediaComponent from "components/NftMediaComponent";
 
 interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"
@@ -102,7 +104,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [myListedCount, setMyListedCount] = useState<number>(0);
   const [publicMarketCount, setPublicMarketCount] = useState<number>(0);
   const [showGroupedDataNfts, setShowGroupedDataNfts] = useState(true);
-  const [groupedOffers, setGroupedOffers] = useState<DataNFTCollectionObject[]>([]);
+  const [groupedCollections, setGroupedCollections] = useState<DataNFTCollectionObject[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const hasWebWalletTx = sessionStorage.getItem("web-wallet-tx");
 
@@ -122,151 +124,9 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
       // start loading offers
       updateLoadingOffers(true);
-      const _groupedOffers: DataNFTCollectionObject[] = await getOfersAsCollectionFromBackendApi(chainID);
-      const testgroupedOffers = _groupedOffers.filter((offer) => offer.dataNfts && offer.dataNfts.length > 1);
-      setGroupedOffers([
-        ..._groupedOffers,
-        {
-          collection: "DNFTPHMA-9e2b1c",
-          type: "NonFungibleESDT",
-          dataNfts: [
-            {
-              tokenIdentifier: "DNFTPHMA-9e2b1c-03",
-              nftImgUrl: "https://devnet-media.elrond.com/nfts/asset/QmdDQP4rpdzPXg8b3Svmxgwme8r4eCFqtgvuirZQp6BTGC/2.png",
-              type: "NonFungibleESDT",
-              dataPreview: "",
-              dataStream: "eyJBIjoiNGYzNzMzZjdkZjFhM2VhY2ZiNzljYzdlOWY4OWQzYTg1YTE1MDM4YjkzNzc4ZjY0IiwiQiI6IjIwZjcxMTU3YjkzNTYzY2M4MWM1MzRmOGQ4Yjk5MzYzO",
-              dataMarshal: " 1NzZkMmViZWE5OTQ5YjE4OWZkZmM0MzBlMGJkYjIwOGQzZWY3OGVhZjM1ZTE1ZDFlYmFlYzNjZTFmMjU0YmI0OThiYWZhZGNlMTM3MmNhZGViNjlkMGMifQ==",
-              tokenName: "DataNFTPHMinAttr #2",
-              creator: "erd1eweqykxcrhh5nps4fzktu9eftf7rxpa8xdfkypwz0k4huhl0s04sa6tqyd",
-              creationTime: "2024-03-21T06:08:26.000Z",
-              supply: 1,
-              description: "functional, minimalist, integrated, modern",
-              title: "DataNFTPHMinAttr #2",
-              royalties: "0.00",
-              nonce: 3,
-              collection: "DNFTPHMA-9e2b1c",
-              balance: "0",
-              owner: "",
-              overrideDataMarshal: "",
-              overrideDataMarshalChainId: "",
-              isDataNFTPH: true,
-              extraAssets: ["https://ipfs.io/ipfs/QmdDQP4rpdzPXg8b3Svmxgwme8r4eCFqtgvuirZQp6BTGC/collection.json"],
-              media: [
-                {
-                  url: "https://devnet-media.elrond.com/nfts/asset/QmdDQP4rpdzPXg8b3Svmxgwme8r4eCFqtgvuirZQp6BTGC/2.png",
-                  originalUrl: "https://ipfs.io/ipfs/QmdDQP4rpdzPXg8b3Svmxgwme8r4eCFqtgvuirZQp6BTGC/2.png",
-                  thumbnailUrl: "https://devnet-media.elrond.com/nfts/thumbnail/DNFTPHMA-9e2b1c-ab02ad91",
-                  fileType: "image/png",
-                  fileSize: 1261036,
-                },
-              ],
-              minOffer: {
-                index: 195,
-                offeredTokenIdentifier: "DNFTPHMA-9e2b1c",
-                offeredTokenNonce: 3,
-                offeredTokenAmount: 1,
-                wantedTokenIdentifier: "ITHEUM-fce905",
-                wantedTokenNonce: 0,
-                wantedTokenAmount: "102000000000000000000",
-                quantity: 1,
-                owner: "erd1xdq4d7uewptx9j9k23aufraklda9leumqc7eu3uezt2kf4fqxz2sex2rxl",
-                maxQuantityPerAddress: 0,
-              },
-            },
-            {
-              tokenIdentifier: "DNFTPHMA-9e2b1c-03",
-              nftImgUrl: "https://devnet-media.elrond.com/nfts/asset/QmdDQP4rpdzPXg8b3Svmxgwme8r4eCFqtgvuirZQp6BTGC/2.png",
-              type: "NonFungibleESDT",
-              dataPreview: "",
-              dataStream: "eyJBIjoiNGYzNzMzZjdkZjFhM2VhY2ZiNzljYzdlOWY4OWQzYTg1YTE1MDM4YjkzNzc4ZjY0IiwiQiI6IjIwZjcxMTU3YjkzNTYzY2M4MWM1MzRmOGQ4Yjk5MzYzO",
-              dataMarshal: " 1NzZkMmViZWE5OTQ5YjE4OWZkZmM0MzBlMGJkYjIwOGQzZWY3OGVhZjM1ZTE1ZDFlYmFlYzNjZTFmMjU0YmI0OThiYWZhZGNlMTM3MmNhZGViNjlkMGMifQ==",
-              tokenName: "DataNFTPHMinAttr #2",
-              creator: "erd1eweqykxcrhh5nps4fzktu9eftf7rxpa8xdfkypwz0k4huhl0s04sa6tqyd",
-              creationTime: "2024-03-21T06:08:26.000Z",
-              supply: 1,
-              description: "functional, minimalist, integrated, modern",
-              title: "DataNFTPHMinAttr #2",
-              royalties: "0.00",
-              nonce: 3,
-              collection: "DNFTPHMA-9e2b1c",
-              balance: "0",
-              owner: "",
-              overrideDataMarshal: "",
-              overrideDataMarshalChainId: "",
-              isDataNFTPH: true,
-              extraAssets: ["https://ipfs.io/ipfs/QmdDQP4rpdzPXg8b3Svmxgwme8r4eCFqtgvuirZQp6BTGC/collection.json"],
-              media: [
-                {
-                  url: "https://devnet-media.elrond.com/nfts/asset/QmdDQP4rpdzPXg8b3Svmxgwme8r4eCFqtgvuirZQp6BTGC/2.png",
-                  originalUrl: "https://ipfs.io/ipfs/QmdDQP4rpdzPXg8b3Svmxgwme8r4eCFqtgvuirZQp6BTGC/2.png",
-                  thumbnailUrl: "https://devnet-media.elrond.com/nfts/thumbnail/DNFTPHMA-9e2b1c-ab02ad91",
-                  fileType: "image/png",
-                  fileSize: 1261036,
-                },
-              ],
-              minOffer: {
-                index: 195,
-                offeredTokenIdentifier: "DNFTPHMA-9e2b1c",
-                offeredTokenNonce: 3,
-                offeredTokenAmount: 1,
-                wantedTokenIdentifier: "ITHEUM-fce905",
-                wantedTokenNonce: 0,
-                wantedTokenAmount: "102000000000000000000",
-                quantity: 1,
-                owner: "erd1xdq4d7uewptx9j9k23aufraklda9leumqc7eu3uezt2kf4fqxz2sex2rxl",
-                maxQuantityPerAddress: 0,
-              },
-            },
-            {
-              tokenIdentifier: "DNFTPHMA-9e2b1c-03",
-              nftImgUrl: "https://devnet-media.elrond.com/nfts/asset/QmdDQP4rpdzPXg8b3Svmxgwme8r4eCFqtgvuirZQp6BTGC/2.png",
-              type: "NonFungibleESDT",
-              dataPreview: "",
-              dataStream: "eyJBIjoiNGYzNzMzZjdkZjFhM2VhY2ZiNzljYzdlOWY4OWQzYTg1YTE1MDM4YjkzNzc4ZjY0IiwiQiI6IjIwZjcxMTU3YjkzNTYzY2M4MWM1MzRmOGQ4Yjk5MzYzO",
-              dataMarshal: " 1NzZkMmViZWE5OTQ5YjE4OWZkZmM0MzBlMGJkYjIwOGQzZWY3OGVhZjM1ZTE1ZDFlYmFlYzNjZTFmMjU0YmI0OThiYWZhZGNlMTM3MmNhZGViNjlkMGMifQ==",
-              tokenName: "DataNFTPHMinAttr #2",
-              creator: "erd1eweqykxcrhh5nps4fzktu9eftf7rxpa8xdfkypwz0k4huhl0s04sa6tqyd",
-              creationTime: "2024-03-21T06:08:26.000Z",
-              supply: 1,
-              description: "functional, minimalist, integrated, modern",
-              title: "DataNFTPHMinAttr #2",
-              royalties: "0.00",
-              nonce: 3,
-              collection: "DNFTPHMA-9e2b1c",
-              balance: "0",
-              owner: "",
-              overrideDataMarshal: "",
-              overrideDataMarshalChainId: "",
-              isDataNFTPH: true,
-              extraAssets: ["https://ipfs.io/ipfs/QmdDQP4rpdzPXg8b3Svmxgwme8r4eCFqtgvuirZQp6BTGC/collection.json"],
-              media: [
-                {
-                  url: "https://devnet-media.elrond.com/nfts/asset/QmdDQP4rpdzPXg8b3Svmxgwme8r4eCFqtgvuirZQp6BTGC/2.png",
-                  originalUrl: "https://ipfs.io/ipfs/QmdDQP4rpdzPXg8b3Svmxgwme8r4eCFqtgvuirZQp6BTGC/2.png",
-                  thumbnailUrl: "https://devnet-media.elrond.com/nfts/thumbnail/DNFTPHMA-9e2b1c-ab02ad91",
-                  fileType: "image/png",
-                  fileSize: 1261036,
-                },
-              ],
-              minOffer: {
-                index: 195,
-                offeredTokenIdentifier: "DNFTPHMA-9e2b1c",
-                offeredTokenNonce: 3,
-                offeredTokenAmount: 1,
-                wantedTokenIdentifier: "ITHEUM-fce905",
-                wantedTokenNonce: 0,
-                wantedTokenAmount: "102000000000000000000",
-                quantity: 1,
-                owner: "erd1xdq4d7uewptx9j9k23aufraklda9leumqc7eu3uezt2kf4fqxz2sex2rxl",
-                maxQuantityPerAddress: 0,
-              },
-            },
-          ],
-        },
-      ]);
-      console.log(testgroupedOffers);
-      console.log(_groupedOffers);
+
+      const _groupedCollections: DataNFTCollectionObject[] = await getOfersAsCollectionFromBackendApi(chainID);
+      setGroupedCollections(_groupedCollections);
 
       updateLoadingOffers(false);
     })();
@@ -355,18 +215,15 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   }, [pageIndex, tabState, hasPendingTransactions, hasWebWalletTx]);
 
   async function openNftDetailsModal(index: number) {
-    console.log("index", index, collectionForDrawer);
     if (collectionForDrawer) {
       setOfferForDrawer(collectionForDrawer.dataNfts[index].minOffer);
     } else if (showGroupedDataNfts && tabState === 1) {
-      if (groupedOffers[index].dataNfts.length === 1) {
-        setOfferForDrawer(groupedOffers[index].dataNfts[0].minOffer);
-      } else {
-        console.log("groupedOffers", groupedOffers[index].dataNfts);
-        setCollectionForDrawer(groupedOffers[index]);
+      if (groupedCollections[index].type === "NonFungibleESDT") {
+        setCollectionForDrawer(groupedCollections[index]);
         onOpenDataNftCollectionModal();
-        console.log("collectionForDrawer", collectionForDrawer);
         return;
+      } else {
+        setOfferForDrawer(groupedCollections[index].dataNfts[0].minOffer);
       }
     } else {
       setOfferForDrawer(extendedOffers[index]);
@@ -615,9 +472,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                             <MarketplaceLowerCard index={index} nftMetadata={nftMetadatas[index]} extendedOffer={offer} />
                           </UpperCardComponent>
                         ))
-                      : groupedOffers.map((collectionObject: DataNFTCollectionObject, index) => {
-                          const { collection, dataNfts, type } = collectionObject;
-                          // console.log(collection, dataNfts, type, index);
+                      : groupedCollections.map((collectionObject: DataNFTCollectionObject, index) => {
+                          const { dataNfts } = collectionObject;
                           const offer: DataNftCollectionType = dataNfts[0];
                           return (
                             <DataNftCollectionCard
@@ -749,48 +605,50 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                 <Text fontFamily="Clash-Medium" fontSize="32px">
                   Collection - {collectionForDrawer.collection}
                 </Text>
-                <Text fontSize="md">Collection Type : {collectionForDrawer.type}</Text>{" "}
+                <Text fontSize="md">Type : {collectionForDrawer.type}</Text>{" "}
               </ModalHeader>
               <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                <Flex flexGrow={1} flexDir={{ base: "column", lg: "row" }} justifyContent="center" alignItems="start" w="100%" h="100%" p={4} gap={4}>
+                <Wrap justify={{ base: "center", md: "start" }} align="start" spacing={4} w="100%" h="100%" p={4}>
                   {collectionForDrawer.dataNfts.map((dataNft, index) => {
                     const offer: Offer = dataNft.minOffer;
                     return (
-                      <Card
-                        key={index}
-                        maxW="sm"
-                        variant="outline"
-                        backgroundColor="none"
-                        border=".01rem solid transparent"
-                        borderColor="#00C79740"
-                        borderRadius="0.75rem">
-                        <CardBody pb={4}>
-                          <Box cursor={"pointer"} onClick={() => openNftDetailsModal(index)}>
-                            <NftMediaComponent
-                              imageUrls={dataNft.media?.map((mediaObj: any) => mediaObj.url) ?? [dataNft?.nftImgUrl]}
-                              autoSlide
-                              imageHeight="230px"
-                              imageWidth="225px"
-                              borderRadius="lg"
-                            />
+                      <WrapItem key={index}>
+                        <Card
+                          key={index}
+                          maxW="sm"
+                          variant="outline"
+                          backgroundColor="none"
+                          border=".01rem solid transparent"
+                          borderColor="#00C79740"
+                          borderRadius="0.75rem">
+                          <CardBody pb={4}>
+                            <Box cursor={"pointer"} onClick={() => openNftDetailsModal(index)}>
+                              <NftMediaComponent
+                                imageUrls={dataNft.media?.map((mediaObj: any) => mediaObj.url) ?? [dataNft?.nftImgUrl]}
+                                autoSlide
+                                imageHeight="230px"
+                                imageWidth="225px"
+                                borderRadius="lg"
+                              />
 
-                            <Stack mt={"4"}>
-                              <Heading size="md" noOfLines={1} fontFamily="Clash-Medium">
-                                {dataNft.title}
-                              </Heading>
-                              <Text fontSize="md">Token Identifier : {dataNft?.tokenIdentifier}</Text>
+                              <Stack mt={"4"}>
+                                <Heading size="md" noOfLines={1} fontFamily="Clash-Medium">
+                                  {dataNft.title}
+                                </Heading>
+                                <Text fontSize="md">Token Identifier : {dataNft?.tokenIdentifier}</Text>
 
-                              <Text fontSize="md">Supply Available : {Number(offer?.quantity)}</Text>
-                              <Text fontSize="sm">
-                                Unlock for {offer?.wantedTokenAmount === 0 ? "Free" : `${Number(convertWeiToEsdt(offer?.wantedTokenAmount))} ITHEUM/NFT`}
-                              </Text>
-                            </Stack>
-                          </Box>
-                        </CardBody>
-                      </Card>
+                                <Text fontSize="md">Supply Available : {Number(offer?.quantity)}</Text>
+                                <Text fontSize="sm">
+                                  Unlock for {offer?.wantedTokenAmount === 0 ? "Free" : `${Number(convertWeiToEsdt(offer?.wantedTokenAmount))} ITHEUM/NFT`}
+                                </Text>
+                              </Stack>
+                            </Box>
+                          </CardBody>
+                        </Card>
+                      </WrapItem>
                     );
                   })}
-                </Flex>
+                </Wrap>
               </ModalBody>
             </ModalContent>
           </Modal>

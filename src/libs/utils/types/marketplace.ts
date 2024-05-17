@@ -38,16 +38,3 @@ interface Media {
   fileType: string;
   fileSize: number;
 }
-// interface Offer {
-//   id: number;
-//   index: number;
-//   offeredTokenIdentifier: string;
-//   offeredTokenNonce: number;
-//   offeredTokenAmount: number;
-//   wantedTokenIdentifier: string;
-//   wantedTokenNonce: number;
-//   wantedTokenAmount: string;
-//   quantity: number;
-//   owner: string;
-//   maxQuantityPerAddress: number;
-// }
