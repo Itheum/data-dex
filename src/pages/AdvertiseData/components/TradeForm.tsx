@@ -686,6 +686,11 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 {dataNFTMarshalServiceStatus}
               </Text>
             )}
+            <Flex justifyContent="flex-end">
+              <Button colorScheme="teal" onClick={() => setActiveStep(activeStep + 1)}>
+                Next
+              </Button>
+            </Flex>
           </Flex>
         )}
       </>
@@ -854,11 +859,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             />
             <FormErrorMessage>{errors?.extraAssets?.message}</FormErrorMessage>
           </FormControl>
-        </>
-      )}
-
-      {activeStep === 2 && (
-        <>
           <FormControl isInvalid={!!errors.donatePercentage} minH={"8.5rem"}>
             <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt={{ base: "1", md: "4" }}>
               Donate Percentage
@@ -898,6 +898,9 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             <Text color="gray.400" fontSize="sm" mt={"1"}>
               Min: 0%, Max: {userData && userData?.maxDonationPecentage / 100}%
             </Text>
+            <Text color="steelblue" fontSize="md" mt={"1"}>
+              Quantity that goes to the community treasury: {Math.floor(dataNFTCopies * (donatePercentage / 100))} Data NFTs
+            </Text>
             {Math.floor(dataNFTCopies * (donatePercentage / 100)) === 0 && (
               <Text color="indianred" fontSize="sm" mt={"1"}>
                 As the number of copies is low, no Data NFTs will be sent for donations
@@ -918,7 +921,19 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               .
             </Text>
           </FormControl>
+          <Flex justifyContent="flex-end" gap={3} pt={5}>
+            <Button onClick={() => setActiveStep(activeStep - 1)}>Back</Button>
+            <Flex justifyContent="flex-end">
+              <Button colorScheme="teal" onClick={() => setActiveStep(activeStep + 1)}>
+                Next
+              </Button>
+            </Flex>
+          </Flex>
+        </>
+      )}
 
+      {activeStep === 2 && (
+        <>
           <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important">
             Liveliness Bonding
           </Text>
@@ -1158,19 +1173,19 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             </ChainSupportedInput>
           </Flex>
 
-        <MintingModal
-          isOpen={isMintingModalOpen}
-          setIsOpen={setIsMintingModalOpen}
-          errDataNFTStreamGeneric={errDataNFTStreamGeneric}
-          saveProgress={saveProgress}
-          imageUrl={imageUrl}
-          metadataUrl={metadataUrl}
-          setSaveProgress={setSaveProgress}
-          dataNFTImg={dataNFTImg}
-          closeProgressModal={closeProgressModal}
-          mintingSuccessful={mintingSuccessful}
-          onChainMint={handleOnChainMint}
-        />
+          <MintingModal
+            isOpen={isMintingModalOpen}
+            setIsOpen={setIsMintingModalOpen}
+            errDataNFTStreamGeneric={errDataNFTStreamGeneric}
+            saveProgress={saveProgress}
+            imageUrl={imageUrl}
+            metadataUrl={metadataUrl}
+            setSaveProgress={setSaveProgress}
+            dataNFTImg={dataNFTImg}
+            closeProgressModal={closeProgressModal}
+            mintingSuccessful={mintingSuccessful}
+            onChainMint={handleOnChainMint}
+          />
         </>
       )}
     </form>
