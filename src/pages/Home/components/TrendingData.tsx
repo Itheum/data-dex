@@ -7,7 +7,7 @@ import { Link as ReactRouterLink } from "react-router-dom";
 import { Favourite } from "../../../components/Favourite/Favourite";
 import { IS_DEVNET, getFavoritesFromBackendApi, getTrendingFromBackendApi } from "../../../libs/MultiversX";
 import { useAccountStore } from "../../../store";
-import NftMediaComponent from "components/ImageSlider";
+import NftMediaComponent from "components/NftMediaComponent";
 
 type TrendingDataCreationNftsType = {
   nonce: number;

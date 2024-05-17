@@ -23,7 +23,7 @@ import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
 import { getApi } from "libs/MultiversX/api";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { convertToLocalString, createNftId, transformDescription } from "libs/utils";
-import NftMediaComponent from "./ImageSlider";
+import NftMediaComponent from "./NftMediaComponent";
 
 const ProfileCard = ({
   index,

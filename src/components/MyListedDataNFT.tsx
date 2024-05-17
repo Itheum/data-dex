@@ -30,7 +30,7 @@ import { convertWeiToEsdt, convertToLocalString, getTokenWantedRepresentation, h
 import { useMarketStore, useMintStore } from "store";
 import FrozenOverlay from "./FrozenOverlay";
 import PreviewDataButton from "./PreviewDataButton";
-import NftMediaComponent from "./ImageSlider";
+import NftMediaComponent from "./NftMediaComponent";
 
 type MyListedDataNFTProps = {
   offer: Offer;

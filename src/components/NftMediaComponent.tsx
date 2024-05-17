@@ -51,12 +51,7 @@ const NftMediaComponent: React.FC<NftMediaComponentProps> = (props) => {
   }, [switchedImageManually]);
 
   function transformSizeInNumber(input: string): number {
-    console.log("input", Number(input.replace(/\D+/g, "")));
     return Number(input.replace(/\D+/g, ""));
-  }
-
-  function transformSizeAndDubleIt(input: string): string {
-    return input.replace(/\d+/g, (match) => String(Number(match) + Number(match)));
   }
 
   function computeLeftMargin(input: string): string {
@@ -99,16 +94,18 @@ const NftMediaComponent: React.FC<NftMediaComponentProps> = (props) => {
                     <Box width={imageWidth} height={imageHeight} as="div" borderRadius={borderRadius} overflow={"hidden"}>
                       <Box
                         as="div"
-                        width={transformSizeAndDubleIt(imageWidth)}
-                        height={transformSizeAndDubleIt(imageHeight)}
+                        width={transformSizeInNumber(imageWidth) * 2 + "px"}
+                        height={transformSizeInNumber(imageHeight) * 2 + "px"}
                         ml={computeLeftMargin(imageWidth)}>
                         <video
-                          width={transformSizeAndDubleIt(imageWidth)}
-                          height={transformSizeAndDubleIt(imageHeight)}
-                          src={imageUrls[nextImageIndex]}
+                          width={transformSizeInNumber(imageWidth) * 2 + "px"}
+                          height={transformSizeInNumber(imageHeight) * 2 + "px"}
                           autoPlay
                           loop
-                          muted></video>
+                          muted
+                          playsInline>
+                          <source src={imageUrls[nextImageIndex]} type="video/mp4" />
+                        </video>
                       </Box>
                     </Box>
                   ) : (

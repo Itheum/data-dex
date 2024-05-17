@@ -25,7 +25,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import NftMediaComponent from "components/ImageSlider";
+import NftMediaComponent from "components/NftMediaComponent";
 
 type MintingModalProps = {
   isOpen: boolean;

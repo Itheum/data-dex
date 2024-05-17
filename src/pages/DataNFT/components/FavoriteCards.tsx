@@ -7,7 +7,7 @@ import { Link as ReactRouterLink } from "react-router-dom";
 import { Favourite } from "../../../components/Favourite/Favourite";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
 import { IS_DEVNET, getFavoritesFromBackendApi } from "../../../libs/MultiversX";
-import NftMediaComponent from "components/ImageSlider";
+import NftMediaComponent from "components/NftMediaComponent";
 
 type FavoriteDataCreationNftsType = {
   nonce: number;

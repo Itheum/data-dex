@@ -35,7 +35,7 @@ import moment from "moment";
 import { FaStore } from "react-icons/fa";
 import { MdOutlineInfo } from "react-icons/md";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import NftMediaComponent from "components/ImageSlider";
+import NftMediaComponent from "components/NftMediaComponent";
 import PreviewDataButton from "components/PreviewDataButton";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import { NoDataHere } from "components/Sections/NoDataHere";

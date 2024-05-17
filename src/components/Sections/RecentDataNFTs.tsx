@@ -13,7 +13,7 @@ import { convertWeiToEsdt, hexZero, sleep } from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
 import { NoDataHere } from "./NoDataHere";
 import { Favourite } from "../Favourite/Favourite";
-import NftMediaComponent from "components/ImageSlider";
+import NftMediaComponent from "components/NftMediaComponent";
 
 const latestOffersSkeleton: RecentDataNFTType[] = [];
 

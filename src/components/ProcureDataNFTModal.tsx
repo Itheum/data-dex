@@ -33,7 +33,7 @@ import {
   tokenDecimals,
 } from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
-import NftMediaComponent from "./ImageSlider";
+import NftMediaComponent from "./NftMediaComponent";
 
 export interface ProcureAccessModalProps {
   isOpen: boolean;
