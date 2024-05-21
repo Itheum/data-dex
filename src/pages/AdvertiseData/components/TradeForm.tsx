@@ -222,7 +222,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     donatePercentage: Yup.number()
       .optional()
       .min(0, "Donate percentage must be a number between 0 and 100")
-      .max(100, "Donate percentage must be a number between 0 and 100"),
+      .max(userData?.maxDonationPecentage ?? 100, "Donate percentage must be a number between 0 and 100"),
 
     numberOfCopiesForm: Yup.number()
       .typeError("Number of copies must be a number.")
@@ -573,11 +573,11 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         <Alert status="info" mt={3} rounded="lg">
           <AlertIcon />
           <Box display="flex" flexDirection="column" w="full">
-            <AlertTitle>Information!</AlertTitle>
+            <AlertTitle>Minting Fees</AlertTitle>
             <AlertDescription fontSize="md">In order to mint your Data NFT you will need:</AlertDescription>
-            <AlertDescription fontSize="md">• A small anti-spam fee({antiSpamTax < 0 ? "?" : antiSpamTax} $ITHEUM)</AlertDescription>
+            <AlertDescription fontSize="md">• A small anti-spam fee ({antiSpamTax < 0 ? "?" : antiSpamTax} $ITHEUM)</AlertDescription>
             <AlertDescription fontSize="md">
-              • Lock an amount of ITHEUM tokens({bondingAmount} $ITHEUM) for a period of time({bondingPeriod} {amountOfTime.unit})
+              • Lock an amount of $ITHEUM tokens ({bondingAmount} $ITHEUM) for a period of time ({bondingPeriod} {amountOfTime.unit})
             </AlertDescription>
             <AlertDescription fontSize="md">• ~0.02 EGLD to cover the gas fees for the transaction.</AlertDescription>
             <AlertDescription fontSize="md" display="flex" gap={1}>
@@ -593,7 +593,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       )}
 
       <>
-        <Stepper size={{ base: "sm", lg: "lg" }} index={activeStep} my={5}>
+        <Stepper size={{ base: "sm", lg: "lg" }} index={activeStep} my={5} colorScheme="teal">
           {steps.map((step, index) => (
             <Step key={index} onClick={() => setActiveStep(index)}>
               <StepIndicator _hover={{ cursor: "pointer" }}>
@@ -869,7 +869,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               render={({ field: { onChange, value } }) => (
                 <Slider
                   id="slider"
-                  defaultValue={donatePercentage}
+                  defaultValue={userData && userData?.maxDonationPecentage / 100 / 2}
                   min={0}
                   max={userData && userData?.maxDonationPecentage / 100}
                   colorScheme="teal"
@@ -898,11 +898,11 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             <Text color="gray.400" fontSize="sm" mt={"1"}>
               Min: 0%, Max: {userData && userData?.maxDonationPecentage / 100}%
             </Text>
-            <Text color="steelblue" fontSize="md" mt={"1"}>
+            <Text color="teal.200" fontSize="md" mt={"1"}>
               Quantity that goes to the community treasury: {Math.floor(dataNFTCopies * (donatePercentage / 100))} Data NFTs
             </Text>
             {Math.floor(dataNFTCopies * (donatePercentage / 100)) === 0 && (
-              <Text color="indianred" fontSize="sm" mt={"1"}>
+              <Text color="darkorange" fontSize="sm" mt={"1"}>
                 As the number of copies is low, no Data NFTs will be sent for donations
               </Text>
             )}

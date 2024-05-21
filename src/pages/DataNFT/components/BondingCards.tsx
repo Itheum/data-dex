@@ -78,6 +78,7 @@ export const BondingCards: React.FC = () => {
   };
 
   const renewBond = async (tokenIdentifier: string, nonce: number) => {
+    console.log(tokenIdentifier, nonce);
     const tx = bondContract.renew(new Address(address), tokenIdentifier, nonce);
     await sendTransactions({
       transactions: [tx],
@@ -91,14 +92,14 @@ export const BondingCards: React.FC = () => {
       transactions: [tx],
     });
   };
-
+  console.log(bondingOffers);
   return (
     <Stack display="flex" flexDirection={{ base: "column" }} flexWrap={"wrap"} gap={7} mx={{ base: 0, md: 16 }} alignItems={"start"}>
       {bondingOffers.length === 0 ? (
         <NoDataHere />
       ) : (
         bondingOffers.map((dataNft, index) => (
-          <Card bg="#1b1b1b50" border="1px solid" borderColor="#00C79740" borderRadius="3xl" p={5} w="100%" key={index}>
+          <Card bg="#1b1b1b50" border="1px solid" borderColor="#00C79740" borderRadius="3xl" p={5} w="100%" key={dataNft.nonce}>
             <Flex>
               <Image src={dataNft.nftImgUrl} alt={dataNft.nftImgUrl} w="20%" h="auto" />
               <Flex justifyContent="space-between" alignItems="center" px={10} w="full">
