@@ -264,7 +264,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       datasetTitleForm: dataToPrefill?.additionalInformation.programName.replaceAll(" ", "") ?? "",
       datasetDescriptionForm: dataToPrefill?.additionalInformation.description ?? "",
       extraAssets: dataToPrefill?.additionalInformation.extraAssets ?? "",
-      donatePercentage: 0,
+      donatePercentage: userData && userData?.maxDonationPecentage / 100 / 2,
       numberOfCopiesForm: 1,
       royaltiesForm: 0,
       bondingAmount:
