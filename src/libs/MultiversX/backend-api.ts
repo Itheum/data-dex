@@ -104,7 +104,6 @@ export async function getTopVolumes(chainId: string, bearerToken: string, limit:
       },
       timeout: uxConfig.mxAPITimeoutMs,
     });
-    console.log("Data volumes top:", data);
     return data;
   } catch (error) {
     console.error(error);
