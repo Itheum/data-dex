@@ -73,6 +73,45 @@ export async function getAddressBoughtOffersFromBackendApi(chainId: string, bear
   }
 }
 
+export async function getVolumes(chainId: string, bearerToken: string, identifiers: string): Promise<any> {
+  try {
+    const url = `${backendApi(chainId)}/volumes`;
+    const { data } = await axios.get<any>(url, {
+      params: {
+        identifiers: identifiers,
+      },
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+      },
+      timeout: uxConfig.mxAPITimeoutMs,
+    });
+    return data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+export async function getTopVolumes(chainId: string, bearerToken: string, limit: number): Promise<any> {
+  try {
+    const url = `${backendApi(chainId)}/volumes/top`;
+    const { data } = await axios.get<any>(url, {
+      params: {
+        limit: limit,
+      },
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+      },
+      timeout: uxConfig.mxAPITimeoutMs,
+    });
+    console.log("Data volumes top:", data);
+    return data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
 export async function updateOfferSupplyOnBackend(chainID: string, bearerToken: string, index: number, supply: number) {
   try {
     const headers = {

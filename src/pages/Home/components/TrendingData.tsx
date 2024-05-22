@@ -16,25 +16,39 @@ type TrendingDataCreationNftsType = {
 
 type TrendingDataNftsType = {
   rating: number;
-} & DataNft;
+  tokenIdentifier: string;
+  nftImgUrl: string;
+  title: string;
+};
+
+const latestOffersSkeleton: TrendingDataNftsType[] = [];
+
+// create the placeholder offers for skeleton loading
+for (let i = 0; i < 10; i++) {
+  latestOffersSkeleton.push({
+    rating: 0,
+    tokenIdentifier: "",
+    nftImgUrl: "",
+    title: "",
+  });
+}
+const skeletonHeight = { base: "260px", md: "190px", "2xl": "220px" };
+
 export const TrendingData: React.FC = () => {
   const { chainID } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const [trendingDataNfts, setTrendingDataNfts] = useState<Array<TrendingDataNftsType>>([]);
+  const [trendingDataNfts, setTrendingDataNfts] = useState<Array<TrendingDataNftsType>>(latestOffersSkeleton);
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
   const { tokenLogin } = useGetLoginInfo();
 
   const favoriteNfts = useAccountStore((state) => state.favoriteNfts);
   const updateFavoriteNfts = useAccountStore((state) => state.updateFavoriteNfts);
 
-  const skeletonHeight = { base: "260px", md: "190px", "2xl": "220px" };
-
   useEffect(() => {
     (async () => {
       DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
       const getTrendingData = await getTrendingFromBackendApi(chainID);
       const _trendingData: Array<TrendingDataCreationNftsType> = [];
-      setLoadedOffers(true);
 
       getTrendingData.forEach((parseTrendingData) => {
         const splitedString = parseTrendingData.tokenIdentifier.split("-");
@@ -50,8 +64,8 @@ export const TrendingData: React.FC = () => {
         }
       });
       setTrendingDataNfts(trending as TrendingDataNftsType[]);
+      setLoadedOffers(true);
     })();
-    setLoadedOffers(false);
   }, []);
 
   const getFavourite = async () => {
