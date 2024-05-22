@@ -125,7 +125,6 @@ export async function updateOfferSupplyOnBackend(chainID: string, bearerToken: s
       headers: headers,
       body: JSON.stringify(requestBody),
     });
-    updateAddressBoughtOfferToBackendApi(chainID, index, supply, bearerToken);
     if (response.ok) {
       console.log("Response:", response.ok);
     }
@@ -153,26 +152,6 @@ export async function updatePriceOnBackend(chainID: string, bearerToken: string,
     }
   } catch (error) {
     console.log("Error:", error);
-  }
-}
-
-export async function updateAddressBoughtOfferToBackendApi(chainID: string, offerId: number, amount: number, bearerToken: string): Promise<Favorite> {
-  try {
-    const url = `${backendApi(chainID)}/updateAddressBoughtOffer/${offerId}`;
-    const { data } = await axios.post<any>(
-      url,
-      { quantity: amount },
-      {
-        timeout: uxConfig.mxAPITimeoutMs,
-        headers: {
-          Authorization: `Bearer ${bearerToken}`,
-        },
-      }
-    );
-    return data;
-  } catch (error) {
-    console.error(error);
-    return {} as Favorite;
   }
 }
 
