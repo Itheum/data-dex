@@ -227,10 +227,6 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                   Data DEX
                 </Heading>
               </Flex>
-              {/*<Heading display={{ base: "flex", md: "flex", xl: "flex" }} fontSize={{ base: "md", xl: "xl" }} fontFamily="Clash-Medium" fontWeight="400">*/}
-              {/*  Itheum&nbsp;*/}
-              {/*  <Text fontWeight="700">Data DEX</Text>*/}
-              {/*</Heading>*/}
             </HStack>
           </Link>
         </HStack>

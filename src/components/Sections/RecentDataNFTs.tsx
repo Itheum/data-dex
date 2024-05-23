@@ -13,6 +13,7 @@ import { convertWeiToEsdt, hexZero, sleep } from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
 import { NoDataHere } from "./NoDataHere";
 import { Favourite } from "../Favourite/Favourite";
+import NftMediaComponent from "components/NftMediaComponent";
 
 const latestOffersSkeleton: RecentDataNFTType[] = [];
 
@@ -178,7 +179,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
                   <Link
                     to={`/datanfts/marketplace/${createTokenIdentifier(item.offeredTokenIdentifier, Number(item.offeredTokenNonce))}/offer-${Number(item.index)}`}
                     as={ReactRouterLink}>
-                    <Image src={item.nftImgUrl} alt="Data NFT Image" borderRadius="lg" h={{ base: "250px", md: "200px" }} />
+                    <NftMediaComponent imageUrls={[item?.nftImgUrl ?? ""]} imageHeight="230px" imageWidth="225px" borderRadius="lg" />
                   </Link>
                 </Skeleton>
                 <Skeleton height="76px" isLoaded={loadedOffers} fadeDuration={2}>

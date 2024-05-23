@@ -35,7 +35,7 @@ import moment from "moment";
 import { FaStore } from "react-icons/fa";
 import { MdOutlineInfo } from "react-icons/md";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import ImageSlider from "components/ImageSlider";
+import NftMediaComponent from "components/NftMediaComponent";
 import PreviewDataButton from "components/PreviewDataButton";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import { NoDataHere } from "components/Sections/NoDataHere";
@@ -340,8 +340,9 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   w="full"
                   alignItems={{ base: "initial", md: "initial" }}
                   justifyContent={{ xl: "space-between" }}>
-                  <ImageSlider imageUrls={nftData.media?.map((mediaObj: any) => mediaObj.url) ?? [nftData.nftImgUrl]} autoSlide />
-
+                  <Box marginRight={"auto"}>
+                    <NftMediaComponent imageUrls={nftData.media?.map((mediaObj: any) => mediaObj.url) ?? [nftData.nftImgUrl]} autoSlide marginTop="1.5rem" />
+                  </Box>
                   <Flex mr={tokenIdParam ? "75px" : "30px"}>
                     <Flex flexDirection="column" ml={5} h="250px" justifyContent="space-evenly">
                       <Box display="flex" gap={3} color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "md", md: "lg", xl: "xl" }}>
@@ -460,9 +461,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           </Button>
                         </Tooltip>
 
-                        {nftData.dataPreview && (
-                          <PreviewDataButton previewDataURL={nftData.dataPreview} buttonSize={{ base: "sm", md: "md", xl: "lg" }} buttonWidth="unset" />
-                        )}
+                        <PreviewDataButton previewDataURL={nftData.dataPreview} buttonSize={{ base: "sm", md: "md", xl: "lg" }} buttonWidth="unset" />
+
                         <ExploreAppButton
                           collection={nftData.collection}
                           nonce={nftData.nonce}

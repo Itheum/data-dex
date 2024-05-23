@@ -34,7 +34,7 @@ import moment from "moment";
 import { MdOutlineInfo } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import FrozenOverlay from "components/FrozenOverlay";
-import ImageSlider from "components/ImageSlider";
+import NftMediaComponent from "components/NftMediaComponent";
 import PreviewDataButton from "components/PreviewDataButton";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
@@ -336,7 +336,7 @@ export default function WalletDataNFTMX(item: any) {
         borderRadius="16px"
         mb="1rem"
         position="relative">
-        <ImageSlider
+        <NftMediaComponent
           imageUrls={item.media?.map((mediaObj: any) => mediaObj.url) ?? [item.nftImgUrl]}
           autoSlide
           imageHeight="236px"
@@ -344,6 +344,7 @@ export default function WalletDataNFTMX(item: any) {
           autoSlideInterval={Math.floor(Math.random() * 6000 + 6000)} // random number between 6 and 12 seconds
           onLoad={() => item.setHasLoaded(true)}
           openNftDetailsDrawer={() => item.openNftDetailsDrawer(item.id)}
+          marginTop="1.5rem"
         />
 
         <Flex h="28rem" mx={6} my={2} direction="column" justify={item.isProfile === true ? "initial" : "space-between"}>
@@ -452,7 +453,7 @@ export default function WalletDataNFTMX(item: any) {
                 </Button>
               </Tooltip>
 
-              {item.dataPreview && <PreviewDataButton previewDataURL={item.dataPreview} />}
+              <PreviewDataButton previewDataURL={item.dataPreview} />
             </HStack>
 
             <Flex mt="6" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>

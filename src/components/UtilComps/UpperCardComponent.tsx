@@ -25,7 +25,7 @@ import moment from "moment/moment";
 import { MdOutlineInfo } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import FrozenOverlay from "components/FrozenOverlay";
-import ImageSlider from "components/ImageSlider";
+import NftMediaComponent from "components/NftMediaComponent";
 import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
 import { convertToLocalString, convertWeiToEsdt, getTokenWantedRepresentation, printPrice, tokenDecimals, transformDescription } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
@@ -84,7 +84,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
         borderColor="#00C79740"
         position="relative"
         mb="1.5rem">
-        <ImageSlider
+        <NftMediaComponent
           imageUrls={nftMetadata?.media?.map((mediaObj: any) => mediaObj.url) ?? [imageUrl]}
           autoSlide
           imageHeight="236px"
@@ -92,6 +92,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
           autoSlideInterval={Math.floor(Math.random() * 6000 + 6000)} // random number between 6 and 12 seconds
           onLoad={() => setNftImageLoaded(true)}
           openNftDetailsDrawer={() => openNftDetailsDrawer && openNftDetailsDrawer(index)}
+          marginTop="1.5rem"
         />
 
         <Flex h={address ? "28rem" : "18rem"} mx={6} my={3} direction="column" justify="space-between">

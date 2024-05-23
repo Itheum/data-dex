@@ -110,26 +110,28 @@ export const DataNftCollectionCard: FC<DataNftCollectionCardComponentProps> = ({
               View Data NFT Collection
             </Text>
           </Button>
-          <Tooltip label={viewDataDisabledMessage(loginMethod)} isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
-            <Button
-              mt={"5px"}
-              borderRadius="8px"
-              width="70%"
-              height="12%"
-              borderColor="#00C797"
-              borderStartWidth="1px"
-              borderEndWidth="1px"
-              borderTopWidth="1px"
-              borderBottomWidth="1px"
-              isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
-              onClick={() => {
-                window.open(dataPreview);
-              }}>
-              <Text fontFamily="Inter" lineHeight="1.6" fontWeight="medium" fontSize="14px" textAlign="center">
-                Preview Data
-              </Text>
-            </Button>
-          </Tooltip>
+          {dataPreview && (
+            <Tooltip label={viewDataDisabledMessage(loginMethod)} isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
+              <Button
+                mt={"5px"}
+                borderRadius="8px"
+                width="70%"
+                height="12%"
+                borderColor="#00C797"
+                borderStartWidth="1px"
+                borderEndWidth="1px"
+                borderTopWidth="1px"
+                borderBottomWidth="1px"
+                isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
+                onClick={() => {
+                  window.open(dataPreview);
+                }}>
+                <Text fontFamily="Inter" lineHeight="1.6" fontWeight="medium" fontSize="14px" textAlign="center">
+                  Preview Data
+                </Text>
+              </Button>
+            </Tooltip>
+          )}
         </VStack>
         <VStack
           cursor={"pointer"}
@@ -138,145 +140,33 @@ export const DataNftCollectionCard: FC<DataNftCollectionCardComponentProps> = ({
           height={"40%"}
           width={"40%"}
           onClick={() => openNftDetailsDrawer && openNftDetailsDrawer(index)}>
-          <Image
-            position={"absolute"}
-            src={imageUrl}
-            alt={"item.dataPreview"}
-            h={230}
-            w={230}
-            mt={"-0.5rem"}
-            zIndex={11}
-            borderRadius="32px"
-            onError={({ currentTarget }) => {
-              currentTarget.src = DEFAULT_NFT_IMAGE;
-            }}
-          />
-          <Image
-            opacity={0.9}
-            position={"absolute"}
-            src={imageUrl}
-            alt={"item.dataPreview"}
-            h={230}
-            w={230}
-            zIndex={10}
-            mt={"-1rem"}
-            borderRadius="32px"
-            onError={({ currentTarget }) => {
-              currentTarget.src = DEFAULT_NFT_IMAGE;
-            }}
-          />
-          <Image
-            opacity={0.8}
-            position={"absolute"}
-            src={imageUrl}
-            alt={"item.dataPreview"}
-            h={230}
-            w={230}
-            zIndex={9}
-            mt={"-1.5rem"}
-            borderRadius="32px"
-            onError={({ currentTarget }) => {
-              currentTarget.src = DEFAULT_NFT_IMAGE;
-            }}
-          />
-          <Image
-            opacity={0.7}
-            position={"absolute"}
-            src={imageUrl}
-            alt={"item.dataPreview"}
-            h={230}
-            w={230}
-            zIndex={8}
-            mt={"-2rem"}
-            borderRadius="32px"
-            onError={({ currentTarget }) => {
-              currentTarget.src = DEFAULT_NFT_IMAGE;
-            }}
-          />
-          <Image
-            opacity={0.6}
-            position={"absolute"}
-            src={imageUrl}
-            alt={"item.dataPreview"}
-            h={230}
-            w={230}
-            zIndex={7}
-            mt={"-2.5rem"}
-            borderRadius="32px"
-            onError={({ currentTarget }) => {
-              currentTarget.src = DEFAULT_NFT_IMAGE;
-            }}
-          />
-          <Image
-            opacity={0.5}
-            position={"absolute"}
-            src={imageUrl}
-            alt={"item.dataPreview"}
-            h={230}
-            w={230}
-            zIndex={6}
-            mt={"-3.0rem"}
-            borderRadius="32px"
-            onError={({ currentTarget }) => {
-              currentTarget.src = DEFAULT_NFT_IMAGE;
-            }}
-          />
-          <Image
-            opacity={0.4}
-            position={"absolute"}
-            src={imageUrl}
-            alt={"item.dataPreview"}
-            h={230}
-            w={230}
-            zIndex={5}
-            mt={"-3.5rem"}
-            borderRadius="32px"
-            onError={({ currentTarget }) => {
-              currentTarget.src = DEFAULT_NFT_IMAGE;
-            }}
-          />
-          <Image
-            opacity={0.3}
-            position={"absolute"}
-            src={imageUrl}
-            alt={"item.dataPreview"}
-            h={230}
-            w={230}
-            zIndex={4}
-            mt={"-4rem"}
-            borderRadius="32px"
-            onError={({ currentTarget }) => {
-              currentTarget.src = DEFAULT_NFT_IMAGE;
-            }}
-          />
-          <Image
-            opacity={0.2}
-            position={"absolute"}
-            src={imageUrl}
-            alt={"item.dataPreview"}
-            h={230}
-            w={230}
-            zIndex={3}
-            mt={"-4.5rem"}
-            borderRadius="32px"
-            onError={({ currentTarget }) => {
-              currentTarget.src = DEFAULT_NFT_IMAGE;
-            }}
-          />
-          <Image
-            opacity={0.1}
-            position={"absolute"}
-            src={imageUrl}
-            alt={"item.dataPreview"}
-            h={230}
-            w={230}
-            zIndex={3}
-            mt={"-5rem"}
-            borderRadius="32px"
-            onError={({ currentTarget }) => {
-              currentTarget.src = DEFAULT_NFT_IMAGE;
-            }}
-          />
+          {imageUrl.includes(".mp4") ? (
+            <Box width={230} height={230} as="div" borderRadius={"32px"} overflow={"hidden"} mb={"-2rem"} mt={"-2.6rem"}>
+              <Box as="div" width={"420px"} height={"full"} borderRadius={"32px"} ml={"-94px"}>
+                <video src={imageUrl} autoPlay loop muted></video>
+              </Box>
+            </Box>
+          ) : (
+            <>
+              {Array.from({ length: 10 }).map((_, index) => (
+                <Image
+                  key={index}
+                  position={"absolute"}
+                  src={imageUrl}
+                  alt={"item.dataPreview"}
+                  h={230}
+                  w={230}
+                  mt={`${-0.5 - 0.5 * index}rem`}
+                  zIndex={11 - index}
+                  opacity={1 - 0.1 * index}
+                  borderRadius="32px"
+                  onError={({ currentTarget }) => {
+                    currentTarget.src = DEFAULT_NFT_IMAGE;
+                  }}
+                />
+              ))}
+            </>
+          )}
         </VStack>
       </HStack>
     </Skeleton>
