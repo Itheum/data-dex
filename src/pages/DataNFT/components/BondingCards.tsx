@@ -9,6 +9,7 @@ import BigNumber from "bignumber.js";
 import { IS_DEVNET } from "libs/config";
 import { LivelinessScore } from "../../../components/Liveliness/LivelinessScore";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
+import NftMediaComponent from "components/NftMediaComponent";
 
 type CompensationNftsType = {
   nonce: number;
@@ -100,7 +101,7 @@ export const BondingCards: React.FC = () => {
         bondingOffers.map((dataNft, index) => (
           <Card bg="#1b1b1b50" border="1px solid" borderColor="#00C79740" borderRadius="3xl" p={5} w="100%" key={index}>
             <Flex>
-              <Image src={dataNft.nftImgUrl} alt={dataNft.nftImgUrl} w="20%" h="auto" />
+              <NftMediaComponent imageUrls={[dataNft.nftImgUrl]} imageHeight="125px" imageWidth="125px" />
               <Flex justifyContent="space-between" alignItems="center" px={10} w="full">
                 <Flex flexDirection="column" justifyContent="center" w="full">
                   <Text fontFamily="Clash-Medium" pb={3}>

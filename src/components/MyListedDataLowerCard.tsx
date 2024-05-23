@@ -39,6 +39,7 @@ import {
 } from "libs/utils";
 import { useMarketStore } from "store";
 import PreviewDataButton from "./PreviewDataButton";
+import NftMediaComponent from "./NftMediaComponent";
 
 type MyListedDataLowerCardProps = {
   offer: Offer;
@@ -58,7 +59,6 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
-  const backendUrl = backendApi(chainID);
 
   const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
   const { isOpen: isUpdatePriceModalOpen, onOpen: onUpdatePriceModalOpen, onClose: onUpdatePriceModalClose } = useDisclosure();
@@ -282,7 +282,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
                       </Flex>
                     </Box>
                     <Box flex="1">
-                      <Image src={nftMetadata.nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
+                      <NftMediaComponent imageUrls={[nftMetadata.nftImgUrl]} imageHeight={"120px"} imageWidth="120px" borderRadius="md" />
                     </Box>
                   </HStack>
                   <Flex mt="40px" justifyContent="flex-start" alignItems="center">
@@ -353,7 +353,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
                       </Flex>
                     </Box>
                     <Box flex="1">
-                      <Image src={nftMetadata ? nftMetadata.nftImgUrl : ""} h="auto" w="100%" borderRadius="md" m="auto" />
+                      <NftMediaComponent imageUrls={[nftMetadata.nftImgUrl]} imageHeight={"120px"} imageWidth="120px" borderRadius="md" />
                     </Box>
                   </HStack>
                   <Text fontSize="md" mt="28px">
@@ -400,7 +400,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
                   </Flex>
                 </Box>
                 <Box flex="1">
-                  <Image src={nftMetadata.nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
+                  <NftMediaComponent imageUrls={[nftMetadata.nftImgUrl]} imageHeight={"120px"} imageWidth="120px" borderRadius="md" />
                 </Box>
               </HStack>
               <Box mt="8">

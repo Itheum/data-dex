@@ -23,6 +23,7 @@ import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
 import { getApi } from "libs/MultiversX/api";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { convertToLocalString, createNftId, transformDescription } from "libs/utils";
+import NftMediaComponent from "./NftMediaComponent";
 
 const ProfileCard = ({
   index,
@@ -61,19 +62,7 @@ const ProfileCard = ({
     <Skeleton fitContent={true} isLoaded={hasLoaded} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box w="275px" h="30rem" mx="3 !important" borderWidth="0.5px" borderRadius="xl" borderColor="#00C79740" position="relative" mb="1rem">
         <Flex justifyContent="center">
-          <Image
-            src={imageUrl}
-            alt={"dataPreview"}
-            h={236}
-            w={236}
-            mx={6}
-            mt={6}
-            borderRadius="32px"
-            onLoad={() => setHasLoaded(true)}
-            onError={({ currentTarget }) => {
-              currentTarget.src = DEFAULT_NFT_IMAGE;
-            }}
-          />
+          <NftMediaComponent imageUrls={[imageUrl]} imageHeight={"236px"} imageWidth={"236px"} onLoad={() => setHasLoaded(true)} />
           <motion.button
             style={{
               position: "absolute",

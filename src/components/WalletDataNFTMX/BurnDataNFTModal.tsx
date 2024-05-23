@@ -13,6 +13,7 @@ import { contractsForChain } from "libs/config";
 import { labels } from "libs/language";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { isValidNumericCharacter } from "libs/utils";
+import NftMediaComponent from "components/NftMediaComponent";
 
 type BurnDataNFTModalPropType = {
   isOpen: boolean;
@@ -101,7 +102,7 @@ export default function BurnDataNFTModal(props: BurnDataNFTModalPropType) {
               <HStack spacing="5" alignItems="center">
                 <Box flex="1.1">
                   <Stack>
-                    <Image src={selectedDataNft.nftImgUrl} h={100} w={100} borderRadius="md" m="auto" />
+                    <NftMediaComponent imageUrls={[selectedDataNft.nftImgUrl]} imageHeight="100px" imageWidth="100px" borderRadius="md" marginTop="1.5rem" />
                     <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" textAlign="center">
                       {selectedDataNft.tokenName}
                     </Text>
