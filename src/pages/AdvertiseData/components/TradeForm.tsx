@@ -222,7 +222,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     donatePercentage: Yup.number()
       .optional()
       .min(0, "Donate percentage must be a number between 0 and 100")
-      .max(100, "Donate percentage must be a number between 0 and 100"),
+      .max(userData?.maxDonationPecentage ?? 100, "Donate percentage must be a number between 0 and 100"),
 
     numberOfCopiesForm: Yup.number()
       .typeError("Number of copies must be a number.")
@@ -253,9 +253,10 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   // Destructure the methods needed from React Hook Form useForm component
   const {
     control,
-    formState: { errors, isValid },
+    formState: { errors, isValid, dirtyFields },
     handleSubmit,
     getValues,
+    trigger,
   } = useForm<TradeDataFormType>({
     defaultValues: {
       dataStreamUrlForm: dataToPrefill?.additionalInformation.dataStreamURL ?? "",
@@ -264,7 +265,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       datasetTitleForm: dataToPrefill?.additionalInformation.programName.replaceAll(" ", "") ?? "",
       datasetDescriptionForm: dataToPrefill?.additionalInformation.description ?? "",
       extraAssets: dataToPrefill?.additionalInformation.extraAssets ?? "",
-      donatePercentage: 0,
+      donatePercentage: userData && userData?.maxDonationPecentage / 100 / 2,
       numberOfCopiesForm: 1,
       royaltiesForm: 0,
       bondingAmount:
@@ -557,11 +558,28 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     }
   };
 
+  const handleDisabledButtonStep2 = () => {
+    return (
+      !!errors.tokenNameForm ||
+      !!errors.datasetDescriptionForm ||
+      !!errors.datasetTitleForm ||
+      !!errors.numberOfCopiesForm ||
+      !!errors.royaltiesForm ||
+      !!errors.extraAssets ||
+      !dirtyFields.tokenNameForm ||
+      !dirtyFields.datasetTitleForm ||
+      !dirtyFields.datasetDescriptionForm ||
+      !dirtyFields.numberOfCopiesForm ||
+      !dirtyFields.royaltiesForm
+    );
+  };
+
   // here you can make logic that you want to happen on submit (used for debugging)
   const onSubmit = (data: TradeDataFormType) => {
     console.log(data);
     //TODO refactor this with react form hook
   };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Flex flexDirection="row">
@@ -573,11 +591,11 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         <Alert status="info" mt={3} rounded="lg">
           <AlertIcon />
           <Box display="flex" flexDirection="column" w="full">
-            <AlertTitle>Information!</AlertTitle>
+            <AlertTitle>Minting Fees</AlertTitle>
             <AlertDescription fontSize="md">In order to mint your Data NFT you will need:</AlertDescription>
-            <AlertDescription fontSize="md">• A small anti-spam fee({antiSpamTax < 0 ? "?" : antiSpamTax} $ITHEUM)</AlertDescription>
+            <AlertDescription fontSize="md">• A small anti-spam fee ({antiSpamTax < 0 ? "?" : antiSpamTax} $ITHEUM)</AlertDescription>
             <AlertDescription fontSize="md">
-              • Lock an amount of ITHEUM tokens({bondingAmount} $ITHEUM) for a period of time({bondingPeriod} {amountOfTime.unit})
+              • Lock an amount of $ITHEUM tokens ({bondingAmount} $ITHEUM) for a period of time ({bondingPeriod} {amountOfTime.unit})
             </AlertDescription>
             <AlertDescription fontSize="md">• ~0.02 EGLD to cover the gas fees for the transaction.</AlertDescription>
             <AlertDescription fontSize="md" display="flex" gap={1}>
@@ -593,10 +611,24 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       )}
 
       <>
-        <Stepper size={{ base: "sm", lg: "lg" }} index={activeStep} my={5}>
+        <Stepper size={{ base: "sm", lg: "lg" }} index={activeStep} my={5} colorScheme="teal">
           {steps.map((step, index) => (
-            <Step key={index} onClick={() => setActiveStep(index)}>
-              <StepIndicator _hover={{ cursor: "pointer" }}>
+            <Step key={index}>
+              <StepIndicator
+                sx={{
+                  "[data-status=complete] &": {
+                    background: "teal.200",
+                    borderColor: "teal.200",
+                  },
+                  "[data-status=active] &": {
+                    background: "transparent",
+                    borderColor: "teal.200",
+                  },
+                  "[data-status=incomplete] &": {
+                    background: "#5b5b5b50",
+                    borderColor: "transparent",
+                  },
+                }}>
                 <StepStatus complete={<StepIcon />} incomplete={<StepNumber />} active={<StepNumber />} />
               </StepIndicator>
 
@@ -686,6 +718,14 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 {dataNFTMarshalServiceStatus}
               </Text>
             )}
+            <Flex justifyContent="flex-end" mb={3}>
+              <Button
+                colorScheme="teal"
+                onClick={() => setActiveStep(activeStep + 1)}
+                isDisabled={!!errors.dataStreamUrlForm || !!errors.dataPreviewUrlForm || !dirtyFields.dataStreamUrlForm || !dirtyFields.dataPreviewUrlForm}>
+                Next
+              </Button>
+            </Flex>
           </Flex>
         )}
       </>
@@ -778,10 +818,13 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                       maxW={24}
                       step={1}
                       defaultValue={dataNFTCopies}
-                      min={1}
+                      min={0}
                       max={maxSupply > 0 ? maxSupply : 1}
                       isValidCharacter={isValidNumericCharacter}
-                      onChange={(event) => onChange(event)}>
+                      onChange={(event) => {
+                        onChange(event);
+                        trigger("numberOfCopiesForm");
+                      }}>
                       <NumberInputField />
                       <NumberInputStepper>
                         <NumberIncrementStepper />
@@ -854,11 +897,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             />
             <FormErrorMessage>{errors?.extraAssets?.message}</FormErrorMessage>
           </FormControl>
-        </>
-      )}
-
-      {activeStep === 2 && (
-        <>
           <FormControl isInvalid={!!errors.donatePercentage} minH={"8.5rem"}>
             <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt={{ base: "1", md: "4" }}>
               Donate Percentage
@@ -869,19 +907,13 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               render={({ field: { onChange, value } }) => (
                 <Slider
                   id="slider"
-                  defaultValue={donatePercentage}
+                  defaultValue={userData && userData?.maxDonationPecentage / 100 / 2}
                   min={0}
                   max={userData && userData?.maxDonationPecentage / 100}
                   colorScheme="teal"
                   onChange={(v) => onChange(v)}
                   onMouseEnter={() => setShowTooltip(true)}
                   onMouseLeave={() => setShowTooltip(false)}>
-                  <SliderMark value={25} mt="1" ml="-2.5" fontSize="sm">
-                    25%
-                  </SliderMark>
-                  <SliderMark value={50} mt="1" ml="-2.5" fontSize="sm">
-                    50%
-                  </SliderMark>
                   <SliderMark value={(userData && userData?.maxDonationPecentage / 100) ?? 0} mt="1" ml="-2.5" fontSize="sm">
                     {(userData && userData?.maxDonationPecentage / 100) ?? 0}%
                   </SliderMark>
@@ -898,8 +930,11 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             <Text color="gray.400" fontSize="sm" mt={"1"}>
               Min: 0%, Max: {userData && userData?.maxDonationPecentage / 100}%
             </Text>
+            <Text color="teal.200" fontSize="md" mt={"1"}>
+              Quantity that goes to the community treasury: {Math.floor(dataNFTCopies * (donatePercentage / 100))} Data NFTs
+            </Text>
             {Math.floor(dataNFTCopies * (donatePercentage / 100)) === 0 && (
-              <Text color="indianred" fontSize="sm" mt={"1"}>
+              <Text color="darkorange" fontSize="sm" mt={"1"}>
                 As the number of copies is low, no Data NFTs will be sent for donations
               </Text>
             )}
@@ -918,7 +953,19 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               .
             </Text>
           </FormControl>
+          <Flex justifyContent="flex-end" gap={3} pt={5}>
+            <Button onClick={() => setActiveStep(activeStep - 1)}>Back</Button>
+            <Flex justifyContent="flex-end">
+              <Button colorScheme="teal" onClick={() => setActiveStep(activeStep + 1)} isDisabled={handleDisabledButtonStep2()}>
+                Next
+              </Button>
+            </Flex>
+          </Flex>
+        </>
+      )}
 
+      {activeStep === 2 && (
+        <>
           <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important">
             Liveliness Bonding
           </Text>
@@ -1158,19 +1205,19 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             </ChainSupportedInput>
           </Flex>
 
-        <MintingModal
-          isOpen={isMintingModalOpen}
-          setIsOpen={setIsMintingModalOpen}
-          errDataNFTStreamGeneric={errDataNFTStreamGeneric}
-          saveProgress={saveProgress}
-          imageUrl={imageUrl}
-          metadataUrl={metadataUrl}
-          setSaveProgress={setSaveProgress}
-          dataNFTImg={dataNFTImg}
-          closeProgressModal={closeProgressModal}
-          mintingSuccessful={mintingSuccessful}
-          onChainMint={handleOnChainMint}
-        />
+          <MintingModal
+            isOpen={isMintingModalOpen}
+            setIsOpen={setIsMintingModalOpen}
+            errDataNFTStreamGeneric={errDataNFTStreamGeneric}
+            saveProgress={saveProgress}
+            imageUrl={imageUrl}
+            metadataUrl={metadataUrl}
+            setSaveProgress={setSaveProgress}
+            dataNFTImg={dataNFTImg}
+            closeProgressModal={closeProgressModal}
+            mintingSuccessful={mintingSuccessful}
+            onChainMint={handleOnChainMint}
+          />
         </>
       )}
     </form>
