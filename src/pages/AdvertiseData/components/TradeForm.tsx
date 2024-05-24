@@ -573,8 +573,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       dataNFTTokenName === "" ||
       datasetTitle === "" ||
       datasetDescription === "" ||
-      dataNFTCopies === 0 ||
-      dataNFTRoyalties === 0
+      dataNFTCopies === 0
     );
   };
 
