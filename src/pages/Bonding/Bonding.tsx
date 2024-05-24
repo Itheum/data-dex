@@ -55,7 +55,6 @@ export const Bonding: React.FC = () => {
   });
 
   const onGotoPageCompensation = useThrottle((newPageIndex: number) => {
-
     if (0 <= newPageIndex && newPageIndex < compensationPageCount) {
       setPageIndexCompensation(newPageIndex);
     }
