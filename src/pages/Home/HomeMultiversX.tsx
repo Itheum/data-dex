@@ -36,6 +36,7 @@ import { ClaimsContract } from "libs/MultiversX/claims";
 import { formatNumberToShort } from "libs/utils";
 import AppMarketplace from "pages/Home/components/AppMarketplace";
 import { TrendingData } from "./components/TrendingData";
+import VolumesDataNfts from "./components/VolumesDataNfts";
 
 export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
   const { colorMode } = useColorMode();
@@ -352,6 +353,9 @@ export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
               </Box>
             </ChainSupportedComponent>
           </SimpleGrid>
+        </Box>
+        <Box m="auto" pt="10" pb="10" w={"100%"}>
+          <VolumesDataNfts />
         </Box>
         <Box m="auto" pt="10" pb="10" w={"100%"}>
           <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" />

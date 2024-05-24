@@ -92,7 +92,7 @@ export const Bonding: React.FC = () => {
       });
 
       const dataNfts: DataNft[] = await DataNft.createManyFromApi(pagedBonds.map((bond) => ({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier })));
-      setTotalAmountBondedForThisPage(_totalAmountBondedForThisPage);
+      // setTotalAmountBondedForThisPage(_totalAmountBondedForThisPage);
       setContractBonds(pagedBonds);
       setBondingDataNfts(dataNfts);
     })();
@@ -161,11 +161,11 @@ export const Bonding: React.FC = () => {
                 {contractBonds.length === 0 ? (
                   <NoDataHere />
                 ) : (
-                  contractBonds.map((bond, index) => (
-                    <Fragment key={bond.bondId}>
-                      <CollectionDashboard bondNft={bond} bondDataNft={bondingDataNfts} />
-                    </Fragment>
-                  ))
+                  // contractBonds.map((bond, index) => (
+                  <Fragment>
+                    <CollectionDashboard bondNft={contractBonds} bondDataNft={bondingDataNfts} />
+                  </Fragment>
+                  // ))
                 )}
 
                 {contractBonds.length > 0 && (
