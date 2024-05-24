@@ -253,9 +253,10 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   // Destructure the methods needed from React Hook Form useForm component
   const {
     control,
-    formState: { errors, isValid },
+    formState: { errors, isValid, dirtyFields },
     handleSubmit,
     getValues,
+    trigger,
   } = useForm<TradeDataFormType>({
     defaultValues: {
       dataStreamUrlForm: dataToPrefill?.additionalInformation.dataStreamURL ?? "",
@@ -557,11 +558,28 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     }
   };
 
+  const handleDisabledButtonStep2 = () => {
+    return (
+      !!errors.tokenNameForm ||
+      !!errors.datasetDescriptionForm ||
+      !!errors.datasetTitleForm ||
+      !!errors.numberOfCopiesForm ||
+      !!errors.royaltiesForm ||
+      !!errors.extraAssets ||
+      !dirtyFields.tokenNameForm ||
+      !dirtyFields.datasetTitleForm ||
+      !dirtyFields.datasetDescriptionForm ||
+      !dirtyFields.numberOfCopiesForm ||
+      !dirtyFields.royaltiesForm
+    );
+  };
+
   // here you can make logic that you want to happen on submit (used for debugging)
   const onSubmit = (data: TradeDataFormType) => {
     console.log(data);
     //TODO refactor this with react form hook
   };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Flex flexDirection="row">
@@ -595,8 +613,22 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       <>
         <Stepper size={{ base: "sm", lg: "lg" }} index={activeStep} my={5} colorScheme="teal">
           {steps.map((step, index) => (
-            <Step key={index} onClick={() => setActiveStep(index)}>
-              <StepIndicator _hover={{ cursor: "pointer" }}>
+            <Step key={index}>
+              <StepIndicator
+                sx={{
+                  "[data-status=complete] &": {
+                    background: "teal.200",
+                    borderColor: "teal.200",
+                  },
+                  "[data-status=active] &": {
+                    background: "transparent",
+                    borderColor: "teal.200",
+                  },
+                  "[data-status=incomplete] &": {
+                    background: "#5b5b5b50",
+                    borderColor: "transparent",
+                  },
+                }}>
                 <StepStatus complete={<StepIcon />} incomplete={<StepNumber />} active={<StepNumber />} />
               </StepIndicator>
 
@@ -686,8 +718,11 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 {dataNFTMarshalServiceStatus}
               </Text>
             )}
-            <Flex justifyContent="flex-end">
-              <Button colorScheme="teal" onClick={() => setActiveStep(activeStep + 1)}>
+            <Flex justifyContent="flex-end" mb={3}>
+              <Button
+                colorScheme="teal"
+                onClick={() => setActiveStep(activeStep + 1)}
+                isDisabled={!!errors.dataStreamUrlForm || !!errors.dataPreviewUrlForm || !dirtyFields.dataStreamUrlForm || !dirtyFields.dataPreviewUrlForm}>
                 Next
               </Button>
             </Flex>
@@ -783,10 +818,13 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                       maxW={24}
                       step={1}
                       defaultValue={dataNFTCopies}
-                      min={1}
+                      min={0}
                       max={maxSupply > 0 ? maxSupply : 1}
                       isValidCharacter={isValidNumericCharacter}
-                      onChange={(event) => onChange(event)}>
+                      onChange={(event) => {
+                        onChange(event);
+                        trigger("numberOfCopiesForm");
+                      }}>
                       <NumberInputField />
                       <NumberInputStepper>
                         <NumberIncrementStepper />
@@ -876,12 +914,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                   onChange={(v) => onChange(v)}
                   onMouseEnter={() => setShowTooltip(true)}
                   onMouseLeave={() => setShowTooltip(false)}>
-                  <SliderMark value={25} mt="1" ml="-2.5" fontSize="sm">
-                    25%
-                  </SliderMark>
-                  <SliderMark value={50} mt="1" ml="-2.5" fontSize="sm">
-                    50%
-                  </SliderMark>
                   <SliderMark value={(userData && userData?.maxDonationPecentage / 100) ?? 0} mt="1" ml="-2.5" fontSize="sm">
                     {(userData && userData?.maxDonationPecentage / 100) ?? 0}%
                   </SliderMark>
@@ -924,7 +956,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           <Flex justifyContent="flex-end" gap={3} pt={5}>
             <Button onClick={() => setActiveStep(activeStep - 1)}>Back</Button>
             <Flex justifyContent="flex-end">
-              <Button colorScheme="teal" onClick={() => setActiveStep(activeStep + 1)}>
+              <Button colorScheme="teal" onClick={() => setActiveStep(activeStep + 1)} isDisabled={handleDisabledButtonStep2()}>
                 Next
               </Button>
             </Flex>
