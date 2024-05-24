@@ -45,7 +45,7 @@ import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
 import { labels } from "libs/language";
-import { getFavoritesFromBackendApi, getOffersByIdAndNoncesFromBackendApi } from "libs/MultiversX";
+import { getFavoritesFromBackendApi, getOffersByIdAndNoncesFromBackendApi, getVolumes } from "libs/MultiversX";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import {
@@ -70,6 +70,11 @@ type DataNFTDetailsProps = {
   offerIdProp?: number;
   closeDetailsView?: () => void;
 };
+
+interface DataNftVolume {
+  tokenIdentifier: string;
+  volumes: { volume: number; priceTokenIdentifier: string }[];
+}
 
 export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const toast = useToast();
@@ -115,6 +120,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [searchParams, setSearchParams] = useSearchParams();
+  const [volume, setVolume] = useState<number>();
 
   useEffect(() => {
     if (tokenId && offerId && location.pathname === "/datanfts/marketplace/market") {
@@ -127,6 +133,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     getAddressTokenInformation();
     getTokenHistory(tokenId ?? "");
     getFavourite();
+    getVolume();
   }, [hasPendingTransactions]);
 
   useEffect(() => {
@@ -161,6 +168,14 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
 
       setFavouriteItems(getFavourites);
+    }
+  };
+
+  const getVolume = async () => {
+    if (tokenLogin?.nativeAuthToken) {
+      const dataNftsVolumes: DataNftVolume[] = await getVolumes(chainID, tokenLogin?.nativeAuthToken ?? "", tokenId ?? "");
+      //as we only have Itheum as priceTokenIdentifier not need to keep it in the state
+      setVolume(dataNftsVolumes[0]?.volumes[0]?.volume);
     }
   };
 
@@ -340,8 +355,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   w="full"
                   alignItems={{ base: "initial", md: "initial" }}
                   justifyContent={{ xl: "space-between" }}>
-                  <Box marginRight={"auto"}>
-                    <NftMediaComponent imageUrls={nftData.media?.map((mediaObj: any) => mediaObj.url) ?? [nftData.nftImgUrl]} autoSlide marginTop="1.5rem" />
+                  <Box marginRight={"auto"} mb={6}>
+                    <NftMediaComponent imageUrls={nftData.media?.map((mediaObj: any) => mediaObj.url) ?? [nftData.nftImgUrl]} autoSlide marginTop="1rem" />
                   </Box>
                   <Flex mr={tokenIdParam ? "75px" : "30px"}>
                     <Flex flexDirection="column" ml={5} h="250px" justifyContent="space-evenly">
@@ -505,9 +520,11 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             </Text>
                           </>
                         )}
+                        {volume && <Text>{`Volume:  ${volume.toFixed(2)} ITHEUM `}</Text>}
                         {!!offerId && (
                           <>
                             <Text>{`Listed: ${offer ? offer.quantity : "-"}`}</Text>
+
                             <Text>
                               {`Unlock Fee per NFT: `}
                               {marketRequirements && offer ? (

@@ -24,7 +24,7 @@ export interface DataNftCollectionType {
   creator: string;
   creationTime: string;
   supply: number;
-  quantity: number;
+  // quantity: number;
   description: string;
   title: string;
   royalties: string;

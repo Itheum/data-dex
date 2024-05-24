@@ -3,6 +3,7 @@ import axios from "axios";
 import { backendApi, convertEsdtToWei, tokenDecimals } from "libs/utils";
 import { IS_DEVNET, uxConfig } from ".";
 import { DataNftCollectionType, Favorite, TrendingNft } from "./types";
+import { DataNFTCollectionObject } from "libs/utils/types/marketplace";
 
 export async function getHealthCheckFromBackendApi(chainID: string): Promise<boolean> {
   try {
@@ -65,7 +66,44 @@ export async function getAddressBoughtOffersFromBackendApi(chainId: string, bear
         Authorization: `Bearer ${bearerToken}`,
       },
     });
-    console.log(data);
+    return data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+export async function getVolumes(chainId: string, bearerToken: string, identifiers: string): Promise<any> {
+  try {
+    const url = `${backendApi(chainId)}/volumes`;
+    const { data } = await axios.get<any>(url, {
+      params: {
+        identifiers: identifiers,
+      },
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+      },
+      timeout: uxConfig.mxAPITimeoutMs,
+    });
+    return data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+export async function getTopVolumes(chainId: string, bearerToken: string, limit: number): Promise<any> {
+  try {
+    const url = `${backendApi(chainId)}/volumes/top`;
+    const { data } = await axios.get<any>(url, {
+      params: {
+        limit: limit,
+      },
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+      },
+      timeout: uxConfig.mxAPITimeoutMs,
+    });
     return data;
   } catch (error) {
     console.error(error);
@@ -195,11 +233,11 @@ export async function getOffersFromBackendApi(chainID: string, from: number, siz
   }
 }
 
-export async function getOfersAsCollectionFromBackendApi(chainID: string): Promise<DataNftCollectionType[]> {
+export async function getOfersAsCollectionFromBackendApi(chainID: string): Promise<DataNFTCollectionObject[]> {
   try {
     const url = `${backendApi(chainID)}/data-nfts`;
 
-    const { data } = await axios.get<DataNftCollectionType[]>(url, {
+    const { data } = await axios.get<DataNFTCollectionObject[]>(url, {
       timeout: uxConfig.mxAPITimeoutMs,
     });
     return data;
@@ -245,7 +283,6 @@ export async function getOffersByIdAndNoncesFromBackendApi(
   const { data } = await axios.get<Offer[]>(url, {
     timeout: uxConfig.mxAPITimeoutMs,
   });
-  console.log(data);
   return data;
 }
 
