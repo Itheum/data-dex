@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Flex, Image, Stack, Text } from "@chakra-ui/react";
+import { Button, Card, Flex, Stack, Text } from "@chakra-ui/react";
 import { Bond, BondConfiguration, BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
-import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import BigNumber from "bignumber.js";
@@ -93,7 +93,7 @@ export const BondingCards: React.FC = () => {
       transactions: [tx],
     });
   };
-  console.log(bondingOffers);
+  // console.log(bondingOffers);
   return (
     <Stack display="flex" flexDirection={{ base: "column" }} flexWrap={"wrap"} gap={7} mx={{ base: 0, md: 16 }} alignItems={"start"}>
       {bondingOffers.length === 0 ? (

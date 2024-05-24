@@ -1,18 +1,18 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { Box, Button, Flex, FormControl, FormErrorMessage, Input, NumberInput, Text } from "@chakra-ui/react";
+import { NumberInputField } from "@chakra-ui/number-input";
+import { Button, Flex, FormControl, FormErrorMessage, Input, NumberInput, Text } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Bond, BondConfiguration, BondContract, Compensation, DataNft, createTokenIdentifier } from "@itheum/sdk-mx-data-nft/out";
+import { Bond, BondConfiguration, BondContract, Compensation, createTokenIdentifier, DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import BigNumber from "bignumber.js";
 import { Controller, useForm } from "react-hook-form";
+import { useParams } from "react-router-dom";
 import * as Yup from "yup";
 import { IS_DEVNET } from "libs/config";
 import { LivelinessScore } from "../../../components/Liveliness/LivelinessScore";
-import { useParams } from "react-router-dom";
-import { NumberInputField } from "@chakra-ui/number-input";
 
 type CollectionDashboardProps = {
   bondNft: Array<Bond>;
