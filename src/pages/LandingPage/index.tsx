@@ -5,6 +5,7 @@ import imgHeroMetaverseMask from "assets/img/landing/hero-metaverse-mask.png";
 import ExplainerArticles from "components/Sections/ExplainerArticles";
 import RecentArticles from "components/Sections/RecentArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
+import VolumesDataNfts from "pages/Home/components/VolumesDataNfts";
 
 const LandingPage = () => {
   const { colorMode } = useColorMode();
@@ -56,7 +57,9 @@ const LandingPage = () => {
               </Flex>
             </Center>
           </Flex>
-
+          <Box pt={{ base: "28", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
+            <VolumesDataNfts />
+          </Box>
           <Box pt={{ base: "28", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
             <RecentDataNFTs headingText="Recent Data NFTs" />
           </Box>

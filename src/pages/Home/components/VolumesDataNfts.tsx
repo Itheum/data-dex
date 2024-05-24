@@ -1,11 +1,10 @@
 import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { IS_DEVNET, getTopVolumes, getVolumes } from "libs/MultiversX";
+import { IS_DEVNET, getTopVolumes } from "libs/MultiversX";
 import React, { useEffect, useState } from "react";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
-import { Box, Card, CardBody, Heading, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
+import { Card, CardBody, Heading, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import NftMediaComponent from "components/NftMediaComponent";
-import { set } from "react-hook-form";
 
 interface VolumesDataNftsProps {
   // Define the props for your component here
@@ -70,7 +69,7 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
   return (
     <>
       <Heading as="h2" size="lg" fontWeight="bold" mb="1rem">
-        Top Volumes Data NFTs
+        Most Traded Data NFTs
       </Heading>
       <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(240px, 1fr))">
         {topVolumesDataNfts.map((volumeDataNft, index) => {
