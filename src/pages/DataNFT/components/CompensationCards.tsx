@@ -9,6 +9,7 @@ import BigNumber from "bignumber.js";
 import { FaCalculator } from "react-icons/fa";
 import { CalculateCompensationModal } from "./CalculateCompensationModal";
 import { contractsForChain, IS_DEVNET } from "../../../libs/config";
+import { NoDataHere } from "../../../components/Sections/NoDataHere";
 
 export type CompensationNftPair = {
   compensation: Compensation;
@@ -22,7 +23,7 @@ export const CompensationCards: React.FC = () => {
   const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   const [compensationPairs, setCompensationPairs] = useState<Array<CompensationNftPair>>([]);
   const [compensationRefund, setCompensationRefund] = useState<Record<number, Refund>>({});
-  const [isCompensationNftLoadig, setIsCompensationNftLoading] = useState<boolean>(true);
+  const [isCompensationNftLoading, setIsCompensationNftLoading] = useState<boolean>(true);
   const [proofOfRefundAmount, setProofOfRefundAmount] = useState<number>(0);
   const [totalProofOfRefundAmount, setTotalProofOfRefundAmount] = useState<number>(0);
   const [accumulatedAmount, setAccumulatedAmount] = useState<number>(0);
@@ -107,7 +108,7 @@ export const CompensationCards: React.FC = () => {
           }
         }
       }
-      console.log(refundObjT);
+      // console.log(refundObjT);
 
       setCompensationRefund(refundObjT);
       setCompensationPairs(compPairsT.filter((pair) => pair.compensation.endDate > 0));
@@ -135,10 +136,11 @@ export const CompensationCards: React.FC = () => {
       <Flex flexDirection="column" gap={4}>
         {compensationPairs.length === 0 ? (
           <>
+            {isCompensationNftLoading && <NoDataHere />}
             {cardsForLoading.map((_, index) => (
               <Box display="flex" gap={4} height="15dvh" w="full" key={index} px={3}>
-                <Skeleton height="15svh" w="15svh" rounded="3xl" isLoaded={isCompensationNftLoadig} />
-                <SkeletonText w="85%" mt="4" noOfLines={4} spacing="5" skeletonHeight="3" />
+                <Skeleton height="15svh" w="15svh" rounded="3xl" isLoaded={isCompensationNftLoading} />
+                <SkeletonText w="85%" mt="4" noOfLines={4} spacing="5" skeletonHeight="3" isLoaded={isCompensationNftLoading} />
               </Box>
             ))}
           </>

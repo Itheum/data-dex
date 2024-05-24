@@ -400,10 +400,6 @@ body {
   max-height: 100% !important;
 }
 
-.dapp-core-component__dappModalStyles__dappModalBody.dapp-modal-dialog-content-body {
-  background-color: #181818 !important;
-}
-
 .chakra-ui-dark {
   background: #181818;
 }
