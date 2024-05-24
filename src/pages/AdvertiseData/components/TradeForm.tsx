@@ -253,7 +253,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   // Destructure the methods needed from React Hook Form useForm component
   const {
     control,
-    formState: { errors, isValid, dirtyFields },
+    formState: { errors, isValid },
     handleSubmit,
     getValues,
     trigger,
@@ -558,6 +558,10 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     }
   };
 
+  const handleDisabledButtonStep1 = () => {
+    return !!errors.dataStreamUrlForm || !!errors.dataPreviewUrlForm || dataNFTStreamUrl === "" || dataNFTPreviewUrl === "";
+  };
+
   const handleDisabledButtonStep2 = () => {
     return (
       !!errors.tokenNameForm ||
@@ -566,11 +570,10 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       !!errors.numberOfCopiesForm ||
       !!errors.royaltiesForm ||
       !!errors.extraAssets ||
-      !dirtyFields.tokenNameForm ||
-      !dirtyFields.datasetTitleForm ||
-      !dirtyFields.datasetDescriptionForm ||
-      !dirtyFields.numberOfCopiesForm ||
-      !dirtyFields.royaltiesForm
+      dataNFTTokenName === "" ||
+      datasetTitle === "" ||
+      datasetDescription === "" ||
+      dataNFTCopies === 0
     );
   };
 
@@ -580,6 +583,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     //TODO refactor this with react form hook
   };
 
+  console.log(dataNFTStreamUrl === "", dataNFTPreviewUrl === "", dataNFTStreamUrl, dataNFTPreviewUrl);
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Flex flexDirection="row">
@@ -719,10 +723,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               </Text>
             )}
             <Flex justifyContent="flex-end" mb={3}>
-              <Button
-                colorScheme="teal"
-                onClick={() => setActiveStep(activeStep + 1)}
-                isDisabled={!!errors.dataStreamUrlForm || !!errors.dataPreviewUrlForm || !dirtyFields.dataStreamUrlForm || !dirtyFields.dataPreviewUrlForm}>
+              <Button colorScheme="teal" onClick={() => setActiveStep(activeStep + 1)} isDisabled={handleDisabledButtonStep1()}>
                 Next
               </Button>
             </Flex>
