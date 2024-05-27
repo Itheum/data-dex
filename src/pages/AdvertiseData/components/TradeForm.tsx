@@ -291,7 +291,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const bondingAmount: number = getValues("bondingAmount") ?? -1;
   const bondingPeriod: number = getValues("bondingPeriod") ?? -1;
 
-  console.log("bondingPeriod", bondingPeriod);
   function shouldMintYourDataNftBeDisabled(
     isValid: boolean,
     readTermsChecked: boolean,
