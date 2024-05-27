@@ -57,6 +57,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
       if (bondingContract) {
         const bondingAmount = await bondingContract.viewLockPeriodsWithBonds();
         updateLockPeriodForBond(bondingAmount);
+        throw new Error("Bonding contract not found");
       }
     })();
   }, []);

@@ -291,6 +291,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const bondingAmount: number = getValues("bondingAmount") ?? -1;
   const bondingPeriod: number = getValues("bondingPeriod") ?? -1;
 
+  console.log("bondingPeriod", bondingPeriod);
   function shouldMintYourDataNftBeDisabled(
     isValid: boolean,
     readTermsChecked: boolean,
@@ -550,7 +551,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       return;
     }
 
-    const res = await validateBaseInput();
+    const res = validateBaseInput();
 
     if (res) {
       setErrDataNFTStreamGeneric(null);
@@ -696,7 +697,10 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                       id="dataPreviewUrlForm"
                       isDisabled={!!currDataCATSellObj}
                       defaultValue={dataNFTPreviewUrl}
-                      onChange={(event) => onChange(event.target.value)}
+                      onChange={(event) => {
+                        onChange(event.target.value);
+                        trigger("dataPreviewUrlForm");
+                      }}
                     />
                   )}
                   name="dataPreviewUrlForm"
