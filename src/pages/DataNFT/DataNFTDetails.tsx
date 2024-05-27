@@ -331,7 +331,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
             {tokenIdParam && (
               <Box display={{ md: "Flex" }} justifyContent="space-between" w="100%">
                 <Heading size="xl" fontFamily="Clash-Medium" marginBottom={4} marginTop={10}>
-                  Data NFT Details 1
+                  Data NFT Details
                 </Heading>
                 <HStack>
                   <Button
