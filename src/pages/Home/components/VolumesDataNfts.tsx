@@ -5,6 +5,8 @@ import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { Card, CardBody, Heading, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import NftMediaComponent from "components/NftMediaComponent";
+import { useMarketStore } from "store";
+import { convertToLocalString } from "libs/utils";
 
 interface VolumesDataNftsProps {
   // Define the props for your component here
@@ -40,6 +42,7 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
   const [loadingOffers, setLoadingOffers] = useState<boolean>(true);
   const { tokenLogin } = useGetLoginInfo();
   const [topVolumesDataNfts, setTopVolumesDataNfts] = useState<VolumeDataNftsType[]>(latestOffersSkeleton);
+  const itheumPrice = useMarketStore((state) => state.itheumPrice);
 
   useEffect(() => {
     (async () => {
@@ -93,7 +96,10 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
                     <Heading size="md" noOfLines={1} fontFamily="Clash-Medium">
                       {volumeDataNft.title}
                     </Heading>
-                    <Text fontSize="lg"> Volume : {volumeDataNft.volume.toFixed(2)} ITHEUM </Text>
+                    <Text fontSize="md">
+                      {volumeDataNft.volume.toFixed(2)} ITHEUM{" "}
+                      <Text as="span" color="teal.200">{`(~${convertToLocalString(Number(volumeDataNft.volume.toFixed(2)) * itheumPrice, 2)} USD)`}</Text>
+                    </Text>
                   </Stack>
                 </Skeleton>
               </CardBody>

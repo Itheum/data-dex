@@ -126,6 +126,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     if (tokenId && offerId && location.pathname === "/datanfts/marketplace/market") {
       setSearchParams({ tokenId: tokenId, offerId: String(offerId) });
     }
+
+    window.scrollTo(0, 0);
   }, []);
 
   useEffect(() => {
@@ -329,7 +331,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
             {tokenIdParam && (
               <Box display={{ md: "Flex" }} justifyContent="space-between" w="100%">
                 <Heading size="xl" fontFamily="Clash-Medium" marginBottom={4} marginTop={10}>
-                  Data NFT Details
+                  Data NFT Details 1
                 </Heading>
                 <HStack>
                   <Button
@@ -355,7 +357,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   w="full"
                   alignItems={{ base: "initial", md: "initial" }}
                   justifyContent={{ xl: "space-between" }}>
-                  <Box marginRight={"auto"} mb={6}>
+                  <Box margin="auto" mb={6}>
                     <NftMediaComponent imageUrls={nftData.media?.map((mediaObj: any) => mediaObj.url) ?? [nftData.nftImgUrl]} autoSlide marginTop="1rem" />
                   </Box>
                   <Flex mr={tokenIdParam ? "75px" : "30px"}>
@@ -454,7 +456,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         </Box>
                       )}
                       <Flex flexDirection="row" gap={3} justifyContent={{ lg: "start" }} w="full">
-                        <Tooltip colorScheme="teal" hasArrow placement="top" label="Market is paused" isDisabled={!isMarketPaused}>
+                        <Tooltip colorScheme="teal" hasArrow placement="top" label="Data Market is Paused" isDisabled={!isMarketPaused}>
                           <Button
                             size={{ base: "sm", md: "md", xl: "lg" }}
                             colorScheme="teal"
