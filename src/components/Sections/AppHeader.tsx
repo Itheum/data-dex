@@ -104,7 +104,7 @@ const exploreRouterMenu = [
         menuEnum: MENU.NFTALL,
         path: "/datanfts/marketplace",
         label: "Data NFT Marketplace",
-        shortLbl: "Market",
+        shortLbl: "Data Market",
         Icon: FaStore,
         needToBeLoggedIn: false,
         isHidden: false,

@@ -7,11 +7,6 @@ import {
   Box,
   Button,
   CloseButton,
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerHeader,
-  DrawerOverlay,
   Heading,
   HStack,
   Modal,
@@ -25,16 +20,17 @@ import {
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useNavigate } from "react-router-dom";
+import { labels } from "libs/language";
+import { getApiDataDex, getApiDataMarshal } from "libs/utils";
+import { useMintStore } from "store";
 import { TradeForm } from "./TradeForm";
-import { labels } from "../../../libs/language";
-import { getApiDataDex, getApiDataMarshal } from "../../../libs/utils";
-import { useMintStore } from "../../../store";
 
 type TradeFormProps = {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   dataToPrefill: any;
 };
+
 export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   const { isOpen, setIsOpen, dataToPrefill } = props;
   const { colorMode } = useColorMode();
@@ -173,12 +169,12 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
               }}
             />
             <Heading as="h4" fontFamily="Clash-Medium" size="lg">
-              Mint a Data Stream as a Data NFT-FT
+              Mint Your Data NFT-FT
             </Heading>
           </HStack>
         </ModalHeader>
 
-        <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"} overflowX={"hidden"} maxH="85svh">
+        <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"} overflowX={"hidden"} maxH="85svh" pt="0">
           <Stack spacing="5" mt="5">
             {(minRoyalties / 100 < 0 ||
               maxRoyalties / 100 < 0 ||

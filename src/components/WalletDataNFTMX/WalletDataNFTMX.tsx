@@ -587,7 +587,7 @@ export default function WalletDataNFTMX(item: any) {
               )}
             </Box>
 
-            <Tooltip colorScheme="teal" hasArrow placement="top" label="Market is paused" isDisabled={!isMarketPaused}>
+            <Tooltip colorScheme="teal" hasArrow placement="top" label="Data Market is Paused" isDisabled={!isMarketPaused}>
               <Button
                 size="sm"
                 mt={2}

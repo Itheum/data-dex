@@ -1,11 +1,12 @@
 import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { IS_DEVNET, getTopVolumes, getVolumes } from "libs/MultiversX";
+import { IS_DEVNET, getTopVolumes } from "libs/MultiversX";
 import React, { useEffect, useState } from "react";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
-import { Box, Card, CardBody, Heading, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
+import { Card, CardBody, Heading, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import NftMediaComponent from "components/NftMediaComponent";
-import { set } from "react-hook-form";
+import { useMarketStore } from "store";
+import { convertToLocalString } from "libs/utils";
 
 interface VolumesDataNftsProps {
   // Define the props for your component here
@@ -41,6 +42,7 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
   const [loadingOffers, setLoadingOffers] = useState<boolean>(true);
   const { tokenLogin } = useGetLoginInfo();
   const [topVolumesDataNfts, setTopVolumesDataNfts] = useState<VolumeDataNftsType[]>(latestOffersSkeleton);
+  const itheumPrice = useMarketStore((state) => state.itheumPrice);
 
   useEffect(() => {
     (async () => {
@@ -70,7 +72,7 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
   return (
     <>
       <Heading as="h2" size="lg" fontWeight="bold" mb="1rem">
-        Top Volumes Data NFTs
+        Most Traded Data NFTs
       </Heading>
       <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(240px, 1fr))">
         {topVolumesDataNfts.map((volumeDataNft, index) => {
@@ -94,7 +96,10 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
                     <Heading size="md" noOfLines={1} fontFamily="Clash-Medium">
                       {volumeDataNft.title}
                     </Heading>
-                    <Text fontSize="lg"> Volume : {volumeDataNft.volume.toFixed(2)} ITHEUM </Text>
+                    <Text fontSize="md">
+                      {volumeDataNft.volume.toFixed(2)} ITHEUM{" "}
+                      <Text as="span" color="teal.200">{`(~${convertToLocalString(Number(volumeDataNft.volume.toFixed(2)) * itheumPrice, 2)} USD)`}</Text>
+                    </Text>
                   </Stack>
                 </Skeleton>
               </CardBody>
