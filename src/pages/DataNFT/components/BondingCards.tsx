@@ -102,7 +102,7 @@ export const BondingCards: React.FC = () => {
         bondingOffers.map((dataNft, index) => (
           <Card bg="#1b1b1b50" border="1px solid" borderColor="#00C79740" borderRadius="3xl" p={5} w="100%" key={dataNft.nonce}>
             <Flex>
-              <NftMediaComponent imageUrls={[dataNft.nftImgUrl]} imageHeight="125px" imageWidth="125px" />
+              <NftMediaComponent nftMedia={dataNft?.media} imageHeight="125px" imageWidth="125px" />
               <Flex justifyContent="space-between" alignItems="center" px={10} w="full">
                 <Flex flexDirection="column" justifyContent="center" w="full">
                   <Text fontFamily="Clash-Medium" pb={3}>

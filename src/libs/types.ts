@@ -25,6 +25,7 @@ export interface RecentDataNFTType {
   title?: string;
   nftImgUrl?: string;
   royalties?: BigNumber.Value;
+  media?: NftMedia[];
 }
 
 export interface DataNFTToken {
@@ -52,4 +53,12 @@ export enum BlobDataType {
 
 export interface ExtendedViewDataReturnType extends ViewDataReturnType {
   blobDataType: BlobDataType;
+}
+
+export interface NftMedia {
+  url: string;
+  originalUrl: string;
+  thumbnailUrl: string;
+  fileType: string;
+  fileSize: number;
 }

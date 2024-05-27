@@ -103,6 +103,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
               title: matchingDataNft?.title,
               nftImgUrl: matchingDataNft?.nftImgUrl,
               royalties: matchingDataNft?.royalties,
+              media: matchingDataNft?.media,
             });
           }
         });
@@ -148,6 +149,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
             title: _nftMetaData.title,
             nftImgUrl: "https://" + getApi(chainID) + "/nfts/" + _nft.identifier + "/thumbnail",
             royalties: _nftMetaData.royalties,
+            media: _nftMetaData.media,
           });
         }
       });
@@ -179,7 +181,14 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
                   <Link
                     to={`/datanfts/marketplace/${createTokenIdentifier(item.offeredTokenIdentifier, Number(item.offeredTokenNonce))}/offer-${Number(item.index)}`}
                     as={ReactRouterLink}>
-                    <NftMediaComponent imageUrls={[item?.nftImgUrl ?? ""]} imageHeight="230px" imageWidth="225px" borderRadius="lg" />
+                    <NftMediaComponent
+                      nftMedia={item?.media}
+                      imageHeight="230px"
+                      imageWidth="225px"
+                      borderRadius="lg"
+                      autoSlide={false}
+                      shouldDisplayArrows={false}
+                    />
                   </Link>
                 </Skeleton>
                 <Skeleton height="76px" isLoaded={loadedOffers} fadeDuration={2}>

@@ -623,13 +623,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                           borderRadius="0.75rem">
                           <CardBody pb={4}>
                             <Box cursor={"pointer"} onClick={() => openNftDetailsModal(index)}>
-                              <NftMediaComponent
-                                imageUrls={dataNft.media?.map((mediaObj: any) => mediaObj.url) ?? [dataNft?.nftImgUrl]}
-                                autoSlide
-                                imageHeight="230px"
-                                imageWidth="225px"
-                                borderRadius="lg"
-                              />
+                              <NftMediaComponent nftMedia={dataNft?.media} autoSlide imageHeight="230px" imageWidth="225px" borderRadius="lg" />
 
                               <Stack mt={"4"}>
                                 <Heading size="md" noOfLines={1} fontFamily="Clash-Medium">

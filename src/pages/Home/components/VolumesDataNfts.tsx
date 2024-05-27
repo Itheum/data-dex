@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import NftMediaComponent from "components/NftMediaComponent";
 import { useMarketStore } from "store";
 import { convertToLocalString } from "libs/utils";
+import { NftMedia } from "libs/types";
 
 interface VolumesDataNftsProps {
   // Define the props for your component here
@@ -22,6 +23,7 @@ type VolumeDataNftsType = {
   tokenIdentifier: string;
   nftImgUrl: string;
   title: string;
+  media: NftMedia[];
 };
 
 const latestOffersSkeleton: VolumeDataNftsType[] = [];
@@ -33,6 +35,7 @@ for (let i = 0; i < 10; i++) {
     tokenIdentifier: "",
     nftImgUrl: "",
     title: "",
+    media: [],
   });
 }
 const skeletonHeight = { base: "260px", md: "190px", "2xl": "220px" };
@@ -43,7 +46,6 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
   const { tokenLogin } = useGetLoginInfo();
   const [topVolumesDataNfts, setTopVolumesDataNfts] = useState<VolumeDataNftsType[]>(latestOffersSkeleton);
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
-
   useEffect(() => {
     (async () => {
       DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
@@ -68,7 +70,6 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
       setLoadingOffers(false);
     })();
   }, []);
-
   return (
     <>
       <Heading as="h2" size="lg" fontWeight="bold" mb="1rem">
@@ -88,7 +89,7 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
               <CardBody>
                 <Skeleton height={skeletonHeight} isLoaded={!loadingOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
                   <Link to={`/datanfts/marketplace/${volumeDataNft.tokenIdentifier}`}>
-                    <NftMediaComponent imageUrls={[volumeDataNft.nftImgUrl]} imageHeight={"225px"} imageWidth="225px" borderRadius="lg" />
+                    <NftMediaComponent nftMedia={volumeDataNft?.media} imageHeight={"225px"} imageWidth="225px" borderRadius="lg" shouldDisplayArrows={false} />
                   </Link>
                 </Skeleton>
                 <Skeleton height="56px" isLoaded={!loadingOffers} fadeDuration={2}>
