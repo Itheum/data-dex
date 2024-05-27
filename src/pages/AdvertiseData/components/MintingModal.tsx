@@ -128,7 +128,7 @@ export const MintingModal: React.FC<MintingModalProps> = (props) => {
 
             <HStack>
               {(!saveProgress.s5 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
-              <Text>Minting your new Data NFT on blockchain</Text>
+              <Text>Minting your new Data NFT on the blockchain</Text>
             </HStack>
             {mintingSuccessful && (
               <Box textAlign="center" mt="6">

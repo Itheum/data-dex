@@ -107,7 +107,7 @@ export const TrendingData: React.FC = () => {
                     <Heading size="md" noOfLines={1} fontFamily="Clash-Medium">
                       {trendingDataNft.title}
                     </Heading>
-                    <Text fontSize="lg"> Trending score : {trendingDataNft.rating.toFixed(2)} </Text>
+                    <Text fontSize="lg"> Trending Score : {trendingDataNft.rating.toFixed(2)} </Text>
                     <Favourite
                       chainID={chainID}
                       tokenIdentifier={trendingDataNft.tokenIdentifier}

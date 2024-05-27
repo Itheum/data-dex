@@ -28,6 +28,7 @@ import myNFMe from "assets/img/my-nfme.png";
 import illustration from "assets/img/whitelist/getWhitelist.png";
 import ClaimModalMx from "components/ClaimModal/ClaimModalMultiversX";
 import Faucet from "components/Faucet/Faucet";
+import NewCreatorCTA from "components/NewCreatorCTA";
 import ExplainerArticles from "components/Sections/ExplainerArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
@@ -353,6 +354,9 @@ export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
               </Box>
             </ChainSupportedComponent>
           </SimpleGrid>
+        </Box>
+        <Box m="auto" pt="10" pb="10" w={"100%"} bgGradient={colorMode === "light" ? "bgWhite" : "linear(to-b, bgDark, #6B46C160, #00C79730)"}>
+          <NewCreatorCTA />
         </Box>
         <Box m="auto" pt="10" pb="10" w={"100%"}>
           <VolumesDataNfts />
