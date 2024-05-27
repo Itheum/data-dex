@@ -905,14 +905,14 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             <FormControl isInvalid={!!errors.extraAssets} minH={{ base: "7rem", md: "6.25rem" }}>
               <FormLabel fontWeight="bold" fontSize="md">
                 Extra Media Asset URL{" "}
-                <Popover w="300px">
+                <Popover>
                   <PopoverTrigger>
                     <Text as="span" fontSize="sm" opacity=".5" cursor="pointer">
                       {" "}
                       - What is this?
                     </Text>
                   </PopoverTrigger>
-                  <PopoverContent>
+                  <PopoverContent backgroundColor="#181818">
                     <PopoverArrow />
                     <PopoverCloseButton />
                     <PopoverHeader>What is an Extra Media Asset?</PopoverHeader>
