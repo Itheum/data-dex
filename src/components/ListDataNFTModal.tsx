@@ -297,7 +297,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
                 </Flex>
               </Box>
               <Box flex="1">
-                <NftMediaComponent imageUrls={[nftData?.nftImgUrl]} imageHeight={"120px"} imageWidth="120px" borderRadius="md" />
+                <NftMediaComponent nftMedia={nftData?.media} imageHeight={"120px"} imageWidth="120px" borderRadius="md" />
               </Box>
             </HStack>
 
