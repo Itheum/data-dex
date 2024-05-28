@@ -23,16 +23,7 @@ const NewCreatorCTA = () => {
           through the process with detailed guides, tips, tricks and support. What are you waiting for? {`Let's`} do this!
         </Text>
 
-        <Button
-          as={Link}
-          variant="solid"
-          colorScheme="teal"
-          px={7}
-          py={6}
-          rounded="lg"
-          mt={7}
-          href="https://discord.com/channels/869901313616527360/1244547010259058699"
-          isExternal>
+        <Button as={Link} variant="solid" colorScheme="teal" px={7} py={6} rounded="lg" mt={7} href="https://itheum.io/discord" isExternal>
           Join Data Creator Discord
         </Button>
       </Box>

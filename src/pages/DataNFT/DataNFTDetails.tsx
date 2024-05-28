@@ -515,19 +515,26 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       <Flex direction={"column"} gap="1" px="28px" py="14px" color={colorMode === "dark" ? "white" : "black"} fontSize="lg">
                         {!!nftData && (
                           <>
-                            <Text>{`Total supply: ${nftData.supply ? nftData.supply : 1}`}</Text>
-                            <Text>
+                            <Text fontSize="md">{`Total supply: ${nftData.supply ? nftData.supply : 1}`}</Text>
+                            <Text fontSize="md">
                               {`Royalty: `}
                               {!isNaN(nftData.royalties) ? `${convertToLocalString(nftData.royalties * 100)}%` : "-"}
                             </Text>
                           </>
                         )}
-                        {volume && <Text>{`Volume:  ${volume.toFixed(2)} ITHEUM `}</Text>}
+                        {volume && (
+                          <Box>
+                            <Text as="span" fontSize="md">
+                              {`Volume:  ${volume.toFixed(2)} ITHEUM`}{" "}
+                            </Text>
+                            <Text as="span" fontSize="md" color="teal.200">{`(~${convertToLocalString(Number(volume.toFixed(2)) * itheumPrice, 2)} USD)`}</Text>
+                          </Box>
+                        )}
                         {!!offerId && (
                           <>
-                            <Text>{`Listed: ${offer ? offer.quantity : "-"}`}</Text>
+                            <Text fontSize="md">{`Listed: ${offer ? offer.quantity : "-"}`}</Text>
 
-                            <Text>
+                            <Text fontSize="md">
                               {`Unlock Fee per NFT: `}
                               {marketRequirements && offer ? (
                                 <>
@@ -536,13 +543,17 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                     getTokenWantedRepresentation(offer.wantedTokenIdentifier, offer.wantedTokenNonce)
                                   )}{" "}
                                   {itheumPrice &&
-                                  convertWeiToEsdt(new BigNumber(offer.wantedTokenAmount), tokenDecimals(offer.wantedTokenIdentifier)).toNumber() > 0
-                                    ? `(~${convertToLocalString(
+                                  convertWeiToEsdt(new BigNumber(offer.wantedTokenAmount), tokenDecimals(offer.wantedTokenIdentifier)).toNumber() > 0 ? (
+                                    <>
+                                      <Text as="span" fontSize="md" color="teal.200">{`(~${convertToLocalString(
                                         convertWeiToEsdt(new BigNumber(offer.wantedTokenAmount), tokenDecimals(offer.wantedTokenIdentifier)).toNumber() *
                                           itheumPrice,
                                         2
-                                      )} USD)`
-                                    : ""}
+                                      )} USD)`}</Text>
+                                    </>
+                                  ) : (
+                                    ""
+                                  )}
                                 </>
                               ) : (
                                 "-"

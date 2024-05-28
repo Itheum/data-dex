@@ -93,7 +93,7 @@ export const BondingCards: React.FC = () => {
       transactions: [tx],
     });
   };
-  // console.log(bondingOffers);
+
   return (
     <Stack display="flex" flexDirection={{ base: "column" }} flexWrap={"wrap"} gap={7} mx={{ base: 0, md: 16 }} alignItems={"start"}>
       {bondingOffers.length === 0 ? (
