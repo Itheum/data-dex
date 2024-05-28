@@ -192,7 +192,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
                   </Link>
                 </Skeleton>
                 <Skeleton height="76px" isLoaded={loadedOffers} fadeDuration={2}>
-                  <Stack mt={{ base: "0", md: isMxLoggedIn ? "12" : "4" }}>
+                  <Stack mt={{ base: "0", md: "12" }}>
                     <Heading size="md" noOfLines={1} fontFamily="Clash-Medium">
                       {item.title}
                     </Heading>

@@ -107,7 +107,7 @@ export const TrendingData: React.FC = () => {
                   </Link>
                 </Skeleton>
                 <Skeleton height="76px" isLoaded={loadedOffers} fadeDuration={2}>
-                  <Stack mt={{ base: "0", md: isMxLoggedIn ? "8" : "4" }}>
+                  <Stack mt={{ base: "0", md: "8" }}>
                     <Heading size="md" noOfLines={1} fontFamily="Clash-Medium">
                       {trendingDataNft.title}
                     </Heading>
