@@ -89,11 +89,11 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
               <CardBody>
                 <Skeleton height={skeletonHeight} isLoaded={!loadingOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
                   <Link to={`/datanfts/marketplace/${volumeDataNft.tokenIdentifier}`}>
-                    <NftMediaComponent nftMedia={volumeDataNft?.media} imageHeight={"225px"} imageWidth="225px" borderRadius="lg" shouldDisplayArrows={false} />
+                    <NftMediaComponent nftMedia={volumeDataNft?.media} imageHeight="210px" imageWidth="210px" borderRadius="lg" shouldDisplayArrows={false} />
                   </Link>
                 </Skeleton>
                 <Skeleton height="56px" isLoaded={!loadingOffers} fadeDuration={2}>
-                  <Stack mt={"8"}>
+                  <Stack mt={{ base: "0", md: "8" }}>
                     <Heading size="md" noOfLines={1} fontFamily="Clash-Medium">
                       {volumeDataNft.title}
                     </Heading>

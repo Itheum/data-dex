@@ -103,17 +103,11 @@ export const TrendingData: React.FC = () => {
               <CardBody>
                 <Skeleton height={skeletonHeight} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
                   <Link to={`/datanfts/marketplace/${trendingDataNft.tokenIdentifier}`} as={ReactRouterLink}>
-                    <NftMediaComponent
-                      nftMedia={trendingDataNft?.media}
-                      imageHeight={"225px"}
-                      imageWidth="225px"
-                      borderRadius="lg"
-                      shouldDisplayArrows={false}
-                    />
+                    <NftMediaComponent nftMedia={trendingDataNft?.media} imageHeight="210px" imageWidth="210px" borderRadius="lg" shouldDisplayArrows={false} />
                   </Link>
                 </Skeleton>
                 <Skeleton height="76px" isLoaded={loadedOffers} fadeDuration={2}>
-                  <Stack mt={isMxLoggedIn ? "8" : "4"}>
+                  <Stack mt={{ base: "0", md: isMxLoggedIn ? "8" : "4" }}>
                     <Heading size="md" noOfLines={1} fontFamily="Clash-Medium">
                       {trendingDataNft.title}
                     </Heading>

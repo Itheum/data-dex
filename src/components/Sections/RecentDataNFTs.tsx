@@ -183,8 +183,8 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
                     as={ReactRouterLink}>
                     <NftMediaComponent
                       nftMedia={item?.media}
-                      imageHeight="230px"
-                      imageWidth="225px"
+                      imageHeight="210px"
+                      imageWidth="210px"
                       borderRadius="lg"
                       autoSlide={false}
                       shouldDisplayArrows={false}
@@ -192,7 +192,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
                   </Link>
                 </Skeleton>
                 <Skeleton height="76px" isLoaded={loadedOffers} fadeDuration={2}>
-                  <Stack mt={isMxLoggedIn ? "12" : "4"}>
+                  <Stack mt={{ base: "0", md: isMxLoggedIn ? "12" : "4" }}>
                     <Heading size="md" noOfLines={1} fontFamily="Clash-Medium">
                       {item.title}
                     </Heading>
