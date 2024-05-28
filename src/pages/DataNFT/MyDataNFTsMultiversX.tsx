@@ -136,7 +136,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
           Data NFT Wallet
         </Heading>
         <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
-          Below are the Data NFTs you created or purchased from the peer-to-peer Data NFT Marketplace
+          Manage the Data NFTs you created or purchased from the peer-to-peer Data NFT Marketplace.
         </Heading>
 
         <Tabs pt={10} index={tabState - 1}>
