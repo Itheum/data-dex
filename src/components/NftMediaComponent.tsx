@@ -43,8 +43,6 @@ const NftMediaComponent: React.FC<NftMediaComponentProps> = (props) => {
   } = props;
 
   const media = imageUrls || nftMedia?.map((mediaObj) => mediaObj.url) || [DEFAULT_NFT_IMAGE];
-  // console.log("nftMedia", nftMedia);
-  // console.log("media", media);
   const [imageIndex, setImageIndex] = useState(0);
   const [switchedImageManually, setSwitchedImageManually] = useState(false);
   const [nextImageIndex, setNextImageIndex] = useState(0);

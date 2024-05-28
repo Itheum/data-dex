@@ -603,7 +603,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     //TODO refactor this with react form hook
   };
 
-  console.log(dataNFTStreamUrl === "", dataNFTPreviewUrl === "", dataNFTStreamUrl, dataNFTPreviewUrl);
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Box mb={10}>

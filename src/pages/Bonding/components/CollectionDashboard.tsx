@@ -57,7 +57,7 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
         _matchedDataNft.push(buildDataNft);
       }
     });
-    console.log(_matchedDataNft, bondingPageNumber);
+
     setMatchedDataNft(_matchedDataNft);
   };
 
@@ -69,7 +69,6 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
         itemsForCompensation.push({ tokenIdentifier: dataNft.collection, nonce: dataNft.nonce });
       });
       const compensation = await bondContract.viewCompensations(itemsForCompensation);
-      console.log(compensation);
       const contractConfigurationRequest = await bondContract.viewContractConfiguration();
 
       setContractConfiguration(contractConfigurationRequest);

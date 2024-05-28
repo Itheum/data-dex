@@ -46,6 +46,7 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
   const { tokenLogin } = useGetLoginInfo();
   const [topVolumesDataNfts, setTopVolumesDataNfts] = useState<VolumeDataNftsType[]>(latestOffersSkeleton);
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
+
   useEffect(() => {
     (async () => {
       DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
@@ -53,23 +54,28 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
       const dataNftsVolumes: DataNftVolume[] = await getTopVolumes(chainID, tokenLogin?.nativeAuthToken ?? "", 10);
 
       const _volumesData: { nonce: number; tokenIdentifier: string }[] = [];
+
       dataNftsVolumes.forEach((volumeObject) => {
         const splitedString = volumeObject.tokenIdentifier.split("-");
         const nonce = parseInt(splitedString[2], 16);
         const tokenIdentifier = splitedString[0] + "-" + splitedString[1];
         _volumesData.push({ nonce: nonce, tokenIdentifier: tokenIdentifier });
       });
+
       const dataNfts: DataNft[] = await DataNft.createManyFromApi(_volumesData);
+
       const _volume = dataNftsVolumes.map((dataNft) => {
         const nftDetails = dataNfts.find((nft) => nft.tokenIdentifier === dataNft.tokenIdentifier);
         if (nftDetails) {
           return { ...nftDetails, volume: dataNft.volumes[0].volume };
         }
       });
+
       setTopVolumesDataNfts(_volume as VolumeDataNftsType[]);
       setLoadingOffers(false);
     })();
   }, []);
+
   return (
     <>
       <Heading as="h2" size="lg" fontWeight="bold" mb="1rem">

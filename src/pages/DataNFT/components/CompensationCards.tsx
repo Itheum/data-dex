@@ -108,7 +108,6 @@ export const CompensationCards: React.FC = () => {
           }
         }
       }
-      // console.log(refundObjT);
 
       setCompensationRefund(refundObjT);
       setCompensationPairs(compPairsT.filter((pair) => pair.compensation.endDate > 0));
