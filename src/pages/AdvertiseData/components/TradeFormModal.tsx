@@ -45,6 +45,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
 
   const navigate = useNavigate();
   const userData = useMintStore((state) => state.userData);
+  const lockPeriod = useMintStore((state) => state.lockPeriodForBond);
 
   useEffect(() => {
     (async () => {
@@ -286,7 +287,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
           width="100%"
           backgroundColor="blackAlpha.800"
           rounded="lg"
-          visibility={userData === null || userData === undefined ? "visible" : "hidden"}
+          visibility={userData === null || userData === undefined ? "visible" : "hidden" || lockPeriod === undefined}
           borderTop="solid .1rem"
           borderColor="teal.200">
           <Text fontSize="24px" fontWeight="500" lineHeight="38px" textAlign="center" textColor="teal.200" px="2">
