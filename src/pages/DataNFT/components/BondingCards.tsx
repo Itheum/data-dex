@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Flex, Image, Stack, Text } from "@chakra-ui/react";
+import { Button, Card, Flex, Stack, Text } from "@chakra-ui/react";
 import { Bond, BondConfiguration, BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
-import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import BigNumber from "bignumber.js";
@@ -79,6 +79,7 @@ export const BondingCards: React.FC = () => {
   };
 
   const renewBond = async (tokenIdentifier: string, nonce: number) => {
+    console.log(tokenIdentifier, nonce);
     const tx = bondContract.renew(new Address(address), tokenIdentifier, nonce);
     await sendTransactions({
       transactions: [tx],
@@ -92,16 +93,16 @@ export const BondingCards: React.FC = () => {
       transactions: [tx],
     });
   };
-
+  // console.log(bondingOffers);
   return (
     <Stack display="flex" flexDirection={{ base: "column" }} flexWrap={"wrap"} gap={7} mx={{ base: 0, md: 16 }} alignItems={"start"}>
       {bondingOffers.length === 0 ? (
         <NoDataHere />
       ) : (
         bondingOffers.map((dataNft, index) => (
-          <Card bg="#1b1b1b50" border="1px solid" borderColor="#00C79740" borderRadius="3xl" p={5} w="100%" key={index}>
+          <Card bg="#1b1b1b50" border="1px solid" borderColor="#00C79740" borderRadius="3xl" p={5} w="100%" key={dataNft.nonce}>
             <Flex>
-              <NftMediaComponent imageUrls={[dataNft.nftImgUrl]} imageHeight="125px" imageWidth="125px" />
+              <NftMediaComponent nftMedia={dataNft?.media} imageHeight="125px" imageWidth="125px" />
               <Flex justifyContent="space-between" alignItems="center" px={10} w="full">
                 <Flex flexDirection="column" justifyContent="center" w="full">
                   <Text fontFamily="Clash-Medium" pb={3}>

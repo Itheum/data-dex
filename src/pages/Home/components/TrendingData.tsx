@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Card, CardBody, Heading, Image, Link, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
+import { Box, Card, CardBody, Heading, Link, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -8,6 +8,7 @@ import { Favourite } from "../../../components/Favourite/Favourite";
 import { IS_DEVNET, getFavoritesFromBackendApi, getTrendingFromBackendApi } from "../../../libs/MultiversX";
 import { useAccountStore } from "../../../store";
 import NftMediaComponent from "components/NftMediaComponent";
+import { NftMedia } from "libs/types";
 
 type TrendingDataCreationNftsType = {
   nonce: number;
@@ -16,25 +17,41 @@ type TrendingDataCreationNftsType = {
 
 type TrendingDataNftsType = {
   rating: number;
-} & DataNft;
+  tokenIdentifier: string;
+  nftImgUrl: string;
+  title: string;
+  media: NftMedia[];
+};
+
+const latestOffersSkeleton: TrendingDataNftsType[] = [];
+
+// create the placeholder offers for skeleton loading
+for (let i = 0; i < 10; i++) {
+  latestOffersSkeleton.push({
+    rating: 0,
+    tokenIdentifier: "",
+    nftImgUrl: "",
+    title: "",
+    media: [],
+  });
+}
+const skeletonHeight = { base: "260px", md: "190px", "2xl": "220px" };
+
 export const TrendingData: React.FC = () => {
   const { chainID } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const [trendingDataNfts, setTrendingDataNfts] = useState<Array<TrendingDataNftsType>>([]);
+  const [trendingDataNfts, setTrendingDataNfts] = useState<Array<TrendingDataNftsType>>(latestOffersSkeleton);
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
   const { tokenLogin } = useGetLoginInfo();
 
   const favoriteNfts = useAccountStore((state) => state.favoriteNfts);
   const updateFavoriteNfts = useAccountStore((state) => state.updateFavoriteNfts);
 
-  const skeletonHeight = { base: "260px", md: "190px", "2xl": "220px" };
-
   useEffect(() => {
     (async () => {
       DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
       const getTrendingData = await getTrendingFromBackendApi(chainID);
       const _trendingData: Array<TrendingDataCreationNftsType> = [];
-      setLoadedOffers(true);
 
       getTrendingData.forEach((parseTrendingData) => {
         const splitedString = parseTrendingData.tokenIdentifier.split("-");
@@ -49,9 +66,10 @@ export const TrendingData: React.FC = () => {
           return { ...ratingNfts, rating: dataNft.rating };
         }
       });
+
       setTrendingDataNfts(trending as TrendingDataNftsType[]);
+      setLoadedOffers(true);
     })();
-    setLoadedOffers(false);
   }, []);
 
   const getFavourite = async () => {
@@ -85,15 +103,15 @@ export const TrendingData: React.FC = () => {
               <CardBody>
                 <Skeleton height={skeletonHeight} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
                   <Link to={`/datanfts/marketplace/${trendingDataNft.tokenIdentifier}`} as={ReactRouterLink}>
-                    <NftMediaComponent imageUrls={[trendingDataNft.nftImgUrl]} imageHeight={"225px"} imageWidth="225px" borderRadius="lg" />
+                    <NftMediaComponent nftMedia={trendingDataNft?.media} imageHeight="210px" imageWidth="210px" borderRadius="lg" shouldDisplayArrows={false} />
                   </Link>
                 </Skeleton>
                 <Skeleton height="76px" isLoaded={loadedOffers} fadeDuration={2}>
-                  <Stack mt={isMxLoggedIn ? "12" : "4"}>
+                  <Stack mt={{ base: "0", md: "8" }}>
                     <Heading size="md" noOfLines={1} fontFamily="Clash-Medium">
                       {trendingDataNft.title}
                     </Heading>
-                    <Text fontSize="lg"> Trending score : {trendingDataNft.rating.toFixed(2)} </Text>
+                    <Text fontSize="lg"> Trending Score : {trendingDataNft.rating.toFixed(2)} </Text>
                     <Favourite
                       chainID={chainID}
                       tokenIdentifier={trendingDataNft.tokenIdentifier}

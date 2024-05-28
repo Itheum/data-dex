@@ -7,29 +7,30 @@ import {
   Box,
   Button,
   CloseButton,
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerHeader,
-  DrawerOverlay,
   Heading,
   HStack,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
   Stack,
   Text,
   useColorMode,
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useNavigate } from "react-router-dom";
+import { labels } from "libs/language";
+import { getApiDataDex, getApiDataMarshal } from "libs/utils";
+import { useMintStore } from "store";
 import { TradeForm } from "./TradeForm";
-import { labels } from "../../../libs/language";
-import { getApiDataDex, getApiDataMarshal } from "../../../libs/utils";
-import { useMintStore } from "../../../store";
 
 type TradeFormProps = {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   dataToPrefill: any;
 };
+
 export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   const { isOpen, setIsOpen, dataToPrefill } = props;
   const { colorMode } = useColorMode();
@@ -44,6 +45,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
 
   const navigate = useNavigate();
   const userData = useMintStore((state) => state.userData);
+  const lockPeriod = useMintStore((state) => state.lockPeriodForBond);
 
   useEffect(() => {
     (async () => {
@@ -155,10 +157,10 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   };
 
   return (
-    <Drawer onClose={onClose} isOpen={isOpen} size="xl" closeOnEsc={true} closeOnOverlayClick={false} blockScrollOnMount={false}>
-      <DrawerOverlay backdropFilter="blur(10px)" />
-      <DrawerContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-        <DrawerHeader>
+    <Modal onClose={onClose} isOpen={isOpen} size="6xl" closeOnEsc={true} closeOnOverlayClick={false} blockScrollOnMount={false}>
+      <ModalOverlay backdropFilter="blur(10px)" />
+      <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+        <ModalHeader>
           <HStack spacing="5">
             <CloseButton
               size="lg"
@@ -167,12 +169,12 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
               }}
             />
             <Heading as="h4" fontFamily="Clash-Medium" size="lg">
-              Mint a Data Stream as a Data NFT-FT
+              Mint Your Data NFT-FT
             </Heading>
           </HStack>
-        </DrawerHeader>
+        </ModalHeader>
 
-        <DrawerBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"} overflowX={"hidden"}>
+        <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"} overflowX={"hidden"} maxH="85svh" pt="0">
           <Stack spacing="5" mt="5">
             {(minRoyalties / 100 < 0 ||
               maxRoyalties / 100 < 0 ||
@@ -237,7 +239,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
             userData={userData}
             dataToPrefill={dataToPrefill}
           />
-        </DrawerBody>
+        </ModalBody>
         <Box
           position="absolute"
           top="5rem"
@@ -285,7 +287,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
           width="100%"
           backgroundColor="blackAlpha.800"
           rounded="lg"
-          visibility={userData === null || userData === undefined ? "visible" : "hidden"}
+          visibility={userData === null || userData === undefined ? "visible" : "hidden" || lockPeriod === undefined}
           borderTop="solid .1rem"
           borderColor="teal.200">
           <Text fontSize="24px" fontWeight="500" lineHeight="38px" textAlign="center" textColor="teal.200" px="2">
@@ -304,7 +306,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
             Refresh Data DEX
           </Button>
         </Box>
-      </DrawerContent>
-    </Drawer>
+      </ModalContent>
+    </Modal>
   );
 };

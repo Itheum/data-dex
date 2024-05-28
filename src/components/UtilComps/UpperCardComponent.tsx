@@ -85,7 +85,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
         position="relative"
         mb="1.5rem">
         <NftMediaComponent
-          imageUrls={nftMetadata?.media?.map((mediaObj: any) => mediaObj.url) ?? [imageUrl]}
+          nftMedia={nftMetadata?.media}
           autoSlide
           imageHeight="236px"
           imageWidth="236px"
@@ -95,7 +95,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
           marginTop="1.5rem"
         />
 
-        <Flex h={address ? "28rem" : "18rem"} mx={6} my={3} direction="column" justify="space-between">
+        <Flex h={address ? "28rem" : "18rem"} mx={6} my={3} mt={6} direction="column" justify="space-between">
           {nftMetadata && (
             <>
               <Text fontSize="md" color="#929497">

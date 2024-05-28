@@ -28,6 +28,7 @@ import myNFMe from "assets/img/my-nfme.png";
 import illustration from "assets/img/whitelist/getWhitelist.png";
 import ClaimModalMx from "components/ClaimModal/ClaimModalMultiversX";
 import Faucet from "components/Faucet/Faucet";
+import NewCreatorCTA from "components/NewCreatorCTA";
 import ExplainerArticles from "components/Sections/ExplainerArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
@@ -36,6 +37,7 @@ import { ClaimsContract } from "libs/MultiversX/claims";
 import { formatNumberToShort } from "libs/utils";
 import AppMarketplace from "pages/Home/components/AppMarketplace";
 import { TrendingData } from "./components/TrendingData";
+import VolumesDataNfts from "./components/VolumesDataNfts";
 
 export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
   const { colorMode } = useColorMode();
@@ -352,6 +354,12 @@ export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
               </Box>
             </ChainSupportedComponent>
           </SimpleGrid>
+        </Box>
+        <Box m="auto" pt="10" pb="10" w={"100%"} bgGradient={colorMode === "light" ? "bgWhite" : "linear(to-b, bgDark, #6B46C160, #00C79730)"}>
+          <NewCreatorCTA />
+        </Box>
+        <Box m="auto" pt="10" pb="10" w={"100%"}>
+          <VolumesDataNfts />
         </Box>
         <Box m="auto" pt="10" pb="10" w={"100%"}>
           <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" />

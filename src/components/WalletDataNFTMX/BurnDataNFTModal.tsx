@@ -90,7 +90,6 @@ export default function BurnDataNFTModal(props: BurnDataNFTModalPropType) {
 
     onClose();
   };
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false}>
       <ModalOverlay backdropFilter="blur(10px)" />
@@ -102,7 +101,14 @@ export default function BurnDataNFTModal(props: BurnDataNFTModalPropType) {
               <HStack spacing="5" alignItems="center">
                 <Box flex="1.1">
                   <Stack>
-                    <NftMediaComponent imageUrls={[selectedDataNft.nftImgUrl]} imageHeight="100px" imageWidth="100px" borderRadius="md" marginTop="1.5rem" />
+                    <NftMediaComponent
+                      nftMedia={selectedDataNft?.media}
+                      shouldDisplayArrows={false}
+                      imageHeight="100px"
+                      imageWidth="100px"
+                      borderRadius="md"
+                      marginTop="1.5rem"
+                    />
                     <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" textAlign="center">
                       {selectedDataNft.tokenName}
                     </Text>
