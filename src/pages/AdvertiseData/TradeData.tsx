@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Box, Button, Heading, Image, Stack, Text, useColorMode, Wrap } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import NewCreatorCTA from "components/NewCreatorCTA";
+import ProgramCard from "./components/ProgramCard";
 import { TradeFormModal } from "./components/TradeFormModal";
 import { dataCATDemoUserData } from "../../libs/config";
-import ProgramCard from "./components/ProgramCard";
 
 export const TradeData: React.FC = () => {
   const [dataCATAcccount] = useState<Record<any, any>>(dataCATDemoUserData);
@@ -44,6 +45,9 @@ export const TradeData: React.FC = () => {
           </Box>
         </Box>
       </Wrap>
+      <Box marginTop={10} bgGradient={colorMode === "light" ? "bgWhite" : "linear(to-b, bgDark, #6B46C160, #00C79730)"}>
+        <NewCreatorCTA />
+      </Box>
       {dataCATAcccount?.programsAllocation?.filter((program: any) => program.chainID === chainID).length > 0 && (
         <>
           <Heading size="lg" fontFamily="Clash-Medium" marginTop="6rem !important">

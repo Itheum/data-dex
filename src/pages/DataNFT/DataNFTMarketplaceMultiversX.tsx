@@ -2,6 +2,8 @@ import React, { FC, useEffect, useState } from "react";
 import { Icon } from "@chakra-ui/icons";
 import {
   Box,
+  Card,
+  CardBody,
   Checkbox,
   CloseButton,
   Flex,
@@ -24,6 +26,8 @@ import {
   useColorMode,
   useDisclosure,
   useToast,
+  Wrap,
+  WrapItem,
 } from "@chakra-ui/react";
 import { DataNft, Offer } from "@itheum/sdk-mx-data-nft/out";
 import { Address, TransactionWatcher } from "@multiversx/sdk-core/out";
@@ -38,6 +42,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { CustomPagination } from "components/CustomPagination";
 import MarketplaceLowerCard from "components/MarketplaceLowerCard";
 import MyListedDataLowerCard from "components/MyListedDataLowerCard";
+import NftMediaComponent from "components/NftMediaComponent";
 import { NoDataHere } from "components/Sections/NoDataHere";
 import ConditionalRender from "components/UtilComps/ApiWrapper";
 import UpperCardComponent from "components/UtilComps/UpperCardComponent";
@@ -49,6 +54,7 @@ import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftCollectionType } from "libs/MultiversX/types";
 import { convertWeiToEsdt, createNftId, hexZero, getBondsForOffers, sleep, tokenDecimals } from "libs/utils";
+import { DataNFTCollectionObject } from "libs/utils/types/marketplace";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
 import { DataNftCollectionCard } from "./DataNftCollection";
@@ -93,10 +99,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   const [offerForDrawer, setOfferForDrawer] = useState<Offer | undefined>();
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
+  const { isOpen: isOpenDataNftCollectionModal, onOpen: onOpenDataNftCollectionModal, onClose: onCloseDataNftCollectionModal } = useDisclosure();
+  const [collectionForDrawer, setCollectionForDrawer] = useState<DataNFTCollectionObject | undefined>();
   const [myListedCount, setMyListedCount] = useState<number>(0);
   const [publicMarketCount, setPublicMarketCount] = useState<number>(0);
   const [showGroupedDataNfts, setShowGroupedDataNfts] = useState(true);
-  const [groupedOffers, setGroupedOffers] = useState<DataNftCollectionType[]>([]);
+  const [groupedCollections, setGroupedCollections] = useState<DataNFTCollectionObject[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const hasWebWalletTx = sessionStorage.getItem("web-wallet-tx");
 
@@ -109,16 +117,16 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       setPageIndex(newPageIndex);
     }
   });
+
   const groupDataNfts = () => {
     (async () => {
       if (!chainID) return;
 
       // start loading offers
       updateLoadingOffers(true);
-      let _groupedOffers: DataNftCollectionType[] = await getOfersAsCollectionFromBackendApi(chainID);
 
-      _groupedOffers = _groupedOffers.filter((offer) => offer.minOffer && offer.minOffer !== null);
-      setGroupedOffers(_groupedOffers);
+      const _groupedCollections: DataNFTCollectionObject[] = await getOfersAsCollectionFromBackendApi(chainID);
+      setGroupedCollections(_groupedCollections);
 
       updateLoadingOffers(false);
     })();
@@ -207,8 +215,16 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   }, [pageIndex, tabState, hasPendingTransactions, hasWebWalletTx]);
 
   async function openNftDetailsModal(index: number) {
-    if (showGroupedDataNfts && tabState === 1) {
-      setOfferForDrawer(groupedOffers[index].minOffer);
+    if (collectionForDrawer) {
+      setOfferForDrawer(collectionForDrawer.dataNfts[index].minOffer);
+    } else if (showGroupedDataNfts && tabState === 1) {
+      if (groupedCollections[index].type === "NonFungibleESDT") {
+        setCollectionForDrawer(groupedCollections[index]);
+        onOpenDataNftCollectionModal();
+        return;
+      } else {
+        setOfferForDrawer(groupedCollections[index].dataNfts[0].minOffer);
+      }
     } else {
       setOfferForDrawer(extendedOffers[index]);
     }
@@ -230,6 +246,23 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       setSearchParams(searchParams);
     }
     setOfferForDrawer(undefined);
+  }
+
+  function closeCollectionView() {
+    onCloseDataNftCollectionModal();
+    let didAlterParams = false;
+    if (searchParams.has("tokenId")) {
+      searchParams.delete("tokenId");
+      didAlterParams = true;
+    }
+    if (searchParams.has("offerId")) {
+      searchParams.delete("offerId");
+      didAlterParams = true;
+    }
+    if (didAlterParams) {
+      setSearchParams(searchParams);
+    }
+    setCollectionForDrawer(undefined);
   }
 
   const toast = useToast();
@@ -439,7 +472,9 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                             <MarketplaceLowerCard index={index} nftMetadata={nftMetadatas[index]} extendedOffer={offer} />
                           </UpperCardComponent>
                         ))
-                      : groupedOffers.map((offer, index) => {
+                      : groupedCollections.map((collectionObject: DataNFTCollectionObject, index) => {
+                          const { dataNfts } = collectionObject;
+                          const offer: DataNftCollectionType = dataNfts[0];
                           return (
                             <DataNftCollectionCard
                               key={index}
@@ -553,6 +588,61 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   offerIdProp={offerForDrawer.index}
                   closeDetailsView={closeDetailsView}
                 />
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        </>
+      )}
+      {collectionForDrawer && (
+        <>
+          <Modal onClose={onCloseDataNftCollectionModal} isOpen={isOpenDataNftCollectionModal} size="6xl" closeOnOverlayClick={false}>
+            <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />
+            <ModalContent overflowY="scroll" h="90%">
+              <ModalHeader paddingBottom={0} bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                <HStack spacing="5">
+                  <CloseButton size="lg" onClick={closeCollectionView} />
+                </HStack>
+                <Text fontFamily="Clash-Medium" fontSize="32px">
+                  Collection - {collectionForDrawer.collection}
+                </Text>
+                <Text fontSize="md">Type : {collectionForDrawer.type}</Text>{" "}
+              </ModalHeader>
+              <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                <Wrap justify={{ base: "center", md: "start" }} align="start" spacing={4} w="100%" h="100%" p={4}>
+                  {collectionForDrawer.dataNfts.map((dataNft, index) => {
+                    const offer: Offer = dataNft.minOffer;
+                    return (
+                      <WrapItem key={index}>
+                        <Card
+                          key={index}
+                          maxW="sm"
+                          variant="outline"
+                          backgroundColor="none"
+                          border=".01rem solid transparent"
+                          borderColor="#00C79740"
+                          borderRadius="0.75rem">
+                          <CardBody pb={4}>
+                            <Box cursor={"pointer"} onClick={() => openNftDetailsModal(index)}>
+                              <NftMediaComponent nftMedia={dataNft?.media} autoSlide imageHeight="230px" imageWidth="225px" borderRadius="lg" />
+
+                              <Stack mt={"4"}>
+                                <Heading size="md" noOfLines={1} fontFamily="Clash-Medium">
+                                  {dataNft.title}
+                                </Heading>
+                                <Text fontSize="md">Token Identifier : {dataNft?.tokenIdentifier}</Text>
+
+                                <Text fontSize="md">Supply Available : {Number(offer?.quantity)}</Text>
+                                <Text fontSize="sm">
+                                  Unlock for {offer?.wantedTokenAmount === 0 ? "Free" : `${Number(convertWeiToEsdt(offer?.wantedTokenAmount))} ITHEUM/NFT`}
+                                </Text>
+                              </Stack>
+                            </Box>
+                          </CardBody>
+                        </Card>
+                      </WrapItem>
+                    );
+                  })}
+                </Wrap>
               </ModalBody>
             </ModalContent>
           </Modal>

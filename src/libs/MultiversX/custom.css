@@ -397,7 +397,6 @@ body {
 .dapp-core-component__dappModalStyles__dappModalContent.dapp-modal-dialog-content {
   margin-top: 0px !important;
   margin-bottom: 4rem !important;
-  overflow-y: scroll !important;
   max-height: 100% !important;
 }
 

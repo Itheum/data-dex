@@ -51,6 +51,7 @@ export function contractsForChain(chainID: string): ContractsType {
             contract: new Address("erd1qqqqqqqqqqqqqpgqu0nxfwcnsaccu3sgt0a8u0sglmk6se9cu00s0zm03r"),
           },
           { id: "DNFTPHMUS-73cde3", contract: new Address("") },
+          { id: "TSTGRP-0a41a6", contract: new Address("erd1qqqqqqqqqqqqqpgqw77mcvlrgzvscnspj0dktdqe344k608a8ypsez46g0") },
         ],
       };
     }

@@ -337,7 +337,7 @@ export default function WalletDataNFTMX(item: any) {
         mb="1rem"
         position="relative">
         <NftMediaComponent
-          imageUrls={item.media?.map((mediaObj: any) => mediaObj.url) ?? [item.nftImgUrl]}
+          nftMedia={item?.media}
           autoSlide
           imageHeight="236px"
           imageWidth="236px"
@@ -347,7 +347,7 @@ export default function WalletDataNFTMX(item: any) {
           marginTop="1.5rem"
         />
 
-        <Flex h="28rem" mx={6} my={2} direction="column" justify={item.isProfile === true ? "initial" : "space-between"}>
+        <Flex h="28rem" mx={6} my={5} direction="column" justify={item.isProfile === true ? "initial" : "space-between"}>
           <Text fontSize="md" color="#929497">
             <Link href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.tokenIdentifier}`} isExternal>
               {item.tokenName} <ExternalLinkIcon mx="2px" />
@@ -587,7 +587,7 @@ export default function WalletDataNFTMX(item: any) {
               )}
             </Box>
 
-            <Tooltip colorScheme="teal" hasArrow placement="top" label="Market is paused" isDisabled={!isMarketPaused}>
+            <Tooltip colorScheme="teal" hasArrow placement="top" label="Data Market is Paused" isDisabled={!isMarketPaused}>
               <Button
                 size="sm"
                 mt={2}
