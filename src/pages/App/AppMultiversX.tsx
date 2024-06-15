@@ -70,6 +70,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   const { pathname } = useLocation();
   const [loggedInActiveMxWallet, setLoggedInActiveMxWallet] = useState("");
   const [dataCATAccount, setDataCATAccount] = useState<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loadingDataCATAccount, setLoadingDataCATAccount] = useState(true);
 
   let path = pathname?.split("/")[pathname?.split("/")?.length - 1]; // handling Route Path

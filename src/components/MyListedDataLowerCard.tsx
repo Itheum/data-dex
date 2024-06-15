@@ -38,8 +38,8 @@ import {
   backendApi,
 } from "libs/utils";
 import { useMarketStore } from "store";
-import PreviewDataButton from "./PreviewDataButton";
 import NftMediaComponent from "./NftMediaComponent";
+import PreviewDataButton from "./PreviewDataButton";
 
 type MyListedDataLowerCardProps = {
   offer: Offer;

@@ -148,17 +148,17 @@ export const DataNftCollectionCard: FC<DataNftCollectionCardComponentProps> = ({
             </Box>
           ) : (
             <>
-              {Array.from({ length: 10 }).map((_, index) => (
+              {Array.from({ length: 10 }).map((_, indexT) => (
                 <Image
-                  key={index}
+                  key={indexT}
                   position={"absolute"}
                   src={imageUrl}
                   alt={"item.dataPreview"}
                   h={230}
                   w={230}
-                  mt={`${-0.5 - 0.5 * index}rem`}
-                  zIndex={11 - index}
-                  opacity={1 - 0.1 * index}
+                  mt={`${-0.5 - 0.5 * indexT}rem`}
+                  zIndex={11 - indexT}
+                  opacity={1 - 0.1 * indexT}
                   borderRadius="32px"
                   onError={({ currentTarget }) => {
                     currentTarget.src = DEFAULT_NFT_IMAGE;

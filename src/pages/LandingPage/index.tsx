@@ -1,13 +1,12 @@
 import React from "react";
-import { Box, Center, Flex, Heading, Image, Text, Button, Link, useColorMode } from "@chakra-ui/react";
+import { Box, Center, Flex, Heading, Image, Text, useColorMode } from "@chakra-ui/react";
 import imgHeroDataNFTs from "assets/img/landing/hero-data-nfts.png";
 import imgHeroMetaverseMask from "assets/img/landing/hero-metaverse-mask.png";
-import dataNFTImg from "assets/img/whitelist/getWhitelist.png";
+import NewCreatorCTA from "components/NewCreatorCTA";
 import ExplainerArticles from "components/Sections/ExplainerArticles";
 import RecentArticles from "components/Sections/RecentArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
 import VolumesDataNfts from "pages/Home/components/VolumesDataNfts";
-import NewCreatorCTA from "components/NewCreatorCTA";
 
 const LandingPage = () => {
   const { colorMode } = useColorMode();

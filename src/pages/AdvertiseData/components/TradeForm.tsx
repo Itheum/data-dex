@@ -61,14 +61,14 @@ import BigNumber from "bignumber.js";
 import { File, NFTStorage } from "nft.storage";
 import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
-import { MintingModal } from "./MintingModal";
+import extraAssetDemo from "assets/img/extra-asset-demo.gif";
 import ChainSupportedInput from "components/UtilComps/ChainSupportedInput";
 import { IS_DEVNET, MENU } from "libs/config";
 import { labels } from "libs/language";
 import { UserDataType } from "libs/MultiversX/types";
 import { getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "libs/utils";
 import { useAccountStore, useMintStore } from "store";
-import extraAssetDemo from "assets/img/extra-asset-demo.gif";
+import { MintingModal } from "./MintingModal";
 
 // Declaring the form types
 type TradeDataFormType = {

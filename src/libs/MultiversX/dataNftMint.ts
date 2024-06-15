@@ -1,4 +1,5 @@
 import { DataNft, SftMinter } from "@itheum/sdk-mx-data-nft/out";
+import { parseDataNft } from "@itheum/sdk-mx-data-nft/out/common/utils";
 import { IAddress } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { NftType } from "@multiversx/sdk-dapp/types/tokens.types";
@@ -8,7 +9,6 @@ import { uxConfig } from "libs/config";
 import { sleep } from "libs/utils";
 import { UserDataType } from "./types";
 import { contractsForChain } from "../config";
-import { parseDataNft } from "@itheum/sdk-mx-data-nft/out/common/utils";
 
 export class DataNftMintContract {
   contract: SftMinter;

@@ -28,6 +28,7 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
   const { bondNft, bondDataNft } = props;
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { bondingPageNumber } = useParams();
   const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   const [allCompensation, setAllCompensation] = useState<Array<Compensation>>([]);

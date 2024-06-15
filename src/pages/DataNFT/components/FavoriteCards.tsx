@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Box, Card, CardBody, Flex, Heading, Image, Link, Text, Skeleton, Stack } from "@chakra-ui/react";
+import { Box, Card, CardBody, Flex, Heading, Link, Text, Skeleton, Stack } from "@chakra-ui/react";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { Link as ReactRouterLink } from "react-router-dom";
+import NftMediaComponent from "components/NftMediaComponent";
 import { Favourite } from "../../../components/Favourite/Favourite";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
 import { IS_DEVNET, getFavoritesFromBackendApi } from "../../../libs/MultiversX";
-import NftMediaComponent from "components/NftMediaComponent";
 
 type FavoriteDataCreationNftsType = {
   nonce: number;
@@ -43,8 +43,8 @@ export const FavoriteCards: React.FC = () => {
         if (getFavourites.length === 0) {
           return;
         } else {
-          const dataNfts: DataNft[] = await DataNft.createManyFromApi(_favoriteData);
-          setDataNfts(dataNfts);
+          const dataNftsT: DataNft[] = await DataNft.createManyFromApi(_favoriteData);
+          setDataNfts(dataNftsT);
         }
       }
     })();

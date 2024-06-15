@@ -10,8 +10,8 @@ import useThrottle from "components/UtilComps/UseThrottle";
 import { IS_DEVNET } from "libs/config";
 import { BondingParameters } from "./components/BondingParameters";
 import { CollectionDashboard } from "./components/CollectionDashboard";
-import { NoDataHere } from "../../components/Sections/NoDataHere";
 import { CompensationDashboard } from "./components/CompensationDashboard";
+import { NoDataHere } from "../../components/Sections/NoDataHere";
 
 type CompensationNftsType = {
   nonce: number;
@@ -28,6 +28,7 @@ export const Bonding: React.FC = () => {
   const [bondingDataNfts, setBondingDataNfts] = useState<Array<DataNft>>([]);
   const [compensationDataNfts, setCompensationDataNfts] = useState<Array<DataNft>>([]);
   const [contractBonds, setContractBonds] = useState<Bond[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [totalAmountBondedForThisPage, setTotalAmountBondedForThisPage] = useState<number>(0);
   const [allCompensation, setAllCompensation] = useState<Compensation[]>([]);
   const navigate = useNavigate();
@@ -84,6 +85,7 @@ export const Bonding: React.FC = () => {
   useEffect(() => {
     (async () => {
       const pagedBonds = await bondContract.viewPagedBonds(bondingPageIndex * pageSize, (bondingPageIndex + 1) * pageSize - 1);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       let _totalAmountBondedForThisPage = 0;
       pagedBonds.forEach((bond) => {
         _totalAmountBondedForThisPage += BigNumber(bond.bondAmount)
@@ -203,7 +205,7 @@ export const Bonding: React.FC = () => {
                 {allCompensation.length === 0 ? (
                   <NoDataHere />
                 ) : (
-                  allCompensation.map((compensation, index) => (
+                  allCompensation.map((compensation) => (
                     <Fragment key={compensation.compensationId}>
                       <CompensationDashboard compensationBondNft={compensation} bondDataNft={compensationDataNfts} />
                     </Fragment>

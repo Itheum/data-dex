@@ -6,10 +6,10 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import BigNumber from "bignumber.js";
+import NftMediaComponent from "components/NftMediaComponent";
 import { IS_DEVNET } from "libs/config";
 import { LivelinessScore } from "../../../components/Liveliness/LivelinessScore";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
-import NftMediaComponent from "components/NftMediaComponent";
 
 type CompensationNftsType = {
   nonce: number;

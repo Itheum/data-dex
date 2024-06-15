@@ -86,7 +86,7 @@ export const CompensationDashboard: React.FC<CompensationDashboardProps> = (prop
     <Flex flexDirection="column" w="full" gap={5}>
       <Flex flexDirection="row" gap={5}>
         <Box w="full">
-          {bondDataNft.map((dataNft, index) => {
+          {bondDataNft.map((dataNft) => {
             if (dataNft.tokenIdentifier === createTokenIdentifier(compensationBondNft.tokenIdentifier, compensationBondNft.nonce)) {
               return (
                 <Flex flexDirection="column" key={dataNft.tokenIdentifier}>

@@ -29,8 +29,8 @@ import { getApi } from "libs/MultiversX/api";
 import { convertWeiToEsdt, convertToLocalString, getTokenWantedRepresentation, hexZero, tokenDecimals } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import FrozenOverlay from "./FrozenOverlay";
-import PreviewDataButton from "./PreviewDataButton";
 import NftMediaComponent from "./NftMediaComponent";
+import PreviewDataButton from "./PreviewDataButton";
 
 type MyListedDataNFTProps = {
   offer: Offer;

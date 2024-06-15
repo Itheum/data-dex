@@ -8,8 +8,8 @@ import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import BigNumber from "bignumber.js";
 import { FaCalculator } from "react-icons/fa";
 import { CalculateCompensationModal } from "./CalculateCompensationModal";
-import { contractsForChain, IS_DEVNET } from "../../../libs/config";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
+import { contractsForChain, IS_DEVNET } from "../../../libs/config";
 
 export type CompensationNftPair = {
   compensation: Compensation;

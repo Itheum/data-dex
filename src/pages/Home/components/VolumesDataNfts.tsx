@@ -1,13 +1,13 @@
-import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { IS_DEVNET, getTopVolumes } from "libs/MultiversX";
 import React, { useEffect, useState } from "react";
-import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { Card, CardBody, Heading, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
+import { DataNft } from "@itheum/sdk-mx-data-nft/out";
+import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { Link } from "react-router-dom";
 import NftMediaComponent from "components/NftMediaComponent";
-import { useMarketStore } from "store";
-import { convertToLocalString } from "libs/utils";
+import { IS_DEVNET, getTopVolumes } from "libs/MultiversX";
 import { NftMedia } from "libs/types";
+import { convertToLocalString } from "libs/utils";
+import { useMarketStore } from "store";
 
 interface VolumesDataNftsProps {
   // Define the props for your component here

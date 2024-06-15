@@ -10,7 +10,6 @@ import {
   Center,
   CloseButton,
   HStack,
-  Image,
   Link,
   Modal,
   ModalBody,

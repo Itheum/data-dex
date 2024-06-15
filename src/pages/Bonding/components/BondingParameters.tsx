@@ -83,6 +83,7 @@ export const BondingParameters: React.FC = () => {
     handleSubmit,
     watch,
     getFieldState,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     formState,
   } = useForm<BondingParametersFormType>({
     defaultValues: {

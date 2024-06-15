@@ -101,12 +101,12 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   ];
 
   const getOnChainNFTs = async () => {
-    const dataNfts: DataNft[] = await getNftsOfACollectionForAnAddress(
+    const dataNftsT: DataNft[] = await getNftsOfACollectionForAnAddress(
       address,
       contractsForChain(chainID).dataNftTokens.map((v) => v.id),
       chainID
     );
-    return dataNfts;
+    return dataNftsT;
   };
 
   useEffect(() => {

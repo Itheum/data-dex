@@ -5,6 +5,7 @@ import { Address } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { Link as ReactRouterLink } from "react-router-dom";
+import NftMediaComponent from "components/NftMediaComponent";
 import { IS_DEVNET, getFavoritesFromBackendApi, getHealthCheckFromBackendApi, getRecentOffersFromBackendApi } from "libs/MultiversX";
 import { getApi, getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
@@ -13,7 +14,6 @@ import { convertWeiToEsdt, hexZero, sleep } from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
 import { NoDataHere } from "./NoDataHere";
 import { Favourite } from "../Favourite/Favourite";
-import NftMediaComponent from "components/NftMediaComponent";
 
 const latestOffersSkeleton: RecentDataNFTType[] = [];
 

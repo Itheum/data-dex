@@ -15,7 +15,7 @@ import {
 } from "libs/MultiversX";
 import { getAccountTokenFromApi, getItheumPriceFromApi } from "libs/MultiversX/api";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
-import { computeRemainingCooldown, convertWeiToEsdt, decodeNativeAuthToken, sleep, tokenDecimals } from "libs/utils";
+import { computeRemainingCooldown, convertWeiToEsdt, decodeNativeAuthToken, tokenDecimals } from "libs/utils";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
@@ -41,7 +41,6 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const isApiUp = useMarketStore((state) => state.isApiUp);
   const updateIsApiUp = useMarketStore((state) => state.updateIsApiUp);
   const updateIsMarketplaceApiUp = useMarketStore((state) => state.updateIsMarketplaceApiUp);
-  const addressBoughtOffers = useMarketStore((state) => state.addressBoughtOffers);
   const updateAddressBoughtOffers = useMarketStore((state) => state.updateAddressBoughtOffers);
 
   // MINT STORE

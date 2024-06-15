@@ -1,10 +1,10 @@
 import React from "react";
-import { timeUntil } from "../../libs/utils";
-import { ProposalDeepLinkBuilder } from "@peerme/sdk";
-import { IS_DEVNET, PEERME_TEAM_NAME } from "../../libs/config";
-import BigNumber from "bignumber.js";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { Button } from "@chakra-ui/react";
+import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { ProposalDeepLinkBuilder } from "@peerme/sdk";
+import BigNumber from "bignumber.js";
+import { IS_DEVNET, PEERME_TEAM_NAME } from "../../libs/config";
+import { timeUntil } from "../../libs/utils";
 
 type ProposalButtonProps = {
   proposalTitle: string;

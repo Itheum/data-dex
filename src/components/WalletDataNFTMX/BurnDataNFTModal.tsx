@@ -9,11 +9,11 @@ import { useToast } from "@chakra-ui/toast";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
+import NftMediaComponent from "components/NftMediaComponent";
 import { contractsForChain } from "libs/config";
 import { labels } from "libs/language";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { isValidNumericCharacter } from "libs/utils";
-import NftMediaComponent from "components/NftMediaComponent";
 
 type BurnDataNFTModalPropType = {
   isOpen: boolean;

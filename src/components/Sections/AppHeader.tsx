@@ -42,6 +42,7 @@ import {
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { BsDot } from "react-icons/bs";
 import { FaStore, FaUserCheck, FaLaptop } from "react-icons/fa";
 import { LuFlaskRound } from "react-icons/lu";
 import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdPerson, MdSpaceDashboard } from "react-icons/md";
@@ -51,14 +52,13 @@ import { Link as ReactRouterLink, useLocation, useNavigate } from "react-router-
 import logoSmlL from "assets/img/logo-icon-b.png";
 import logoSmlD from "assets/img/logo-sml-d.png";
 import ClaimsHistory from "components/ClaimsHistory";
+import Countdown from "components/CountDown";
 import InteractionsHistory from "components/Tables/InteractionHistory";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU, BIT_GAME_WINDOW_HOURS, EXPLORER_APP_FOR_TOKEN } from "libs/config";
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
-import Countdown from "components/CountDown";
-import { BsDot } from "react-icons/bs";
 const exploreRouterMenu = [
   {
     sectionId: "MainSections",

@@ -24,6 +24,7 @@ import {
 } from "@chakra-ui/react";
 import { Offer } from "@itheum/sdk-mx-data-nft/out";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
+import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import axios from "axios";
@@ -43,7 +44,6 @@ import { DataNftMarketContract } from "../../../libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { backendApi, createNftId, sleep } from "../../../libs/utils";
 import { useMarketStore } from "../../../store";
-import { Address } from "@multiversx/sdk-core/out";
 
 interface PropsType {
   tabState: number;
@@ -125,12 +125,12 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   ];
 
   const getOnChainNFTs = async () => {
-    const dataNfts: DataNft[] = await getNftsOfACollectionForAnAddress(
+    const dataNftsT: DataNft[] = await getNftsOfACollectionForAnAddress(
       address,
       contractsForChain(chainID).dataNftTokens.map((v) => v.id),
       chainID
     );
-    return dataNfts;
+    return dataNftsT;
   };
 
   useEffect(() => {

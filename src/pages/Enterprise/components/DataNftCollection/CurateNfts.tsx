@@ -23,6 +23,7 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
   const [createDataNfts, setCreateDataNfts] = useState<Array<NftType>>([]);
   const [addressFrozenNonces, setAddressFrozenNonces] = useState<Array<number>>([]);
   const [paginationFromNft, setPaginationFromNft] = useState<number>(0);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [paginationSizeNft, setPaginationSizeNft] = useState<number>(4);
   const [nftCount, setNftCount] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);

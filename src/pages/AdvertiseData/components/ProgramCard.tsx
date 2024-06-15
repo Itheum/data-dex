@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { Badge, Box, Button, Image, Text, useColorMode } from "@chakra-ui/react";
 
 interface ProgramCardProps {

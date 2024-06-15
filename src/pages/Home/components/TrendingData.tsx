@@ -4,11 +4,11 @@ import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { Link as ReactRouterLink } from "react-router-dom";
+import NftMediaComponent from "components/NftMediaComponent";
+import { NftMedia } from "libs/types";
 import { Favourite } from "../../../components/Favourite/Favourite";
 import { IS_DEVNET, getFavoritesFromBackendApi, getTrendingFromBackendApi } from "../../../libs/MultiversX";
 import { useAccountStore } from "../../../store";
-import NftMediaComponent from "components/NftMediaComponent";
-import { NftMedia } from "libs/types";
 
 type TrendingDataCreationNftsType = {
   nonce: number;
@@ -39,7 +39,6 @@ const skeletonHeight = { base: "260px", md: "190px", "2xl": "220px" };
 
 export const TrendingData: React.FC = () => {
   const { chainID } = useGetNetworkConfig();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const [trendingDataNfts, setTrendingDataNfts] = useState<Array<TrendingDataNftsType>>(latestOffersSkeleton);
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
   const { tokenLogin } = useGetLoginInfo();

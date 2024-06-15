@@ -1,9 +1,9 @@
 import { DataNftMarket, MarketplaceRequirements, Offer } from "@itheum/sdk-mx-data-nft/out";
 import axios from "axios";
-import { backendApi, convertEsdtToWei, tokenDecimals } from "libs/utils";
-import { IS_DEVNET, uxConfig } from ".";
-import { DataNftCollectionType, Favorite, TrendingNft } from "./types";
+import { backendApi } from "libs/utils";
 import { DataNFTCollectionObject } from "libs/utils/types/marketplace";
+import { IS_DEVNET, uxConfig } from ".";
+import { Favorite, TrendingNft } from "./types";
 
 export async function getHealthCheckFromBackendApi(chainID: string): Promise<boolean> {
   try {
