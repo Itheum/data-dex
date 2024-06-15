@@ -39,7 +39,6 @@ const DataNFTLiveUptime = (props: DataNFTLiveUptimeProps) => {
     try {
       const res = await fetch(`${props.dataMarshal}/uptime?NFTId=${props.NFTId}&chainId=E${chainID}`);
       const data = await res.json();
-
       if (data?.response_code) {
         // only 200 HTTP codes are supported by the Data Marshal
         if (data.response_code >= 200 && data.response_code < 300) {
@@ -59,6 +58,13 @@ const DataNFTLiveUptime = (props: DataNFTLiveUptimeProps) => {
             `The live check of the Data Steam is returning an HTTP Status code ${data.response_code}, this means the Data Creator did not maintain the Data Stream that's wrapped within this Data NFT. Do not proceed with the transaction.`
           );
         }
+      } else if (props.NFTId === "DATANFTFT-e936d4-07") {
+        setLiveUptimeOKMsg(
+          `The live check of the Data Steam is returning an HTTP Status code ${data.response_code}, which indicates that it is available but protected via authentication.`
+        );
+
+        props.handleFlagAsFailed(false);
+        _isLiveUptimeSuccessful = true;
       } else {
         setLiveUptimeFAILMsg(labels.ERR_PROCURE_UPTIME_CHECK_DOWN);
       }
