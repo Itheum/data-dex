@@ -60,7 +60,7 @@ const DataNFTLiveUptime = (props: DataNFTLiveUptimeProps) => {
         }
       } else if (props.NFTId === "DATANFTFT-e936d4-07") {
         setLiveUptimeOKMsg(
-          `The live check of the Data Steam is returning an HTTP Status code ${data.response_code}, which indicates that it is available but protected via authentication.`
+          `The live check of the Data Steam is returning an HTTP Status code 403, which indicates that it is available but protected via authentication.`
         );
 
         props.handleFlagAsFailed(false);
