@@ -274,7 +274,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
                   {": "}
                   {buyerFee ? (
                     <>
-                      {feePrice} {fee && itheumPrice ? `(~${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
+                      {feePrice} {fee && itheumPrice ? `(~${convertToLocalString(amount * fee * itheumPrice, 2)} USD)` : ""}
                     </>
                   ) : (
                     "-"
