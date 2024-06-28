@@ -31,6 +31,8 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const updateAccessToken = useAccountStore((state) => state.updateAccessToken);
   const updateFavoriteNfts = useAccountStore((state) => state.updateFavoriteNfts);
   const updateBitzBalance = useAccountStore((state) => state.updateBitzBalance);
+  const updateBonusBitzSum = useAccountStore((state) => state.updateBonusBitzSum);
+  const updateGivenBitzSum = useAccountStore((state) => state.updateGivenBitzSum);
   const updateCooldown = useAccountStore((state) => state.updateCooldown);
 
   // MARKET STORE
@@ -64,6 +66,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
     if (!address || !(tokenLogin && tokenLogin.nativeAuthToken)) {
       return;
     }
+    if (hasPendingTransactions) return;
     const nativeAuthTokenData = decodeNativeAuthToken(tokenLogin.nativeAuthToken);
     if (nativeAuthTokenData.extraInfo.timestamp) {
       const currentTime = new Date().getTime();
@@ -97,13 +100,21 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
         const getBitzGameResult = await viewDataJSONCore(viewDataArgs, bitzGameDataNFT);
         if (getBitzGameResult) {
-          updateBitzBalance(getBitzGameResult.data.gamePlayResult.bitsScoreBeforePlay);
+          let sumScoreBitzBefore = getBitzGameResult.data.gamePlayResult.bitsScoreBeforePlay || 0;
+          sumScoreBitzBefore = sumScoreBitzBefore < 0 ? 0 : sumScoreBitzBefore;
+          let sumGivenBitz = getBitzGameResult.data?.bitsMain?.bitsGivenSum || 0;
+          sumGivenBitz = sumGivenBitz < 0 ? 0 : sumGivenBitz;
+          let sumBonusBitz = getBitzGameResult.data?.bitsMain?.bitsBonusSum || 0;
+          sumBonusBitz = sumBonusBitz < 0 ? 0 : sumBonusBitz;
+          updateBitzBalance(sumScoreBitzBefore + sumBonusBitz - sumGivenBitz);
           updateCooldown(
             computeRemainingCooldown(
               Math.max(getBitzGameResult.data.gamePlayResult.lastPlayedAndCommitted, getBitzGameResult.data.gamePlayResult.lastPlayedBeforeThisPlay),
               getBitzGameResult.data.gamePlayResult.configCanPlayEveryMSecs
             )
           );
+          updateGivenBitzSum(sumGivenBitz);
+          updateBonusBitzSum(sumBonusBitz);
         }
       } else {
         console.log("info: user does NOT OWN the bitz score data nft");
@@ -111,8 +122,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
         updateCooldown(-1);
       }
     })();
-    // }, 3000);
-  }, [address, tokenLogin]);
+  }, [address, tokenLogin, hasPendingTransactions]);
 
   useEffect(() => {
     const accessToken = searchParams.get("accessToken");
