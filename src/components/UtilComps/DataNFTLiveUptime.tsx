@@ -58,7 +58,7 @@ const DataNFTLiveUptime = (props: DataNFTLiveUptimeProps) => {
             `The live check of the Data Steam is returning an HTTP Status code ${data.response_code}, this means the Data Creator did not maintain the Data Stream that's wrapped within this Data NFT. Do not proceed with the transaction.`
           );
         }
-      } else if (props.NFTId === "DATANFTFT-e936d4-07") {
+      } else if (props.NFTId === "DATANFTFT-e936d4-07" || props.NFTId === "DATANFTFT-e0b917-c6") {
         setLiveUptimeOKMsg(
           `The live check of the Data Steam is returning an HTTP Status code 403, which indicates that it is available but protected via authentication.`
         );
