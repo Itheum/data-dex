@@ -18,7 +18,7 @@ function Launcher() {
     setLaunchMode(option);
     setLaunchModeSession(option);
 
-    // resetting all launch mode sessions here is nice an clean
+    // resetting all launch mode sessions here is nice and clean
     clearAppSessionsLaunchMode();
   };
 

@@ -99,98 +99,105 @@ export const BondingCards: React.FC = () => {
       {bondingOffers.length === 0 ? (
         <NoDataHere />
       ) : (
-        bondingOffers.map((dataNft, index) => (
-          <Card bg="#1b1b1b50" border="1px solid" borderColor="#00C79740" borderRadius="3xl" p={5} w="100%" key={dataNft.nonce}>
-            <Flex>
-              <NftMediaComponent nftMedia={dataNft?.media} imageHeight="125px" imageWidth="125px" />
-              <Flex justifyContent="space-between" alignItems="center" px={10} w="full">
-                <Flex flexDirection="column" justifyContent="center" w="full">
-                  <Text fontFamily="Clash-Medium" pb={3}>
-                    {dataNft.tokenName}
-                  </Text>
-                  <LivelinessScore key={index} unbondTimestamp={contractBonds[index].unbondTimestamp} lockPeriod={contractBonds[index].lockPeriod} />
-                  <Flex gap={4} pt={3} alignItems="center">
-                    <Button colorScheme="teal" px={6} onClick={() => renewBond(dataNft.collection, dataNft.nonce)}>
-                      Renew Bond
-                    </Button>
-                    <Text>{`New expiry will be ${calculateNewPeriodAfterNewBond(contractBonds[index].unbondTimestamp, contractBonds[index].lockPeriod)}`}</Text>
-                  </Flex>
-                  <Flex gap={4} pt={3} alignItems="center">
-                    {!checkIfBondIsExpired(contractBonds[index].unbondTimestamp) ? (
-                      <Button
-                        colorScheme="red"
-                        variant="outline"
-                        textColor="indianred"
-                        fontWeight="400"
-                        isDisabled={
-                          calculateRemainedAmountAfterPenalty(BigNumber(contractBonds[index].remainingAmount), BigNumber(contractBonds[index].bondAmount)) <=
-                          new BigNumber(0)
-                        }
-                        onClick={() => withdrawBonds(dataNft.collection, dataNft.nonce)}>
-                        Withdraw Bond
+        bondingOffers.map((dataNft) => {
+          const contractBond = contractBonds.find((bond) => bond.nonce === dataNft.nonce && bond.tokenIdentifier === dataNft.collection)!;
+          const contractCompensation = allCompensation.find((comp) => comp.nonce === dataNft.nonce && comp.tokenIdentifier === dataNft.collection)!;
+          return (
+            <Card bg="#1b1b1b50" border="1px solid" borderColor="#00C79740" borderRadius="3xl" p={5} w="100%" key={dataNft.nonce}>
+              <Flex>
+                <NftMediaComponent nftMedia={dataNft?.media} imageHeight="125px" imageWidth="125px" />
+                <Flex justifyContent="space-between" alignItems="center" px={10} w="full">
+                  <Flex flexDirection="column" justifyContent="center" w="full">
+                    <Text fontFamily="Clash-Medium" pb={3}>
+                      {dataNft.tokenName}
+                    </Text>
+                    <LivelinessScore
+                      key={dataNft.collection + dataNft.nonce}
+                      unbondTimestamp={contractBond.unbondTimestamp}
+                      lockPeriod={contractBond.lockPeriod}
+                    />
+                    <Flex gap={4} pt={3} alignItems="center">
+                      <Button colorScheme="teal" px={6} onClick={() => renewBond(dataNft.collection, dataNft.nonce)}>
+                        Renew Bond
                       </Button>
-                    ) : (
-                      <Button
-                        colorScheme="teal"
-                        variant="outline"
-                        textColor="teal.200"
-                        fontWeight="400"
-                        onClick={() => withdrawBonds(dataNft.collection, dataNft.nonce)}>
-                        Withdraw Bond
-                      </Button>
-                    )}
-                    <Flex flexDirection="column" gap={1}>
-                      <Flex flexDirection="row" gap={4}>
-                        <Text fontSize=".75rem" textColor="teal.200">
-                          {BigNumber(contractBonds[index].bondAmount)
-                            .dividedBy(10 ** 18)
-                            .toNumber()}
-                          &nbsp;$ITHEUM Bonded
-                        </Text>
-                        <Text fontSize=".75rem">|</Text>
-                        <Text fontSize=".75rem" textColor="indianred">
-                          {BigNumber(allCompensation[index].accumulatedAmount)
-                            .dividedBy(10 ** 18)
-                            .toNumber()}
-                          &nbsp;$ITHEUM Penalized
-                        </Text>
-                        <Text fontSize=".75rem">|</Text>
-                        <Text fontSize=".75rem" textColor="mediumpurple">
-                          {BigNumber(contractBonds[index].remainingAmount)
-                            .dividedBy(10 ** 18)
-                            .toNumber()}
-                          &nbsp;$ITHEUM Remaining
-                        </Text>
-                      </Flex>
-                      {!checkIfBondIsExpired(contractBonds[index].unbondTimestamp) ? (
-                        <>
-                          {calculateRemainedAmountAfterPenalty(BigNumber(contractBonds[index].remainingAmount), BigNumber(contractBonds[index].bondAmount)) >=
-                          new BigNumber(0) ? (
-                            <Text textColor="indianred" fontSize="sm">
-                              You can withdraw bond with {contractConfiguration.withdrawPenalty / 100}% Penalty
-                            </Text>
-                          ) : (
-                            <Text textColor="indianred" fontSize="sm">
-                              You cant withdraw because {contractConfiguration.withdrawPenalty / 100}% Penalty is greater than your remaining bond.
-                            </Text>
-                          )}
-                        </>
+                      <Text>{`New expiry will be ${calculateNewPeriodAfterNewBond(contractBond.unbondTimestamp, contractBond.lockPeriod)}`}</Text>
+                    </Flex>
+                    <Flex gap={4} pt={3} alignItems="center">
+                      {!checkIfBondIsExpired(contractBond.unbondTimestamp) ? (
+                        <Button
+                          colorScheme="red"
+                          variant="outline"
+                          textColor="indianred"
+                          fontWeight="400"
+                          isDisabled={
+                            calculateRemainedAmountAfterPenalty(BigNumber(contractBond.remainingAmount), BigNumber(contractBond.bondAmount)) <= new BigNumber(0)
+                          }
+                          onClick={() => withdrawBonds(dataNft.collection, dataNft.nonce)}>
+                          Withdraw Bond
+                        </Button>
                       ) : (
-                        <Text textColor="teal.200" fontSize="sm">
-                          You can withdraw{" "}
-                          {BigNumber(contractBonds[index].remainingAmount)
-                            .dividedBy(10 ** 18)
-                            .toNumber()}{" "}
-                          $ITHEUM with no penalty
-                        </Text>
+                        <Button
+                          colorScheme="teal"
+                          variant="outline"
+                          textColor="teal.200"
+                          fontWeight="400"
+                          onClick={() => withdrawBonds(dataNft.collection, dataNft.nonce)}>
+                          Withdraw Bond
+                        </Button>
                       )}
+                      <Flex flexDirection="column" gap={1}>
+                        <Flex flexDirection="row" gap={4}>
+                          <Text fontSize=".75rem" textColor="teal.200">
+                            {BigNumber(contractBond.bondAmount)
+                              .dividedBy(10 ** 18)
+                              .toNumber()}
+                            &nbsp;$ITHEUM Bonded
+                          </Text>
+                          <Text fontSize=".75rem">|</Text>
+                          <Text fontSize=".75rem" textColor="indianred">
+                            {BigNumber(contractCompensation.accumulatedAmount)
+                              .dividedBy(10 ** 18)
+                              .toNumber()}
+                            &nbsp;$ITHEUM Penalized
+                          </Text>
+                          <Text fontSize=".75rem">|</Text>
+                          <Text fontSize=".75rem" textColor="mediumpurple">
+                            {BigNumber(contractBond.remainingAmount)
+                              .dividedBy(10 ** 18)
+                              .toNumber()}
+                            &nbsp;$ITHEUM Remaining
+                          </Text>
+                        </Flex>
+                        {!checkIfBondIsExpired(contractBond.unbondTimestamp) ? (
+                          <>
+                            {calculateRemainedAmountAfterPenalty(BigNumber(contractBond.remainingAmount), BigNumber(contractBond.bondAmount)) >=
+                            new BigNumber(0) ? (
+                              <Text textColor="indianred" fontSize="sm">
+                                You can withdraw bond with {contractConfiguration.withdrawPenalty / 100}% Penalty
+                              </Text>
+                            ) : (
+                              <Text textColor="indianred" fontSize="sm">
+                                You cant withdraw because {contractConfiguration.withdrawPenalty / 100}% Penalty is greater than your remaining bond.
+                              </Text>
+                            )}
+                          </>
+                        ) : (
+                          <Text textColor="teal.200" fontSize="sm">
+                            You can withdraw{" "}
+                            {BigNumber(contractBond.remainingAmount)
+                              .dividedBy(10 ** 18)
+                              .toNumber()}{" "}
+                            $ITHEUM with no penalty
+                          </Text>
+                        )}
+                      </Flex>
                     </Flex>
                   </Flex>
                 </Flex>
               </Flex>
-            </Flex>
-          </Card>
-        ))
+            </Card>
+          );
+        })
       )}
     </Stack>
   );
