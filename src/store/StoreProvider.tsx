@@ -63,19 +63,22 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   }, []);
 
   useEffect(() => {
-    if (!address || !(tokenLogin && tokenLogin.nativeAuthToken)) {
-      return;
-    }
-    if (hasPendingTransactions) return;
-    const nativeAuthTokenData = decodeNativeAuthToken(tokenLogin.nativeAuthToken);
-    if (nativeAuthTokenData.extraInfo.timestamp) {
-      const currentTime = new Date().getTime();
-      if (currentTime > (nativeAuthTokenData.extraInfo.timestamp + nativeAuthTokenData.ttl) * 1000) {
+    (async () => {
+      if (!address || !(tokenLogin && tokenLogin.nativeAuthToken)) {
         return;
       }
-    }
-    // setTimeout(() => {
-    (async () => {
+
+      if (hasPendingTransactions) return;
+
+      const nativeAuthTokenData = decodeNativeAuthToken(tokenLogin.nativeAuthToken);
+      if (nativeAuthTokenData.extraInfo.timestamp) {
+        const currentTime = new Date().getTime();
+        console.log(currentTime, (nativeAuthTokenData.extraInfo.timestamp + nativeAuthTokenData.ttl) * 1000);
+        if (currentTime > (nativeAuthTokenData.extraInfo.timestamp + nativeAuthTokenData.ttl) * 1000) {
+          return;
+        }
+      }
+
       // get the bitz game data nft details
       const bitzGameDataNFT = await DataNft.createFromApi(GET_BITZ_TOKEN);
 
@@ -89,7 +92,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
         console.log("info: user OWNs the bitz score data nft, so get balance");
 
         const viewDataArgs = {
-          mvxNativeAuthOrigins: [decodeNativeAuthToken(tokenLogin.nativeAuthToken || "").origin],
+          mvxNativeAuthOrigins: [nativeAuthTokenData.origin],
           mvxNativeAuthMaxExpirySeconds: 3600,
           fwdHeaderMapLookup: {
             "authorization": `Bearer ${tokenLogin.nativeAuthToken}`,
