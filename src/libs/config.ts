@@ -505,6 +505,7 @@ export const EXPLORER_APP_SUPPORTED_TOKENS: any = {
     "bitzgame": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 198 }],
     "bobergameroom": [],
     "deepforest": [],
+    "nfpodcast": [],
   },
   "1": {
     "trailblazer": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 1 }],
@@ -514,11 +515,13 @@ export const EXPLORER_APP_SUPPORTED_TOKENS: any = {
       { tokenIdentifier: "DATANFTFT-e936d4", nonce: 4 },
       { tokenIdentifier: "DATANFTFT-e936d4", nonce: 9 },
       { tokenIdentifier: "DATANFTFT-e936d4", nonce: 10 },
+      { tokenIdentifier: "DATANFTFT-e936d4", nonce: 11 },
     ],
     "deepforest": [...Array.from({ length: 91 }, (_, i) => ({ tokenIdentifier: "DFEE-72425b", nonce: i }))],
     "timecapsule": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 5 }],
     "bitzgame": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 7 }],
     "bobergameroom": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 8 }],
+    "nfpodcast": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 12 }],
   },
 };
 
@@ -531,6 +534,7 @@ export const EXPLORER_APP_FOR_TOKEN: Record<string, Record<string, string>> = {
     "timecapsule": "https://test.explorer.itheum.io/timecapsule",
     "bitzgame": "https://test.explorer.itheum.io/getbitz",
     "bobergameroom": "https://test.explorer.itheum.io/bobergameroom",
+    "nfpodcast": "https://test.explorer.itheum.io/nfpodcast",
   },
   "1": {
     "trailblazer": "https://explorer.itheum.io/project-trailblazer",
@@ -541,6 +545,7 @@ export const EXPLORER_APP_FOR_TOKEN: Record<string, Record<string, string>> = {
     "timecapsule": "https://explorer.itheum.io/timecapsule",
     "bitzgame": "https://explorer.itheum.io/getbitz",
     "bobergameroom": "https://explorer.itheum.io/bobergameroom",
+    "nfpodcast": "https://explorer.itheum.io/nfpodcast",
   },
 };
 
