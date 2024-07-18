@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Flex, Stack, Text } from "@chakra-ui/react";
+import { Button, Card, Flex, Heading, Stack, Text } from "@chakra-ui/react";
 import { Bond, BondConfiguration, BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
@@ -96,6 +96,9 @@ export const BondingCards: React.FC = () => {
 
   return (
     <Stack display="flex" flexDirection={{ base: "column" }} flexWrap={"wrap"} gap={7} mx={{ base: 0, md: 16 }} alignItems={"start"}>
+      <Heading as="h1" size="lg" fontFamily="Clash-Medium" color="teal.200">
+        Your Data NFT Creator Liveliness Bonds
+      </Heading>
       {bondingOffers.length === 0 ? (
         <NoDataHere />
       ) : (
@@ -106,7 +109,7 @@ export const BondingCards: React.FC = () => {
             <Card bg="#1b1b1b50" border="1px solid" borderColor="#00C79740" borderRadius="3xl" p={5} w="100%" key={dataNft.nonce}>
               <Flex>
                 <NftMediaComponent nftMedia={dataNft?.media} imageHeight="125px" imageWidth="125px" />
-                <Flex justifyContent="space-between" alignItems="center" px={10} w="full">
+                <Flex justifyContent="space-between" alignItems="center" px={4} w="full">
                   <Flex flexDirection="column" justifyContent="center" w="full">
                     <Text fontFamily="Clash-Medium" pb={3}>
                       {dataNft.tokenName}

@@ -20,6 +20,7 @@ import {
   Text,
   useColorMode,
   useDisclosure,
+  VStack,
 } from "@chakra-ui/react";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
@@ -40,6 +41,7 @@ import { BondingCards } from "./components/BondingCards";
 import { CompensationCards } from "./components/CompensationCards";
 import { FavoriteCards } from "./components/FavoriteCards";
 import DataNFTDetails from "./DataNFTDetails";
+import { LivelinessStaking } from "./components/LivelinessStaking";
 
 export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { colorMode } = useColorMode();
@@ -240,7 +242,10 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
             </TabPanel>
             <TabPanel mt={2} width={"full"}>
               {tabState === 5 ? (
-                <BondingCards />
+                <VStack alignItems={"start"}>
+                  <LivelinessStaking />
+                  <BondingCards />
+                </VStack>
               ) : (
                 <Flex onClick={getOnChainNFTs}>
                   <NoDataHere />
