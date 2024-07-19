@@ -15,8 +15,8 @@ export const LivelinessStaking: React.FC = () => {
 
   const [combinedLiveliness, setCombinedLiveliness] = useState<number>(0);
   const [combinedBondsStaked, setCombinedBondsStaked] = useState<number>(0);
-  const [rewardApy, setRewardApy] = useState<number>(11);
-  const [maxApy, setMaxApy] = useState<number>(20);
+  const [rewardApy, setRewardApy] = useState<number>(0);
+  const [maxApy, setMaxApy] = useState<number>(0);
   const [accumulatedRewards, setAccumulatedRewards] = useState<number>(0);
 
   const [globalTotalBond, setGlobalTotalBond] = useState<number>(0);
