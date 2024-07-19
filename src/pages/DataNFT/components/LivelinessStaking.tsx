@@ -94,6 +94,7 @@ export const LivelinessStaking: React.FC = () => {
     const envNetwork = import.meta.env.VITE_ENV_NETWORK;
     const liveContract = new LivelinessStake(envNetwork);
     const tx = liveContract.claimRewards(new Address(address));
+    tx.setGasLimit(200000000);
     await sendTransactions({
       transactions: [tx],
     });
