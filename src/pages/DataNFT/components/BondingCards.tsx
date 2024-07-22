@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Flex, Heading, Stack, Text } from "@chakra-ui/react";
+import { Button, Card, Flex, Heading, Stack, Text, VStack } from "@chakra-ui/react";
 import { Bond, BondConfiguration, BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
@@ -108,7 +108,19 @@ export const BondingCards: React.FC = () => {
           return (
             <Card bg="#1b1b1b50" border="1px solid" borderColor="#00C79740" borderRadius="3xl" p={5} w="100%" key={dataNft.nonce}>
               <Flex>
-                <NftMediaComponent nftMedia={dataNft?.media} imageHeight="125px" imageWidth="125px" />
+                <VStack m={6}>
+                  <NftMediaComponent nftMedia={dataNft?.media} imageHeight="125px" imageWidth="125px" />
+                  <Button
+                    colorScheme="teal"
+                    onClick={() => {
+                      const tx = bondContract.setVaultNonce(new Address(address), dataNft.nonce, dataNft.collection);
+                      sendTransactions({
+                        transactions: [tx],
+                      });
+                    }}>
+                    Make this your Primary NFMe.ID
+                  </Button>
+                </VStack>
                 <Flex justifyContent="space-between" alignItems="center" px={4} w="full">
                   <Flex flexDirection="column" justifyContent="center" w="full">
                     <Text fontFamily="Clash-Medium" pb={3}>
