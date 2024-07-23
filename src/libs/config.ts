@@ -343,6 +343,24 @@ export const dataCATDemoUserData = {
           "Unlock a live dataset of a Sony Playstation gamer's platform, preferences, active titles played, trophies, playtime, and achievements. All sourced direct from the gamer!",
       },
     },
+    {
+      "program": "nfme-id-vault",
+      "group": "custom",
+      "userId": "custom-x",
+      "status": "stop",
+      "chainID": "D",
+      "shortId": "1",
+      "type": "1",
+      "fromTs": 1528448026784,
+      "toTs": 1535951753305,
+      additionalInformation: {
+        "programName": "NFMe.ID Vault Data NFT",
+        "dataStreamURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport.json",
+        "dataPreviewURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport_preview.json",
+        "img": "sony-playstation-data-passport",
+        "description": "Unlock the full power of Itheum token with the NFMe.ID Vault Data NFT",
+      },
+    },
   ],
 };
 

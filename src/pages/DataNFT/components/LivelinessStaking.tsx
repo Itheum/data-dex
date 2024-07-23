@@ -264,15 +264,6 @@ export const LivelinessStaking: React.FC = () => {
               </HStack>
               <Box h={"1px"} w={"100%"} borderStyle={"solid"} borderWidth={"1px"} borderColor={"teal.200"} />
               <HStack mx={6} my={2} justifyContent={"center"} alignItems={"flex-start"}>
-                <Image
-                  w={"120px"}
-                  h={"120px"}
-                  borderRadius={"md"}
-                  src={DEFAULT_NFT_IMAGE}
-                  onError={({ currentTarget }) => {
-                    currentTarget.src = DEFAULT_NFT_IMAGE;
-                  }}
-                />
                 <VStack alignItems={"start"} w={"100%"}>
                   <Text fontSize="xl" alignItems={"flex-start"} fontFamily="Inter" color="teal.200">
                     Top-Up Liveliness for Boosted Rewards
@@ -314,6 +305,11 @@ export const LivelinessStaking: React.FC = () => {
                       px={4}
                       onClick={() => {
                         setTopUpItheumValue(Math.floor(itheumBalance));
+                        const percentage = (combinedBondsStaked + Math.floor(itheumBalance)) / globalTotalBond;
+                        const localRewardsPerBlock = globalRewardsPerBlock * percentage;
+                        const blockPerYear = 31536000 / 6;
+                        const rewardPerYear = localRewardsPerBlock * blockPerYear;
+                        setEstAnnualRewards(Math.floor(rewardPerYear));
                       }}>
                       MAX
                     </Button>
@@ -340,9 +336,7 @@ export const LivelinessStaking: React.FC = () => {
                         Top-Up Now
                       </Button>
                       <Text position="absolute" mt={2} fontSize="sm" color={"grey"}>
-                        Note: top-up will
-                        <br />
-                        also renew bond
+                        Note: top-up will also renew bond
                       </Text>
                     </Box>
                   </HStack>
