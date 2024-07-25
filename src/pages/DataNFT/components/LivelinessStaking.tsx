@@ -110,7 +110,7 @@ export const LivelinessStaking: React.FC = () => {
       const localRewardsPerBlock = globalRewardsPerBlock * percentage;
       const blockPerYear = 31536000 / 6;
       const rewardPerYear = localRewardsPerBlock * blockPerYear;
-      const calculatedRewardApy = Math.floor((rewardPerYear / combinedBondsStaked) * 100) / 100;
+      const calculatedRewardApy = Math.floor((rewardPerYear / combinedBondsStaked) * 10000) / 100;
       if (maxApy === 0) {
         setRewardApy(calculatedRewardApy);
       } else {
