@@ -61,6 +61,17 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const [nftForDrawer, setNftForDrawer] = useState<DataNft | undefined>();
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
 
+  useEffect(() => {
+    async function createNft() {
+      const nft = await DataNft.createFromApi({
+        nonce: 15,
+        tokenIdentifier: "DATANFTFT-e936d4",
+      });
+      console.log(nft);
+    }
+    createNft();
+  }, []);
+
   const onChangeTab = useThrottle((newTabState: number) => {
     navigate(
       `/datanfts/wallet${newTabState === 2 ? "/purchased" : newTabState === 4 ? "/activity" : newTabState === 3 ? "/favorite" : newTabState === 5 ? "/bonding" : newTabState === 6 ? "/compensation" : ""}`

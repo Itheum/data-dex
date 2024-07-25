@@ -168,6 +168,7 @@ export const LivelinessStaking: React.FC = () => {
           <Text fontSize="3xl">Combined Liveliness: {combinedLiveliness}</Text>
           <Progress hasStripe isAnimated value={combinedLiveliness} rounded="xs" colorScheme="teal" width={"100%"} />
           <Text fontSize="2xl">Combined Bonds Staked: {formatNumberToShort(combinedBondsStaked)}</Text>
+          <Text fontSize="2xl">Global Total Bonded: {formatNumberToShort(globalTotalBond)}</Text>
           <Text fontSize="2xl">Your reward APR: {rewardApy}%</Text>
           {maxApy > 0 && <Text fontSize="2xl">MAX APR: {maxApy}%</Text>}
           <Text fontSize="2xl">Accumulated Rewards: {formatNumberToShort(accumulatedRewards)} $ITHEUM</Text>
