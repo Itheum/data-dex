@@ -105,6 +105,10 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
       return { isSuccess: true, message: "" };
     }
 
+    if (url.includes("dmf-allow-http403=1")) {
+      return { isSuccess: true, message: "" };
+    }
+
     const urlToTest = convertToHttpUrl(url);
     const { statusCode, isError } = await makeRequest(urlToTest);
 
