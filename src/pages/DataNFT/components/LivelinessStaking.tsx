@@ -133,11 +133,14 @@ export const LivelinessStaking: React.FC = () => {
         const dataNft = await DataNft.createFromApi({
           nonce: nfmeIdData,
         });
-        setNfmeId(dataNft);
         const bonds = await bondContract.viewAddressBonds(new Address(address));
         const foundBound = bonds.find((bond) => bond.nonce === nfmeIdData);
-        if (foundBound) {
+        if (foundBound && new BigNumber(foundBound.remainingAmount).isGreaterThan(0) && foundBound.unbondTimestamp > 0) {
+          setNfmeId(dataNft);
           setNfmeIdBond(foundBound);
+        } else {
+          setNfmeId(undefined);
+          setNfmeIdBond(undefined);
         }
       }
     }
@@ -149,6 +152,16 @@ export const LivelinessStaking: React.FC = () => {
     const liveContract = new LivelinessStake(envNetwork);
     const tx = liveContract.claimRewards(new Address(address));
     tx.setGasLimit(200000000);
+    await sendTransactions({
+      transactions: [tx],
+    });
+  }
+
+  async function handleReinvestRewardsClick() {
+    const envNetwork = import.meta.env.VITE_ENV_NETWORK;
+    const liveContract = new LivelinessStake(envNetwork);
+    const tx = liveContract.stakeRewards(new Address(address));
+    tx.setGasLimit(60000000);
     await sendTransactions({
       transactions: [tx],
     });
@@ -170,7 +183,7 @@ export const LivelinessStaking: React.FC = () => {
           <Progress hasStripe isAnimated value={combinedLiveliness} rounded="xs" colorScheme="teal" width={"100%"} />
           <Text fontSize="2xl">Combined Bonds Staked: {formatNumberToShort(combinedBondsStaked)}</Text>
           <Text fontSize="2xl">Global Total Bonded: {formatNumberToShort(globalTotalBond)}</Text>
-          <Text fontSize="2xl">Your reward APR: {rewardApy}%</Text>
+          <Text fontSize="2xl">Your reward APR: {isNaN(rewardApy) ? 0 : rewardApy}%</Text>
           {maxApy > 0 && <Text fontSize="2xl">MAX APR: {maxApy}%</Text>}
           <Text fontSize="2xl">
             Current accumulated rewards: {formatNumberToShort(combinedLiveliness >= 95 ? accumulatedRewards : (combinedLiveliness * accumulatedRewards) / 100)}
@@ -186,7 +199,7 @@ export const LivelinessStaking: React.FC = () => {
               isDisabled={address === "" || hasPendingTransactions || accumulatedRewards < 1}>
               Claim rewards
             </Button>
-            <Button fontSize="lg" colorScheme="teal" px={6} isDisabled>
+            <Button fontSize="lg" colorScheme="teal" px={6} isDisabled={nfmeId === undefined} onClick={handleReinvestRewardsClick}>
               Reinvest rewards
             </Button>
           </HStack>
@@ -240,24 +253,30 @@ export const LivelinessStaking: React.FC = () => {
                     <Flex flexDirection="column" gap={1}>
                       <Flex flexDirection="row" gap={4}>
                         <Text fontSize=".75rem" textColor="teal.200">
-                          {BigNumber(nfmeIdBond?.bondAmount ?? 0)
-                            .dividedBy(10 ** 18)
-                            .toNumber()}
+                          {formatNumberToShort(
+                            BigNumber(nfmeIdBond?.bondAmount ?? 0)
+                              .dividedBy(10 ** 18)
+                              .toNumber()
+                          )}
                           &nbsp;$ITHEUM Bonded
                         </Text>
                         <Text fontSize=".75rem">|</Text>
                         <Text fontSize=".75rem" textColor="indianred">
-                          {BigNumber(nfmeIdBond?.bondAmount ?? 0)
-                            .minus(nfmeIdBond?.remainingAmount ?? 0)
-                            .dividedBy(10 ** 18)
-                            .toNumber()}
+                          {formatNumberToShort(
+                            BigNumber(nfmeIdBond?.bondAmount ?? 0)
+                              .minus(nfmeIdBond?.remainingAmount ?? 0)
+                              .dividedBy(10 ** 18)
+                              .toNumber()
+                          )}
                           &nbsp;$ITHEUM Penalized
                         </Text>
                         <Text fontSize=".75rem">|</Text>
                         <Text fontSize=".75rem" textColor="mediumpurple">
-                          {BigNumber(nfmeIdBond?.remainingAmount ?? 0)
-                            .dividedBy(10 ** 18)
-                            .toNumber()}
+                          {formatNumberToShort(
+                            BigNumber(nfmeIdBond?.remainingAmount ?? 0)
+                              .dividedBy(10 ** 18)
+                              .toNumber()
+                          )}
                           &nbsp;$ITHEUM Remaining
                         </Text>
                       </Flex>

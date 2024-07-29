@@ -181,6 +181,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       .test("is-200", "Data Stream URL must be public", async function (value: string) {
         if (previousDataNFTStreamUrl !== value) {
           const { isSuccess, message } = await checkUrlReturns200(value);
+          console.log(isSuccess, message);
           setPreviousDataNFTStreamUrl(value);
           setWasPreviousCheck200StreamSuccess(isSuccess);
           if (!isSuccess) {

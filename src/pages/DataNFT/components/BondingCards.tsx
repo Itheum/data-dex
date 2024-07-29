@@ -10,6 +10,7 @@ import NftMediaComponent from "components/NftMediaComponent";
 import { IS_DEVNET } from "libs/config";
 import { LivelinessScore } from "../../../components/Liveliness/LivelinessScore";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
+import { formatNumberToShort } from "libs/utils";
 
 type CompensationNftsType = {
   nonce: number;
@@ -81,6 +82,7 @@ export const BondingCards: React.FC = () => {
   const renewBond = async (tokenIdentifier: string, nonce: number) => {
     console.log(tokenIdentifier, nonce);
     const tx = bondContract.renew(new Address(address), tokenIdentifier, nonce);
+    tx.setGasLimit(30000000);
     await sendTransactions({
       transactions: [tx],
     });
@@ -163,23 +165,29 @@ export const BondingCards: React.FC = () => {
                       <Flex flexDirection="column" gap={1}>
                         <Flex flexDirection="row" gap={4}>
                           <Text fontSize=".75rem" textColor="teal.200">
-                            {BigNumber(contractBond.bondAmount)
-                              .dividedBy(10 ** 18)
-                              .toNumber()}
+                            {formatNumberToShort(
+                              BigNumber(contractBond.bondAmount)
+                                .dividedBy(10 ** 18)
+                                .toNumber()
+                            )}
                             &nbsp;$ITHEUM Bonded
                           </Text>
                           <Text fontSize=".75rem">|</Text>
                           <Text fontSize=".75rem" textColor="indianred">
-                            {BigNumber(contractCompensation.accumulatedAmount)
-                              .dividedBy(10 ** 18)
-                              .toNumber()}
+                            {formatNumberToShort(
+                              BigNumber(contractCompensation.accumulatedAmount)
+                                .dividedBy(10 ** 18)
+                                .toNumber()
+                            )}
                             &nbsp;$ITHEUM Penalized
                           </Text>
                           <Text fontSize=".75rem">|</Text>
                           <Text fontSize=".75rem" textColor="mediumpurple">
-                            {BigNumber(contractBond.remainingAmount)
-                              .dividedBy(10 ** 18)
-                              .toNumber()}
+                            {formatNumberToShort(
+                              BigNumber(contractBond.remainingAmount)
+                                .dividedBy(10 ** 18)
+                                .toNumber()
+                            )}
                             &nbsp;$ITHEUM Remaining
                           </Text>
                         </Flex>
