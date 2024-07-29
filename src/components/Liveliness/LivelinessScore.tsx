@@ -21,7 +21,7 @@ export const LivelinessScore: React.FC<LivelinessScoreProp> = (props) => {
   }, [tokenIdentifier, unbondTimestamp]);
 
   return (
-    <>
+    <Box w={"100%"}>
       {livelinessScore === -1 ? (
         <Flex flexDirection="column">
           <Text fontSize="lg" fontWeight="light" display="flex" justifyContent="flex-start" pt={2} pb={1} textColor="teal.200">
@@ -78,6 +78,6 @@ export const LivelinessScore: React.FC<LivelinessScoreProp> = (props) => {
           )}
         </>
       )}
-    </>
+    </Box>
   );
 };

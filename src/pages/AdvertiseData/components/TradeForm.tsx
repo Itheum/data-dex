@@ -283,7 +283,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     defaultValues: {
       dataStreamUrlForm: dataToPrefill?.additionalInformation.dataStreamURL ?? "",
       dataPreviewUrlForm: dataToPrefill?.additionalInformation.dataPreviewURL ?? "",
-      tokenNameForm: dataToPrefill?.additionalInformation.programName.replaceAll(" ", "").substring(0, 15) ?? "",
+      tokenNameForm: dataToPrefill?.additionalInformation.programName.replaceAll(" ", "").substring(0, 16) ?? "",
       datasetTitleForm: dataToPrefill?.additionalInformation.programName.replaceAll(" ", "") ?? "",
       datasetDescriptionForm: dataToPrefill?.additionalInformation.description ?? "",
       extraAssets: dataToPrefill?.additionalInformation.extraAssets ?? "",
