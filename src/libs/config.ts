@@ -355,7 +355,7 @@ export const dataCATDemoUserData = {
       "toTs": 1535951753305,
       additionalInformation: {
         "programName": "NFMe.ID Vault Data NFT",
-        "dataStreamURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport.json",
+        "dataStreamURL": "https://api.itheumcloud-stg.com/datadexapi/nfmeIdVault/dataStream?dmf-allow-http403=1",
         "dataPreviewURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport_preview.json",
         "img": "sony-playstation-data-passport",
         "description": "Unlock the full power of Itheum token with the NFMe.ID Vault Data NFT",

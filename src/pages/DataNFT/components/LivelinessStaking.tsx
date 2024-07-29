@@ -50,8 +50,9 @@ export const LivelinessStaking: React.FC = () => {
   const [topUpItheumValue, setTopUpItheumValue] = useState<number>(0);
 
   const [estAnnualRewards, setEstAnnualRewards] = useState<number>(0);
+
   useEffect(() => {
-    async function fetcCombinedBonds() {
+    async function fetchCombinedBonds() {
       if (address) {
         const envNetwork = import.meta.env.VITE_ENV_NETWORK;
         const bondContract = new BondContract(envNetwork);
@@ -63,7 +64,7 @@ export const LivelinessStaking: React.FC = () => {
         setGlobalTotalBond(totalNetworkBond.dividedBy(10 ** 18).toNumber());
       }
     }
-    fetcCombinedBonds();
+    fetchCombinedBonds();
   }, [address, hasPendingTransactions]);
 
   useEffect(() => {
@@ -83,7 +84,7 @@ export const LivelinessStaking: React.FC = () => {
       if (address) {
         const envNetwork = import.meta.env.VITE_ENV_NETWORK;
         const liveContract = new LivelinessStake(envNetwork);
-        const claimableRewards = new BigNumber(await liveContract.viewClaimableRewards(new Address(address), false));
+        const claimableRewards = new BigNumber(await liveContract.viewClaimableRewards(new Address(address), true));
         setAccumulatedRewards(Math.floor(claimableRewards.dividedBy(10 ** 18).toNumber() * 100) / 100);
       }
     }
@@ -171,7 +172,11 @@ export const LivelinessStaking: React.FC = () => {
           <Text fontSize="2xl">Global Total Bonded: {formatNumberToShort(globalTotalBond)}</Text>
           <Text fontSize="2xl">Your reward APR: {rewardApy}%</Text>
           {maxApy > 0 && <Text fontSize="2xl">MAX APR: {maxApy}%</Text>}
-          <Text fontSize="2xl">Accumulated Rewards: {formatNumberToShort(accumulatedRewards)} $ITHEUM</Text>
+          <Text fontSize="2xl">
+            Current accumulated rewards: {formatNumberToShort(combinedLiveliness >= 95 ? accumulatedRewards : (combinedLiveliness * accumulatedRewards) / 100)}
+            $ITHEUM
+          </Text>
+          <Text fontSize="2xl">Potential rewards if liveliness &gt;95%: {formatNumberToShort(accumulatedRewards)} $ITHEUM</Text>
           <HStack mt={5} justifyContent={"center"} alignItems={"flex-start"} width={"100%"}>
             <Button
               fontSize="lg"
@@ -181,12 +186,9 @@ export const LivelinessStaking: React.FC = () => {
               isDisabled={address === "" || hasPendingTransactions || accumulatedRewards < 1}>
               Claim rewards
             </Button>
-            <VStack>
-              <Button fontSize="lg" colorScheme="teal" px={6}>
-                Top-Up NFMe.ID Data NFT
-              </Button>
-              <Text fontSize="md">Compound rewards</Text>
-            </VStack>
+            <Button fontSize="lg" colorScheme="teal" px={6} isDisabled>
+              Reinvest rewards
+            </Button>
           </HStack>
         </VStack>
       </VStack>

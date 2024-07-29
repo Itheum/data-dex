@@ -21,7 +21,7 @@ export const TradeData: React.FC = () => {
       <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light">
         Mint your Data Streams or Data Assets as Data NFTs and list and trade them in the peer-to-peer Data NFT Marketplace.
       </Heading>
-      <Wrap shouldWrapChildren={true} spacing={5} display={"flex"} justifyContent={{ base: "center", md: "start" }} overflow={"unset"}>
+      <Wrap shouldWrapChildren={true} spacing={5} display={"flex"} flexDir={"row"} justifyContent={{ base: "center", md: "start" }} overflow={"unset"}>
         <Box maxW="xs" overflow="hidden" mt={5} border=".01rem solid transparent" borderColor="#00C79740" borderRadius="0.75rem">
           <Image src="https://itheum-static.s3.ap-southeast-2.amazonaws.com/data-stream.png" alt="" rounded="lg" />
 
@@ -44,6 +44,20 @@ export const TradeData: React.FC = () => {
             </Button>
           </Box>
         </Box>
+        <Wrap shouldWrapChildren={true} spacingX={5} mt="25px !important" marginBottom="8 !important">
+          {dataCATAcccount?.programsAllocation
+            .slice(1, 2)
+            .map((item: any) => (
+              <ProgramCard
+                key={item.program}
+                item={item}
+                setIsDrawerOpen={setIsDrawerOpen}
+                setPrefilledData={setPrefilledData}
+                isDrawerOpen={isDrawerOpen}
+                isNew={true}
+              />
+            ))}
+        </Wrap>
       </Wrap>
       <Box marginTop={10} bgGradient={colorMode === "light" ? "bgWhite" : "linear(to-b, bgDark, #6B46C160, #00C79730)"}>
         <NewCreatorCTA />
@@ -54,16 +68,18 @@ export const TradeData: React.FC = () => {
             Supported Data CAT Programs
           </Heading>
           <Wrap shouldWrapChildren={true} spacingX={5} mt="25px !important" marginBottom="8 !important">
-            {dataCATAcccount?.programsAllocation.map((item: any) => (
-              <ProgramCard
-                key={item.program}
-                item={item}
-                setIsDrawerOpen={setIsDrawerOpen}
-                setPrefilledData={setPrefilledData}
-                isDrawerOpen={isDrawerOpen}
-                isNew={true}
-              />
-            ))}
+            {dataCATAcccount?.programsAllocation
+              .slice(0, 1)
+              .map((item: any) => (
+                <ProgramCard
+                  key={item.program}
+                  item={item}
+                  setIsDrawerOpen={setIsDrawerOpen}
+                  setPrefilledData={setPrefilledData}
+                  isDrawerOpen={isDrawerOpen}
+                  isNew={true}
+                />
+              ))}
           </Wrap>
         </>
       )}
