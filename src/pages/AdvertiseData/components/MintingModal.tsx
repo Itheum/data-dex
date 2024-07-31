@@ -114,13 +114,18 @@ export const MintingModal: React.FC<MintingModalProps> = (props) => {
                     Metadata URL <ExternalLinkIcon mx="2px" />
                   </Link>
                 </HStack>
+                <Text fontSize={"lg"} textAlign={"center"} p={3}>
+                  Click the links above and wait for the them to load to confirm that your IPFS assets are available
+                </Text>
                 <Button
+                  px={10}
                   disabled={imageUrl === "" || metadataUrl === ""}
+                  colorScheme="teal"
                   onClick={() => {
                     setSaveProgress((prev: any) => ({ ...prev, s4: 1 }));
                     onChainMint();
                   }}>
-                  Confirm you checked IPFS assets and they are available
+                  CONFIRM
                 </Button>
               </VStack>
             )}
