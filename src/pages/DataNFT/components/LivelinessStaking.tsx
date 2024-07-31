@@ -204,7 +204,12 @@ export const LivelinessStaking: React.FC = () => {
               isDisabled={address === "" || hasPendingTransactions || accumulatedRewards < 1 || combinedLiveliness === 0}>
               Claim rewards
             </Button>
-            <Button fontSize="lg" colorScheme="teal" px={6} isDisabled={nfmeId === undefined} onClick={handleReinvestRewardsClick}>
+            <Button
+              fontSize="lg"
+              colorScheme="teal"
+              px={6}
+              isDisabled={address === "" || hasPendingTransactions || nfmeId === undefined || accumulatedRewards < 1 || combinedLiveliness === 0}
+              onClick={handleReinvestRewardsClick}>
               Reinvest rewards
             </Button>
           </HStack>
