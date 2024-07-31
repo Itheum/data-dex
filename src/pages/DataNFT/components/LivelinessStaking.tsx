@@ -256,6 +256,7 @@ export const LivelinessStaking: React.FC = () => {
                       onClick={() => {
                         const bondContract = new BondContract(import.meta.env.VITE_ENV_NETWORK);
                         const tx = bondContract.renew(new Address(address), nfmeId.collection, nfmeId.nonce);
+                        tx.setGasLimit(30000000);
                         sendTransactions({
                           transactions: [tx],
                         });
