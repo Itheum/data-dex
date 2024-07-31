@@ -44,7 +44,7 @@ export const TradeData: React.FC = () => {
             </Button>
           </Box>
         </Box>
-        <Wrap shouldWrapChildren={true} spacingX={5} mt="25px !important" marginBottom="8 !important">
+        <>
           {dataCATAcccount?.programsAllocation
             .slice(1, 2)
             .map((item: any) => (
@@ -57,7 +57,7 @@ export const TradeData: React.FC = () => {
                 isNew={true}
               />
             ))}
-        </Wrap>
+        </>
       </Wrap>
       <Box marginTop={10} bgGradient={colorMode === "light" ? "bgWhite" : "linear(to-b, bgDark, #6B46C160, #00C79730)"}>
         <NewCreatorCTA />

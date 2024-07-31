@@ -14,30 +14,22 @@ const ProgramCard: React.FC<ProgramCardProps> = (props) => {
   const { colorMode } = useColorMode();
 
   return (
-    <Box maxW="22.4rem" borderWidth="1px" overflow="hidden" border=".1rem solid transparent" backgroundColor="none">
-      <Image
-        src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${item.additionalInformation?.img}.png`}
-        alt=""
-        height="13.375rem"
-        width={{ base: "auto", md: "355px" }}
-        border="1px solid transparent"
-        borderColor="#00C797"
-        borderRadius="16px"
-      />
+    <Box maxW="xs" overflow="hidden" mt={5} border=".01rem solid transparent" borderColor="#00C79740" borderRadius="0.75rem">
+      <Image src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${item.additionalInformation?.img}.png`} alt="" rounded="lg" />
 
-      <Box paddingTop="6" paddingBottom="2">
-        <Box display="flex" alignItems="center">
+      <Box p="6">
+        <Box display="flex" alignItems="baseline">
           {isNew && (
-            <Badge borderRadius="sm" px="2" py="0.08rem" colorScheme="teal">
+            <Badge borderRadius="sm" px="2" py="0.08rem" colorScheme="teal" mr="2">
               New
             </Badge>
           )}
-          <Box ml="2" fontWeight="semibold" fontFamily="Clash-Medium" fontSize="2xl" noOfLines={1}>
+          <Box mt="1" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
             {item.additionalInformation?.programName}
           </Box>
         </Box>
         <Button
-          mt="2"
+          mt="3"
           colorScheme="teal"
           variant="outline"
           borderRadius="xl"
@@ -45,7 +37,7 @@ const ProgramCard: React.FC<ProgramCardProps> = (props) => {
             setIsDrawerOpen(!isDrawerOpen);
             setPrefilledData(item);
           }}>
-          <Text color={colorMode === "dark" ? "white" : "black"}>Create Data</Text>
+          <Text color={colorMode === "dark" ? "white" : "black"}>Mint Data NFT</Text>
         </Button>
       </Box>
     </Box>
