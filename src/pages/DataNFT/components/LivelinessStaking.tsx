@@ -117,7 +117,12 @@ export const LivelinessStaking: React.FC = () => {
       } else {
         setRewardApy(Math.min(calculatedRewardApy, maxApy));
       }
-      setEstAnnualRewards(Math.floor(rewardPerYear));
+
+      if (maxApy === 0 || calculatedRewardApy < maxApy) {
+        setEstAnnualRewards(Math.floor(rewardPerYear));
+      } else {
+        setEstAnnualRewards(Math.floor((combinedBondsStaked * maxApy) / 100));
+      }
     }
   }, [globalTotalBond, combinedBondsStaked, maxApy]);
 
@@ -311,7 +316,12 @@ export const LivelinessStaking: React.FC = () => {
                         const localRewardsPerBlock = globalRewardsPerBlock * percentage;
                         const blockPerYear = 31536000 / 6;
                         const rewardPerYear = localRewardsPerBlock * blockPerYear;
-                        setEstAnnualRewards(Math.floor(rewardPerYear));
+                        const calculatedRewardApy = Math.floor((rewardPerYear / combinedBondsStaked) * 10000) / 100;
+                        if (maxApy === 0 || calculatedRewardApy < maxApy) {
+                          setEstAnnualRewards(Math.floor(rewardPerYear));
+                        } else {
+                          setEstAnnualRewards(Math.floor(((combinedBondsStaked + Number(value)) * maxApy) / 100));
+                        }
                       }}
                       keepWithinRange={true}>
                       <NumberInputField />
@@ -331,7 +341,12 @@ export const LivelinessStaking: React.FC = () => {
                         const localRewardsPerBlock = globalRewardsPerBlock * percentage;
                         const blockPerYear = 31536000 / 6;
                         const rewardPerYear = localRewardsPerBlock * blockPerYear;
-                        setEstAnnualRewards(Math.floor(rewardPerYear));
+                        const calculatedRewardApy = Math.floor((rewardPerYear / combinedBondsStaked) * 10000) / 100;
+                        if (maxApy === 0 || calculatedRewardApy < maxApy) {
+                          setEstAnnualRewards(Math.floor(rewardPerYear));
+                        } else {
+                          setEstAnnualRewards(Math.floor(((combinedBondsStaked + Math.floor(itheumBalance)) * maxApy) / 100));
+                        }
                       }}>
                       MAX
                     </Button>
