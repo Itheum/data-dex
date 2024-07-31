@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, Flex, Heading, Stack, Text, VStack } from "@chakra-ui/react";
-import { Bond, BondConfiguration, BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";
+import { Bond, BondConfiguration, BondContract, Compensation, DataNft, dataNftTokenIdentifier } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -8,9 +8,9 @@ import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import BigNumber from "bignumber.js";
 import NftMediaComponent from "components/NftMediaComponent";
 import { IS_DEVNET } from "libs/config";
+import { formatNumberToShort } from "libs/utils";
 import { LivelinessScore } from "../../../components/Liveliness/LivelinessScore";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
-import { formatNumberToShort } from "libs/utils";
 
 type CompensationNftsType = {
   nonce: number;
@@ -25,6 +25,9 @@ export const BondingCards: React.FC = () => {
   const [bondingOffers, setBondingOffers] = useState<Array<DataNft>>([]);
   const [contractBonds, setContractBonds] = useState<Bond[]>([]);
   const [allCompensation, setAllCompensation] = useState<Array<Compensation>>([]);
+
+  const [nfmeIdNonce, setNfmeIdNonce] = useState<number>(0);
+
   const [contractConfiguration, setContractConfiguration] = useState<BondConfiguration>({
     contractState: 0,
     bondPaymentTokenIdentifier: "",
@@ -39,6 +42,18 @@ export const BondingCards: React.FC = () => {
     withdrawPenalty: 0,
     acceptedCallers: [""],
   });
+
+  useEffect(() => {
+    async function fetchNfmeId() {
+      const envNetwork = import.meta.env.VITE_ENV_NETWORK as string;
+      const nfmeIdNonceT = await bondContract.viewAddressVaultNonce(
+        new Address(address),
+        envNetwork === "mainnet" ? dataNftTokenIdentifier.mainnet : dataNftTokenIdentifier.devnet
+      );
+      setNfmeIdNonce(nfmeIdNonceT);
+    }
+    fetchNfmeId();
+  }, [address, hasPendingTransactions]);
 
   useEffect(() => {
     (async () => {
@@ -112,16 +127,18 @@ export const BondingCards: React.FC = () => {
               <Flex>
                 <VStack m={6}>
                   <NftMediaComponent nftMedia={dataNft?.media} imageHeight="125px" imageWidth="125px" />
-                  <Button
-                    colorScheme="teal"
-                    onClick={() => {
-                      const tx = bondContract.setVaultNonce(new Address(address), dataNft.nonce, dataNft.collection);
-                      sendTransactions({
-                        transactions: [tx],
-                      });
-                    }}>
-                    Make this your Primary NFMe.ID
-                  </Button>
+                  {nfmeIdNonce !== dataNft.nonce && (
+                    <Button
+                      colorScheme="teal"
+                      onClick={() => {
+                        const tx = bondContract.setVaultNonce(new Address(address), dataNft.nonce, dataNft.collection);
+                        sendTransactions({
+                          transactions: [tx],
+                        });
+                      }}>
+                      Make this your Primary NFMe.ID
+                    </Button>
+                  )}
                 </VStack>
                 <Flex justifyContent="space-between" alignItems="center" px={4} w="full">
                   <Flex flexDirection="column" justifyContent="center" w="full">
