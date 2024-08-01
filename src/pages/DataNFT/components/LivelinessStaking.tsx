@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
-  Card,
   Flex,
   Heading,
   HStack,
@@ -13,22 +12,18 @@ import {
   NumberInputField,
   NumberInputStepper,
   Progress,
-  Stack,
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { Bond, BondContract, DataNft, dataNftTokenIdentifier, itheumTokenIdentifier, LivelinessStake } from "@itheum/sdk-mx-data-nft/out";
+import { Bond, BondContract, DataNft, itheumTokenIdentifier, LivelinessStake } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import BigNumber from "bignumber.js";
-import NftMediaComponent from "components/NftMediaComponent";
+import { LivelinessScore } from "components/Liveliness/LivelinessScore";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { formatNumberToShort, isValidNumericCharacter } from "libs/utils";
-import { LivelinessScore } from "components/Liveliness/LivelinessScore";
 import { useAccountStore } from "store";
-import { env, send } from "process";
-import { set } from "react-hook-form";
 
 export const LivelinessStaking: React.FC = () => {
   const { address } = useGetAccountInfo();
@@ -52,56 +47,35 @@ export const LivelinessStaking: React.FC = () => {
   const [estAnnualRewards, setEstAnnualRewards] = useState<number>(0);
 
   useEffect(() => {
-    async function fetchCombinedBonds() {
-      if (address) {
-        const envNetwork = import.meta.env.VITE_ENV_NETWORK;
-        const bondContract = new BondContract(envNetwork);
-        const totalBondAmount = new BigNumber(await bondContract.viewAddressTotalBondAmount(new Address(address)));
-        const formattedBondAmount = totalBondAmount.dividedBy(10 ** 18).toNumber();
-        setCombinedBondsStaked(formattedBondAmount);
-
-        const totalNetworkBond = new BigNumber(await bondContract.viewTotalBondAmount());
-        setGlobalTotalBond(totalNetworkBond.dividedBy(10 ** 18).toNumber());
-      }
-    }
-    fetchCombinedBonds();
-  }, [address, hasPendingTransactions]);
-
-  useEffect(() => {
-    async function fetchCombinedLiveliness() {
-      if (address) {
-        const envNetwork = import.meta.env.VITE_ENV_NETWORK;
-        const bondContract = new BondContract(envNetwork);
-        const liveliness = await bondContract.viewAddressAvgLivelinessScore(new Address(address));
-        setCombinedLiveliness(Math.floor(liveliness * 10000) / 100);
-      }
-    }
-    fetchCombinedLiveliness();
-  }, [address, hasPendingTransactions]);
-
-  useEffect(() => {
-    async function fetchRewards() {
+    async function fetchData() {
       if (address) {
         const envNetwork = import.meta.env.VITE_ENV_NETWORK;
         const liveContract = new LivelinessStake(envNetwork);
-        const claimableRewards = new BigNumber(await liveContract.viewClaimableRewards(new Address(address), true));
-        setAccumulatedRewards(Math.floor(claimableRewards.dividedBy(10 ** 18).toNumber() * 100) / 100);
-      }
-    }
-    fetchRewards();
-  }, [address, hasPendingTransactions]);
+        const data = await liveContract.getUserDataOut(new Address(address));
 
-  useEffect(() => {
-    async function fetchConfig() {
-      if (address) {
-        const envNetwork = import.meta.env.VITE_ENV_NETWORK;
-        const liveContract = new LivelinessStake(envNetwork);
-        const config = await liveContract.viewContractConfiguration();
-        setMaxApy(Math.floor(config.maxApr * 10000) / 100);
-        setGlobalRewardsPerBlock(new BigNumber(config.rewardsPerBlock).dividedBy(10 ** 18).toNumber());
+        setCombinedBondsStaked(new BigNumber(data.userData.userStakedAmount).dividedBy(10 ** 18).toNumber());
+        setGlobalTotalBond(new BigNumber(data.userData.totalStakedAmount).dividedBy(10 ** 18).toNumber());
+        setCombinedLiveliness(Math.floor(data.userData.livelinessScore * 100) / 100);
+        setAccumulatedRewards(Math.floor(new BigNumber(data.userData.accumulatedRewards).dividedBy(10 ** 18).toNumber() * 100) / 100);
+        setMaxApy(Math.floor(data.contractDetails.maxApr * 100) / 100);
+        setGlobalRewardsPerBlock(new BigNumber(data.contractDetails.rewardsPerBlock).dividedBy(10 ** 18).toNumber());
+
+        const dataNft = await DataNft.createFromApi({
+          nonce: data.userData.vaultNonce,
+        });
+        const bondContract = new BondContract(envNetwork);
+        const bonds = await bondContract.viewAddressBonds(new Address(address));
+        const foundBound = bonds.find((bond) => bond.nonce === data.userData.vaultNonce);
+        if (foundBound && new BigNumber(foundBound.remainingAmount).isGreaterThan(0) && foundBound.unbondTimestamp > 0) {
+          setNfmeId(dataNft);
+          setNfmeIdBond(foundBound);
+        } else {
+          setNfmeId(undefined);
+          setNfmeIdBond(undefined);
+        }
       }
     }
-    fetchConfig();
+    fetchData();
   }, [address, hasPendingTransactions]);
 
   useEffect(() => {
@@ -125,32 +99,6 @@ export const LivelinessStaking: React.FC = () => {
       }
     }
   }, [globalTotalBond, combinedBondsStaked, maxApy]);
-
-  useEffect(() => {
-    async function fetchNfmeIdData() {
-      if (address) {
-        const envNetwork = import.meta.env.VITE_ENV_NETWORK as string;
-        const bondContract = new BondContract(envNetwork);
-        const nfmeIdData = await bondContract.viewAddressVaultNonce(
-          new Address(address),
-          envNetwork === "mainnet" ? dataNftTokenIdentifier.mainnet : dataNftTokenIdentifier.devnet
-        );
-        const dataNft = await DataNft.createFromApi({
-          nonce: nfmeIdData,
-        });
-        const bonds = await bondContract.viewAddressBonds(new Address(address));
-        const foundBound = bonds.find((bond) => bond.nonce === nfmeIdData);
-        if (foundBound && new BigNumber(foundBound.remainingAmount).isGreaterThan(0) && foundBound.unbondTimestamp > 0) {
-          setNfmeId(dataNft);
-          setNfmeIdBond(foundBound);
-        } else {
-          setNfmeId(undefined);
-          setNfmeIdBond(undefined);
-        }
-      }
-    }
-    fetchNfmeIdData();
-  }, [address, hasPendingTransactions]);
 
   async function handleClaimRewarsClick() {
     const envNetwork = import.meta.env.VITE_ENV_NETWORK;
