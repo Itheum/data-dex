@@ -13,6 +13,7 @@ import {
   NumberInputStepper,
   Progress,
   Text,
+  Tooltip,
   VStack,
 } from "@chakra-ui/react";
 import { Bond, BondContract, DataNft, itheumTokenIdentifier, LivelinessStake } from "@itheum/sdk-mx-data-nft/out";
@@ -24,6 +25,7 @@ import { LivelinessScore } from "components/Liveliness/LivelinessScore";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { formatNumberToShort, isValidNumericCharacter } from "libs/utils";
 import { useAccountStore } from "store";
+import { labels } from "libs/language";
 
 export const LivelinessStaking: React.FC = () => {
   const { address } = useGetAccountInfo();
@@ -144,23 +146,37 @@ export const LivelinessStaking: React.FC = () => {
           </Text>
           <Text fontSize="2xl">Potential rewards if liveliness &gt;95%: {formatNumberToShort(accumulatedRewards)} $ITHEUM</Text>
           <HStack mt={5} justifyContent={"center"} alignItems={"flex-start"} width={"100%"}>
-            <Button
-              fontSize="lg"
-              colorScheme="teal"
-              px={6}
-              onClick={handleClaimRewarsClick}
-              isDisabled={address === "" || hasPendingTransactions || accumulatedRewards < 1 || combinedLiveliness === 0}>
-              Claim rewards
-            </Button>
-            <VStack>
+            <Tooltip
+              hasArrow
+              shouldWrapChildren
+              isDisabled={!(address === "" || hasPendingTransactions || accumulatedRewards < 1 || combinedLiveliness === 0)}
+              label={"Rewards claiming is disabled if liveliness is 0, rewards amount is lower than 1 or there are transactions pending"}>
               <Button
                 fontSize="lg"
                 colorScheme="teal"
                 px={6}
-                isDisabled={address === "" || hasPendingTransactions || nfmeId === undefined || accumulatedRewards < 1 || combinedLiveliness === 0}
-                onClick={handleReinvestRewardsClick}>
-                Reinvest rewards
+                onClick={handleClaimRewarsClick}
+                isDisabled={address === "" || hasPendingTransactions || accumulatedRewards < 1 || combinedLiveliness === 0}>
+                Claim rewards
               </Button>
+            </Tooltip>
+            <VStack>
+              <Tooltip
+                hasArrow
+                shouldWrapChildren
+                isDisabled={!(address === "" || hasPendingTransactions || nfmeId === undefined || accumulatedRewards < 1 || combinedLiveliness === 0)}
+                label={
+                  "Rewards reinvesting is disabled if you have no NFT as a Primary NFMe.ID, liveliness is 0, rewards amount is lower than 1 or there are transactions pending"
+                }>
+                <Button
+                  fontSize="lg"
+                  colorScheme="teal"
+                  px={6}
+                  isDisabled={address === "" || hasPendingTransactions || nfmeId === undefined || accumulatedRewards < 1 || combinedLiveliness === 0}
+                  onClick={handleReinvestRewardsClick}>
+                  Reinvest rewards
+                </Button>
+              </Tooltip>
               <Text fontSize="sm" color={"grey"}>
                 Note: reinvesting rewards will also renew bond
               </Text>
