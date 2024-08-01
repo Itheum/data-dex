@@ -39,6 +39,7 @@ type MintingModalProps = {
   imageUrl: string;
   metadataUrl: string;
   onChainMint: () => void;
+  isAutoVault: boolean;
 };
 
 export const MintingModal: React.FC<MintingModalProps> = (props) => {
@@ -54,6 +55,7 @@ export const MintingModal: React.FC<MintingModalProps> = (props) => {
     imageUrl,
     metadataUrl,
     onChainMint,
+    isAutoVault,
   } = props;
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState<boolean>(false);
   const { colorMode } = useColorMode();
@@ -130,10 +132,20 @@ export const MintingModal: React.FC<MintingModalProps> = (props) => {
               </VStack>
             )}
 
-            <HStack>
+            <VStack>
               {(!saveProgress.s5 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
               <Text>Minting your new Data NFT on the blockchain</Text>
-            </HStack>
+              {isAutoVault && (
+                <>
+                  <b>
+                    <u>
+                      <Text>& setting it as Primary NFMe.ID</Text>
+                    </u>
+                  </b>
+                  <Text>(2 transactions)</Text>
+                </>
+              )}
+            </VStack>
             {mintingSuccessful && (
               <Box textAlign="center" mt="6">
                 <Alert status="success">

@@ -52,7 +52,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { BondContract, SftMinter } from "@itheum/sdk-mx-data-nft/out";
+import { BondContract, dataNftTokenIdentifier, SftMinter } from "@itheum/sdk-mx-data-nft/out";
 import { Address, ITransaction, Transaction } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
@@ -69,6 +69,8 @@ import { UserDataType } from "libs/MultiversX/types";
 import { getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "libs/utils";
 import { useAccountStore, useMintStore } from "store";
 import { MintingModal } from "./MintingModal";
+import axios from "axios";
+import { getApi } from "libs/MultiversX/api";
 
 // Declaring the form types
 type TradeDataFormType = {
@@ -98,6 +100,7 @@ type TradeFormProps = {
 };
 
 export const TradeForm: React.FC<TradeFormProps> = (props) => {
+  const { address } = useGetAccountInfo();
   const { checkUrlReturns200, maxSupply, minRoyalties, maxRoyalties, antiSpamTax, dataNFTMarshalServiceStatus, userData, dataToPrefill, closeTradeFormModal } =
     props;
 
@@ -372,6 +375,23 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
   const mintTxSuccess = async (_foo: any) => {
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s5: 1 }));
+
+    if (dataToPrefill.shouldAutoVault) {
+      const dataNftTokenId = IS_DEVNET ? dataNftTokenIdentifier.devnet : dataNftTokenIdentifier.mainnet;
+      const nonceToVault = (await axios.get(`https://${getApi(IS_DEVNET ? "D" : "1")}/nfts/count?search=${dataNftTokenId}`)).data;
+      const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
+      const vaultTx = bondContract.setVaultNonce(new Address(address), nonceToVault, dataNftTokenId);
+      await sendTransactions({
+        transactions: [vaultTx],
+        transactionsDisplayInfo: {
+          processingMessage: "Setting NFT as primary NFMe.ID",
+          errorMessage: "NFMe.ID setting failed",
+          successMessage: "NFMe.ID set successfully!",
+        },
+        redirectAfterSign: false,
+      });
+    }
+
     await sleep(3);
 
     setMintingSuccessful(true);
@@ -1275,6 +1295,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               closeProgressModal={closeProgressModal}
               mintingSuccessful={mintingSuccessful}
               onChainMint={handleOnChainMint}
+              isAutoVault={dataToPrefill.shouldAutoVault}
             />
           </>
         )}

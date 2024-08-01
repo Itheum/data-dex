@@ -353,6 +353,7 @@ export const dataCATDemoUserData = {
       "type": "1",
       "fromTs": 1528448026784,
       "toTs": 1535951753305,
+      "shouldAutoVault": true,
       additionalInformation: {
         "programName": "NFMeID Vault",
         "dataStreamURL": "https://api.itheumcloud-stg.com/datadexapi/nfmeIdVault/dataStream?dmf-allow-http403=1",
