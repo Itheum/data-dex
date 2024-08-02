@@ -153,6 +153,17 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const [metadataUrl, setMetadataUrl] = useState("");
   const [mintTx, setMintTx] = useState<any>(undefined);
 
+  const [bondVaultNonce, setBondVaultNonce] = useState<number | undefined>(0);
+  useEffect(() => {
+    async function fetchVaultNonce() {
+      if (address) {
+        const nonce = await bond.viewAddressVaultNonce(new Address(address), IS_DEVNET ? dataNftTokenIdentifier.devnet : dataNftTokenIdentifier.mainnet);
+        setBondVaultNonce(nonce);
+      }
+    }
+    fetchVaultNonce();
+  }, []);
+
   useEffect(() => {
     bond.viewLockPeriodsWithBonds().then((periodsT) => {
       setPeriods(periodsT);
@@ -1295,7 +1306,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               closeProgressModal={closeProgressModal}
               mintingSuccessful={mintingSuccessful}
               onChainMint={handleOnChainMint}
-              isAutoVault={dataToPrefill.shouldAutoVault}
+              isAutoVault={dataToPrefill.shouldAutoVault && !bondVaultNonce}
             />
           </>
         )}

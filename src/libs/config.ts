@@ -356,7 +356,7 @@ export const dataCATDemoUserData = {
       "shouldAutoVault": true,
       additionalInformation: {
         "programName": "NFMeID Vault",
-        "dataStreamURL": "https://api.itheumcloud-stg.com/datadexapi/nfmeIdVault/dataStream?dmf-allow-http403=1",
+        "dataStreamURL": `https://api.itheumcloud-stg.com/datadexapi/nfmeIdVault/dataStream?dmf-allow-http403=1&timestamp=${Date.now()}`,
         "dataPreviewURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport_preview.json",
         "img": "nfme_id_vault_preview",
         "description": "NFMe.ID Vault Data NFT Vault is a special Data NFT that will act as your private web3 identity persona when activated.",

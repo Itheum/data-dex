@@ -82,7 +82,7 @@ export const MintingModal: React.FC<MintingModalProps> = (props) => {
               <Text>Generating unique tamper-proof data stream signature</Text>
             </HStack>
 
-            {dataNFTImg && (
+            {dataNFTImg && !isAutoVault && (
               <>
                 <Skeleton isLoaded={oneNFTImgLoaded} h={200} margin="auto">
                   <Center>
@@ -109,10 +109,10 @@ export const MintingModal: React.FC<MintingModalProps> = (props) => {
             {!saveProgress.s4 && saveProgress.s3 && (
               <VStack>
                 <HStack>
-                  <Link color="teal.500" fontSize="md" mb={1} href={imageUrl} isExternal>
+                  <Link color="teal.500" fontSize="md" mb={1} href={`https://gateway.pinata.cloud/ipfs/${imageUrl.split("/").at(-1)}`} isExternal>
                     Image URL <ExternalLinkIcon mx="2px" />
                   </Link>
-                  <Link color="teal.500" fontSize="md" mb={1} href={metadataUrl} isExternal>
+                  <Link color="teal.500" fontSize="md" mb={1} href={`https://gateway.pinata.cloud/ipfs/${metadataUrl.split("/").at(-1)}`} isExternal>
                     Metadata URL <ExternalLinkIcon mx="2px" />
                   </Link>
                 </HStack>
@@ -132,20 +132,22 @@ export const MintingModal: React.FC<MintingModalProps> = (props) => {
               </VStack>
             )}
 
-            <VStack>
+            <HStack>
               {(!saveProgress.s5 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
-              <Text>Minting your new Data NFT on the blockchain</Text>
-              {isAutoVault && (
-                <>
-                  <b>
-                    <u>
-                      <Text>& setting it as Primary NFMe.ID</Text>
-                    </u>
-                  </b>
-                  <Text>(2 transactions)</Text>
-                </>
-              )}
-            </VStack>
+              <VStack>
+                <Text>Minting your new Data NFT on the blockchain</Text>
+                {isAutoVault && (
+                  <>
+                    <b>
+                      <u>
+                        <Text>& setting it as Primary NFMe.ID</Text>
+                      </u>
+                    </b>
+                    <Text>(2 transactions)</Text>
+                  </>
+                )}
+              </VStack>
+            </HStack>
             {mintingSuccessful && (
               <Box textAlign="center" mt="6">
                 <Alert status="success">
