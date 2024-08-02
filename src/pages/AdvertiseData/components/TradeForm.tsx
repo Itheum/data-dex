@@ -387,7 +387,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const mintTxSuccess = async (_foo: any) => {
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s5: 1 }));
 
-    if (dataToPrefill.shouldAutoVault ?? false) {
+    if (dataToPrefill?.shouldAutoVault ?? false) {
       const dataNftTokenId = IS_DEVNET ? dataNftTokenIdentifier.devnet : dataNftTokenIdentifier.mainnet;
       const nonceToVault = (await axios.get(`https://${getApi(IS_DEVNET ? "D" : "1")}/nfts/count?search=${dataNftTokenId}`)).data;
       const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
@@ -1306,7 +1306,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               closeProgressModal={closeProgressModal}
               mintingSuccessful={mintingSuccessful}
               onChainMint={handleOnChainMint}
-              isAutoVault={(dataToPrefill.shouldAutoVault ?? false) && !bondVaultNonce}
+              isAutoVault={(dataToPrefill?.shouldAutoVault ?? false) && !bondVaultNonce}
             />
           </>
         )}
