@@ -53,24 +53,23 @@ import {
 } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { BondContract, dataNftTokenIdentifier, SftMinter } from "@itheum/sdk-mx-data-nft/out";
-import { Address, ITransaction, Transaction } from "@multiversx/sdk-core/out";
+import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
+import axios from "axios";
 import BigNumber from "bignumber.js";
-import { File, NFTStorage } from "nft.storage";
 import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import extraAssetDemo from "assets/img/extra-asset-demo.gif";
 import ChainSupportedInput from "components/UtilComps/ChainSupportedInput";
 import { IS_DEVNET, MENU } from "libs/config";
 import { labels } from "libs/language";
+import { getApi } from "libs/MultiversX/api";
 import { UserDataType } from "libs/MultiversX/types";
 import { getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "libs/utils";
 import { useAccountStore, useMintStore } from "store";
 import { MintingModal } from "./MintingModal";
-import axios from "axios";
-import { getApi } from "libs/MultiversX/api";
 
 // Declaring the form types
 type TradeDataFormType = {
@@ -100,10 +99,10 @@ type TradeFormProps = {
 };
 
 export const TradeForm: React.FC<TradeFormProps> = (props) => {
-  const { address } = useGetAccountInfo();
   const { checkUrlReturns200, maxSupply, minRoyalties, maxRoyalties, antiSpamTax, dataNFTMarshalServiceStatus, userData, dataToPrefill, closeTradeFormModal } =
     props;
 
+  const [isNFMeIDMint, setIsNFMeIDMint] = useState<boolean>(false);
   const [currDataCATSellObj] = useState<any>(dataToPrefill ?? null);
   const [readTermsChecked, setReadTermsChecked] = useState<boolean>(false);
   const [readAntiSpamFeeChecked, setReadAntiSpamFeeChecked] = useState<boolean>(false);
@@ -111,6 +110,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const [isMintingModalOpen, setIsMintingModalOpen] = useState<boolean>(false);
   const [errDataNFTStreamGeneric, setErrDataNFTStreamGeneric] = useState<any>(null);
   const [mintingSuccessful, setMintingSuccessful] = useState<boolean>(false);
+  const [makePrimaryNFMeIdSuccessful, setMakePrimaryNFMeIdSuccessful] = useState<boolean>(false);
   const [dataNFTImg, setDataNFTImg] = useState<string>("");
   const [saveProgress, setSaveProgress] = useState({
     s1: 0,
@@ -119,9 +119,9 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     s4: 0,
     s5: 0,
   });
-
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const [mintSessionId, setMintSessionId] = useState<any>(null);
+  const [makePrimaryNFMeIdSessionId, setMakePrimaryNFMeIdSessionId] = useState<any>(null);
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
   const { colorMode } = useColorMode();
   const toast = useToast();
@@ -137,32 +137,39 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const [previousDataNFTStreamUrl, setPreviousDataNFTStreamUrl] = useState<string>("");
   const [wasPreviousCheck200StreamSuccess, setWasPreviousCheck200StreamSuccess] = useState<boolean>(false);
   const { isOpen: isMintFeeInfoVisible, onClose, onOpen } = useDisclosure({ defaultIsOpen: true });
-
   const steps = [
     { title: "Step 1", description: "Asset Detail" },
     { title: "Step 2", description: "Token Metadata" },
     { title: "Step 3", description: "Bonding & Terms" },
   ];
-
   const { activeStep, setActiveStep } = useSteps({
     index: 0,
     count: steps.length,
   });
-
   const [imageUrl, setImageUrl] = useState("");
   const [metadataUrl, setMetadataUrl] = useState("");
   const [mintTx, setMintTx] = useState<any>(undefined);
-
   const [bondVaultNonce, setBondVaultNonce] = useState<number | undefined>(0);
+
   useEffect(() => {
+    // does the user have a primary vault set? (if not and then mint a NFMe, we can auto set it)
     async function fetchVaultNonce() {
-      if (address) {
-        const nonce = await bond.viewAddressVaultNonce(new Address(address), IS_DEVNET ? dataNftTokenIdentifier.devnet : dataNftTokenIdentifier.mainnet);
+      if (mxAddress) {
+        const nonce = await bond.viewAddressVaultNonce(new Address(mxAddress), IS_DEVNET ? dataNftTokenIdentifier.devnet : dataNftTokenIdentifier.mainnet);
         setBondVaultNonce(nonce);
       }
     }
+
     fetchVaultNonce();
   }, []);
+
+  useEffect(() => {
+    if (currDataCATSellObj && currDataCATSellObj?.isNFMeID === true) {
+      setIsNFMeIDMint(true);
+      // everything is prefilled, so we can go to the last step of thr stepper, but we can also hide the stepper header in the UI
+      setActiveStep(2);
+    }
+  }, [currDataCATSellObj]);
 
   useEffect(() => {
     bond.viewLockPeriodsWithBonds().then((periodsT) => {
@@ -316,17 +323,34 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     mode: "onChange", // mode stay for when the validation should be applied
     resolver: yupResolver(validationSchema), // telling to React Hook Form that we want to use yupResolver as the validation schema
   });
-  const dataNFTStreamUrl: string = getValues("dataStreamUrlForm");
+
+  const dataNFTStreamUrl: string = isNFMeIDMint ? generatePrefilledNFMeIDDataStreamURL() : getValues("dataStreamUrlForm");
   const dataNFTPreviewUrl: string = getValues("dataPreviewUrlForm");
   const dataNFTTokenName: string = getValues("tokenNameForm");
   const datasetTitle: string = getValues("datasetTitleForm");
   const datasetDescription: string = getValues("datasetDescriptionForm");
   const extraAssets: string = getValues("extraAssets") ?? "";
-  const donatePercentage: number = getValues("donatePercentage") ?? 0;
-  const dataNFTCopies: number = getValues("numberOfCopiesForm");
-  const dataNFTRoyalties: number = getValues("royaltiesForm");
+  const donatePercentage: number = isNFMeIDMint ? 0 : getValues("donatePercentage") ?? 0;
+  const dataNFTCopies: number = isNFMeIDMint ? 5 : getValues("numberOfCopiesForm");
+  const dataNFTRoyalties: number = isNFMeIDMint ? 2 : getValues("royaltiesForm");
   const bondingAmount: number = getValues("bondingAmount") ?? -1;
   const bondingPeriod: number = getValues("bondingPeriod") ?? -1;
+
+  function generatePrefilledNFMeIDDataStreamURL() {
+    // create the dynamic NFMeID URL for this user
+    let nfmeIdVaultDataStreamURL = dataToPrefill?.additionalInformation.dataStreamURL;
+
+    if (!IS_DEVNET) {
+      nfmeIdVaultDataStreamURL = dataToPrefill?.additionalInformation.dataStreamURL_PRD;
+    }
+
+    // append the imgswapsalt to make the image unique to the user
+    const imgSwapSalt = `&imgswapsalt=${mxAddress.substring(0, 6)}-${mxAddress.slice(-6)}_timestamp_${Date.now()}`;
+    nfmeIdVaultDataStreamURL = nfmeIdVaultDataStreamURL + imgSwapSalt;
+    console.log("nfmeIdVaultDataStreamURL", nfmeIdVaultDataStreamURL);
+
+    return nfmeIdVaultDataStreamURL;
+  }
 
   function shouldMintYourDataNftBeDisabled(
     isValid: boolean,
@@ -341,17 +365,33 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   }
 
   const closeProgressModal = () => {
-    if (mintingSuccessful) {
-      toast({
-        title: 'Success! Data NFT Minted. Head over to your "Data NFT Wallet" to view your new NFT',
-        status: "success",
-        isClosable: true,
-      });
+    if ((dataToPrefill?.shouldAutoVault ?? false) && !bondVaultNonce) {
+      // mint and auto vault is a success
+      if (mintingSuccessful && makePrimaryNFMeIdSuccessful) {
+        toast({
+          title: 'Success! Data NFT Minted and set as your NFMe ID Vault. Head over to your "Wallet" to view your new NFT',
+          status: "success",
+          isClosable: true,
+        });
+      }
+    } else {
+      // only minting was needed, and that was a success
+      if (mintingSuccessful) {
+        toast({
+          title: 'Success! Data NFT Minted. Head over to your "Wallet" to view your new NFT',
+          status: "success",
+          isClosable: true,
+        });
+      }
     }
 
     setIsMintingModalOpen(false);
     setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0, s5: 0 });
     setMintingSuccessful(false);
+    setMakePrimaryNFMeIdSuccessful(false);
+    setMintTx(undefined);
+    setMintSessionId(null);
+    setMakePrimaryNFMeIdSessionId(null);
     setDataNFTImg("");
     closeTradeFormModal();
   };
@@ -374,33 +414,51 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const mintTxFail = (_foo: any) => {
+  const mintTxFail = () => {
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT has failed"));
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const mintTxCancelled = (_foo: any) => {
+  const makePrimaryVaultTxFail = () => {
+    setErrDataNFTStreamGeneric(new Error("Transaction to set primary NFMe ID has failed"));
+  };
+
+  const mintTxCancelled = () => {
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT was cancelled"));
   };
 
-  const mintTxSuccess = async (_foo: any) => {
+  const makePrimaryVaultCancelled = () => {
+    setErrDataNFTStreamGeneric(new Error("Transaction to set primary NFMe ID was cancelled"));
+  };
+
+  const makePrimaryVaultTxSuccess = async () => {
+    setMakePrimaryNFMeIdSuccessful(true);
+  };
+
+  const mintTxSuccess = async () => {
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s5: 1 }));
 
-    if (dataToPrefill?.shouldAutoVault ?? false) {
+    // if we have to auto-vault -- i.e most likely user first nfme id, then we can auto vault it with this TX
+    if ((dataToPrefill?.shouldAutoVault ?? false) && !bondVaultNonce) {
       const dataNftTokenId = IS_DEVNET ? dataNftTokenIdentifier.devnet : dataNftTokenIdentifier.mainnet;
       const nonceToVault = (await axios.get(`https://${getApi(IS_DEVNET ? "D" : "1")}/nfts/count?search=${dataNftTokenId}`)).data;
       const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
-      const vaultTx = bondContract.setVaultNonce(new Address(address), nonceToVault, dataNftTokenId);
-      await sendTransactions({
+      const vaultTx = bondContract.setVaultNonce(new Address(mxAddress), nonceToVault, dataNftTokenId);
+
+      const { sessionId, error } = await sendTransactions({
         transactions: [vaultTx],
         transactionsDisplayInfo: {
-          processingMessage: "Setting NFT as primary NFMe.ID",
-          errorMessage: "NFMe.ID setting failed",
-          successMessage: "NFMe.ID set successfully!",
+          processingMessage: "Setting NFT as primary NFMe ID",
+          errorMessage: "NFMe ID setting failed",
+          successMessage: "NFMe ID set successfully!",
         },
         redirectAfterSign: false,
       });
+
+      if (error) {
+        setErrDataNFTStreamGeneric(new Error(labels.ERR_SET_AS_PRIMARY_NF_ME_ID_VAULT_TX));
+      }
+
+      setMakePrimaryNFMeIdSessionId(sessionId);
     }
 
     await sleep(3);
@@ -417,11 +475,13 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     */
 
     setMintingSuccessful(false);
+    setMakePrimaryNFMeIdSuccessful(false);
     setIsMintingModalOpen(true);
 
     const myHeaders = new Headers();
     myHeaders.append("cache-control", "no-cache");
     myHeaders.append("Content-Type", "application/json");
+
     const requestOptions = {
       method: "POST",
       headers: myHeaders,
@@ -455,29 +515,29 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     }
   };
 
-  const handleOnChainMint = async () =>
-    // { imageOnIpfsUrl, metadataOnIpfsUrl }
-    // : { imageOnIpfsUrl: string; metadataOnIpfsUrl: string }
-    {
-      await sleep(1);
-      await refreshAccount();
+  const handleOnChainMint = async () => {
+    await sleep(1);
+    await refreshAccount();
 
-      const { sessionId, error } = await sendTransactions({
-        transactions: mintTx,
-        transactionsDisplayInfo: {
-          processingMessage: "Minting Data NFT Collection",
-          errorMessage: "Collection minting failed :(",
-          successMessage: "Collection minted successfully!",
-        },
-        redirectAfterSign: false,
-      });
-      if (error) {
-        setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_NO_TX));
-      }
+    const { sessionId, error } = await sendTransactions({
+      transactions: mintTx,
+      transactionsDisplayInfo: {
+        processingMessage: "Minting Data NFT Collection",
+        errorMessage: "Collection minting failed :(",
+        successMessage: "Collection minted successfully!",
+      },
+      redirectAfterSign: false,
+    });
 
-      setMintSessionId(sessionId);
-    };
+    if (error) {
+      setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_NO_TX));
+    }
 
+    setMintSessionId(sessionId);
+  };
+
+  // S: Track transaction statuses
+  // track minting TX
   useTrackTransactionStatus({
     transactionId: mintSessionId,
     onSuccess: mintTxSuccess,
@@ -485,6 +545,16 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     onCancelled: mintTxCancelled,
   });
 
+  // track make primary NFMe ID  TX
+  useTrackTransactionStatus({
+    transactionId: makePrimaryNFMeIdSessionId,
+    onSuccess: makePrimaryVaultTxSuccess,
+    onFail: makePrimaryVaultTxFail,
+    onCancelled: makePrimaryVaultCancelled,
+  });
+  // E: Track transaction statuses
+
+  /*
   function createIpfsMetadata(traits: string) {
     const metadata = {
       description: `${getValues("datasetTitleForm")} : ${getValues("datasetDescriptionForm")}`,
@@ -515,35 +585,36 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     const _traitsFile = new File([JSON.stringify(traits)], "metadata.json", { type: "application/json" });
     return { image: _imageFile, traits: _traitsFile };
   }
+  */
 
   const prepareMint = async ({ dataNFTHash }: { dataNFTHash: any }) => {
     await sleep(3);
 
-    const newNFTImg = `${getApiDataDex(chainID)}/v1/generateNFTArt?hash=${dataNFTHash}`;
-
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s2: 1 }));
 
-    // let res;
-    // try {
-    //   // catch IPFS error
-    //   const { image, traits } = await createFileFromUrl(newNFTImg);
-    //   const nftstorage = new NFTStorage({
-    //     token: import.meta.env.VITE_ENV_NFT_STORAGE_KEY || "",
-    //   });
+    /*
+    let res;
+    try {
+      // catch IPFS error
+      const { image, traits } = await createFileFromUrl(imgGenServiceApi);
+      const nftstorage = new NFTStorage({
+        token: import.meta.env.VITE_ENV_NFT_STORAGE_KEY || "",
+      });
 
-    //   res = await nftstorage.storeDirectory([image, traits]);
-    // } catch (e) {
-    //   setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_FORM_NFT_IMG_GEN_AND_STORAGE_CATCH_HIT));
-    //   return;
-    // }
+      res = await nftstorage.storeDirectory([image, traits]);
+    } catch (e) {
+      setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_FORM_NFT_IMG_GEN_AND_STORAGE_CATCH_HIT));
+      return;
+    }
 
-    // if (!res) {
-    //   setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_FORM_NFT_IMG_GEN_ISSUE));
-    //   return;
-    // }
+    if (!res) {
+      setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_FORM_NFT_IMG_GEN_ISSUE));
+      return;
+    }
 
-    // const imageOnIpfsUrl = `https://ipfs.io/ipfs/${res}/image.png`;
-    // const metadataOnIpfsUrl = `https://ipfs.io/ipfs/${res}/metadata.json`;
+    const imageOnIpfsUrl = `https://ipfs.io/ipfs/${res}/image.png`;
+    const metadataOnIpfsUrl = `https://ipfs.io/ipfs/${res}/metadata.json`;
+    */
 
     const sftMinter = new SftMinter(IS_DEVNET ? "devnet" : "mainnet");
 
@@ -554,6 +625,17 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
     if (extraAssets && extraAssets.trim() !== "" && extraAssets.trim().toUpperCase() !== "NA") {
       optionalSDKMintCallFields["extraAssets"] = [extraAssets.trim()];
+    }
+
+    // create the img generative service API based on user options (to show it on the UI)
+    let imgGenServiceApi = `${getApiDataDex(chainID)}/v1/generateNFTArt?hash=${dataNFTHash}`;
+
+    // if it's nfme id vault, get the custom image layers
+    if (isNFMeIDMint) {
+      optionalSDKMintCallFields["imgGenBg"] = "bg5_series_nfmeid_gen1";
+      optionalSDKMintCallFields["imgGenSet"] = "set9_series_nfmeid_gen1";
+
+      imgGenServiceApi += "&bg=bg5_series_nfmeid_gen1&set=set9_series_nfmeid_gen1";
     }
 
     const { imageUrl, metadataUrl, tx } = await sftMinter.mint(
@@ -571,11 +653,11 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       donatePercentage * 100,
       optionalSDKMintCallFields
     );
-    setImageUrl(imageUrl);
+
+    setDataNFTImg(imgGenServiceApi); // the gen image we will get, so we can show it to the user on the UI
+    setImageUrl(imageUrl); // the gen image saved to IPFS (might have a delay so can't show this on UI)
     setMetadataUrl(metadataUrl);
     setMintTx(tx);
-
-    setDataNFTImg(newNFTImg);
 
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s3: 1 }));
     await sleep(1);
@@ -602,9 +684,9 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       return;
     }
 
-    const res = await validateBaseInput();
+    const isValidInput = validateBaseInput();
 
-    if (res) {
+    if (isValidInput) {
       setErrDataNFTStreamGeneric(null);
       dataNFTDataStreamAdvertise();
     }
@@ -661,13 +743,33 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           </Button>
         )}
 
+        <Box>
+          <Alert status="warning" mt={3} p={2} fontSize=".8rem" rounded="lg" as="div" style={{ "display": "block" }}>
+            <Box>--- Debugging Panel ---</Box>
+            <Box>^^ Is NFMe ID Mint: {isNFMeIDMint.toString()}</Box>
+            <Box>
+              ^^ Should Auto Vault?: {!bondVaultNonce ? "true" : "false"} : current bondVaultNonce = {bondVaultNonce?.toString()} (should be true if a primary
+              nfme is not set yet)
+            </Box>
+            <Box>Data Stream URL: {dataNFTStreamUrl}</Box>
+            <Box>Data Preview URL: {dataNFTPreviewUrl}</Box>
+            <Box>Data Marshal URL: {dataNFTMarshalService}</Box>
+            <Box>Number of Copies: {dataNFTCopies} (should be - 5)</Box>
+            <Box>Royalties: {dataNFTRoyalties} (should be - 2)</Box>
+            <Box>Donate %: {donatePercentage} (should be - 0)</Box>
+            <Box>Token Name: {dataNFTTokenName} (should be - NFMeIDVaultG1)</Box>
+            <Box>Title: {datasetTitle} (should be - NFMeIDVaultG1)</Box>
+            <Box>Description: {datasetDescription}</Box>
+          </Alert>
+        </Box>
+
         <Flex flexDirection="row" mt="3">
           <Text fontSize="md" color="red.400">
             * &nbsp;Required fields
           </Text>
         </Flex>
 
-        <>
+        {!isNFMeIDMint && (
           <Stepper size={{ base: "sm", lg: "lg" }} index={activeStep} my={5} colorScheme="teal">
             {steps.map((step, index) => (
               <Step key={index}>
@@ -698,94 +800,96 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               </Step>
             ))}
           </Stepper>
-          {activeStep === 0 && (
-            <Flex flexDirection={"column"}>
-              <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="2 !important" mb={2}>
-                Data Asset Detail
-              </Text>
-              <Link
-                color="teal.500"
-                fontSize="md"
-                mb={7}
-                href="https://docs.itheum.io/product-docs/integrators/data-streams-guides/data-asset-storage-options"
-                isExternal>
-                Where can I store or host my Data Assets? <ExternalLinkIcon mx="2px" />
-              </Link>
+        )}
 
-              <Flex flexDirection="row" gap="7">
-                <FormControl isInvalid={!!errors.dataStreamUrlForm} isRequired minH={"6.25rem"}>
-                  <FormLabel fontWeight="bold" fontSize="md">
-                    Data Stream URL
-                  </FormLabel>
+        {activeStep === 0 && (
+          <Flex flexDirection={"column"}>
+            <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="2 !important" mb={2}>
+              Data Asset Detail
+            </Text>
 
-                  <Controller
-                    control={control}
-                    render={({ field: { onChange } }) => (
-                      <Input
-                        mt="1 !important"
-                        placeholder="e.g. https://mydomain.com/my_hosted_file.json"
-                        id="dataStreamUrlForm"
-                        isDisabled={!!currDataCATSellObj}
-                        defaultValue={dataNFTStreamUrl}
-                        onChange={(event) => onChange(event.target.value)}
-                      />
-                    )}
-                    name={"dataStreamUrlForm"}
-                  />
-                  <FormErrorMessage>{errors?.dataStreamUrlForm?.message} </FormErrorMessage>
-                </FormControl>
+            <Link
+              color="teal.500"
+              fontSize="md"
+              mb={7}
+              href="https://docs.itheum.io/product-docs/integrators/data-streams-guides/data-asset-storage-options"
+              isExternal>
+              Where can I store or host my Data Assets? <ExternalLinkIcon mx="2px" />
+            </Link>
 
-                <FormControl isInvalid={!!errors.dataPreviewUrlForm} isRequired minH={{ base: "7rem", md: "6.25rem" }}>
-                  <FormLabel fontWeight="bold" fontSize="md" noOfLines={1}>
-                    Data Preview URL
-                  </FormLabel>
+            <Flex flexDirection="row" gap="7">
+              <FormControl isInvalid={!!errors.dataStreamUrlForm} isRequired minH={"6.25rem"}>
+                <FormLabel fontWeight="bold" fontSize="md">
+                  Data Stream URL
+                </FormLabel>
 
-                  <Controller
-                    control={control}
-                    render={({ field: { onChange } }) => (
-                      <Input
-                        mt="1 !important"
-                        placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
-                        id="dataPreviewUrlForm"
-                        isDisabled={!!currDataCATSellObj}
-                        defaultValue={dataNFTPreviewUrl}
-                        onChange={(event) => {
-                          onChange(event.target.value);
-                          trigger("dataPreviewUrlForm");
-                        }}
-                      />
-                    )}
-                    name="dataPreviewUrlForm"
-                  />
-                  <FormErrorMessage>{errors?.dataPreviewUrlForm?.message}</FormErrorMessage>
-
-                  {currDataCATSellObj && (
-                    <Link color="teal.500" fontSize="sm" href={dataNFTPreviewUrl} isExternal>
-                      View Preview Data <ExternalLinkIcon mx="2px" />
-                    </Link>
+                <Controller
+                  control={control}
+                  render={({ field: { onChange } }) => (
+                    <Input
+                      mt="1 !important"
+                      placeholder="e.g. https://mydomain.com/my_hosted_file.json"
+                      id="dataStreamUrlForm"
+                      isDisabled={!!currDataCATSellObj}
+                      defaultValue={dataNFTStreamUrl}
+                      onChange={(event) => onChange(event.target.value)}
+                    />
                   )}
-                </FormControl>
-              </Flex>
+                  name={"dataStreamUrlForm"}
+                />
+                <FormErrorMessage>{errors?.dataStreamUrlForm?.message} </FormErrorMessage>
+              </FormControl>
 
-              <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "5" }}>
-                Data Marshal URL
-              </Text>
+              <FormControl isInvalid={!!errors.dataPreviewUrlForm} isRequired minH={{ base: "7rem", md: "6.25rem" }}>
+                <FormLabel fontWeight="bold" fontSize="md" noOfLines={1}>
+                  Data Preview URL
+                </FormLabel>
 
-              <Input mt="1 !important" mb={8} value={dataNFTMarshalService} disabled />
+                <Controller
+                  control={control}
+                  render={({ field: { onChange } }) => (
+                    <Input
+                      mt="1 !important"
+                      placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
+                      id="dataPreviewUrlForm"
+                      isDisabled={!!currDataCATSellObj}
+                      defaultValue={dataNFTPreviewUrl}
+                      onChange={(event) => {
+                        onChange(event.target.value);
+                        trigger("dataPreviewUrlForm");
+                      }}
+                    />
+                  )}
+                  name="dataPreviewUrlForm"
+                />
+                <FormErrorMessage>{errors?.dataPreviewUrlForm?.message}</FormErrorMessage>
 
-              {!!dataNFTMarshalServiceStatus && (
-                <Text color="red.400" fontSize="sm" mt="1 !important">
-                  {dataNFTMarshalServiceStatus}
-                </Text>
-              )}
-              <Flex justifyContent="flex-end" mb={3} mt={5}>
-                <Button colorScheme="teal" size="lg" onClick={() => setActiveStep(activeStep + 1)} isDisabled={handleDisabledButtonStep1()}>
-                  Next
-                </Button>
-              </Flex>
+                {currDataCATSellObj && (
+                  <Link color="teal.500" fontSize="sm" href={dataNFTPreviewUrl} isExternal>
+                    View Preview Data <ExternalLinkIcon mx="2px" />
+                  </Link>
+                )}
+              </FormControl>
             </Flex>
-          )}
-        </>
+
+            <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "5" }}>
+              Data Marshal URL
+            </Text>
+
+            <Input mt="1 !important" mb={8} value={dataNFTMarshalService} disabled />
+
+            {!!dataNFTMarshalServiceStatus && (
+              <Text color="red.400" fontSize="sm" mt="1 !important">
+                {dataNFTMarshalServiceStatus}
+              </Text>
+            )}
+            <Flex justifyContent="flex-end" mb={3} mt={5}>
+              <Button colorScheme="teal" size="lg" onClick={() => setActiveStep(activeStep + 1)} isDisabled={handleDisabledButtonStep1()}>
+                Next
+              </Button>
+            </Flex>
+          </Flex>
+        )}
 
         {activeStep === 1 && (
           <>
@@ -807,6 +911,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                       placeholder="Between 3 and 20 alphanumeric characters only"
                       id="tokenNameForm"
                       defaultValue={dataNFTTokenName}
+                      isDisabled={isNFMeIDMint}
                       onChange={(event) => onChange(event.target.value)}
                     />
                   )}
@@ -828,6 +933,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                       placeholder="Between 10 and 60 alphanumeric characters only"
                       id="datasetTitleForm"
                       defaultValue={datasetTitle}
+                      isDisabled={isNFMeIDMint}
                       onChange={(event) => onChange(event.target.value)}
                     />
                   )}
@@ -852,6 +958,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                       placeholder="Between 10 and 400 characters only. URL allowed."
                       id={"datasetDescriptionForm"}
                       defaultValue={datasetDescription}
+                      isDisabled={isNFMeIDMint}
                       onChange={(event) => onChange(event.target.value)}
                     />
                   )}
@@ -875,6 +982,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                         maxW={24}
                         step={1}
                         defaultValue={dataNFTCopies}
+                        isDisabled={isNFMeIDMint}
                         min={0}
                         max={maxSupply > 0 ? maxSupply : 1}
                         isValidCharacter={isValidNumericCharacter}
@@ -912,6 +1020,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                         maxW={24}
                         step={1}
                         defaultValue={dataNFTRoyalties}
+                        isDisabled={isNFMeIDMint}
                         min={minRoyalties > 0 ? minRoyalties : 0}
                         max={maxRoyalties > 0 ? maxRoyalties : 0}
                         isValidCharacter={isValidNumericCharacter}
@@ -980,6 +1089,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               />
               <FormErrorMessage>{errors?.extraAssets?.message}</FormErrorMessage>
             </FormControl>
+
             <FormControl isInvalid={!!errors.donatePercentage} minH={"8.5rem"}>
               <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt={{ base: "1", md: "4" }}>
                 Donate Percentage
@@ -992,6 +1102,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                     <Slider
                       id="slider"
                       defaultValue={userData && userData?.maxDonationPecentage / 100 / 2}
+                      isDisabled={isNFMeIDMint}
                       min={0}
                       max={userData && userData?.maxDonationPecentage / 100}
                       colorScheme="teal"
@@ -1038,6 +1149,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 </Link>
               </Text>
             </FormControl>
+
             <Flex justifyContent="flex-end" gap={3} pt={5} mt={5}>
               <Button size="lg" onClick={() => setActiveStep(activeStep - 1)}>
                 Back
@@ -1207,13 +1319,15 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               Minting Terms of Use
             </Text>
 
-            <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="3 !important">
-              Minting a Data NFT and putting it for trade on the Data DEX means you have to agree to some strict “terms of use”, as an example, you agree that
-              the data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data Stream URL is always
-              online. Given it&apos;s an NFT, you also have limitations like not being able to update the title, description, royalty, etc. But there are other
-              conditions too. Take some time to read these “terms of use” before you proceed and it&apos;s critical you understand the terms of use before
-              proceeding.
-            </Text>
+            {!isNFMeIDMint && (
+              <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="3 !important">
+                Bonding ITHEUM tokens proves your Liveliness and assures Data Consumers that {"you'll"} maintain the {"Data NFT's"} Data Stream. You must lock
+                the specified Bonding Amount for the required Bonding Period, during which penalties and slashing terms may apply. After the period ends, you
+                can withdraw your full amount or {"renew"} the Liveliness Bond to continue signaling your commitment. Plus, you earn staking rewards for your
+                bonded ITHEUM.
+              </Text>
+            )}
+
             <Flex mt="3 !important">
               <Button
                 colorScheme="teal"
@@ -1226,6 +1340,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 </Text>
               </Button>
             </Flex>
+
             <Box minH={"3.5rem"}>
               <Checkbox size="md" mt="2 !important" isChecked={readTermsChecked} onChange={(e) => setReadTermsChecked(e.target.checked)}>
                 I have read and I agree to the Terms of Use
@@ -1243,8 +1358,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             </Text>
 
             <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="3 !important">
-              An “anti-spam fee” is required to ensure that the Data DEX does not get impacted by spam datasets created by bad actors. This fee will be
-              dynamically adjusted by the protocol based on ongoing dataset curation discovery by the Itheum DAO.
+              An {"anti-spam fee"} is necessary to prevent excessive concurrent mints from overwhelming the Data DEX.
             </Text>
 
             <Box mt="3 !important">
@@ -1289,7 +1403,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                     antiSpamTax,
                     bondingAmount
                   )}>
-                  Mint Your Data NFT
+                  {isNFMeIDMint ? "Mint Your NFMe ID Vault" : "Mint Your Data NFT Collection"}
                 </Button>
               </ChainSupportedInput>
             </Flex>
@@ -1300,12 +1414,14 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               errDataNFTStreamGeneric={errDataNFTStreamGeneric}
               saveProgress={saveProgress}
               imageUrl={imageUrl}
+              dataNFTImg={dataNFTImg}
               metadataUrl={metadataUrl}
               setSaveProgress={setSaveProgress}
-              dataNFTImg={dataNFTImg}
               closeProgressModal={closeProgressModal}
               mintingSuccessful={mintingSuccessful}
+              makePrimaryNFMeIdSuccessful={makePrimaryNFMeIdSuccessful}
               onChainMint={handleOnChainMint}
+              isNFMeIDMint={isNFMeIDMint}
               isAutoVault={(dataToPrefill?.shouldAutoVault ?? false) && !bondVaultNonce}
             />
           </>

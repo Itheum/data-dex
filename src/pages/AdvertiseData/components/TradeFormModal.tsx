@@ -42,7 +42,6 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   const [dataNFTMarshalServiceStatus, setDataNFTMarshalServiceStatus] = useState<boolean>(false);
   const [, setDataNFTMarshalService] = useState<string>("");
   const [dataNFTImgGenServiceValid, setDataNFTImgGenService] = useState(false);
-
   const navigate = useNavigate();
   const userData = useMintStore((state) => state.userData);
   const lockPeriod = useMintStore((state) => state.lockPeriodForBond);
@@ -173,7 +172,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
               }}
             />
             <Heading as="h4" fontFamily="Clash-Medium" size="lg">
-              Mint Your Data NFT-FT
+              {dataToPrefill?.isNFMeID ? "Mint Your NFMe ID Vault" : "Mint Your Data NFT Collection"}
             </Heading>
           </HStack>
         </ModalHeader>
