@@ -97,7 +97,7 @@ export const BondingCards: React.FC = () => {
   const renewBond = async (tokenIdentifier: string, nonce: number) => {
     console.log(tokenIdentifier, nonce);
     const tx = bondContract.renew(new Address(address), tokenIdentifier, nonce);
-    tx.setGasLimit(30000000);
+    tx.setGasLimit(50000000);
     await sendTransactions({
       transactions: [tx],
     });
@@ -105,7 +105,7 @@ export const BondingCards: React.FC = () => {
 
   const withdrawBonds = async (tokenIdentifier: string, nonce: number) => {
     const tx = bondContract.withdraw(new Address(address), tokenIdentifier, nonce);
-    tx.setGasLimit(30000000);
+    tx.setGasLimit(50000000);
     await sendTransactions({
       transactions: [tx],
     });
