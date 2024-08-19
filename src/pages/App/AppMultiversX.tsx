@@ -199,11 +199,11 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                       <Route path=":profileAddress/created" element={<Profile tabState={1} />} />
                       <Route path=":profileAddress/listed" element={<Profile tabState={2} />} />
                     </Route>
-                    {/*{routing}*/}
 
                     <Route path="dashboard" element={<HomeMultiversX key={rfKeys.tools} setMenuItem={setMenuItem} />} />
 
                     <Route path="mintdata" element={<TradeData />} />
+
                     {isMxLoggedIn ? (
                       <Route path="enterprise" element={<Outlet />}>
                         <Route path="" element={<Enterprise />} />
@@ -231,10 +231,13 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                       <Route path="marketplace/my" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
                       <Route path="marketplace/my/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
                     </Route>
-                    <Route path="bonding/" element={<Bonding />} />
+
+                    {/* This may not be needed, just commenting out for now */}
+                    {/* <Route path="bonding/" element={<Bonding />} />
                     <Route path="bonding/:bondingPageNumber" element={<Bonding />}>
                       <Route path="compensation/:compensationPageNumber" element={<Bonding />} />
-                    </Route>
+                    </Route> */}
+
                     <Route path="settings" element={<AppSettings />} />
                   </Routes>
                 </AuthenticatedRoutesWrapper>

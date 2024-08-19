@@ -555,6 +555,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           dataNFTTraitsFetched = dataNFTTraitsFromRes;
           if (assetsLoadedOnIPFSwasSuccess) {
             break;
+          } else {
+            await sleep(10); // wait 10 seconds extra if it's a fail in case IPFS is slow
           }
         } catch (err) {
           setErrDataNFTStreamGeneric(new Error(labels.ERR_IPFS_ASSET_SAVE_FAILED));
@@ -786,7 +788,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         )}
 
         <Box>
-          <Alert status="warning" mt={3} p={2} fontSize=".8rem" rounded="lg" as="div" style={{ "display": "none" }}>
+          <Alert status="warning" mt={3} p={2} fontSize=".8rem" rounded="lg" as="div" style={{ "display": "block" }}>
             <Box>--- Debugging Panel ---</Box>
             <Box>^^ Is NFMe ID Mint: {isNFMeIDMint.toString()}</Box>
             <Box>

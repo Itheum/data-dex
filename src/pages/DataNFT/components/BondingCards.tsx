@@ -6,11 +6,11 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import BigNumber from "bignumber.js";
+import { LivelinessScore } from "components/Liveliness/LivelinessScore";
 import NftMediaComponent from "components/NftMediaComponent";
+import { NoDataHere } from "components/Sections/NoDataHere";
 import { IS_DEVNET } from "libs/config";
 import { formatNumberToShort } from "libs/utils";
-import { LivelinessScore } from "../../../components/Liveliness/LivelinessScore";
-import { NoDataHere } from "../../../components/Sections/NoDataHere";
 
 type CompensationNftsType = {
   nonce: number;
@@ -21,12 +21,12 @@ export const BondingCards: React.FC = () => {
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
-  DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
-  const [bondingOffers, setBondingOffers] = useState<Array<DataNft>>([]);
   const [contractBonds, setContractBonds] = useState<Bond[]>([]);
   const [allCompensation, setAllCompensation] = useState<Array<Compensation>>([]);
-
   const [nfmeIdNonce, setNfmeIdNonce] = useState<number>(0);
+
+  DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
+  const [bondingOffers, setBondingOffers] = useState<Array<DataNft>>([]);
 
   const [contractConfiguration, setContractConfiguration] = useState<BondConfiguration>({
     contractState: 0,
@@ -112,9 +112,9 @@ export const BondingCards: React.FC = () => {
   };
 
   return (
-    <Stack display="flex" flexDirection={{ base: "column" }} flexWrap={"wrap"} gap={7} mx={{ base: 0, md: 16 }} alignItems={"start"}>
-      <Heading as="h1" size="lg" fontFamily="Clash-Medium" color="teal.200">
-        Your Data NFT Creator Liveliness Bonds
+    <Flex width="100%" flexWrap="wrap" gap={7} px={{ base: 0, md: 12 }} mt={10} backgroundColor={"2blue"}>
+      <Heading fontSize="1.5rem" fontFamily="Clash-Medium" color="teal.200">
+        Your Data NFT Liveliness Bonds
       </Heading>
       {bondingOffers.length === 0 ? (
         <NoDataHere />
@@ -123,7 +123,7 @@ export const BondingCards: React.FC = () => {
           const contractBond = contractBonds.find((bond) => bond.nonce === dataNft.nonce && bond.tokenIdentifier === dataNft.collection)!;
           const contractCompensation = allCompensation.find((comp) => comp.nonce === dataNft.nonce && comp.tokenIdentifier === dataNft.collection)!;
           return (
-            <Card bg="#1b1b1b50" border="1px solid" borderColor="#00C79740" borderRadius="3xl" p={5} w="100%" key={dataNft.nonce}>
+            <Card bg="#1b1b1b50" border=".1rem solid" borderColor="#00C79740" borderRadius="3xl" p={5} w="100%" key={dataNft.nonce}>
               <Flex>
                 <VStack m={6}>
                   <NftMediaComponent nftMedia={dataNft?.media} imageHeight="125px" imageWidth="125px" />
@@ -239,6 +239,6 @@ export const BondingCards: React.FC = () => {
           );
         })
       )}
-    </Stack>
+    </Flex>
   );
 };

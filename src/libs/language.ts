@@ -27,7 +27,8 @@ export const labels = {
   "ERR_API_ISSUE_DATA_NFT_DETAILS": "Could not fetch Data NFT-FT details. (ER-22)",
   "ERR_API_ISSUE_DATA_NFT_OFFERS": "Could not fetch Data NFT-FT offers. (ER-23)",
   "ERR_MARKET_OFFER_NOT_FOUND": "Data NFT offer not found (ER-24)",
-  "ERR_IPFS_ASSET_SAVE_FAILED": "Could not save the img and or metadata assets to IPFS. (ER-31)",
+  "ERR_IPFS_ASSET_SAVE_FAILED":
+    "Could not save the img and or metadata assets to IPFS. There is a chance that your firewall is blocking IPFS, please disable it and try again. (ER-31)",
   "ERR_MINT_TX_GEN_COMMAND_FAILED": "Could not generate the Data NFT mint transaction. (ER-32)",
 
   "NATIVE_AUTH_TOKEN_MISSING": "Your wallet did not produce a Native Auth token (ER-25)",

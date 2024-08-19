@@ -62,6 +62,7 @@ export const LivelinessStaking: React.FC = () => {
         const bondContract = new BondContract(envNetwork);
         const bonds = await bondContract.viewAddressBonds(new Address(address));
         const foundBound = bonds.find((bond) => bond.nonce === data.userData.vaultNonce);
+
         if (foundBound && new BigNumber(foundBound.remainingAmount).isGreaterThan(0) && foundBound.unbondTimestamp > 0) {
           setNfmeId(dataNft);
           setNfmeIdBond(foundBound);
@@ -98,7 +99,7 @@ export const LivelinessStaking: React.FC = () => {
     }
   }, [globalTotalBond, combinedBondsStaked, maxApy]);
 
-  async function handleClaimRewarsClick() {
+  async function handleClaimRewardsClick() {
     const envNetwork = import.meta.env.VITE_ENV_NETWORK;
     const liveContract = new LivelinessStake(envNetwork);
     const tx = liveContract.claimRewards(new Address(address));
@@ -125,24 +126,24 @@ export const LivelinessStaking: React.FC = () => {
   };
 
   return (
-    <HStack justifyContent={"center"} alignItems={"flex-start"}>
-      <VStack flexWrap={"wrap"} gap={7} mx={{ base: 0, md: 12 }} my={4} alignItems={"start"}>
-        <Heading as="h1" size="lg" fontFamily="Clash-Medium" color="teal.200" alignItems={"start"}>
+    <Flex width="100%" justifyContent="space-between" backgroundColor={"1pink"}>
+      <Box px={{ base: 0, md: 12 }} backgroundColor={"1red"}>
+        <Heading fontSize="1.5rem" fontFamily="Clash-Medium" color="teal.200" mb={2}>
           Your Liveliness Rewards
         </Heading>
 
-        <VStack borderStyle={"solid"} borderWidth={"2px"} borderColor={"teal.200"} borderRadius="lg" p={6} alignItems={"start"} minW={{ md: "36rem" }}>
+        <VStack border=".1rem solid" borderColor="#00C79740" borderRadius="3xl" p={6} alignItems={"start"} minW={{ md: "36rem" }} minH={{ md: "26rem" }}>
           <Text fontSize="3xl">Combined Liveliness: {combinedLiveliness}</Text>
           <Progress hasStripe isAnimated value={combinedLiveliness} rounded="xs" colorScheme="teal" width={"100%"} />
-          <Text fontSize="2xl">Combined Bonds Staked: {formatNumberToShort(combinedBondsStaked)}</Text>
-          <Text fontSize="2xl">Global Total Bonded: {formatNumberToShort(globalTotalBond)}</Text>
-          <Text fontSize="2xl">Your reward APR: {isNaN(rewardApy) ? 0 : rewardApy}%</Text>
-          {maxApy > 0 && <Text fontSize="2xl">MAX APR: {maxApy}%</Text>}
-          <Text fontSize="2xl">
-            Current accumulated rewards: {formatNumberToShort(combinedLiveliness >= 95 ? accumulatedRewards : (combinedLiveliness * accumulatedRewards) / 100)}{" "}
+          <Text fontSize="xl">Combined Bonds Staked: {formatNumberToShort(combinedBondsStaked)}</Text>
+          <Text fontSize="xl">Global Total Bonded: {formatNumberToShort(globalTotalBond)}</Text>
+          <Text fontSize="xl">Your Reward APR: {isNaN(rewardApy) ? 0 : rewardApy}%</Text>
+          {maxApy > 0 && <Text fontSize="xl">Max APR: {maxApy}%</Text>}
+          <Text fontSize="xl">
+            Current Accumulated Rewards: {formatNumberToShort(combinedLiveliness >= 95 ? accumulatedRewards : (combinedLiveliness * accumulatedRewards) / 100)}{" "}
             $ITHEUM
           </Text>
-          <Text fontSize="2xl">Potential rewards if liveliness &gt;95%: {formatNumberToShort(accumulatedRewards)} $ITHEUM</Text>
+          <Text fontSize="xl">Potential Rewards If Liveliness &gt;95%: {formatNumberToShort(accumulatedRewards)} $ITHEUM</Text>
           <HStack mt={5} justifyContent={"center"} alignItems={"flex-start"} width={"100%"}>
             <Tooltip
               hasArrow
@@ -153,9 +154,9 @@ export const LivelinessStaking: React.FC = () => {
                 fontSize="lg"
                 colorScheme="teal"
                 px={6}
-                onClick={handleClaimRewarsClick}
+                onClick={handleClaimRewardsClick}
                 isDisabled={address === "" || hasPendingTransactions || accumulatedRewards < 1 || combinedLiveliness === 0}>
-                Claim rewards
+                Claim Rewards
               </Button>
             </Tooltip>
             <VStack>
@@ -172,7 +173,7 @@ export const LivelinessStaking: React.FC = () => {
                   px={6}
                   isDisabled={address === "" || hasPendingTransactions || nfmeId === undefined || accumulatedRewards < 1 || combinedLiveliness === 0}
                   onClick={handleReinvestRewardsClick}>
-                  Reinvest rewards
+                  Reinvest Rewards
                 </Button>
               </Tooltip>
               <Text fontSize="sm" color={"grey"}>
@@ -181,23 +182,17 @@ export const LivelinessStaking: React.FC = () => {
             </VStack>
           </HStack>
         </VStack>
-      </VStack>
+      </Box>
 
-      <VStack mx={{ base: 0, md: 12 }} my={4} alignItems={"start"}>
+      <Box px={{ base: 0, md: 12 }} backgroundColor={"1orange"}>
         {nfmeId && (
           <>
-            <Heading as="h1" size="lg" fontFamily="Clash-Medium" color="teal.200" alignItems={"start"}>
-              Your NFMe.ID Vault Data NFT
+            <Heading fontSize="1.5rem" fontFamily="Clash-Medium" color="teal.200" mb={2}>
+              Your NFMe.ID Vault
             </Heading>
-            <VStack
-              justifyContent={"center"}
-              borderStyle={"solid"}
-              borderWidth={"2px"}
-              borderColor={"teal.200"}
-              borderRadius="lg"
-              alignItems={"start"}
-              minH={"100px"}>
-              <HStack m={6} mr={0} justifyContent={"flex-start"} width={"90%"} alignItems={"flex-start"}>
+
+            <VStack justifyContent="center" border=".1rem solid" borderColor="#00C79740" borderRadius="3xl" alignItems="start" minH={{ md: "26rem" }}>
+              <HStack m={6} mr={0} justifyContent="flex-start" width="90%" alignItems="flex-start">
                 <Image
                   w={"120px"}
                   h={"120px"}
@@ -207,10 +202,10 @@ export const LivelinessStaking: React.FC = () => {
                     currentTarget.src = DEFAULT_NFT_IMAGE;
                   }}
                 />
-                <VStack alignItems={"start"} w={"100%"}>
-                  <Text fontSize="xl" alignItems={"flex-start"}>
+                <VStack alignItems="start" w="100%">
+                  {/* <Text fontSize="xl" alignItems={"flex-start"}>
                     NFMe.ID Vault Data NFT
-                  </Text>
+                  </Text> */}
                   <LivelinessScore unbondTimestamp={nfmeIdBond?.unbondTimestamp} lockPeriod={nfmeIdBond?.lockPeriod} />
                   <Flex gap={4} pt={3} alignItems="center">
                     <Button
@@ -226,7 +221,7 @@ export const LivelinessStaking: React.FC = () => {
                       }}>
                       Renew Bond
                     </Button>
-                    <Text>{`New expiry will be ${calculateNewPeriodAfterNewBond(nfmeIdBond?.unbondTimestamp ?? 0, nfmeIdBond?.lockPeriod ?? 0)}`}</Text>
+                    <Text fontSize=".75rem">{`New expiry will be ${calculateNewPeriodAfterNewBond(nfmeIdBond?.unbondTimestamp ?? 0, nfmeIdBond?.lockPeriod ?? 0)}`}</Text>
                   </Flex>
                   <Flex gap={4} pt={3} alignItems="center">
                     <Flex flexDirection="column" gap={1}>
@@ -263,15 +258,15 @@ export const LivelinessStaking: React.FC = () => {
                   </Flex>
                 </VStack>
               </HStack>
-              <Box h={"1px"} w={"100%"} borderStyle={"solid"} borderWidth={"1px"} borderColor={"teal.200"} />
-              <HStack mx={6} my={2} justifyContent={"center"} alignItems={"flex-start"}>
+              <Box h="1px" w="100%" borderStyle="solid" borderWidth="1px" borderColor="teal.200" />
+              <HStack mx={6} my={2} justifyContent="center" alignItems="flex-start">
                 <VStack alignItems={"start"} w={"100%"}>
-                  <Text fontSize="xl" alignItems={"flex-start"} fontFamily="Inter" color="teal.200">
+                  <Text fontSize="xl" alignItems={"flex-start"} fontFamily="Inter" color="teal.200" fontWeight="bold">
                     Top-Up Liveliness for Boosted Rewards
                   </Text>
-                  <Text fontSize="xl">Available Balance: {formatNumberToShort(itheumBalance)} $ITHEUM</Text>
+                  <Text fontSize="lg">Available Balance: {formatNumberToShort(itheumBalance)} $ITHEUM</Text>
                   <HStack my={2}>
-                    <Text fontSize="xl" color={"grey"}>
+                    <Text fontSize="lg" color={"grey"}>
                       Top-Up Liveliness
                     </Text>
                     <NumberInput
@@ -357,7 +352,7 @@ export const LivelinessStaking: React.FC = () => {
             </VStack>
           </>
         )}
-      </VStack>
-    </HStack>
+      </Box>
+    </Flex>
   );
 };

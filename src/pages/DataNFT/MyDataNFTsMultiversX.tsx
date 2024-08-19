@@ -40,8 +40,8 @@ import { useMarketStore } from "store";
 import { BondingCards } from "./components/BondingCards";
 import { CompensationCards } from "./components/CompensationCards";
 import { FavoriteCards } from "./components/FavoriteCards";
-import DataNFTDetails from "./DataNFTDetails";
 import { LivelinessStaking } from "./components/LivelinessStaking";
+import DataNFTDetails from "./DataNFTDetails";
 
 export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { colorMode } = useColorMode();
@@ -49,28 +49,37 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const itheumToken = contractsForChain(chainID).itheumToken;
   const { address } = useGetAccountInfo();
   const navigate = useNavigate();
-
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
-
   const [dataNfts, setDataNfts] = useState<Array<DataNft>>([]);
   const purchasedDataNfts: DataNft[] = dataNfts.filter((item) => item.creator != address);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const { hasPendingTransactions } = useGetPendingTransactions();
-
   const [nftForDrawer, setNftForDrawer] = useState<DataNft | undefined>();
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
 
+  // @TODO: What is this???
   useEffect(() => {
     async function createNft() {
       const nft = await DataNft.createFromApi({
         nonce: 15,
         tokenIdentifier: "DATANFTFT-e936d4",
       });
+
       console.log(nft);
     }
     createNft();
   }, []);
+
+  useEffect(() => {
+    if (hasPendingTransactions) return;
+    (async () => {
+      const _dataNfts = await getOnChainNFTs();
+      const _alteredDataNfts = _dataNfts.map((nft) => new DataNft({ ...nft, balance: nft.balance ? nft.balance : 1 }));
+      setDataNfts(_alteredDataNfts);
+    })();
+    setOneNFTImgLoaded(false);
+  }, [hasPendingTransactions]);
 
   const onChangeTab = useThrottle((newTabState: number) => {
     navigate(
@@ -121,16 +130,6 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     );
     return dataNftsT;
   };
-
-  useEffect(() => {
-    if (hasPendingTransactions) return;
-    (async () => {
-      const _dataNfts = await getOnChainNFTs();
-      const _alteredDataNfts = _dataNfts.map((nft) => new DataNft({ ...nft, balance: nft.balance ? nft.balance : 1 }));
-      setDataNfts(_alteredDataNfts);
-    })();
-    setOneNFTImgLoaded(false);
-  }, [hasPendingTransactions]);
 
   function openNftDetailsDrawer(index: number) {
     setNftForDrawer(dataNfts[index]);
@@ -183,6 +182,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
             })}
           </TabList>
           <TabPanels>
+            {/* Your Data NFTs */}
             <TabPanel mt={2} width={"full"}>
               {tabState === 1 && dataNfts.length > 0 ? (
                 <SimpleGrid
@@ -211,6 +211,8 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                 </Flex>
               )}
             </TabPanel>
+
+            {/* Purchased */}
             <TabPanel mt={2} width={"full"}>
               {tabState === 2 && purchasedDataNfts.length >= 0 ? (
                 <SimpleGrid
@@ -239,6 +241,8 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                 </Flex>
               )}
             </TabPanel>
+
+            {/* Favorites */}
             <TabPanel mt={2} width={"full"}>
               {tabState === 3 ? (
                 <FavoriteCards />
@@ -248,21 +252,27 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                 </Flex>
               )}
             </TabPanel>
+
+            {/* Activity */}
             <TabPanel>
               <InteractionTxTable address={address} />
             </TabPanel>
+
+            {/* Bonding */}
             <TabPanel mt={2} width={"full"}>
               {tabState === 5 ? (
-                <VStack alignItems={"start"}>
+                <Flex flexDirection={{ base: "column" }} alignItems="start" backgroundColor={"3white"}>
                   <LivelinessStaking />
                   <BondingCards />
-                </VStack>
+                </Flex>
               ) : (
                 <Flex onClick={getOnChainNFTs}>
                   <NoDataHere />
                 </Flex>
               )}
             </TabPanel>
+
+            {/* Compensation */}
             <TabPanel mt={2} width={"full"}>
               {tabState === 6 ? (
                 <CompensationCards />
@@ -275,6 +285,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
           </TabPanels>
         </Tabs>
       </Stack>
+
       {nftForDrawer && (
         <>
           <Modal onClose={closeDetailsView} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
