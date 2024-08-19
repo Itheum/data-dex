@@ -38,17 +38,16 @@ const LandingPage = () => {
               <Flex w="100%" justifyContent={[null, null, null, "space-between"]} flexDirection={["column", null, "row"]} mx={{ base: 0, "lg": 12 }}>
                 <Box width={["300px", null, null, "500px", "690px"]} textAlign={["center", null, null, "center", "left"]} m={["auto", "initial"]} pt={10}>
                   <Heading as="h1" size={["2xl", null, null, "3xl", "4xl"]} fontFamily="Clash-Regular">
-                    Own and trade{" "}
+                    Tokenize and Trade{" "}
                     <Text as="span" color="teal.200">
-                      your data
+                      Your Data
                     </Text>{" "}
-                    as Data NFTs
                   </Heading>
 
                   <Text mt="1rem">
                     Seamlessly enable web3 gated access to your data by minting and listing Data NFTs on a peer-to-peer marketplace. Allow organic open-market
                     price discovery for data by minting multiple supplies to satisfy high demand or burning supply to correct low demand. Earn creator royalties
-                    if your data is re-traded. The future of data access licensing is here.
+                    if your data is re-traded. The future of data tokenization and trading is here.
                   </Text>
                 </Box>
 

@@ -27,6 +27,9 @@ export const labels = {
   "ERR_API_ISSUE_DATA_NFT_DETAILS": "Could not fetch Data NFT-FT details. (ER-22)",
   "ERR_API_ISSUE_DATA_NFT_OFFERS": "Could not fetch Data NFT-FT offers. (ER-23)",
   "ERR_MARKET_OFFER_NOT_FOUND": "Data NFT offer not found (ER-24)",
+  "ERR_IPFS_ASSET_SAVE_FAILED": "Could not save the img and or metadata assets to IPFS. (ER-31)",
+  "ERR_MINT_TX_GEN_COMMAND_FAILED": "Could not generate the Data NFT mint transaction. (ER-32)",
+
   "NATIVE_AUTH_TOKEN_MISSING": "Your wallet did not produce a Native Auth token (ER-25)",
   "ERR_PROCURE_UPTIME_CHECK_DOWN_NON_HTTP":
     "The Data Marshal is unavailable to provide a status check on this Data Stream URL. This may mean that the Data Stream is unavailable or that your network is blocking the check. You may proceed with the transaction at your own risk. (ER-26)",

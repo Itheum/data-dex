@@ -356,7 +356,7 @@ export const dataCATDemoUserData = {
       "isNFMeID": true,
       "shouldAutoVault": true,
       additionalInformation: {
-        "programName": "NFMeID Vault G1",
+        "programName": "NFMe ID Vault",
         "dataStreamURL_PRD": `https://api.itheumcloud.com/datadexapi/nfmeIdVault/dataStream?dmf-allow-http403=1`,
         "dataStreamURL": `https://api.itheumcloud-stg.com/datadexapi/nfmeIdVault/dataStream?dmf-allow-http403=1`,
         "dataPreviewURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport_preview.json",

@@ -25,27 +25,21 @@ import { LivelinessScore } from "components/Liveliness/LivelinessScore";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { formatNumberToShort, isValidNumericCharacter } from "libs/utils";
 import { useAccountStore } from "store";
-import { labels } from "libs/language";
 
 export const LivelinessStaking: React.FC = () => {
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { itheumBalance } = useAccountStore();
-
   const [combinedLiveliness, setCombinedLiveliness] = useState<number>(0);
   const [combinedBondsStaked, setCombinedBondsStaked] = useState<number>(0);
   const [rewardApy, setRewardApy] = useState<number>(0);
   const [maxApy, setMaxApy] = useState<number>(0);
   const [accumulatedRewards, setAccumulatedRewards] = useState<number>(0);
-
   const [globalTotalBond, setGlobalTotalBond] = useState<number>(0);
   const [globalRewardsPerBlock, setGlobalRewardsPerBlock] = useState<number>(0);
-
   const [nfmeId, setNfmeId] = useState<DataNft | undefined>(undefined);
   const [nfmeIdBond, setNfmeIdBond] = useState<Bond>();
-
   const [topUpItheumValue, setTopUpItheumValue] = useState<number>(0);
-
   const [estAnnualRewards, setEstAnnualRewards] = useState<number>(0);
 
   useEffect(() => {
@@ -77,6 +71,7 @@ export const LivelinessStaking: React.FC = () => {
         }
       }
     }
+
     fetchData();
   }, [address, hasPendingTransactions]);
 
@@ -88,6 +83,7 @@ export const LivelinessStaking: React.FC = () => {
       const blockPerYear = 31536000 / 6;
       const rewardPerYear = localRewardsPerBlock * blockPerYear;
       const calculatedRewardApy = Math.floor((rewardPerYear / combinedBondsStaked) * 10000) / 100;
+
       if (maxApy === 0) {
         setRewardApy(calculatedRewardApy);
       } else {
@@ -117,6 +113,7 @@ export const LivelinessStaking: React.FC = () => {
     const liveContract = new LivelinessStake(envNetwork);
     const tx = liveContract.stakeRewards(new Address(address));
     tx.setGasLimit(60000000);
+
     await sendTransactions({
       transactions: [tx],
     });
@@ -133,6 +130,7 @@ export const LivelinessStaking: React.FC = () => {
         <Heading as="h1" size="lg" fontFamily="Clash-Medium" color="teal.200" alignItems={"start"}>
           Your Liveliness Rewards
         </Heading>
+
         <VStack borderStyle={"solid"} borderWidth={"2px"} borderColor={"teal.200"} borderRadius="lg" p={6} alignItems={"start"} minW={{ md: "36rem" }}>
           <Text fontSize="3xl">Combined Liveliness: {combinedLiveliness}</Text>
           <Progress hasStripe isAnimated value={combinedLiveliness} rounded="xs" colorScheme="teal" width={"100%"} />
@@ -141,7 +139,7 @@ export const LivelinessStaking: React.FC = () => {
           <Text fontSize="2xl">Your reward APR: {isNaN(rewardApy) ? 0 : rewardApy}%</Text>
           {maxApy > 0 && <Text fontSize="2xl">MAX APR: {maxApy}%</Text>}
           <Text fontSize="2xl">
-            Current accumulated rewards: {formatNumberToShort(combinedLiveliness >= 95 ? accumulatedRewards : (combinedLiveliness * accumulatedRewards) / 100)}
+            Current accumulated rewards: {formatNumberToShort(combinedLiveliness >= 95 ? accumulatedRewards : (combinedLiveliness * accumulatedRewards) / 100)}{" "}
             $ITHEUM
           </Text>
           <Text fontSize="2xl">Potential rewards if liveliness &gt;95%: {formatNumberToShort(accumulatedRewards)} $ITHEUM</Text>
@@ -184,6 +182,7 @@ export const LivelinessStaking: React.FC = () => {
           </HStack>
         </VStack>
       </VStack>
+
       <VStack mx={{ base: 0, md: 12 }} my={4} alignItems={"start"}>
         {nfmeId && (
           <>
