@@ -282,7 +282,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
             rounded="lg"
             mt={7}
             onClick={() => {
-              navigate("/getverified");
+              navigate("/getVerified");
             }}>
             Find out how you can get whitelisted
           </Button>

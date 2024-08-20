@@ -17,6 +17,7 @@ import DataNFTMarketplaceMultiversX from "pages/DataNFT/DataNFTMarketplaceMultiv
 import DataNFTs from "pages/DataNFT/DataNFTs";
 import MyDataNFTsMx from "pages/DataNFT/MyDataNFTsMultiversX";
 import { GetVerified } from "pages/GetVerified";
+import { GetNFMeID } from "pages/GetNFMeID";
 import HomeMultiversX from "pages/Home/HomeMultiversX";
 import LandingPage from "pages/LandingPage";
 import { StoreProvider } from "store/StoreProvider";
@@ -186,8 +187,12 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                   <Routes>
                     <Route path="/" element={<LandingPage />} />
 
-                    <Route path="getverified" element={<Outlet />}>
+                    <Route path="getVerified" element={<Outlet />}>
                       <Route path="" element={<GetVerified />} />
+                    </Route>
+
+                    <Route path="getNFMeID" element={<Outlet />}>
+                      <Route path="" element={<GetNFMeID />} />
                     </Route>
 
                     <Route path="guardrails" element={<Outlet />}>
@@ -239,6 +244,12 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                     </Route>
 
                     <Route path="settings" element={<AppSettings />} />
+
+                    {isMxLoggedIn ? (
+                      <Route path="liveliness" element={<Navigate to={"/datanfts/wallet/liveliness"} />} />
+                    ) : (
+                      <Route path="liveliness" element={<Navigate to={"/getNFMeID#liveliness"} />} />
+                    )}
                   </Routes>
                 </AuthenticatedRoutesWrapper>
               </Box>

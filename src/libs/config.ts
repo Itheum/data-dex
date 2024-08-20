@@ -115,6 +115,7 @@ export const MENU = {
   DATACAT: 19,
   PROFILE: 20,
   GUARDRAILS: 21,
+  GETNFMEID: 22,
 };
 
 export const BUTTONS = {
@@ -136,7 +137,7 @@ export const PATHS = {
   personaldataproof: [13, [0]],
   nftdetails: [17, [4]],
   offer: [17, [4]],
-  getverified: [18, [-1]],
+  getVerified: [18, [-1]],
 };
 
 export const CHAINS = {
@@ -343,28 +344,21 @@ export const dataCATDemoUserData = {
           "Unlock a live dataset of a Sony Playstation gamer's platform, preferences, active titles played, trophies, playtime, and achievements. All sourced direct from the gamer!",
       },
     },
-    {
-      "program": "nfme-id-vault",
-      "group": "custom",
-      "userId": "custom-x",
-      "status": "stop",
-      "chainID": "D",
-      "shortId": "1",
-      "type": "1",
-      "fromTs": 1528448026784,
-      "toTs": 1535951753305,
-      "isNFMeID": true,
-      "shouldAutoVault": true,
-      additionalInformation: {
-        "programName": "NFMe ID Vault",
-        "dataStreamURL_PRD": `https://api.itheumcloud.com/datadexapi/nfmeIdVault/dataStream?dmf-allow-http403=1`,
-        "dataStreamURL": `https://api.itheumcloud-stg.com/datadexapi/nfmeIdVault/dataStream?dmf-allow-http403=1`,
-        "dataPreviewURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport_preview.json",
-        "img": "nfme_id_vault_preview",
-        "description": "Activate this Gen1 NFMe ID Data NFT as your web3 identity.",
-      },
-    },
   ],
+};
+
+export const nfMeIDVaultConfig = {
+  "program": "nfme-id-vault",
+  "isNFMeID": true,
+  "shouldAutoVault": true,
+  additionalInformation: {
+    "programName": "NFMe ID Vault",
+    "dataStreamURL_PRD": `https://api.itheumcloud.com/datadexapi/nfmeIdVault/dataStream?dmf-allow-http403=1`,
+    "dataStreamURL": `https://api.itheumcloud-stg.com/datadexapi/nfmeIdVault/dataStream?dmf-allow-http403=1`,
+    "dataPreviewURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport_preview.json",
+    "img": "nfme_id_vault_preview",
+    "description": "Activate this Gen1 NFMe ID Vault Data NFT as your web3 identity.",
+  },
 };
 
 export const styleStrings = {

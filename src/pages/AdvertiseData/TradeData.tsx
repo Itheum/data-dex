@@ -1,17 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Button, Heading, Image, Stack, Text, useColorMode, Wrap } from "@chakra-ui/react";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetNetworkConfig, useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import NewCreatorCTA from "components/NewCreatorCTA";
+import { dataCATDemoUserData, nfMeIDVaultConfig } from "libs/config";
+import { sleep } from "libs/utils";
+import { qsParams } from "libs/utils/util";
+import { useMintStore } from "store";
 import ProgramCard from "./components/ProgramCard";
 import { TradeFormModal } from "./components/TradeFormModal";
-import { dataCATDemoUserData } from "../../libs/config";
 
 export const TradeData: React.FC = () => {
-  const [dataCATAcccount] = useState<Record<any, any>>(dataCATDemoUserData);
-  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
-  const [prefilledData, setPrefilledData] = useState(null);
-  const { colorMode } = useColorMode();
+  const { address: mxAddress } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
+  const [dataCATAccount] = useState<Record<any, any>>(dataCATDemoUserData);
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const [prefilledData, setPrefilledData] = useState<any>(null);
+  const { colorMode } = useColorMode();
+  const lockPeriod = useMintStore((state) => state.lockPeriodForBond);
+
+  useEffect(() => {
+    async function launchAutoTemplate() {
+      if (!chainID || !mxAddress) {
+        return;
+      }
+
+      // lockPeriod is a dependency in TradeForm, so we need to make sure it loads before open the form
+      if (!lockPeriod || lockPeriod?.length === 0) {
+        return;
+      }
+
+      const queryParams = qsParams();
+      const launchTemplate = queryParams?.launchTemplate;
+
+      if (launchTemplate) {
+        if (launchTemplate === "nfmeidvault") {
+          await sleep(1);
+          setIsDrawerOpen(true);
+          setPrefilledData(nfMeIDVaultConfig);
+        }
+      }
+    }
+
+    launchAutoTemplate();
+  }, [chainID, mxAddress, lockPeriod]);
 
   return (
     <Stack mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
@@ -44,31 +75,25 @@ export const TradeData: React.FC = () => {
             </Button>
           </Box>
         </Box>
-        <>
-          {dataCATAcccount?.programsAllocation
-            .slice(1, 2)
-            .map((item: any) => (
-              <ProgramCard
-                key={item.program}
-                item={item}
-                setIsDrawerOpen={setIsDrawerOpen}
-                setPrefilledData={setPrefilledData}
-                isDrawerOpen={isDrawerOpen}
-                isNew={true}
-              />
-            ))}
-        </>
+        <ProgramCard
+          key={nfMeIDVaultConfig.program}
+          item={nfMeIDVaultConfig}
+          setIsDrawerOpen={setIsDrawerOpen}
+          setPrefilledData={setPrefilledData}
+          isDrawerOpen={isDrawerOpen}
+          isNew={true}
+        />
       </Wrap>
       <Box marginTop={10} bgGradient={colorMode === "light" ? "bgWhite" : "linear(to-b, bgDark, #6B46C160, #00C79730)"}>
         <NewCreatorCTA />
       </Box>
-      {dataCATAcccount?.programsAllocation?.filter((program: any) => program.chainID === chainID).length > 0 && (
+      {dataCATAccount?.programsAllocation?.filter((program: any) => program.chainID === chainID).length > 0 && (
         <>
           <Heading size="lg" fontFamily="Clash-Medium" marginTop="6rem !important">
             Supported Data CAT Programs
           </Heading>
           <Wrap shouldWrapChildren={true} spacingX={5} mt="25px !important" marginBottom="8 !important">
-            {dataCATAcccount?.programsAllocation
+            {dataCATAccount?.programsAllocation
               .slice(0, 1)
               .map((item: any) => (
                 <ProgramCard

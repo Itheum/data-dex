@@ -31,7 +31,7 @@ import { useAccountStore } from "store";
 
 export const LivelinessStaking: React.FC = () => {
   const navigate = useNavigate();
-  const { address } = useGetAccountInfo();
+  const { address: mxAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { itheumBalance } = useAccountStore();
   const [combinedLiveliness, setCombinedLiveliness] = useState<number>(0);
@@ -53,12 +53,12 @@ export const LivelinessStaking: React.FC = () => {
     if (hasPendingTransactions) return;
 
     async function fetchData() {
-      if (address) {
+      if (mxAddress) {
         setAllInfoLoading(true);
 
         const envNetwork = import.meta.env.VITE_ENV_NETWORK;
         const liveContract = new LivelinessStake(envNetwork);
-        const data = await liveContract.getUserDataOut(new Address(address));
+        const data = await liveContract.getUserDataOut(new Address(mxAddress));
 
         setCombinedBondsStaked(new BigNumber(data.userData.userStakedAmount).dividedBy(10 ** 18).toNumber());
         setGlobalTotalBond(new BigNumber(data.userData.totalStakedAmount).dividedBy(10 ** 18).toNumber());
@@ -72,7 +72,7 @@ export const LivelinessStaking: React.FC = () => {
           nonce: data.userData.vaultNonce,
         });
         const bondContract = new BondContract(envNetwork);
-        const bonds = await bondContract.viewAddressBonds(new Address(address));
+        const bonds = await bondContract.viewAddressBonds(new Address(mxAddress));
         const foundBound = bonds.find((bond) => bond.nonce === data.userData.vaultNonce);
 
         console.log("bonds");
@@ -98,7 +98,7 @@ export const LivelinessStaking: React.FC = () => {
     }
 
     fetchData();
-  }, [address, hasPendingTransactions]);
+  }, [mxAddress, hasPendingTransactions]);
 
   useEffect(() => {
     if (combinedBondsStaked === 0) setRewardApy(0);
@@ -126,7 +126,7 @@ export const LivelinessStaking: React.FC = () => {
   async function handleClaimRewardsClick() {
     const envNetwork = import.meta.env.VITE_ENV_NETWORK;
     const liveContract = new LivelinessStake(envNetwork);
-    const tx = liveContract.claimRewards(new Address(address));
+    const tx = liveContract.claimRewards(new Address(mxAddress));
     tx.setGasLimit(200000000);
     await sendTransactions({
       transactions: [tx],
@@ -136,7 +136,7 @@ export const LivelinessStaking: React.FC = () => {
   async function handleReinvestRewardsClick() {
     const envNetwork = import.meta.env.VITE_ENV_NETWORK;
     const liveContract = new LivelinessStake(envNetwork);
-    const tx = liveContract.stakeRewards(new Address(address));
+    const tx = liveContract.stakeRewards(new Address(mxAddress));
     tx.setGasLimit(60000000);
 
     await sendTransactions({
@@ -183,7 +183,7 @@ export const LivelinessStaking: React.FC = () => {
                 <Tooltip
                   hasArrow
                   shouldWrapChildren
-                  isDisabled={!(address === "" || hasPendingTransactions || accumulatedRewards < 1 || combinedLiveliness === 0)}
+                  isDisabled={!(mxAddress === "" || hasPendingTransactions || accumulatedRewards < 1 || combinedLiveliness === 0)}
                   label={"Rewards claiming is disabled if liveliness is 0, rewards amount is lower than 1 or there are transactions pending"}>
                   <Button
                     fontSize="lg"
@@ -196,7 +196,7 @@ export const LivelinessStaking: React.FC = () => {
                         setClaimRewardsConfirmationWorkflow(true);
                       }
                     }}
-                    isDisabled={address === "" || hasPendingTransactions || accumulatedRewards < 1 || combinedLiveliness === 0}>
+                    isDisabled={mxAddress === "" || hasPendingTransactions || accumulatedRewards < 1 || combinedLiveliness === 0}>
                     Claim Rewards
                   </Button>
                 </Tooltip>
@@ -204,7 +204,7 @@ export const LivelinessStaking: React.FC = () => {
                   <Tooltip
                     hasArrow
                     shouldWrapChildren
-                    isDisabled={!(address === "" || hasPendingTransactions || nfmeId === undefined || accumulatedRewards < 1 || combinedLiveliness === 0)}
+                    isDisabled={!(mxAddress === "" || hasPendingTransactions || nfmeId === undefined || accumulatedRewards < 1 || combinedLiveliness === 0)}
                     label={
                       "Rewards reinvesting is disabled if you have no NFT as a Primary NFMe ID, liveliness is 0, rewards amount is lower than 1 or there are transactions pending"
                     }>
@@ -212,7 +212,7 @@ export const LivelinessStaking: React.FC = () => {
                       fontSize="lg"
                       colorScheme="teal"
                       px={6}
-                      isDisabled={address === "" || hasPendingTransactions || nfmeId === undefined || accumulatedRewards < 1 || combinedLiveliness === 0}
+                      isDisabled={mxAddress === "" || hasPendingTransactions || nfmeId === undefined || accumulatedRewards < 1 || combinedLiveliness === 0}
                       onClick={() => {
                         if (combinedLiveliness >= 95) {
                           handleReinvestRewardsClick();
@@ -266,10 +266,10 @@ export const LivelinessStaking: React.FC = () => {
                           <Button
                             colorScheme="teal"
                             px={6}
-                            isDisabled={address === "" || hasPendingTransactions}
+                            isDisabled={mxAddress === "" || hasPendingTransactions}
                             onClick={() => {
                               const bondContract = new BondContract(import.meta.env.VITE_ENV_NETWORK);
-                              const tx = bondContract.renew(new Address(address), nfmeId.collection, nfmeId.nonce);
+                              const tx = bondContract.renew(new Address(mxAddress), nfmeId.collection, nfmeId.nonce);
                               tx.setGasLimit(100000000);
                               sendTransactions({
                                 transactions: [tx],
@@ -360,7 +360,7 @@ export const LivelinessStaking: React.FC = () => {
                             size="sm"
                             variant="outline"
                             px={4}
-                            isDisabled={address === "" || hasPendingTransactions}
+                            isDisabled={mxAddress === "" || hasPendingTransactions}
                             onClick={() => {
                               setTopUpItheumValue(Math.floor(itheumBalance));
                               const percentage = (combinedBondsStaked + Math.floor(itheumBalance)) / globalTotalBond;
@@ -381,12 +381,12 @@ export const LivelinessStaking: React.FC = () => {
                               colorScheme="teal"
                               px={6}
                               size="sm"
-                              isDisabled={address === "" || hasPendingTransactions}
+                              isDisabled={mxAddress === "" || hasPendingTransactions}
                               onClick={() => {
                                 const envNetwork = import.meta.env.VITE_ENV_NETWORK;
                                 const bondContract = new BondContract(envNetwork);
                                 const tx = bondContract.topUpVault(
-                                  new Address(address),
+                                  new Address(mxAddress),
                                   {
                                     tokenIdentifier: envNetwork === "mainnet" ? itheumTokenIdentifier.mainnet : itheumTokenIdentifier.devnet,
                                     amount: new BigNumber(topUpItheumValue).multipliedBy(10 ** 18),
@@ -426,7 +426,7 @@ export const LivelinessStaking: React.FC = () => {
                     <Text fontSize="md" my="5">
                       2. Mint your very own new NFMe ID Vault!
                     </Text>
-                    <Button colorScheme="teal" borderRadius="12px" variant="outline" size="sm" onClick={() => navigate("/mintdata#template=nfmeid")}>
+                    <Button colorScheme="teal" borderRadius="12px" variant="outline" size="sm" onClick={() => navigate("/mintdata?launchTemplate=nfmeidvault")}>
                       <Text px={2}>Mint a NFMe ID Vault</Text>
                     </Button>
                   </Box>

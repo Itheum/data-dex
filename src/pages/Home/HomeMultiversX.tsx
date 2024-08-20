@@ -244,16 +244,21 @@ export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
             <Box w={[tileBoxW, "initial"]} border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
               <Stack p="5" h={"430px"} bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg" alignItems={{ base: "center", xl: "start" }}>
                 <Heading size="md" fontFamily="Clash-Medium" pb={2}>
-                  NFMe ID Avatar
+                  NFMe ID Vault
                 </Heading>
                 <Spacer />
 
                 <Flex w="full" justifyContent="center">
-                  <Badge borderRadius="full" px="2" bgColor="teal.200">
-                    <Text fontSize="md" fontWeight="600" color={colorMode === "light" ? "bgWhite" : "black"}>
-                      Coming Soon
-                    </Text>
-                  </Badge>
+                  <Button
+                    mt="3"
+                    size="lg"
+                    colorScheme="teal"
+                    borderRadius="xl"
+                    onClick={() => {
+                      navigate("/mintdata?launchTemplate=nfmeidvault");
+                    }}>
+                    <Text>Mint Your NFMe ID Vault</Text>
+                  </Button>
                 </Flex>
               </Stack>
             </Box>
