@@ -30,10 +30,11 @@ export const labels = {
   "ERR_IPFS_ASSET_SAVE_FAILED":
     "Could not save the img and or metadata assets to IPFS. There is a chance that your firewall is blocking IPFS, please disable it and try again. (ER-31)",
   "ERR_MINT_TX_GEN_COMMAND_FAILED": "Could not generate the Data NFT mint transaction. (ER-32)",
-
-  "NATIVE_AUTH_TOKEN_MISSING": "Your wallet did not produce a Native Auth token (ER-25)",
+  "ERR_NATIVE_AUTH_TOKEN_MISSING": "Your wallet did not produce a Native Auth token (ER-25)",
   "ERR_PROCURE_UPTIME_CHECK_DOWN_NON_HTTP":
     "The Data Marshal is unavailable to provide a status check on this Data Stream URL. This may mean that the Data Stream is unavailable or that your network is blocking the check. You may proceed with the transaction at your own risk. (ER-26)",
+  "ERR_BONDING_STAKING_COULD_NOT_GET_DATA_NFTS":
+    "Could not get a list of all your Data NFTs to show liveliness bonding status on each. Could be related to you having too many or the network is slow (ER-33)",
 
   "MINT_FORM_POPUP_INFO_DATA_STREAM":
     "The URL of the hosted data asset that you would like to trade. This URL should be publicly accessible behind a secure domain (one that starts with https://)",

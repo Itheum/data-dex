@@ -91,7 +91,7 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
   }, [errDataNFTStreamGeneric]);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false} blockScrollOnMount={false} size="lg">
+    <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false} blockScrollOnMount={false} size={{ base: "sm", md: "lg" }}>
       <ModalOverlay />
       <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
         <ModalHeader>{isNFMeIDMint ? "NFMe ID Vault" : "Data NFT Collection"} Minting Progress</ModalHeader>
@@ -125,34 +125,32 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
               <VStack>
                 <Text fontSize="lg">
                   Minting your new {isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} on the blockchain{" "}
-                  {isAutoVault ? "& setting it as your primary NFMe.ID Vault" : ""}
+                  {isAutoVault ? "& setting it as your primary NFMe ID Vault" : ""}
                 </Text>
               </VStack>
             </HStack>
 
             {!mintingSuccessful ? (
-              <Flex>
-                <Center>
-                  <Box w="255px">
-                    <Skeleton w="200px" h="200px" margin="auto" rounded="lg" />
-                  </Box>
+              <Flex flexDirection={{ base: "column", md: "row" }} alignItems="center">
+                <Box w="255px">
+                  <Skeleton w="200px" h="200px" margin="auto" rounded="lg" />
+                </Box>
 
-                  <Box w="180px">
-                    <Box>
-                      <SkeletonText noOfLines={4} spacing="2" skeletonHeight="2" />
-                      <SkeletonText mt="4" noOfLines={4} spacing="2" skeletonHeight="2" />
-                    </Box>
+                <Box w="180px" mt={{ base: "3", md: "0" }}>
+                  <Box>
+                    <SkeletonText noOfLines={4} spacing="2" skeletonHeight="2" />
+                    <SkeletonText mt="4" noOfLines={4} spacing="2" skeletonHeight="2" />
                   </Box>
-                </Center>
+                </Box>
               </Flex>
             ) : (
               <>
-                <Flex>
+                <Flex flexDirection={{ base: "column", md: "row" }} alignItems="center">
                   <Box w="255px">
                     <NftMediaComponent imageUrls={[dataNFTImg]} imageHeight={"200px"} imageWidth={"200px"} borderRadius="md" />
                   </Box>
 
-                  <Box w="220px">
+                  <Box w="220px" mt={{ base: "3", md: "0" }}>
                     {dataNFTTraits && (
                       <Box>
                         <Text fontSize="sm" mb={2} fontWeight="bold">
@@ -175,7 +173,7 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
                 </Flex>
 
                 {dataNFTImg && (
-                  <Text fontSize="xs" align="center" mt="-5">
+                  <Text fontSize="xs" align="center" mt={{ md: "-5" }}>
                     Image and traits were created using the unique data signature (it&apos;s one of a kind!)
                   </Text>
                 )}
@@ -216,9 +214,9 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
                         colorScheme="teal"
                         ml="auto"
                         onClick={() => {
-                          navigate("/datanfts/wallet/bonding");
+                          navigate("/datanfts/wallet/liveliness");
                         }}>
-                        Visit {"Wallet > Bonding"} to see it!
+                        Visit {"Wallet > Liveliness"} to see it!
                       </Button>
                       <Button
                         colorScheme="teal"

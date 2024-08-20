@@ -71,13 +71,8 @@ export default function WalletDataNFTMX(item: any) {
   const userData = useMintStore((state) => state.userData);
   const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
-
   const { isOpen: isAccessProgressModalOpen, onOpen: onAccessProgressModalOpen, onClose: onAccessProgressModalClose } = useDisclosure();
-  const [unlockAccessProgress, setUnlockAccessProgress] = useState({
-    s1: 0,
-    s2: 0,
-    s3: 0,
-  });
+  const [unlockAccessProgress, setUnlockAccessProgress] = useState({ s1: 0, s2: 0, s3: 0 });
   const [errUnlockAccessGeneric, setErrUnlockAccessGeneric] = useState<string>("");
   const marketContract = new DataNftMarketContract(chainID);
   const [selectedDataNft, setSelectedDataNft] = useState<DataNft | undefined>();
@@ -87,7 +82,7 @@ export default function WalletDataNFTMX(item: any) {
   const [amountError, setAmountError] = useState("");
   const [price, setPrice] = useState(10);
   const [priceError, setPriceError] = useState("");
-  const [maxPerAddress, setMaxPerAddress] = useState(0);
+  const [maxPerAddress, setMaxPerAddress] = useState(1);
   const [maxPerAddressError, setMaxPerAddressError] = useState("");
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
   const [webWalletListTxHash, setWebWalletListTxHash] = useState("");
@@ -238,7 +233,7 @@ export default function WalletDataNFTMX(item: any) {
 
       // auto download the file without ever exposing the url
       if (!(tokenLogin && tokenLogin.nativeAuthToken)) {
-        throw Error(labels.NATIVE_AUTH_TOKEN_MISSING);
+        throw Error(labels.ERR_NATIVE_AUTH_TOKEN_MISSING);
       }
 
       DataNft.setNetworkConfig(network.id);
@@ -345,6 +340,7 @@ export default function WalletDataNFTMX(item: any) {
           onLoad={() => item.setHasLoaded(true)}
           openNftDetailsDrawer={() => item.openNftDetailsDrawer(item.id)}
           marginTop="1.5rem"
+          borderRadius="md"
         />
 
         <Flex h="28rem" mx={6} my={5} direction="column" justify={item.isProfile === true ? "initial" : "space-between"}>
@@ -543,7 +539,7 @@ export default function WalletDataNFTMX(item: any) {
             </Box>
 
             <Flex mt="3" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
-              <Tooltip label="This is a limit that you can impose in order to avoid someone buying your whole supply. Setting it to 0 will disable it">
+              <Tooltip label="This is a limit that you can impose in order to avoid someone buying your whole supply. Note that setting it to 0 will remove the limit, enabling the buyer to buy the whole supply if they want to.">
                 <Text fontSize="md" color="#929497">
                   Max buy per address:
                 </Text>
@@ -553,7 +549,7 @@ export default function WalletDataNFTMX(item: any) {
                 borderRadius="4.65px !important"
                 maxW={20}
                 step={1}
-                defaultValue={0}
+                defaultValue={1}
                 min={0}
                 max={Number(maxListNumber)}
                 isValidCharacter={isValidNumericCharacter}
@@ -561,6 +557,7 @@ export default function WalletDataNFTMX(item: any) {
                 onChange={(value) => {
                   let error = "";
                   const valueAsNumber = Number(value);
+
                   if (valueAsNumber < 0) {
                     error = "Cannot be negative";
                   } else if (valueAsNumber > item.balance) {
@@ -579,6 +576,9 @@ export default function WalletDataNFTMX(item: any) {
                 </NumberInputStepper>
               </NumberInput>
             </Flex>
+            <Text fontSize="sm" textAlign="right" mt="1" opacity="0.5">
+              {maxPerAddress === 0 ? "No Limit" : `${maxPerAddress} per address`}
+            </Text>
             <Box h={3}>
               {maxPerAddressError && (
                 <Text color="red.400" fontSize="xs">

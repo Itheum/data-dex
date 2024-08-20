@@ -20,7 +20,6 @@ import {
   Text,
   useColorMode,
   useDisclosure,
-  VStack,
 } from "@chakra-ui/react";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
@@ -58,19 +57,6 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const [nftForDrawer, setNftForDrawer] = useState<DataNft | undefined>();
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
 
-  // @TODO: What is this???
-  useEffect(() => {
-    async function createNft() {
-      const nft = await DataNft.createFromApi({
-        nonce: 15,
-        tokenIdentifier: "DATANFTFT-e936d4",
-      });
-
-      console.log(nft);
-    }
-    createNft();
-  }, []);
-
   useEffect(() => {
     if (hasPendingTransactions) return;
     (async () => {
@@ -78,12 +64,13 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       const _alteredDataNfts = _dataNfts.map((nft) => new DataNft({ ...nft, balance: nft.balance ? nft.balance : 1 }));
       setDataNfts(_alteredDataNfts);
     })();
+
     setOneNFTImgLoaded(false);
   }, [hasPendingTransactions]);
 
   const onChangeTab = useThrottle((newTabState: number) => {
     navigate(
-      `/datanfts/wallet${newTabState === 2 ? "/purchased" : newTabState === 4 ? "/activity" : newTabState === 3 ? "/favorite" : newTabState === 5 ? "/bonding" : newTabState === 6 ? "/compensation" : ""}`
+      `/datanfts/wallet${newTabState === 2 ? "/purchased" : newTabState === 4 ? "/activity" : newTabState === 3 ? "/favorite" : newTabState === 5 ? "/liveliness" : newTabState === 6 ? "/compensation" : ""}`
     );
   }, /* delay: */ 500);
 
@@ -111,7 +98,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       isDisabled: false,
     },
     {
-      tabName: "Bonding",
+      tabName: "Liveliness",
       icon: MdLockOutline,
       isDisabled: false,
     },
@@ -258,7 +245,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
               <InteractionTxTable address={address} />
             </TabPanel>
 
-            {/* Bonding */}
+            {/* Liveliness */}
             <TabPanel mt={2} width={"full"}>
               {tabState === 5 ? (
                 <Flex flexDirection={{ base: "column" }} alignItems="start" backgroundColor={"3white"}>

@@ -358,7 +358,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   alignItems={{ base: "initial", md: "initial" }}
                   justifyContent={{ xl: "space-between" }}>
                   <Box margin="auto" mb={6}>
-                    <NftMediaComponent nftMedia={nftData?.media} autoSlide marginTop="1rem" />
+                    <NftMediaComponent nftMedia={nftData?.media} autoSlide marginTop="1rem" borderRadius="md" />
                   </Box>
                   <Flex mr={tokenIdParam ? "75px" : "30px"}>
                     <Flex flexDirection="column" ml={5} h="250px" justifyContent="space-evenly">

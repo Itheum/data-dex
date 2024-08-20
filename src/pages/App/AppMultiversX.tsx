@@ -219,7 +219,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                       <Route path="wallet/purchased" element={<MyDataNFTsMx tabState={2} />} />
                       <Route path="wallet/activity" element={<MyDataNFTsMx tabState={4} />} />
                       <Route path="wallet/favorite" element={<MyDataNFTsMx tabState={3} />} />
-                      <Route path="wallet/bonding" element={<MyDataNFTsMx tabState={5} />} />
+                      <Route path="wallet/liveliness" element={<MyDataNFTsMx tabState={5} />} />
                       <Route path="wallet/compensation" element={<MyDataNFTsMx tabState={6} />} />
                       <Route path="wallet/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={1} />} />
                       <Route path="wallet/purchased/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={2} />} />
@@ -232,11 +232,11 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                       <Route path="marketplace/my/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
                     </Route>
 
-                    {/* This may not be needed, just commenting out for now */}
-                    {/* <Route path="bonding/" element={<Bonding />} />
+                    {/* This are admin whitelisted routes */}
+                    <Route path="bonding/" element={<Bonding />} />
                     <Route path="bonding/:bondingPageNumber" element={<Bonding />}>
                       <Route path="compensation/:compensationPageNumber" element={<Bonding />} />
-                    </Route> */}
+                    </Route>
 
                     <Route path="settings" element={<AppSettings />} />
                   </Routes>

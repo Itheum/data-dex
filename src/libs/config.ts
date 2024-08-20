@@ -361,7 +361,7 @@ export const dataCATDemoUserData = {
         "dataStreamURL": `https://api.itheumcloud-stg.com/datadexapi/nfmeIdVault/dataStream?dmf-allow-http403=1`,
         "dataPreviewURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport_preview.json",
         "img": "nfme_id_vault_preview",
-        "description": "Activate this Gen1 NFMe.ID NFT as your web3 identity.",
+        "description": "Activate this Gen1 NFMe ID Data NFT as your web3 identity.",
       },
     },
   ],

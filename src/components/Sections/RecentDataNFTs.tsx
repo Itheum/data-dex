@@ -185,7 +185,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
                       nftMedia={item?.media}
                       imageHeight="210px"
                       imageWidth="210px"
-                      borderRadius="lg"
+                      borderRadius="md"
                       autoSlide={false}
                       shouldDisplayArrows={false}
                     />

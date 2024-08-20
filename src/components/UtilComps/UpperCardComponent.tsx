@@ -93,6 +93,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
           onLoad={() => setNftImageLoaded(true)}
           openNftDetailsDrawer={() => openNftDetailsDrawer && openNftDetailsDrawer(index)}
           marginTop="1.5rem"
+          borderRadius="md"
         />
 
         <Flex h={address ? "28rem" : "18rem"} mx={6} my={3} mt={6} direction="column" justify="space-between">
