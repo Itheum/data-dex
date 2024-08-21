@@ -3,6 +3,7 @@ import { Box, Center, Flex, Heading, Image, Text, useColorMode } from "@chakra-u
 import imgHeroDataNFTs from "assets/img/landing/hero-data-nfts.png";
 import imgHeroMetaverseMask from "assets/img/landing/hero-metaverse-mask.png";
 import NewCreatorCTA from "components/NewCreatorCTA";
+import NFMeIdCTA from "components/NFMeIdCTA";
 import ExplainerArticles from "components/Sections/ExplainerArticles";
 import RecentArticles from "components/Sections/RecentArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
@@ -44,7 +45,7 @@ const LandingPage = () => {
                     </Text>{" "}
                   </Heading>
 
-                  <Text mt="1rem">
+                  <Text mt="1rem" fontFamily="Clash-Regular">
                     Seamlessly enable web3 gated access to your data by minting and listing Data NFTs on a peer-to-peer marketplace. Allow organic open-market
                     price discovery for data by minting multiple supplies to satisfy high demand or burning supply to correct low demand. Earn creator royalties
                     if your data is re-traded. The future of data tokenization and trading is here.
@@ -58,6 +59,10 @@ const LandingPage = () => {
             </Center>
           </Flex>
 
+          <Box m="auto" pt="10" pb="10" w={"100%"} bgGradient={colorMode === "light" ? "bgWhite" : "linear(to-b, bgDark, #00C79730, bgDark)"}>
+            <NFMeIdCTA />
+          </Box>
+
           <Box pt={{ base: "28", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
             <NewCreatorCTA />
           </Box>
@@ -65,6 +70,7 @@ const LandingPage = () => {
           <Box pt={{ base: "28", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
             <VolumesDataNfts />
           </Box>
+
           <Box pt={{ base: "28", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
             <RecentDataNFTs headingText="Recent Data NFTs" />
           </Box>

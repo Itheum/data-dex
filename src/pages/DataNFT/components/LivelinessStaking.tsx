@@ -160,7 +160,7 @@ export const LivelinessStaking: React.FC = () => {
           Your Liveliness Rewards
         </Heading>
 
-        <VStack border=".1rem solid" borderColor="#00C79740" borderRadius="3xl" p={6} alignItems={"start"} minW={{ md: "36rem" }} minH={{ md: "26rem" }}>
+        <VStack border=".1rem solid" borderColor="#00C79740" borderRadius="3xl" p={6} alignItems={"start"} minW={{ md: "36rem" }} minH={{ md: "25rem" }}>
           {allInfoLoading ? (
             <Flex w="100%" h="20rem" justifyContent="center" alignItems="center">
               <Spinner size="md" color="teal.200" />
@@ -169,8 +169,8 @@ export const LivelinessStaking: React.FC = () => {
             <>
               <Text fontSize="3xl">Combined Liveliness: {combinedLiveliness}%</Text>
               <Progress hasStripe isAnimated value={combinedLiveliness} rounded="xs" colorScheme="teal" width={"100%"} />
-              <Text fontSize="xl">Combined Bonds Staked: {formatNumberToShort(combinedBondsStaked)}</Text>
-              <Text fontSize="xl">Global Total Bonded: {formatNumberToShort(globalTotalBond)}</Text>
+              <Text fontSize="xl">Combined Bonds Staked: {formatNumberToShort(combinedBondsStaked)} $ITHEUM</Text>
+              <Text fontSize="xl">Global Total Bonded: {formatNumberToShort(globalTotalBond)} $ITHEUM</Text>
               <Text fontSize="xl">Your Reward APR: {isNaN(rewardApy) ? 0 : rewardApy}%</Text>
               {maxApy > 0 && <Text fontSize="xl">Max APR: {maxApy}%</Text>}
               <Text fontSize="xl">
@@ -238,7 +238,7 @@ export const LivelinessStaking: React.FC = () => {
           <Heading fontSize="1.5rem" fontFamily="Clash-Medium" color="teal.200" mb={2} textAlign={{ base: "center", md: "left" }}>
             Your NFMe ID Vault
           </Heading>
-          <VStack border=".1rem solid" borderColor="#00C79740" borderRadius="3xl" p={6} alignItems={"start"} minW={{ md: "30rem" }} minH={{ md: "26rem" }}>
+          <VStack border=".1rem solid" borderColor="#00C79740" borderRadius="3xl" p={6} alignItems={"start"} minW={{ md: "30rem" }} minH={{ md: "25rem" }}>
             {allInfoLoading ? (
               <Flex w="100%" h="20rem" justifyContent="center" alignItems="center">
                 <Spinner size="md" color="teal.200" />

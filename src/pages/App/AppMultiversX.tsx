@@ -181,6 +181,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
               zIndex={2}>
               {/* App Header */}
               <AppHeader onShowConnectWalletModal={onShowConnectWalletModal} setMenuItem={setMenuItem} handleLogout={handleLogout} />
+
               {/* App Body */}
               <Box flexGrow={1} minH={{ base: "auto", lg: bodyMinHeightLg }}>
                 <AuthenticatedRoutesWrapper routes={routes} unlockRoute={"/"}>
@@ -192,7 +193,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                     </Route>
 
                     <Route path="getNFMeID" element={<Outlet />}>
-                      <Route path="" element={<GetNFMeID />} />
+                      <Route path="" element={<GetNFMeID onShowConnectWalletModal={onShowConnectWalletModal} />} />
                     </Route>
 
                     <Route path="guardrails" element={<Outlet />}>

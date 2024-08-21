@@ -11,12 +11,18 @@ import ModalAuthPickerMx from "./ModalAuthPickerMultiversX";
 function Launcher() {
   const [launchModeSession, setLaunchModeSession] = useLocalStorage("itm-launch-mode", null);
   const [launchMode, setLaunchMode] = useState(launchModeSession || "no-auth");
+  const [redirectToRoute, setRedirectToRoute] = useState<null | string>(null);
 
   // hoisting launchModeControl here allows us to go multi-chain easier in future
   // ... have a look at git history on this component
-  const handleLaunchMode = (option: any) => {
-    setLaunchMode(option);
-    setLaunchModeSession(option);
+  const handleLaunchMode = (chainOption: string, redirectToRouteStr?: string) => {
+    setLaunchMode(chainOption);
+    setLaunchModeSession(chainOption);
+
+    // we can redirect user to a route after login is complete
+    if (redirectToRouteStr) {
+      setRedirectToRoute(redirectToRouteStr);
+    }
 
     // resetting all launch mode sessions here is nice and clean
     clearAppSessionsLaunchMode();
@@ -38,7 +44,7 @@ function Launcher() {
         <NotificationModal />
         <SignTransactionsModals className="itheum-data-dex-elrond-modals" />
 
-        {launchMode == "mx" && <ModalAuthPickerMx resetLaunchMode={() => handleLaunchMode("no-auth")} />}
+        {launchMode === "mvx" && <ModalAuthPickerMx resetLaunchMode={() => handleLaunchMode("no-auth")} redirectToRoute={redirectToRoute} />}
 
         <AppMx onShowConnectWalletModal={handleLaunchMode} />
       </DappProvider>

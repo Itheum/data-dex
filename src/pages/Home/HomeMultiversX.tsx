@@ -24,11 +24,12 @@ import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/a
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
-import myNFMe from "assets/img/my-nfme.png";
+import myNFMe from "assets/img/nfme/nfme-data-nft-token.png";
 import illustration from "assets/img/whitelist/getWhitelist.png";
 import ClaimModalMx from "components/ClaimModal/ClaimModalMultiversX";
 import Faucet from "components/Faucet/Faucet";
 import NewCreatorCTA from "components/NewCreatorCTA";
+import NFMeIdCTA from "components/NFMeIdCTA";
 import ExplainerArticles from "components/Sections/ExplainerArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
@@ -38,6 +39,7 @@ import { formatNumberToShort } from "libs/utils";
 import AppMarketplace from "pages/Home/components/AppMarketplace";
 import { TrendingData } from "./components/TrendingData";
 import VolumesDataNfts from "./components/VolumesDataNfts";
+import NftMediaComponent from "../../components/NftMediaComponent";
 
 export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
   const { colorMode } = useColorMode();
@@ -242,10 +244,12 @@ export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
             </ChainSupportedComponent>
 
             <Box w={[tileBoxW, "initial"]} border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
-              <Stack p="5" h={"430px"} bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg" alignItems={{ base: "center", xl: "start" }}>
+              <Stack p="5" h={"430px"} alignItems={{ base: "center", xl: "start" }}>
                 <Heading size="md" fontFamily="Clash-Medium" pb={2}>
                   NFMe ID Vault
                 </Heading>
+                <Spacer />
+                <NftMediaComponent imageUrls={[myNFMe]} imageHeight="200px" imageWidth="200px" borderRadius="md" shouldDisplayArrows={false} />
                 <Spacer />
 
                 <Flex w="full" justifyContent="center">
@@ -360,7 +364,10 @@ export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
             </ChainSupportedComponent>
           </SimpleGrid>
         </Box>
-        <Box m="auto" pt="10" pb="10" w={"100%"} bgGradient={colorMode === "light" ? "bgWhite" : "linear(to-b, bgDark, #6B46C160, #00C79730)"}>
+        <Box m="auto" pt="10" pb="10" w={"100%"} bgGradient={colorMode === "light" ? "bgWhite" : "linear(to-b, bgDark, #00C79730, bgDark)"}>
+          <NFMeIdCTA />
+        </Box>
+        <Box m="auto" pt="10" pb="10" w={"100%"} bgGradient={colorMode === "light" ? "bgWhite" : "linear(to-b, bgDark, #6B46C160, bgDark)"}>
           <NewCreatorCTA />
         </Box>
         <Box m="auto" pt="10" pb="10" w={"100%"}>

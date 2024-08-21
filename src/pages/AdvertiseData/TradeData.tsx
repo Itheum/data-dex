@@ -19,6 +19,13 @@ export const TradeData: React.FC = () => {
   const lockPeriod = useMintStore((state) => state.lockPeriodForBond);
 
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, []);
+
+  useEffect(() => {
     async function launchAutoTemplate() {
       if (!chainID || !mxAddress) {
         return;
@@ -84,7 +91,7 @@ export const TradeData: React.FC = () => {
           isNew={true}
         />
       </Wrap>
-      <Box marginTop={10} bgGradient={colorMode === "light" ? "bgWhite" : "linear(to-b, bgDark, #6B46C160, #00C79730)"}>
+      <Box marginTop={10} bgGradient={colorMode === "light" ? "bgWhite" : "linear(to-b, bgDark, #6B46C160, bgDark)"}>
         <NewCreatorCTA />
       </Box>
       {dataCATAccount?.programsAllocation?.filter((program: any) => program.chainID === chainID).length > 0 && (

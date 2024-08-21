@@ -105,7 +105,7 @@ const exploreRouterMenu = [
         menuEnum: MENU.NFTALL,
         path: "/datanfts/marketplace",
         label: "Data NFT Marketplace",
-        shortLbl: "Data Market",
+        shortLbl: "Market",
         Icon: FaStore,
         needToBeLoggedIn: false,
         isHidden: false,
@@ -118,16 +118,15 @@ const exploreRouterMenu = [
         Icon: FaUserCheck,
         needToBeLoggedIn: false,
         needToBeLoggedOut: true,
-        isHidden: false,
+        isHidden: true,
       },
       {
         menuEnum: MENU.GETNFMEID,
         path: "/getNFMeID",
         label: "Get a NFMe ID",
-        shortLbl: "Get NFMe ID",
+        shortLbl: "NFMe ID",
         Icon: FaUserAstronaut,
         needToBeLoggedIn: false,
-        needToBeLoggedOut: true,
         isHidden: false,
       },
     ],
@@ -461,7 +460,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 size={{ base: "sm", lg: "lg" }}
                 onClick={() => {
                   localStorage?.removeItem("itm-datacat-linked");
-                  onShowConnectWalletModal("mx");
+                  onShowConnectWalletModal("mvx");
                 }}>
                 {connectBtnTitle}
               </Button>
@@ -718,8 +717,6 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
   );
 };
 
-export default AppHeader;
-
 function shouldDisplayQuickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
   if (quickMenuItem.needToBeLoggedOut === undefined) {
     return quickMenuItem.needToBeLoggedIn ? (isMxLoggedIn ? "inline" : "none") : "inline";
@@ -771,3 +768,5 @@ function LoggedInChainBadge({ chain, displayParams }: { chain: any; displayParam
     </Box>
   );
 }
+
+export default AppHeader;
