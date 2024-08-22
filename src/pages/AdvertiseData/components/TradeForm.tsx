@@ -52,16 +52,16 @@ import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
-import liteNFMeIDHero from "assets/img/nfme/lite-nfmeid-vault-mint-page-hero.png";
 import axios from "axios";
 import BigNumber from "bignumber.js";
 import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import extraAssetDemo from "assets/img/extra-asset-demo.gif";
 import darkNFMeIDHero from "assets/img/nfme/dark-nfmeid-vault-mint-page-hero.png";
+import liteNFMeIDHero from "assets/img/nfme/lite-nfmeid-vault-mint-page-hero.png";
 import ChainSupportedInput from "components/UtilComps/ChainSupportedInput";
 import { PopoverTooltip } from "components/UtilComps/PopoverTooltip";
-import { IS_DEVNET, MENU } from "libs/config";
+import { IS_DEVNET, MENU, PRINT_UI_DEBUG_PANELS } from "libs/config";
 import { labels } from "libs/language";
 import { getApi } from "libs/MultiversX/api";
 import { UserDataType } from "libs/MultiversX/types";
@@ -313,8 +313,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     defaultValues: {
       dataStreamUrlForm: dataToPrefill?.additionalInformation.dataStreamURL ?? "",
       dataPreviewUrlForm: dataToPrefill?.additionalInformation.dataPreviewURL ?? "",
-      tokenNameForm: dataToPrefill?.additionalInformation.programName.replaceAll(" ", "").substring(0, 16) ?? "",
-      datasetTitleForm: dataToPrefill?.additionalInformation.programName.replaceAll(" ", "") ?? "",
+      tokenNameForm: dataToPrefill?.additionalInformation.tokenName.replaceAll(" ", "").substring(0, 16) ?? "",
+      datasetTitleForm: dataToPrefill?.additionalInformation.tokenName.replaceAll(" ", "") ?? "",
       datasetDescriptionForm: dataToPrefill?.additionalInformation.description ?? "",
       extraAssets: dataToPrefill?.additionalInformation.extraAssets ?? "",
       donatePercentage: userData && userData?.maxDonationPecentage / 100 / 2,
@@ -675,39 +675,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   });
   // E: Track transaction statuses
 
-  /*
-  function createIpfsMetadata(traits: string) {
-    const metadata = {
-      description: `${getValues("datasetTitleForm")} : ${getValues("datasetDescriptionForm")}`,
-      attributes: [] as object[],
-    };
-
-    const attributes = traits.split(",").filter((element) => element.trim() !== "");
-    const metadataAttributes = [];
-
-    for (const attribute of attributes) {
-      const [key, value] = attribute.split(":");
-      const trait = { trait_type: key.trim(), value: value.trim() };
-      metadataAttributes.push(trait);
-    }
-
-    metadataAttributes.push({ trait_type: "Data Preview URL", value: dataNFTPreviewUrl });
-    metadataAttributes.push({ trait_type: "Creator", value: mxAddress });
-    metadata.attributes = metadataAttributes;
-
-    return metadata;
-  }
-
-  async function createFileFromUrl(url: string) {
-    const res = await fetch(url);
-    const data = await res.blob();
-    const _imageFile = new File([data], "image.png", { type: "image/png" });
-    const traits = createIpfsMetadata(res.headers.get("x-nft-traits") || "");
-    const _traitsFile = new File([JSON.stringify(traits)], "metadata.json", { type: "application/json" });
-    return { image: _imageFile, traits: _traitsFile };
-  }
-  */
-
   const handleDisabledButtonStep1 = () => {
     return !!errors.dataStreamUrlForm || !!errors.dataPreviewUrlForm || dataNFTStreamUrl === "" || dataNFTPreviewUrl === "";
   };
@@ -769,25 +736,27 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           </Button>
         )}
 
-        <Box>
-          <Alert status="warning" mt={3} p={2} fontSize=".8rem" rounded="lg" as="div" style={{ "display": "block" }}>
-            <Box>--- Debugging Panel ---</Box>
-            <Box>^^ Is NFMe ID Mint: {isNFMeIDMint.toString()}</Box>
-            <Box>
-              ^^ Should Auto Vault?: {!bondVaultNonce ? "true" : "false"} : current bondVaultNonce = {bondVaultNonce?.toString()} (should be true if a primary
-              nfme is not set yet)
-            </Box>
-            <Box>Data Stream URL: {dataNFTStreamUrl}</Box>
-            <Box>Data Preview URL: {dataNFTPreviewUrl}</Box>
-            <Box>Data Marshal URL: {dataNFTMarshalService}</Box>
-            <Box>Number of Copies: {dataNFTCopies} (should be - 5)</Box>
-            <Box>Royalties: {dataNFTRoyalties} (should be - 2)</Box>
-            <Box>Donate %: {donatePercentage} (should be - 0)</Box>
-            <Box>Token Name: {dataNFTTokenName} (should be - NFMeIDVaultG1)</Box>
-            <Box>Title: {datasetTitle} (should be - NFMeIDVaultG1)</Box>
-            <Box>Description: {datasetDescription}</Box>
-          </Alert>
-        </Box>
+        {PRINT_UI_DEBUG_PANELS && (
+          <Box>
+            <Alert status="warning" mt={3} p={2} fontSize=".8rem" rounded="lg" as="div" style={{ "display": "block" }}>
+              <Box>--- Debugging Panel ---</Box>
+              <Box>^^ Is NFMe ID Mint: {isNFMeIDMint.toString()}</Box>
+              <Box>
+                ^^ Should Auto Vault?: {!bondVaultNonce ? "true" : "false"} : current bondVaultNonce = {bondVaultNonce?.toString()} (should be true if a primary
+                nfme is not set yet)
+              </Box>
+              <Box>Data Stream URL: {dataNFTStreamUrl}</Box>
+              <Box>Data Preview URL: {dataNFTPreviewUrl}</Box>
+              <Box>Data Marshal URL: {dataNFTMarshalService}</Box>
+              <Box>Number of Copies: {dataNFTCopies} (should be - 5)</Box>
+              <Box>Royalties: {dataNFTRoyalties} (should be - 2)</Box>
+              <Box>Donate %: {donatePercentage} (should be - 0)</Box>
+              <Box>Token Name: {dataNFTTokenName} (should be - NFMeIDG1)</Box>
+              <Box>Title: {datasetTitle} (should be - NFMeIDG1)</Box>
+              <Box>Description: {datasetDescription}</Box>
+            </Alert>
+          </Box>
+        )}
 
         {activeStep !== 2 && (
           <Flex flexDirection="row" mt="3">
@@ -1075,7 +1044,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 Extra Media Asset URL{" "}
               </FormLabel>
 
-              <PopoverTooltip title="What is an Extra Media Asset?">
+              <PopoverTooltip title="What is an Extra Media Asset?" bodyWidthInPX="350px">
                 <>
                   Your Data NFT will automatically get {`it's`} very own unique random NFT image, but you can also choose to have an optional Extra Media Asset
                   (like an image) that will be displayed when your Data NFT is listed. Check it out...{" "}
@@ -1190,53 +1159,11 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               Liveliness Bonding
             </Text>
 
-            <PopoverTooltip title="Bond $ITHEUM to prove reputation and earn staking rewards">
-              <>
-                <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="3 !important">
-                  Bonding ITHEUM tokens proves your {"Liveliness"} and gives Data Consumers confidence that you will maintain the Data {`NFT's`} Data Stream.
-                  You will need to lock the{" "}
-                  <Text fontWeight="bold" as="span">
-                    Bonding Amount{" "}
-                  </Text>
-                  for the required{" "}
-                  <Text fontWeight="bold" as="span">
-                    Bonding Period.{" "}
-                  </Text>
-                  <br />
-                  <br />
-                  Your Liveliness Bond is bound by some{" "}
-                  <Text fontWeight="bold" as="span">
-                    Penalties and Slashing Terms
-                  </Text>{" "}
-                  as detailed below. At the end of the{" "}
-                  <Text fontWeight="bold" as="span">
-                    Bonding Period
-                  </Text>
-                  , you can withdraw your full&nbsp;
-                  <Text fontWeight="bold" as="span">
-                    Bonding Amount
-                  </Text>{" "}
-                  OR if you want to continue to signal to Data Consumers that you will maintain the Data {`NFT’s`} Data Stream, you can {`"renew"`} the
-                  Liveliness Bond. <br />
-                  <br />
-                  But wait, on top of the benefit of having liveliness to prove your reputation, there is more good news, your bonded $ITHEUM also earns Staking
-                  APR as it powers your Liveliness reputation!{" "}
-                  <Link
-                    href="https://docs.itheum.io/product-docs/product/liveliness-on-chain-reputation/liveliness-staking-guide"
-                    isExternal
-                    rel="noreferrer"
-                    color="teal.200">
-                    Learn more
-                  </Link>
-                </Text>
-              </>
-            </PopoverTooltip>
-
-            <Flex flexDirection="row" gap="7" my={2}>
-              <Heading size="lg" fontSize="22px" my={5} lineHeight="tall">
+            <Flex flexDirection="row">
+              <Heading size="lg" fontSize="22px" mt={3} mb={5} lineHeight="tall">
                 <Highlight
                   query={[`${bondingAmount.toLocaleString()} $ITHEUM`, `${bondingPeriod.toString()} days`, `${maxApy}% Max APR`]}
-                  styles={{ px: "2", py: "1", rounded: "full", bg: "teal.100" }}>
+                  styles={{ px: "2", py: "1", rounded: "full", bg: "teal.200" }}>
                   {`To mint your ${isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} , you need to bond ${bondingAmount.toLocaleString()} $ITHEUM for ${bondingPeriod.toString()} days. Bonds earn an estimated ${maxApy}% Max APR as staking rewards.`}
                 </Highlight>
               </Heading>
@@ -1304,6 +1231,48 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               )}
             </Flex>
 
+            <PopoverTooltip title="Bond $ITHEUM to Prove Reputation" bodyWidthInPX="380px">
+              <>
+                <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="3 !important">
+                  Bonding ITHEUM tokens proves your {"Liveliness"} and gives Data Consumers confidence that you will maintain the Data {`NFT's`} Data Stream.
+                  You will need to lock the{" "}
+                  <Text fontWeight="bold" as="span">
+                    Bonding Amount{" "}
+                  </Text>
+                  for the required{" "}
+                  <Text fontWeight="bold" as="span">
+                    Bonding Period.{" "}
+                  </Text>
+                  <br />
+                  <br />
+                  Your Liveliness Bond is bound by some{" "}
+                  <Text fontWeight="bold" as="span">
+                    Penalties and Slashing Terms
+                  </Text>{" "}
+                  as detailed below. At the end of the{" "}
+                  <Text fontWeight="bold" as="span">
+                    Bonding Period
+                  </Text>
+                  , you can withdraw your full&nbsp;
+                  <Text fontWeight="bold" as="span">
+                    Bonding Amount
+                  </Text>{" "}
+                  OR if you want to continue to signal to Data Consumers that you will maintain the Data {`NFT’s`} Data Stream, you can {`"renew"`} the
+                  Liveliness Bond. <br />
+                  <br />
+                  But wait, on top of the benefit of having liveliness to prove your reputation, there is more good news, your bonded $ITHEUM also earns Staking
+                  APR as it powers your Liveliness reputation!{" "}
+                  <Link
+                    href="https://docs.itheum.io/product-docs/product/liveliness-on-chain-reputation/liveliness-staking-guide"
+                    isExternal
+                    rel="noreferrer"
+                    color="teal.200">
+                    Learn more
+                  </Link>
+                </Text>
+              </>
+            </PopoverTooltip>
+
             <Box minH={{ base: "5rem", md: "3.5rem" }}>
               {itheumBalance < antiSpamTax + bondingAmount && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
@@ -1337,7 +1306,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               )}
             </Box>
 
-            <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="40px !important">
+            <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="48px !important">
               Minting Terms of Use
             </Text>
 

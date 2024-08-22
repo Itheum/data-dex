@@ -58,6 +58,13 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
 
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, []);
+
+  useEffect(() => {
     if (hasPendingTransactions) return;
     (async () => {
       const _dataNfts = await getOnChainNFTs();

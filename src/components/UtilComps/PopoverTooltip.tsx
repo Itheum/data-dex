@@ -4,20 +4,21 @@ import { Popover, PopoverTrigger, Text, PopoverContent, PopoverArrow, PopoverClo
 type PopoverTooltipProps = {
   title: string;
   children: React.ReactNode;
+  bodyWidthInPX?: string;
 };
 
 export const PopoverTooltip: React.FC<PopoverTooltipProps> = (props) => {
-  const { title, children } = props;
+  const { title, children, bodyWidthInPX } = props;
   const { colorMode } = useColorMode();
 
   return (
     <Popover>
       <PopoverTrigger>
-        <Text as="span" fontSize="sm" opacity=".5" cursor="pointer">
-          {`>`} What is this?
+        <Text as="span" fontSize="md" opacity=".5" cursor="pointer">
+          {`>`} Tell Me More
         </Text>
       </PopoverTrigger>
-      <PopoverContent color={colorMode === "dark" ? "bgWhite" : "#181818"}>
+      <PopoverContent width={bodyWidthInPX || "300px"} color={colorMode === "dark" ? "bgWhite" : "#181818"}>
         <PopoverArrow />
         <PopoverCloseButton />
         <PopoverHeader>{title}</PopoverHeader>

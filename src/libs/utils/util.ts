@@ -225,6 +225,15 @@ export function findNthOccurrenceFromEnd(string: string, char: string, n: number
   return string.length - 1 - index;
 }
 
+// Is an NFT a NFMeID Vault class (if so it will start with NFMeIDVault.. i.e NFMeIDVaultG1)
+export function isNFMeIDVaultClassDataNFT(tokenName: string | undefined) {
+  if (tokenName && tokenName.includes("NFMeIDVault")) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 export const ITHEUM_EXPLORER_PROD_URL = "https://explorer.itheum.io";
 export const ITHEUM_EXPLORER_STG_URL = "https://stg.explorer.itheum.io";
 export const ITHEUM_EXPLORER_TEST_URL = "https://test.explorer.itheum.io";

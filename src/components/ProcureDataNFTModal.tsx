@@ -322,6 +322,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
             <DataNFTLiveUptime
               dataMarshal={getApiDataMarshal(chainID)}
               NFTId={nftData.tokenIdentifier ?? ""}
+              tokenName={nftData.tokenName}
               handleFlagAsFailed={(hasFailed: boolean) => setLiveUptimeFAIL(hasFailed)}
               isLiveUptimeSuccessful={isLiveUptimeSuccessful}
               setIsLiveUptimeSuccessful={setIsLiveUptimeSuccessful}

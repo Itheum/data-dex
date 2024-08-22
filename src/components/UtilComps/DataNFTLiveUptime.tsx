@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Button, Text, Progress, Stack, Heading, Badge, Box } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { labels } from "libs/language";
-import { sleep } from "libs/utils";
+import { sleep, isNFMeIDVaultClassDataNFT } from "libs/utils";
 
 export type DataNFTLiveUptimeProps = {
   dataMarshal: string;
   NFTId: string;
+  tokenName: string | undefined;
   handleFlagAsFailed: (hasFailed: boolean) => void;
   isLiveUptimeSuccessful: boolean;
   setIsLiveUptimeSuccessful: (e: boolean) => void;
@@ -35,7 +36,10 @@ const DataNFTLiveUptime = (props: DataNFTLiveUptimeProps) => {
 
     props.handleFlagAsFailed(true);
 
+    const isNFMeIDVaultDataNFT = isNFMeIDVaultClassDataNFT(props.tokenName);
+
     let _isLiveUptimeSuccessful = false;
+
     try {
       const res = await fetch(`${props.dataMarshal}/uptime?NFTId=${props.NFTId}&chainId=E${chainID}`);
       const data = await res.json();
@@ -58,7 +62,7 @@ const DataNFTLiveUptime = (props: DataNFTLiveUptimeProps) => {
             `The live check of the Data Steam is returning an HTTP Status code ${data.response_code}, this means the Data Creator did not maintain the Data Stream that's wrapped within this Data NFT. Do not proceed with the transaction.`
           );
         }
-      } else if (props.NFTId === "DATANFTFT-e936d4-07" || props.NFTId === "DATANFTFT-e0b917-c6") {
+      } else if (props.NFTId === "DATANFTFT-e936d4-07" || props.NFTId === "DATANFTFT-e0b917-c6" || isNFMeIDVaultDataNFT) {
         setLiveUptimeOKMsg(
           `The live check of the Data Steam is returning an HTTP Status code 403, which indicates that it is available but protected via authentication.`
         );

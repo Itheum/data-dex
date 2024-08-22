@@ -410,6 +410,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
             <DataNFTLiveUptime
               dataMarshal={getApiDataMarshal(chainID)}
               NFTId={nftData.tokenIdentifier}
+              tokenName={nftData.tokenName}
               handleFlagAsFailed={(hasFailed: boolean) => setLiveUptimeFAIL(hasFailed)}
               isLiveUptimeSuccessful={isLiveUptimeSuccessful}
               setIsLiveUptimeSuccessful={setIsLiveUptimeSuccessful}

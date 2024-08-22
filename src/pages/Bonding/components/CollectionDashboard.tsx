@@ -48,20 +48,6 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
   });
   const [matchedDataNft, setMatchedDataNft] = useState<Array<any>>([]);
 
-  const matchBondWithDataNft = () => {
-    const _matchedDataNft: Array<any> = [];
-    bondNft.forEach((currentNft) => {
-      const matchingNft = bondDataNft.find((dataNft) => dataNft.tokenIdentifier === createTokenIdentifier(currentNft.tokenIdentifier, currentNft.nonce));
-
-      if (matchingNft) {
-        const buildDataNft = { ...matchingNft, ...currentNft };
-        _matchedDataNft.push(buildDataNft);
-      }
-    });
-
-    setMatchedDataNft(_matchedDataNft);
-  };
-
   useEffect(() => {
     matchBondWithDataNft();
     (async () => {
@@ -76,6 +62,20 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
       setAllCompensation(compensation);
     })();
   }, [hasPendingTransactions, bondNft, bondDataNft]);
+
+  const matchBondWithDataNft = () => {
+    const _matchedDataNft: Array<any> = [];
+    bondNft.forEach((currentNft) => {
+      const matchingNft = bondDataNft.find((dataNft) => dataNft.tokenIdentifier === createTokenIdentifier(currentNft.tokenIdentifier, currentNft.nonce));
+
+      if (matchingNft) {
+        const buildDataNft = { ...matchingNft, ...currentNft };
+        _matchedDataNft.push(buildDataNft);
+      }
+    });
+
+    setMatchedDataNft(_matchedDataNft);
+  };
 
   const validationSchema = Yup.object().shape({
     enforceMinimumPenalty: Yup.number().typeError("Value must be a number").required("Please select a value for enforce penalty"),
@@ -134,6 +134,7 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
       transactions: [tx],
     });
   };
+
   return (
     <Flex flexDirection="column" w="full" gap={5}>
       {matchedDataNft.map((dataNft, index) => {
@@ -170,7 +171,7 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
                     &nbsp;$ITHEUM Penalized
                   </Text>
                   <Text fontSize=".75rem">|</Text>
-                  <Text fontSize=".75rem" textColor="mediumpurple">
+                  <Text fontSize=".75rem" textColor="#39bdf8">
                     {BigNumber(dataNft.remainingAmount)
                       .dividedBy(10 ** 18)
                       .toNumber()}

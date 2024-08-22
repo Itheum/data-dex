@@ -63,15 +63,15 @@ const LandingPage = () => {
             <NFMeIdCTA />
           </Box>
 
-          <Box pt={{ base: "28", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
+          <Box pt={{ base: "18", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
             <NewCreatorCTA />
           </Box>
 
-          <Box pt={{ base: "28", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
+          <Box pt={{ base: "20", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
             <VolumesDataNfts />
           </Box>
 
-          <Box pt={{ base: "28", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
+          <Box pt={{ base: "20", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
             <RecentDataNFTs headingText="Recent Data NFTs" />
           </Box>
 

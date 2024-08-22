@@ -56,7 +56,7 @@ import Countdown from "components/CountDown";
 import InteractionsHistory from "components/Tables/InteractionHistory";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU, BIT_GAME_WINDOW_HOURS, EXPLORER_APP_FOR_TOKEN } from "libs/config";
+import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU, EXPLORER_APP_FOR_TOKEN } from "libs/config";
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
 
@@ -195,7 +195,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
         borderBottom="solid .1rem"
         borderColor="teal.200"
         paddingY="5">
-        <HStack alignItems={"center"} backgroundColor="none" width={{ base: "full", md: "14.5rem" }} justifyContent={{ base: "initial", md: "space-around" }}>
+        <HStack alignItems={"center"} width={{ base: "full", md: "14.5rem" }} justifyContent={{ base: "initial", md: "space-around" }}>
           {isMxLoggedIn && (
             <IconButton
               fontSize="2rem"
@@ -237,7 +237,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
             </HStack>
           </Link>
         </HStack>
-        <Flex backgroundColor="none" mr={{ base: "1rem" }}>
+        <Flex mr={{ base: "1rem" }}>
           <HStack alignItems={"center"} spacing={2}>
             <HStack display={{ base: "none", md: "none", xl: "block", "2xl": "block" }}>
               {exploreRouterMenu[0].sectionItems.map((quickMenuItem) => {
@@ -432,8 +432,8 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                         What is {`<BiTz>`} XP?
                       </Text>
                       <Text fontSize="md" lineHeight="1.5rem" fontFamily="Satoshi-Regular" py={4} px={3}>
-                        {`<BiTz>`} are Itheum Protocol XP. {`<BiTz>`} can be collected every {BIT_GAME_WINDOW_HOURS} hours by playing the Get {`<BiTz>`} game
-                        Data Widget. Top LEADERBOARD climbers get special perks and drops!
+                        {`<BiTz>`} are Itheum Protocol XP. {`<BiTz>`} can be collected every few hours by playing the Get {`<BiTz>`} game Data Widget. Top
+                        LEADERBOARD climbers get special perks and drops!
                       </Text>
                       <Link as={ReactRouterLink} isExternal to={`${EXPLORER_APP_FOR_TOKEN[chainID]["bitzgame"]}/?accessToken=${tokenLogin?.nativeAuthToken}`}>
                         <Button
@@ -443,7 +443,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                           w="full"
                           _hover={{ backgroundImage: "linear-gradient(345deg, #171717, #38bdf8)" }}>
                           <span>
-                            {cooldown === -2 ? <span>...</span> : cooldown > 0 ? <Countdown unixTime={cooldown} /> : <span> Claim your {`<BiTz>`}</span>}
+                            {cooldown === -2 ? <span>...</span> : cooldown > 0 ? <Countdown unixTime={cooldown} /> : <span> Claim Your {`<BiTz>`} XP</span>}
                           </span>
                         </Button>
                       </Link>
@@ -582,8 +582,8 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                               What is {`<BiTz>`} XP?
                             </Text>
                             <Text fontSize="md" lineHeight="1.5rem" fontFamily="Satoshi-Regular" py={4} px={3}>
-                              {`<BiTz>`} are Itheum Protocol XP. {`<BiTz>`} can be collected every {BIT_GAME_WINDOW_HOURS} hours by playing the Get {`<BiTz>`}{" "}
-                              game Data Widget. Top LEADERBOARD climbers get special perks and drops!
+                              {`<BiTz>`} are Itheum Protocol XP. {`<BiTz>`} can be collected every few hours by playing the Get {`<BiTz>`} game Data Widget. Top
+                              LEADERBOARD climbers get special perks and drops!
                             </Text>
                             <Link
                               as={ReactRouterLink}

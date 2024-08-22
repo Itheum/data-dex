@@ -4,7 +4,6 @@ import {
   Button,
   Flex,
   HStack,
-  Image,
   Modal,
   ModalBody,
   ModalContent,
@@ -35,7 +34,6 @@ import {
   sleep,
   getTokenWantedRepresentation,
   tokenDecimals,
-  backendApi,
 } from "libs/utils";
 import { useMarketStore } from "store";
 import NftMediaComponent from "./NftMediaComponent";
@@ -51,15 +49,11 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const { colorMode } = useColorMode();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { tokenLogin, loginMethod } = useGetLoginInfo();
-
   const contract = new DataNftMarketContract(chainID);
-
   const isWebWallet = loginMethod === "wallet";
-
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
-
   const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
   const { isOpen: isUpdatePriceModalOpen, onOpen: onUpdatePriceModalOpen, onClose: onUpdatePriceModalClose } = useDisclosure();
   const [delistAmount, setDelistAmount] = useState<number>(1);
@@ -72,8 +66,17 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const { address } = useGetAccountInfo();
   const [sessionId, setSessionId] = useState<string>("");
   const [delistTxStatus, setDelistTxStatus] = useState<boolean>(false);
-
   const { hasSignedTransactions, signedTransactionsArray } = useGetSignedTransactions();
+  const [updatePriceSessionId, setUpdatePriceSessionId] = useState<string>("");
+  const [updatePriceTxStatus, setUpdatePriceTxStatus] = useState<boolean>(false);
+
+  const trackUpdatePriceTransactionStatus = useTrackTransactionStatus({
+    transactionId: updatePriceSessionId,
+  });
+
+  const trackTransactionStatus = useTrackTransactionStatus({
+    transactionId: sessionId,
+  });
 
   useEffect(() => {
     if (!isWebWallet) return;
@@ -85,7 +88,9 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
     } catch (e) {
       sessionStorage.removeItem("web-wallet-tx");
     }
+
     const sessionInfo = sessionStorage.getItem("web-wallet-tx");
+
     if (sessionInfo) {
       const { type } = JSON.parse(sessionInfo);
       if (type == "delist-tx") {
@@ -103,20 +108,9 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
     }
   }, [hasSignedTransactions]);
 
-  const [updatePriceSessionId, setUpdatePriceSessionId] = useState<string>("");
-  const [updatePriceTxStatus, setUpdatePriceTxStatus] = useState<boolean>(false);
-
-  const trackUpdatePriceTransactionStatus = useTrackTransactionStatus({
-    transactionId: updatePriceSessionId,
-  });
-
   useEffect(() => {
     setUpdatePriceTxStatus(trackUpdatePriceTransactionStatus.isPending ? true : false);
   }, [trackUpdatePriceTransactionStatus]);
-
-  const trackTransactionStatus = useTrackTransactionStatus({
-    transactionId: sessionId,
-  });
 
   useEffect(() => {
     setDelistTxStatus(trackTransactionStatus.isPending ? true : false);
@@ -216,9 +210,10 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
     await sleep(0.5);
     onUpdatePriceModalClose();
   };
+
   return (
     <>
-      <PreviewDataButton previewDataURL={nftMetadata.dataPreview} />
+      <PreviewDataButton previewDataURL={nftMetadata.dataPreview} tokenName={nftMetadata.tokenName} />
 
       <Flex justifyContent="space-between" mt="2" gap="2">
         <Button

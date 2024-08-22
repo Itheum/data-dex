@@ -58,6 +58,7 @@ import { useMarketStore, useMintStore } from "store";
 import AccessDataStreamModal from "./AccessDatastreamModal";
 import BurnDataNFTModal from "./BurnDataNFTModal";
 import ListDataNFTModal from "../ListDataNFTModal";
+import { isNFMeIDVaultClassDataNFT } from "libs/utils";
 
 export default function WalletDataNFTMX(item: any) {
   const { chainID, network } = useGetNetworkConfig();
@@ -229,6 +230,7 @@ export default function WalletDataNFTMX(item: any) {
         s1: 1,
         s2: 1,
       }));
+
       await sleep(3);
 
       // auto download the file without ever exposing the url
@@ -320,6 +322,8 @@ export default function WalletDataNFTMX(item: any) {
 
   const parsedCreationTime = moment(item.creationTime);
 
+  const isNFMeIDVaultDataNFT = isNFMeIDVaultClassDataNFT(item.tokenName);
+
   return (
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
       <Box
@@ -349,6 +353,7 @@ export default function WalletDataNFTMX(item: any) {
               {item.tokenName} <ExternalLinkIcon mx="2px" />
             </Link>
           </Text>
+
           <Popover trigger="hover" placement="auto">
             <PopoverTrigger>
               <div>
@@ -376,6 +381,7 @@ export default function WalletDataNFTMX(item: any) {
               </PopoverBody>
             </PopoverContent>
           </Popover>
+
           <Box mt={1}>
             {item.creator && (
               <Box color="#8c8f92d0" fontSize="md" display="flex" alignItems="center">
@@ -425,32 +431,37 @@ export default function WalletDataNFTMX(item: any) {
                 <ExploreAppButton collection={item.collection} nonce={item.nonce} />
               </HStack>
             </Stack>
+
             <Box color="#8c8f92d0" fontSize="md" fontWeight="normal" my={2}>
               {item.balance === 0 ? `Balance: 1` : `Balance: ${item.balance}`} <br />
               {`Total supply: ${item.supply}`} <br />
               {`Royalty: ${convertToLocalString(item.royalties * 100)}%`}
             </Box>
 
-            <HStack mt="2">
-              <Tooltip
-                colorScheme="teal"
-                hasArrow
-                label={viewDataDisabledMessage(loginMethod)}
-                isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
-                <Button
-                  size="sm"
+            {!isNFMeIDVaultDataNFT ? (
+              <HStack mt="2" height="37px">
+                <Tooltip
                   colorScheme="teal"
-                  w="full"
-                  isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
-                  onClick={() => {
-                    accessDataStream(item.collection, item.nonce);
-                  }}>
-                  View Data
-                </Button>
-              </Tooltip>
+                  hasArrow
+                  label={viewDataDisabledMessage(loginMethod)}
+                  isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
+                  <Button
+                    size="sm"
+                    colorScheme="teal"
+                    w="full"
+                    isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
+                    onClick={() => {
+                      accessDataStream(item.collection, item.nonce);
+                    }}>
+                    View Data
+                  </Button>
+                </Tooltip>
 
-              <PreviewDataButton previewDataURL={item.dataPreview} />
-            </HStack>
+                <PreviewDataButton previewDataURL={item.dataPreview} tokenName={item.tokenName} />
+              </HStack>
+            ) : (
+              <Box height="37px">&nbsp;</Box>
+            )}
 
             <Flex mt="6" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
               <Text fontSize="md" color="#929497">
@@ -530,6 +541,7 @@ export default function WalletDataNFTMX(item: any) {
                 </NumberInputStepper>
               </NumberInput>
             </Flex>
+
             <Box h={3}>
               {priceError && (
                 <Text color="red.400" fontSize="xs">
@@ -576,9 +588,11 @@ export default function WalletDataNFTMX(item: any) {
                 </NumberInputStepper>
               </NumberInput>
             </Flex>
+
             <Text fontSize="sm" textAlign="right" mt="1" opacity="0.5">
               {maxPerAddress === 0 ? "No Limit" : `${maxPerAddress} per address`}
             </Text>
+
             <Box h={3}>
               {maxPerAddressError && (
                 <Text color="red.400" fontSize="xs">

@@ -68,28 +68,32 @@ export const LivelinessStaking: React.FC = () => {
         setGlobalRewardsPerBlock(new BigNumber(data.contractDetails.rewardsPerBlock).dividedBy(10 ** 18).toNumber());
 
         console.log("data.userData.vaultNonce ", data.userData.vaultNonce);
-        const dataNft = await DataNft.createFromApi({
-          nonce: data.userData.vaultNonce,
-        });
-        const bondContract = new BondContract(envNetwork);
-        const bonds = await bondContract.viewAddressBonds(new Address(mxAddress));
-        const foundBound = bonds.find((bond) => bond.nonce === data.userData.vaultNonce);
 
-        console.log("bonds");
-        console.log(bonds);
-        console.log("foundBound");
-        console.log(foundBound);
+        // 0 means the user has not set a primary NFMe ID Vault yet
+        if (data.userData.vaultNonce !== 0) {
+          const dataNft = await DataNft.createFromApi({
+            nonce: data.userData.vaultNonce,
+          });
+          const bondContract = new BondContract(envNetwork);
+          const bonds = await bondContract.viewAddressBonds(new Address(mxAddress));
+          const foundBound = bonds.find((bond) => bond.nonce === data.userData.vaultNonce);
 
-        if (foundBound && new BigNumber(foundBound.remainingAmount).isGreaterThan(0) && foundBound.unbondTimestamp > 0) {
-          console.log("dataNft SET S ----------->");
-          console.log(dataNft);
-          console.log("nfmeId SET E  ----------->");
+          console.log("bonds");
+          console.log(bonds);
+          console.log("foundBound");
+          console.log(foundBound);
 
-          setNfmeId(dataNft);
-          setNfmeIdBond(foundBound);
-        } else {
-          setNfmeId(undefined);
-          setNfmeIdBond(undefined);
+          if (foundBound && new BigNumber(foundBound.remainingAmount).isGreaterThan(0) && foundBound.unbondTimestamp > 0) {
+            console.log("dataNft SET S ----------->");
+            console.log(dataNft);
+            console.log("nfmeId SET E  ----------->");
+
+            setNfmeId(dataNft);
+            setNfmeIdBond(foundBound);
+          } else {
+            setNfmeId(undefined);
+            setNfmeIdBond(undefined);
+          }
         }
 
         await sleep(1);
@@ -102,6 +106,7 @@ export const LivelinessStaking: React.FC = () => {
 
   useEffect(() => {
     if (combinedBondsStaked === 0) setRewardApy(0);
+
     if (globalTotalBond > 0) {
       const percentage = combinedBondsStaked / globalTotalBond;
       const localRewardsPerBlock = globalRewardsPerBlock * percentage;
@@ -154,8 +159,8 @@ export const LivelinessStaking: React.FC = () => {
   console.log("nfmeId RENDER E ----------->");
 
   return (
-    <Flex flexDirection={{ base: "column", md: "row" }} width="100%" justifyContent="space-between" backgroundColor={"1pink"}>
-      <Box flex="1" px={{ base: 0, md: 12 }} backgroundColor={"1red"}>
+    <Flex flexDirection={{ base: "column", md: "row" }} width="100%" justifyContent="space-between">
+      <Box flex="1" px={{ base: 0, md: 12 }}>
         <Heading fontSize="1.5rem" fontFamily="Clash-Medium" color="teal.200" mb={2} textAlign={{ base: "center", md: "left" }}>
           Your Liveliness Rewards
         </Heading>
@@ -233,7 +238,7 @@ export const LivelinessStaking: React.FC = () => {
         </VStack>
       </Box>
 
-      <Box flex="1" px={{ base: 0, md: 12 }} backgroundColor={"1orange"} my={{ base: 4, md: 0 }}>
+      <Box flex="1" px={{ base: 0, md: 12 }} my={{ base: 4, md: 0 }}>
         <>
           <Heading fontSize="1.5rem" fontFamily="Clash-Medium" color="teal.200" mb={2} textAlign={{ base: "center", md: "left" }}>
             Your NFMe ID Vault
@@ -247,8 +252,8 @@ export const LivelinessStaking: React.FC = () => {
               <>
                 {nfmeId ? (
                   <>
-                    <Flex flexDirection={{ base: "column", md: "row" }} width="100%" backgroundColor={"1red"}>
-                      <Box minW={{ md: "100px" }} backgroundColor={"1green"} mr={{ md: "5" }}>
+                    <Flex flexDirection={{ base: "column", md: "row" }} width="100%">
+                      <Box minW={{ md: "100px" }} mr={{ md: "5" }}>
                         <Image
                           w="100px"
                           h="100px"
@@ -260,9 +265,9 @@ export const LivelinessStaking: React.FC = () => {
                           }}
                         />
                       </Box>
-                      <VStack mt={{ base: "5", md: "auto" }} backgroundColor={"1blue"}>
+                      <VStack mt={{ base: "5", md: "auto" }}>
                         <LivelinessScore unbondTimestamp={nfmeIdBond?.unbondTimestamp} lockPeriod={nfmeIdBond?.lockPeriod} />
-                        <Flex gap={4} pt={3} alignItems="center" backgroundColor={"1blue"} w="100%">
+                        <Flex gap={4} pt={3} alignItems="center" w="100%">
                           <Button
                             colorScheme="teal"
                             px={6}
@@ -279,7 +284,7 @@ export const LivelinessStaking: React.FC = () => {
                           </Button>
                           <Text fontSize=".75rem">{`New expiry will be ${calculateNewPeriodAfterNewBond(nfmeIdBond?.unbondTimestamp ?? 0, nfmeIdBond?.lockPeriod ?? 0)}`}</Text>
                         </Flex>
-                        <Flex gap={4} pt={3} alignItems="center" backgroundColor={"1green"} w="100%">
+                        <Flex gap={4} pt={3} alignItems="center" w="100%">
                           <Flex flexDirection="column" gap={1}>
                             <Flex flexDirection="row" gap={4}>
                               <Text fontSize=".75rem" textColor="teal.200">
@@ -301,7 +306,7 @@ export const LivelinessStaking: React.FC = () => {
                                 &nbsp;$ITHEUM Penalized
                               </Text>
                               <Text fontSize=".75rem">|</Text>
-                              <Text fontSize=".75rem" textColor="mediumpurple">
+                              <Text fontSize=".75rem" textColor="#39bdf8">
                                 {formatNumberToShort(
                                   BigNumber(nfmeIdBond?.remainingAmount ?? 0)
                                     .dividedBy(10 ** 18)
@@ -315,13 +320,13 @@ export const LivelinessStaking: React.FC = () => {
                       </VStack>
                     </Flex>
                     <Box h="1px" w="100%" borderStyle="solid" borderWidth="1px" borderColor="#00C79740" />
-                    <HStack my={2} justifyContent="center" alignItems="flex-start" backgroundColor={"1orange"} w="100%">
-                      <VStack alignItems={"start"} w={"100%"} backgroundColor={"1green"}>
+                    <HStack my={2} justifyContent="center" alignItems="flex-start" w="100%">
+                      <VStack alignItems={"start"} w={"100%"}>
                         <Text fontSize="xl" alignItems={"flex-start"} fontFamily="Inter" color="teal.200" fontWeight="bold">
                           Top-Up Liveliness for Boosted Rewards
                         </Text>
                         <Text fontSize="lg">Available Balance: {formatNumberToShort(itheumBalance)} $ITHEUM</Text>
-                        <HStack my={2} backgroundColor={"1blue"}>
+                        <HStack my={2}>
                           <Text fontSize="lg" color={"grey"}>
                             Top-Up Liveliness
                           </Text>
@@ -412,7 +417,7 @@ export const LivelinessStaking: React.FC = () => {
                     </HStack>
                   </>
                 ) : (
-                  <Box w="90%" mt="10" backgroundColor={"1red"}>
+                  <Box w="90%" mt="10">
                     <Text fontWeight="bold">
                       You do not seem to have am active NFMe ID Vault yet. If you did, you can top-up bonus $ITHEUM tokens and earn extra staking rewards. Your
                       have a few options:

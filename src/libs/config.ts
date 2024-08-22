@@ -352,9 +352,10 @@ export const nfMeIDVaultConfig = {
   "isNFMeID": true,
   "shouldAutoVault": true,
   additionalInformation: {
+    "tokenName": "NFMeIDG1",
     "programName": "NFMe ID Vault",
-    "dataStreamURL_PRD": `https://api.itheumcloud.com/datadexapi/nfmeIdVault/dataStream?dmf-allow-http403=1`,
-    "dataStreamURL": `https://api.itheumcloud-stg.com/datadexapi/nfmeIdVault/dataStream?dmf-allow-http403=1`,
+    "dataStreamURL_PRD": "https://api.itheumcloud.com/datadexapi/nfmeIdVault/dataStream?dmf-allow-http403=1",
+    "dataStreamURL": "https://api.itheumcloud-stg.com/datadexapi/nfmeIdVault/dataStream?dmf-allow-http403=1",
     "dataPreviewURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport_preview.json",
     "img": "nfme_id_vault_preview",
     "description": "Activate this Gen1 NFMe ID Vault Data NFT as your web3 identity.",
@@ -471,13 +472,14 @@ export const PREVIEW_DATA_ON_DEVNET_SESSION_KEY = "itm-preview-data-on-devnet";
 
 export const IS_DEVNET = import.meta.env.VITE_ENV_NETWORK && import.meta.env.VITE_ENV_NETWORK === EnvironmentsEnum.devnet;
 
+export const PRINT_UI_DEBUG_PANELS = import.meta.env.VITE_PRINT_UI_DEBUG_PANELS && import.meta.env.VITE_PRINT_UI_DEBUG_PANELS === "1";
+
 export type app_token = {
   tokenIdentifier: string;
   nonce: number;
 };
 
 export const GET_BITZ_TOKEN: app_token = IS_DEVNET ? { tokenIdentifier: "DATANFTFT-e0b917", nonce: 198 } : { tokenIdentifier: "DATANFTFT-e936d4", nonce: 7 };
-export const BIT_GAME_WINDOW_HOURS = "3";
 
 export async function viewDataJSONCore(viewDataArgs: any, requiredDataNFT: DataNft) {
   try {

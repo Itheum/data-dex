@@ -12,7 +12,7 @@ export const GetNFMeID = ({ onShowConnectWalletModal }: { onShowConnectWalletMod
   }, []);
 
   return (
-    <Flex flexDirection="column" justifyContent="space-between" minH="100vh" zIndex={2} mx={{ base: 10, lg: 24 }} pb="50">
+    <Flex flexDirection="column" justifyContent="space-between" minH="100vh" zIndex={2} pb="50">
       <LandingPage onShowConnectWalletModal={onShowConnectWalletModal} />
       <LivelinessStaking onShowConnectWalletModal={onShowConnectWalletModal} />
     </Flex>

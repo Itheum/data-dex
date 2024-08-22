@@ -189,7 +189,7 @@ export const BondingCards: React.FC = () => {
   };
 
   return (
-    <Flex width="100%" flexWrap="wrap" gap={7} px={{ base: 0, md: 12 }} mt={10} backgroundColor={"1blue"}>
+    <Flex width="100%" flexWrap="wrap" gap={7} px={{ base: 0, md: 12 }} mt={10}>
       <Heading fontSize="1.5rem" fontFamily="Clash-Medium" color="teal.200" textAlign={{ base: "center", md: "left" }}>
         Your Data NFT Liveliness Bonds
       </Heading>
@@ -230,7 +230,7 @@ export const BondingCards: React.FC = () => {
                     p={5}
                     w="100%">
                     <Flex flexDirection={{ base: "column", md: "row" }}>
-                      <Box backgroundColor="1red" minW="250px" textAlign="center">
+                      <Box minW="250px" textAlign="center">
                         <NftMediaComponent nftMedia={dataNft?.media} imageHeight="220px" imageWidth="220px" borderRadius="10px" />
 
                         {nfmeIdNonce !== dataNft.nonce ? (
@@ -251,7 +251,7 @@ export const BondingCards: React.FC = () => {
                           </Text>
                         )}
                       </Box>
-                      <Flex ml={{ md: "3" }} justifyContent="space-between" alignItems="center" w="full" backgroundColor="1blue">
+                      <Flex ml={{ md: "3" }} justifyContent="space-between" alignItems="center" w="full">
                         <Flex flexDirection="column" justifyContent="center" w="full">
                           <Text fontFamily="Clash-Medium" mt={{ base: 3, md: "auto" }}>
                             {dataNft.tokenName}
@@ -329,7 +329,7 @@ export const BondingCards: React.FC = () => {
                                   &nbsp;$ITHEUM Penalized
                                 </Text>
                                 <Text fontSize=".75rem">|</Text>
-                                <Text fontSize=".75rem" textColor="mediumpurple">
+                                <Text fontSize=".75rem" textColor="#39bdf8">
                                   {formatNumberToShort(
                                     BigNumber(contractBond.remainingAmount)
                                       .dividedBy(10 ** 18)
@@ -375,7 +375,7 @@ export const BondingCards: React.FC = () => {
             {dataNftsWithNoBond?.length > 0 && (
               <>
                 <Heading fontSize="1.2rem" fontFamily="Clash-Medium" color="teal.200" textAlign={{ base: "center", md: "left" }}>
-                  Data NFTs Where You Have Withdrew Your Bond
+                  Data NFTs With No Liveliness Bond
                 </Heading>
                 <Wrap justify={{ base: "center", md: "start" }} align="start" spacing={4} w="100%" h="100%" p={4}>
                   {dataNftsWithNoBond.map((dataNft) => {
@@ -389,7 +389,7 @@ export const BondingCards: React.FC = () => {
                           borderRadius="3xl"
                           p={5}>
                           <Flex flexDirection={{ base: "column", md: "row" }}>
-                            <Box backgroundColor="1red" minW="200px" minH="345px" textAlign="center">
+                            <Box minW="200px" minH="345px" textAlign="center">
                               <Text fontFamily="Clash-Medium" pb={3} mt={{ base: 3, md: "auto" }}>
                                 {dataNft.tokenName}
                               </Text>

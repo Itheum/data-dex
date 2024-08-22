@@ -2,16 +2,18 @@ import React from "react";
 import { Button } from "@chakra-ui/button";
 import { useColorMode } from "@chakra-ui/color-mode";
 import { Text } from "@chakra-ui/layout";
+import { Box } from "@chakra-ui/react";
 import { Tooltip } from "@chakra-ui/tooltip";
 import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
-import { shouldPreviewDataBeEnabled, viewDataDisabledMessage } from "libs/utils";
+import { shouldPreviewDataBeEnabled, viewDataDisabledMessage, isNFMeIDVaultClassDataNFT } from "libs/utils";
 
 type PreviewDataButtonPropType = {
   previewDataURL: string;
   buttonSize?: any;
   buttonWidth?: string;
+  tokenName?: string | undefined;
 };
 
 export default function PreviewDataButton(props: PreviewDataButtonPropType) {
@@ -19,8 +21,13 @@ export default function PreviewDataButton(props: PreviewDataButtonPropType) {
   const { chainID } = useGetNetworkConfig();
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
   const { colorMode } = useColorMode();
-  const { previewDataURL, buttonSize = "sm", buttonWidth = "full" } = props;
-  return previewDataURL ? (
+  const { previewDataURL, buttonSize = "sm", buttonWidth = "full", tokenName } = props;
+  const isNFMeIDVaultDataNFT = isNFMeIDVaultClassDataNFT(tokenName);
+
+  console.log("tokenName", tokenName);
+  console.log("isNFMeIDVaultDataNFT", isNFMeIDVaultDataNFT);
+
+  return previewDataURL && !isNFMeIDVaultDataNFT ? (
     <Tooltip
       colorScheme="teal"
       hasArrow
@@ -41,6 +48,6 @@ export default function PreviewDataButton(props: PreviewDataButtonPropType) {
       </Button>
     </Tooltip>
   ) : (
-    <></>
+    <Box height="37px">&nbsp;</Box>
   );
 }
