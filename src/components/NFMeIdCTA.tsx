@@ -38,7 +38,7 @@ const NFMeIdCTA = () => {
             if (mxAddress) {
               navigate("/mintdata?launchTemplate=nfmeidvault");
             } else {
-              navigate("/getNFMeId");
+              navigate("/NFMeId");
             }
           }}>
           Mint Your NFMe ID Vault

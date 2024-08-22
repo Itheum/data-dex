@@ -121,7 +121,7 @@ const exploreRouterMenu = [
         isHidden: true,
       },
       {
-        menuEnum: MENU.GETNFMEID,
+        menuEnum: MENU.NFMEID,
         path: "/NFMeID",
         label: "Get a NFMe ID",
         shortLbl: "NFMe",

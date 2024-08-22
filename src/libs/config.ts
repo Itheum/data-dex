@@ -115,7 +115,7 @@ export const MENU = {
   DATACAT: 19,
   PROFILE: 20,
   GUARDRAILS: 21,
-  GETNFMEID: 22,
+  NFMEID: 22,
 };
 
 export const BUTTONS = {
