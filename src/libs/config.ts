@@ -336,6 +336,7 @@ export const dataCATDemoUserData = {
       "fromTs": 1528448026784,
       "toTs": 1535951753305,
       additionalInformation: {
+        "tokenName": "GMRPSG1",
         "programName": "Sony Playstation Data Passport",
         "dataStreamURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport.json",
         "dataPreviewURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport_preview.json",

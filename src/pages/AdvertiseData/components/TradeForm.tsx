@@ -146,43 +146,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const [mintTx, setMintTx] = useState<any>(undefined);
   const [bondVaultNonce, setBondVaultNonce] = useState<number | undefined>(0);
   const [maxApy, setMaxApy] = useState<number>(0);
-
-  useEffect(() => {
-    // does the user have a primary vault set? (if not and then mint a NFMe, we can auto set it)
-    async function fetchVaultNonce() {
-      if (mxAddress) {
-        const nonce = await bond.viewAddressVaultNonce(new Address(mxAddress), IS_DEVNET ? dataNftTokenIdentifier.devnet : dataNftTokenIdentifier.mainnet);
-        setBondVaultNonce(nonce);
-      }
-    }
-
-    fetchVaultNonce();
-  }, []);
-
-  useEffect(() => {
-    if (currDataCATSellObj && currDataCATSellObj?.isNFMeID === true) {
-      setIsNFMeIDMint(true);
-      // everything is prefilled, so we can go to the last step of thr stepper, but we can also hide the stepper header in the UI
-      setActiveStep(2);
-    }
-  }, [currDataCATSellObj]);
-
-  useEffect(() => {
-    async function fetchBondingRelatedData() {
-      if (mxAddress) {
-        bond.viewLockPeriodsWithBonds().then((periodsT) => {
-          setPeriods(periodsT);
-        });
-
-        const envNetwork = import.meta.env.VITE_ENV_NETWORK;
-        const liveContract = new LivelinessStake(envNetwork);
-        const data = await liveContract.getUserDataOut(new Address(mxAddress));
-        setMaxApy(Math.floor(data.contractDetails.maxApr * 100) / 100);
-      }
-    }
-
-    fetchBondingRelatedData();
-  }, [mxAddress]);
+  const [needsMoreITHEUMToProceed, setNeedsMoreITHEUMToProceed] = useState<boolean>(false);
 
   // S: React hook form + yup integration ---->
   // Declaring a validation schema for the form with the validation needed
@@ -313,8 +277,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     defaultValues: {
       dataStreamUrlForm: dataToPrefill?.additionalInformation.dataStreamURL ?? "",
       dataPreviewUrlForm: dataToPrefill?.additionalInformation.dataPreviewURL ?? "",
-      tokenNameForm: dataToPrefill?.additionalInformation.tokenName.replaceAll(" ", "").substring(0, 16) ?? "",
-      datasetTitleForm: dataToPrefill?.additionalInformation.tokenName.replaceAll(" ", "") ?? "",
+      tokenNameForm: dataToPrefill?.additionalInformation?.tokenName.replaceAll(" ", "").substring(0, 16) ?? "",
+      datasetTitleForm: dataToPrefill?.additionalInformation?.programName ?? "",
       datasetDescriptionForm: dataToPrefill?.additionalInformation.description ?? "",
       extraAssets: dataToPrefill?.additionalInformation.extraAssets ?? "",
       donatePercentage: userData && userData?.maxDonationPecentage / 100 / 2,
@@ -360,15 +324,56 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   }
   // E: React hook form + yup integration ---->
 
-  function shouldMintYourDataNftBeDisabled(
-    isValid: boolean,
-    readTermsChecked: boolean,
-    readAntiSpamFeeChecked: boolean,
-    readLivelinessBonding: boolean,
-    itheumBalance: number,
-    antiSpamTax: number,
-    bondingAmount: number
-  ): boolean | undefined {
+  useEffect(() => {
+    // does the user have a primary vault set? (if not and then mint a NFMe, we can auto set it)
+    async function fetchVaultNonce() {
+      if (mxAddress) {
+        const nonce = await bond.viewAddressVaultNonce(new Address(mxAddress), IS_DEVNET ? dataNftTokenIdentifier.devnet : dataNftTokenIdentifier.mainnet);
+        setBondVaultNonce(nonce);
+      }
+    }
+
+    fetchVaultNonce();
+  }, []);
+
+  useEffect(() => {
+    if (currDataCATSellObj && currDataCATSellObj?.isNFMeID === true) {
+      setIsNFMeIDMint(true);
+      // everything is prefilled, so we can go to the last step of thr stepper, but we can also hide the stepper header in the UI
+      setActiveStep(2);
+    }
+  }, [currDataCATSellObj]);
+
+  useEffect(() => {
+    async function fetchBondingRelatedData() {
+      if (mxAddress) {
+        bond.viewLockPeriodsWithBonds().then((periodsT) => {
+          setPeriods(periodsT);
+        });
+
+        const envNetwork = import.meta.env.VITE_ENV_NETWORK;
+        const liveContract = new LivelinessStake(envNetwork);
+        const data = await liveContract.getUserDataOut(new Address(mxAddress));
+        setMaxApy(Math.floor(data.contractDetails.maxApr * 100) / 100);
+      }
+    }
+
+    fetchBondingRelatedData();
+  }, [mxAddress]);
+
+  useEffect(() => {
+    if (itheumBalance && antiSpamTax && bondingAmount) {
+      // check if "defaults" are passed (i.e. we have the final values to calculate)
+      if (itheumBalance >= 0 && antiSpamTax >= 0 && antiSpamTax >= 0) {
+        if (itheumBalance < antiSpamTax + bondingAmount) {
+          // we can use this to send a CTA to get them to buy ITHEUM tokens on the market
+          setNeedsMoreITHEUMToProceed(true);
+        }
+      }
+    }
+  }, [itheumBalance, antiSpamTax, bondingAmount]);
+
+  function shouldMintYourDataNftBeDisabled(): boolean | undefined {
     return !isValid || !readTermsChecked || !readAntiSpamFeeChecked || !readLivelinessBonding || itheumBalance < antiSpamTax + bondingAmount;
   }
 
@@ -740,6 +745,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           <Box>
             <Alert status="warning" mt={3} p={2} fontSize=".8rem" rounded="lg" as="div" style={{ "display": "block" }}>
               <Box>--- Debugging Panel ---</Box>
+              <Box>^^ Needs more Itheum to Proceed: {needsMoreITHEUMToProceed.toString()}</Box>
               <Box>^^ Is NFMe ID Mint: {isNFMeIDMint.toString()}</Box>
               <Box>
                 ^^ Should Auto Vault?: {!bondVaultNonce ? "true" : "false"} : current bondVaultNonce = {bondVaultNonce?.toString()} (should be true if a primary
@@ -752,7 +758,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               <Box>Royalties: {dataNFTRoyalties} (should be - 2)</Box>
               <Box>Donate %: {donatePercentage} (should be - 0)</Box>
               <Box>Token Name: {dataNFTTokenName} (should be - NFMeIDG1)</Box>
-              <Box>Title: {datasetTitle} (should be - NFMeIDG1)</Box>
+              <Box>Title: {datasetTitle} (should be - NFMe ID Vault)</Box>
               <Box>Description: {datasetDescription}</Box>
             </Alert>
           </Box>
@@ -1231,6 +1237,14 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               )}
             </Flex>
 
+            <Box>
+              {itheumBalance < antiSpamTax + bondingAmount && (
+                <Text color="red.400" fontSize="md" mt="1 !important" mb="2">
+                  {labels.ERR_MINT_FORM_NOT_ENOUGH_BOND}
+                </Text>
+              )}
+            </Box>
+
             <PopoverTooltip title="Bond $ITHEUM to Prove Reputation" bodyWidthInPX="380px">
               <>
                 <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="3 !important">
@@ -1274,12 +1288,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             </PopoverTooltip>
 
             <Box minH={{ base: "5rem", md: "3.5rem" }}>
-              {itheumBalance < antiSpamTax + bondingAmount && (
-                <Text color="red.400" fontSize="sm" mt="1 !important">
-                  {labels.ERR_MINT_FORM_NOT_ENOUGH_BOND}
-                </Text>
-              )}
-
               <Flex mt="3 !important">
                 <Button
                   colorScheme="teal"
@@ -1392,20 +1400,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
             <Flex>
               <ChainSupportedInput feature={MENU.SELL}>
-                <Button
-                  mt="10"
-                  colorScheme="teal"
-                  isLoading={isMintingModalOpen}
-                  onClick={dataNFTSellSubmit}
-                  isDisabled={shouldMintYourDataNftBeDisabled(
-                    isValid,
-                    readTermsChecked,
-                    readAntiSpamFeeChecked,
-                    readLivelinessBonding,
-                    itheumBalance,
-                    antiSpamTax,
-                    bondingAmount
-                  )}>
+                <Button mt="10" colorScheme="teal" isLoading={isMintingModalOpen} onClick={dataNFTSellSubmit} isDisabled={shouldMintYourDataNftBeDisabled()}>
                   {isNFMeIDMint ? "Mint Your NFMe ID Vault" : "Mint Your Data NFT Collection"}
                 </Button>
               </ChainSupportedInput>
