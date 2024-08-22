@@ -13,11 +13,13 @@ export const CustomPagination: FC<PropsType> = ({ pageCount, pageIndex, gotoPage
   const canPreviousPage = pageIndex > 0;
   const canNextPage = pageIndex < pageCount - 1;
   const [isInThrottle, setIsInThrottle] = useState(false);
+
   const previousPage = () => {
     if (canPreviousPage) {
       gotoPage(pageIndex - 1);
     }
   };
+
   const nextPage = () => {
     if (canNextPage) {
       gotoPage(pageIndex + 1);

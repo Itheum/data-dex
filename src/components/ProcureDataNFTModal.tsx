@@ -1,20 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Checkbox,
-  Divider,
-  Flex,
-  HStack,
-  Image,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalOverlay,
-  Text,
-  useColorMode,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Button, Checkbox, Divider, Flex, HStack, Modal, ModalBody, ModalContent, ModalOverlay, Text, useColorMode, useToast } from "@chakra-ui/react";
 import { DataNft, Offer } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetSignedTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
@@ -22,7 +7,6 @@ import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
 import { updateOfferSupplyOnBackend } from "libs/MultiversX";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import {
-  backendApi,
   convertEsdtToWei,
   convertToLocalString,
   convertWeiToEsdt,

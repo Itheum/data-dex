@@ -20,7 +20,6 @@ type Action = {
   updateMarketRequirements: (marketRequirements: State["marketRequirements"]) => void;
   updateMaxPaymentFeeMap: (maxPaymentFeeMap: State["maxPaymentFeeMap"]) => void;
   updateIsMarketPaused: (isMarketPaused: State["isMarketPaused"]) => void;
-
   updateIsApiUp: (isApiUp: State["isApiUp"]) => void;
   updateIsMarketplaceApiUp: (isApiUp: State["isMarketplaceApiUp"]) => void;
   updateOffers: (offers: State["offers"]) => void;
@@ -47,7 +46,6 @@ export const useMarketStore = create<State & Action>((set) => ({
   updateMarketRequirements: (value: MarketplaceRequirements | undefined) => set((state) => ({ ...state, marketRequirements: value })),
   updateMaxPaymentFeeMap: (value: Record<string, number>) => set((state) => ({ ...state, maxPaymentFeeMap: value })),
   updateIsMarketPaused: (value: boolean) => set((state) => ({ ...state, isMarketPaused: value })),
-
   isApiUp: true,
   isMarketplaceApiUp: true,
   offers: [],
@@ -58,7 +56,6 @@ export const useMarketStore = create<State & Action>((set) => ({
   updateOffers: (value: Array<ExtendedOffer>) => set((state) => ({ ...state, offers: value })),
   updateLoadingOffers: (value: boolean) => set((state) => ({ ...state, loadingOffers: value })),
   updatePageCount: (value: number) => set((state) => ({ ...state, pageCount: value })),
-
   addressBoughtOffers: [],
   updateAddressBoughtOffers: (value: any) => set((state) => ({ ...state, addressBoughtOffers: value })),
 }));

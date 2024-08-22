@@ -38,6 +38,7 @@ for (let i = 0; i < 10; i++) {
     media: [],
   });
 }
+
 const skeletonHeight = { base: "260px", md: "190px", "2xl": "220px" };
 
 const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
@@ -80,6 +81,7 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
       <Heading as="h4" fontFamily="Clash-Medium" fontWeight="semibold" size="lg" mb="5" textAlign={["center", "initial"]}>
         Most Traded Data NFTs
       </Heading>
+
       <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(240px, 1fr))">
         {topVolumesDataNfts.map((volumeDataNft, index) => {
           return (

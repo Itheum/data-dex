@@ -25,9 +25,11 @@ const LearnMoreModal: React.FC<Props> = (props) => {
   const { isOpen, onClose, learnMoreProd } = props;
   const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
   const { colorMode } = useColorMode();
+
   return (
     <Modal size={modelSize} isOpen={isOpen && !!learnMoreProd} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false}>
       <ModalOverlay backdropFilter="blur(10px)" />
+
       <ModalContent>
         <ModalHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>{progInfoMeta[learnMoreProd].name}</ModalHeader>
         <ModalCloseButton />

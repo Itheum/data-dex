@@ -227,7 +227,7 @@ export function findNthOccurrenceFromEnd(string: string, char: string, n: number
 
 // Is an NFT a NFMeID Vault class (if so it will start with NFMeIDVault.. i.e NFMeIDVaultG1)
 export function isNFMeIDVaultClassDataNFT(tokenName: string | undefined) {
-  if (tokenName && tokenName.includes("NFMeIDVault")) {
+  if (tokenName && tokenName.replaceAll(" ", "").toLowerCase().includes("nfmeid")) {
     return true;
   } else {
     return false;

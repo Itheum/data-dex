@@ -507,7 +507,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
         </Flex>
       </Flex>
 
-      {mxShowClaimsHistory && <ClaimsHistory mxAddress={mxAddress} onAfterCloseChaimsHistory={() => setMxShowClaimsHistory(false)} />}
+      {mxShowClaimsHistory && <ClaimsHistory mxAddress={mxAddress} onAfterCloseClaimsHistory={() => setMxShowClaimsHistory(false)} />}
       {mxShowInteractionsHistory && <InteractionsHistory mxAddress={mxAddress} onAfterCloseInteractionsHistory={() => setMxInteractionsHistory(false)} />}
 
       <Drawer placement={"left"} onClose={onClose} isOpen={isOpen} blockScrollOnMount={false}>
