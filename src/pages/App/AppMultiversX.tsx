@@ -192,7 +192,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                       <Route path="" element={<GetVerified />} />
                     </Route>
 
-                    <Route path="getNFMeID" element={<Outlet />}>
+                    <Route path="NFMeID" element={<Outlet />}>
                       <Route path="" element={<GetNFMeID onShowConnectWalletModal={onShowConnectWalletModal} />} />
                     </Route>
 
@@ -249,7 +249,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                     {isMxLoggedIn ? (
                       <Route path="liveliness" element={<Navigate to={"/datanfts/wallet/liveliness"} />} />
                     ) : (
-                      <Route path="liveliness" element={<Navigate to={"/getNFMeID"} />} />
+                      <Route path="liveliness" element={<Navigate to={"/NFMeID"} />} />
                     )}
                   </Routes>
                 </AuthenticatedRoutesWrapper>

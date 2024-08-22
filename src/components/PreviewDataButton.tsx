@@ -24,9 +24,6 @@ export default function PreviewDataButton(props: PreviewDataButtonPropType) {
   const { previewDataURL, buttonSize = "sm", buttonWidth = "full", tokenName } = props;
   const isNFMeIDVaultDataNFT = isNFMeIDVaultClassDataNFT(tokenName);
 
-  console.log("tokenName", tokenName);
-  console.log("isNFMeIDVaultDataNFT", isNFMeIDVaultDataNFT);
-
   return previewDataURL && !isNFMeIDVaultDataNFT ? (
     <Tooltip
       colorScheme="teal"

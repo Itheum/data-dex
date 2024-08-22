@@ -52,7 +52,6 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
       DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
 
       const dataNftsVolumes: DataNftVolume[] = await getTopVolumes(chainID, tokenLogin?.nativeAuthToken ?? "", 10);
-
       const _volumesData: { nonce: number; tokenIdentifier: string }[] = [];
 
       dataNftsVolumes.forEach((volumeObject) => {
@@ -78,7 +77,7 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
 
   return (
     <>
-      <Heading as="h2" size="lg" fontWeight="bold" mb="1rem">
+      <Heading as="h4" fontFamily="Clash-Medium" fontWeight="semibold" size="lg" mb="5" textAlign={["center", "initial"]}>
         Most Traded Data NFTs
       </Heading>
       <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(240px, 1fr))">

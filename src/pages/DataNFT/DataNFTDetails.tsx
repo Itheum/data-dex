@@ -359,6 +359,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 <Heading size="xl" fontFamily="Clash-Medium" marginBottom={4} marginTop={10}>
                   Data NFT Details
                 </Heading>
+
                 <HStack>
                   <Button
                     marginTop={{ md: "25px" }}
@@ -376,6 +377,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 </HStack>
               </Box>
             )}
+
             <Box width={"100%"} marginY={tokenIdParam ? "20px" : "10px"} border="1px solid" borderColor="#00C79740" borderRadius="xl">
               <Stack flexDirection="column" m={5} justifyContent={{ base: "center", xl: "flex-start" }} alignItems={{ xl: "flex-start" }}>
                 <Flex
@@ -386,6 +388,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   <Box margin="auto" mb={6}>
                     <NftMediaComponent nftMedia={nftData?.media} autoSlide marginTop="1rem" borderRadius="md" />
                   </Box>
+
                   <Flex mr={tokenIdParam ? "75px" : "30px"}>
                     <Flex flexDirection="column" ml={5} h="250px" justifyContent="space-evenly">
                       <Box display="flex" gap={3} color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "md", md: "lg", xl: "xl" }}>
@@ -441,10 +444,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           </Button>
                         )}
                       </Flex>
+
                       {offer && address && address != offer.owner && (
                         <Box h={14}>
                           <HStack gap={5}>
                             <Text fontSize="xl">How many to {isCreatorListing() ? "mint" : "procure"} </Text>
+
                             <NumberInput
                               size="md"
                               maxW={24}
@@ -476,11 +481,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                               </NumberInputStepper>
                             </NumberInput>
                           </HStack>
+
                           <Text color="red.400" fontSize="sm" mt="2" ml="190px">
                             {amountError}
                           </Text>
                         </Box>
                       )}
+
                       <Flex flexDirection="row" gap={3} justifyContent={{ lg: "start" }} w="full">
                         <Tooltip colorScheme="teal" hasArrow placement="top" label="Data Market is Paused" isDisabled={!isMarketPaused}>
                           <Button
@@ -504,7 +511,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           </Button>
                         </Tooltip>
 
-                        <PreviewDataButton previewDataURL={nftData.dataPreview} buttonSize={{ base: "sm", md: "md", xl: "lg" }} buttonWidth="unset" />
+                        <PreviewDataButton
+                          previewDataURL={nftData.dataPreview}
+                          buttonSize={{ base: "sm", md: "md", xl: "lg" }}
+                          buttonWidth="unset"
+                          tokenName={nftData.tokenName}
+                        />
 
                         <ExploreAppButton
                           collection={nftData.collection}
@@ -741,6 +753,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       </Flex>
                     </Box>
                   </GridItem>
+
                   <GridItem colSpan={{ base: 8, xl: 3 }}>
                     <ConditionalRender fallback={<></>} checkFunction={isApiUp}>
                       <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl" w="full">

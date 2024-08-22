@@ -46,6 +46,7 @@ const Faucet = ({ tileBoxW, tileBoxH }: any) => {
   }, [hasPendingTransactions]);
 
   const mxFaucetContract = new FaucetContract(chainID);
+
   const handleOnChainFaucet = async () => {
     if (mxAddress) {
       mxFaucetContract.sendActivateFaucetTransaction(new Address(mxAddress));
