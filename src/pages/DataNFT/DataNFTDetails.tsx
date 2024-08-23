@@ -60,6 +60,7 @@ import {
   printPrice,
   tokenDecimals,
   transformDescription,
+  isNFMeIDVaultClassDataNFT,
 } from "libs/utils";
 import { useMarketStore } from "store";
 import { Favourite } from "../../components/Favourite/Favourite";
@@ -119,7 +120,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const maxBuyPerAddress = offer ? offer.maxQuantityPerAddress : 0;
   const boughtByAddressAlreadyForThisOffer =
     useMarketStore((state) => state.addressBoughtOffers).find((boughtOffer) => boughtOffer.offerId === (offer ? offer.index : -1))?.quantity ?? 0;
-
   const maxBuyForOfferForAddress = computeMaxBuyForOfferForAddress(offer, maxBuyPerTransaction, maxBuyPerAddress, boughtByAddressAlreadyForThisOffer);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -348,6 +348,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   };
 
   const parsedCreationTime = moment(nftData.creationTime);
+  const isNFMeIDVaultDataNFT = isNFMeIDVaultClassDataNFT(nftData.tokenName);
 
   return (
     <Box mx={tokenIdParam ? { base: "5 !important", xl: "28 !important" } : 0}>
@@ -506,7 +507,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             hidden={!isMxLoggedIn || pathname === walletDrawer || !offer || address === offer.owner}
                             onClick={onProcureModalOpen}>
                             <Text px={tokenId ? 0 : 3} fontSize={{ base: "xs", md: "sm", xl: "md" }}>
-                              {isCreatorListing() ? "Mint Data NFT" : "Buy Data NFT"}
+                              {isCreatorListing() && !isNFMeIDVaultDataNFT ? "Mint Data NFT" : "Buy Data NFT"}
                             </Text>
                           </Button>
                         </Tooltip>

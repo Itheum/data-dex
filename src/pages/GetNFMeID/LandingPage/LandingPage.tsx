@@ -22,6 +22,9 @@ export const LandingPage = ({ onShowConnectWalletModal }: { onShowConnectWalletM
             Liveliness Reputation Staking
           </Text>{" "}
         </Heading>
+        <Heading as="h2" size={{ base: "lg", md: "lg" }} fontFamily="Clash-Regular" mt="2" opacity="0.6">
+          Farm Your Reputation For Rewards
+        </Heading>
 
         <Flex flexDirection={{ base: "column", md: "row" }} justifyContent="center" alignItems={{ base: "center", md: "normal" }} mt="10">
           <Box border="1px solid" borderColor="teal.400" borderRadius="lg" p="5" mx={{ base: "0", md: "5" }} my={{ base: "5", md: "0" }} width="320px">

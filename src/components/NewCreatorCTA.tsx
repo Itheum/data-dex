@@ -18,7 +18,7 @@ const NewCreatorCTA = () => {
           </Text>
         </Heading>
 
-        <Text fontSize="xl" fontWeight="400" lineHeight="25px" my={4}>
+        <Text fontSize="xl" fontWeight="400" lineHeight="25px" my={4} width={{ base: "90%", md: "100%" }} m={{ base: "auto", md: "initial" }}>
           Ready to begin your Data NFT journey but not sure where to start? Fear not! We have a dedicated Discord channel for new creators. {`We'll`} walk you
           through the process with detailed guides, tips, tricks and support. What are you waiting for? {`Let's`} do this!
         </Text>

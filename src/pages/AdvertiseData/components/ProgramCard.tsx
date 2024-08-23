@@ -28,6 +28,7 @@ const ProgramCard: React.FC<ProgramCardProps> = (props) => {
             {item.additionalInformation?.programName}
           </Box>
         </Box>
+
         <Button
           mt="3"
           colorScheme="teal"

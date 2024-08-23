@@ -11,10 +11,10 @@ const NFMeIdCTA = () => {
   return (
     <Flex mt={{ base: "10", md: "0" }} flexDirection={["column", null, "row"]} alignItems="center" justifyContent="center">
       <Box width={["100%", null, null, "300px", "550px"]} textAlign={["center", null, null, "left", "left"]}>
-        <Heading as="h1" size="xl" fontFamily="Clash-Medium">
+        <Heading as="h1" size="xl" fontFamily="Clash-Medium" width={{ base: "80%", md: "90%" }} m={{ base: "auto", md: "initial" }}>
           Mint your{" "}
           <Text as="span" color="teal.200">
-            NFMe ID Vault{" "}
+            NFMe ID{" "}
           </Text>{" "}
           , stake your{" "}
           <Text as="span" color="teal.200">
