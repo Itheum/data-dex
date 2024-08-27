@@ -5,7 +5,7 @@ import dataNFTImg from "assets/img/whitelist/getWhitelist.png";
 
 const NewCreatorCTA = () => {
   return (
-    <Flex flexDirection={["column", null, "row"]} alignItems="center" justifyContent="center">
+    <Flex flexDirection={{ base: "column-reverse", md: "row" }} alignItems="center" justifyContent="center">
       <Box>
         <Image className="bounce-hero-img" margin="auto" boxSize="auto" w={{ base: "90%", md: "60%" }} src={dataNFTImg} alt="Data NFTs Illustration" />
       </Box>
@@ -18,7 +18,7 @@ const NewCreatorCTA = () => {
           </Text>
         </Heading>
 
-        <Text fontSize="xl" fontWeight="400" lineHeight="25px" my={4}>
+        <Text fontSize="xl" fontWeight="400" lineHeight="25px" my={4} width={{ base: "90%", md: "100%" }} m={{ base: "auto", md: "initial" }}>
           Ready to begin your Data NFT journey but not sure where to start? Fear not! We have a dedicated Discord channel for new creators. {`We'll`} walk you
           through the process with detailed guides, tips, tricks and support. What are you waiting for? {`Let's`} do this!
         </Text>

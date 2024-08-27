@@ -11,17 +11,18 @@ import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks
 import { Link as ReactRouterLink } from "react-router-dom";
 import { EXPLORER_APP_FOR_TOKEN } from "../../libs/config";
 
-type DatastreamModalPropType = {
+type DataStreamModalPropType = {
   isOpen: boolean;
   onClose: () => void;
   unlockAccessProgress: { s1: number; s2: number; s3: number };
   errorMessage: string;
 };
 
-export default function AccessDataStreamModal(props: DatastreamModalPropType) {
+export default function AccessDataStreamModal(props: DataStreamModalPropType) {
   const { isOpen, onClose, unlockAccessProgress, errorMessage } = props;
   const { chainID } = useGetNetworkConfig();
   const { tokenLogin } = useGetLoginInfo();
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false}>
       <ModalOverlay backdropFilter="blur(10px)" />
@@ -73,6 +74,7 @@ export default function AccessDataStreamModal(props: DatastreamModalPropType) {
                 </Stack>
               </Alert>
             )}
+
             {unlockAccessProgress.s1 && unlockAccessProgress.s2 && unlockAccessProgress.s3 && (
               <Button colorScheme="teal" variant="outline" onClick={onClose}>
                 Close & Return

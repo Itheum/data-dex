@@ -20,7 +20,7 @@ interface NftMediaComponentProps {
   openNftDetailsDrawer?: () => void;
 }
 
-//Spring animation parameters
+// Spring animation parameters
 const spring = {
   type: "spring",
   stiffness: 300,
@@ -161,6 +161,7 @@ const NftMediaComponent: React.FC<NftMediaComponentProps> = (props) => {
               </div>
             </Card3DAnimation>
           </Flex>
+
           {shouldDisplayArrows && media.length > 1 && (
             <Flex justifyContent="center" my={2}>
               <IconButton

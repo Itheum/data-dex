@@ -62,7 +62,7 @@ const ProfileCard = ({
     <Skeleton fitContent={true} isLoaded={hasLoaded} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box w="275px" h="30rem" mx="3 !important" borderWidth="0.5px" borderRadius="xl" borderColor="#00C79740" position="relative" mb="1rem">
         <Flex justifyContent="center">
-          <NftMediaComponent imageUrls={[imageUrl]} imageHeight={"236px"} imageWidth={"236px"} onLoad={() => setHasLoaded(true)} />
+          <NftMediaComponent imageUrls={[imageUrl]} imageHeight={"236px"} imageWidth={"236px"} onLoad={() => setHasLoaded(true)} borderRadius="md" />
           <motion.button
             style={{
               position: "absolute",

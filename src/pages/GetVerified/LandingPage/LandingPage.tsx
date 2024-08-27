@@ -79,7 +79,7 @@ export const LandingPage: React.FC = () => {
         </Flex>
         <Box position="absolute" bottom={2} right={4} display={{ base: "none", md: "flex", xl: "flex" }}>
           <Flex direction="column" justifyContent="end" alignItems="end" gap={5} pb={16} pr={4}>
-            <a href="https://twitter.com/itheum" target="_blank" rel="noreferrer">
+            <a href="https://x.com/itheum" target="_blank" rel="noreferrer">
               <Box rounded="full" border="2px solid" w={16} h={16} alignContent={"center"} backgroundColor={colorMode === "light" ? "bgWhite" : "bgDark"}>
                 <Image as={FaTwitter} m="auto" fontSize="3xl" h="full" />
               </Box>

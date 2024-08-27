@@ -42,7 +42,6 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   const [dataNFTMarshalServiceStatus, setDataNFTMarshalServiceStatus] = useState<boolean>(false);
   const [, setDataNFTMarshalService] = useState<string>("");
   const [dataNFTImgGenServiceValid, setDataNFTImgGenService] = useState(false);
-
   const navigate = useNavigate();
   const userData = useMintStore((state) => state.userData);
   const lockPeriod = useMintStore((state) => state.lockPeriodForBond);
@@ -67,15 +66,22 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
     setIsOpen(false);
   };
 
-  function makeRequest(url: string): Promise<{ statusCode: number; isError: boolean }> {
+  function makeRequest(url: string, sendBackResponse?: boolean): Promise<{ statusCode: number; isError: boolean; callResponse?: string }> {
     return new Promise(function (resolve) {
       const xhr = new XMLHttpRequest();
       xhr.open("GET", url);
       xhr.onload = function () {
-        resolve({
+        const returnRes = {
           statusCode: this.status,
           isError: false,
-        });
+          callResponse: "",
+        };
+
+        if (sendBackResponse) {
+          returnRes.callResponse = xhr.responseText;
+        }
+
+        resolve(returnRes);
       };
       xhr.onerror = function () {
         resolve({
@@ -100,13 +106,17 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
     return url;
   }
 
-  const checkUrlReturns200 = async (url: string) => {
+  const checkUrlReturns200 = async (url: string, sendBackResponse?: boolean) => {
     if (url.includes("dmf-dnslink=1") && url.includes("dmf-http=1")) {
       return { isSuccess: true, message: "" };
     }
 
+    if (url.includes("dmf-allow-http403=1")) {
+      return { isSuccess: true, message: "" };
+    }
+
     const urlToTest = convertToHttpUrl(url);
-    const { statusCode, isError } = await makeRequest(urlToTest);
+    const { statusCode, isError, callResponse } = await makeRequest(urlToTest, sendBackResponse);
 
     if (isError) {
       return {
@@ -117,7 +127,11 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
 
     switch (statusCode) {
       case 200:
-        return { isSuccess: true, message: "" };
+        if (sendBackResponse) {
+          return { isSuccess: true, message: "", callResponse };
+        } else {
+          return { isSuccess: true, message: "" };
+        }
       case 404:
         return { isSuccess: false, message: "Data Stream URL is not reachable (Status Code 404 received)" };
       case 403:
@@ -169,7 +183,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
               }}
             />
             <Heading as="h4" fontFamily="Clash-Medium" size="lg">
-              Mint Your Data NFT-FT
+              {dataToPrefill?.isNFMeID ? "Mint Your NFMe ID Vault" : "Mint Your Data NFT Collection"}
             </Heading>
           </HStack>
         </ModalHeader>
@@ -268,7 +282,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
             rounded="lg"
             mt={7}
             onClick={() => {
-              navigate("/getverified");
+              navigate("/getVerified");
             }}>
             Find out how you can get whitelisted
           </Button>

@@ -29,8 +29,7 @@ import { getApi } from "libs/MultiversX/api";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
 import { gtagGo, clearAppSessionsLaunchMode, sleep } from "libs/utils";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
+function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMode: any; redirectToRoute: null | string }) {
   const { address: mxAddress } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
@@ -38,6 +37,7 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { colorMode } = useColorMode();
+  const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
 
   useEffect(() => {
     async function cleanOutRemoteXPortalAppWalletDisconnect() {
@@ -79,18 +79,17 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
     setWalletUsedSession(wallet);
   };
 
-  const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
-
   const nativeAuthProps: NativeAuthConfigType = {
     apiAddress: `https://${getApi(chainID)}`,
     // origin: "https://test.datadex.itheum.io",
     expirySeconds: 3600,
   };
+
   const commonProps = {
     nativeAuth: {
       ...nativeAuthProps,
     },
-    callbackRoute: pathname,
+    callbackRoute: redirectToRoute || pathname,
   };
 
   return (

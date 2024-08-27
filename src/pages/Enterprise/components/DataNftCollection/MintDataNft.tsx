@@ -23,7 +23,7 @@ import BigNumber from "bignumber.js";
 import { Controller, useForm } from "react-hook-form";
 import { MdInfo } from "react-icons/md";
 import * as Yup from "yup";
-import { ImageTooltip } from "../../../../components/ImageTooltip";
+import { ImageTooltip } from "../../../../components/UtilComps/ImageTooltip";
 import { isValidNumericCharacter } from "../../../../libs/utils";
 
 type MintDataNftFormType = {

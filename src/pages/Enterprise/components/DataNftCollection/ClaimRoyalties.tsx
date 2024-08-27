@@ -9,7 +9,7 @@ import { MdInfo } from "react-icons/md";
 import { useParams } from "react-router-dom";
 import { IS_DEVNET } from "libs/config";
 import { tokenContractAddress_Mx_Devnet, tokenContractAddress_Mx_Mainnet } from "libs/contractAddresses";
-import { ImageTooltip } from "../../../../components/ImageTooltip";
+import { ImageTooltip } from "../../../../components/UtilComps/ImageTooltip";
 import { getApi } from "../../../../libs/MultiversX/api";
 import { ClaimsContract } from "../../../../libs/MultiversX/claims";
 

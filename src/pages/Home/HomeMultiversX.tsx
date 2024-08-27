@@ -24,11 +24,12 @@ import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/a
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
-import myNFMe from "assets/img/my-nfme.png";
+import myNFMe from "assets/img/nfme/nfme-data-nft-token.png";
 import illustration from "assets/img/whitelist/getWhitelist.png";
 import ClaimModalMx from "components/ClaimModal/ClaimModalMultiversX";
 import Faucet from "components/Faucet/Faucet";
 import NewCreatorCTA from "components/NewCreatorCTA";
+import NFMeIdCTA from "components/NFMeIdCTA";
 import ExplainerArticles from "components/Sections/ExplainerArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
@@ -38,6 +39,7 @@ import { formatNumberToShort } from "libs/utils";
 import AppMarketplace from "pages/Home/components/AppMarketplace";
 import { TrendingData } from "./components/TrendingData";
 import VolumesDataNfts from "./components/VolumesDataNfts";
+import NftMediaComponent from "../../components/NftMediaComponent";
 
 export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
   const { colorMode } = useColorMode();
@@ -206,176 +208,201 @@ export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
 
   return (
     <>
-      <Stack mx={{ base: 5, lg: 24 }}>
-        <Box m={heroGridMargin} pt="20" pb="10" w={"100%"}>
-          <SimpleGrid columns={{ base: 1, md: 2, xl: 3, "2xl": 4 }} spacing={10}>
-            <Box w={[tileBoxW, "initial"]} border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
-              <Stack p="5" h={"439px"} borderRadius="lg" alignItems={{ base: "center", xl: "start" }}>
-                <Box
-                  className="bounce-hero-img"
-                  h="100%"
-                  w="100%"
-                  bgPosition="50% 30%"
-                  bgImage={illustration}
-                  bgSize="230px"
-                  backgroundRepeat="no-repeat"></Box>
-                <Spacer />
+      <Stack>
+        <Box mx={{ base: 5, lg: 24 }}>
+          <Box m={heroGridMargin} pt="20" pb="10" w={"100%"}>
+            <SimpleGrid columns={{ base: 1, md: 2, xl: 3, "2xl": 4 }} spacing={10}>
+              <Box w={[tileBoxW, "initial"]} border="1px solid transparent" borderColor="#00C79740" borderRadius="16px" m={{ base: "auto", md: "initial" }}>
+                <Stack p="5" h={"439px"} borderRadius="lg" alignItems={{ base: "center", xl: "start" }}>
+                  <Box
+                    className="bounce-hero-img"
+                    h="100%"
+                    w="100%"
+                    bgPosition="50% 30%"
+                    bgImage={illustration}
+                    bgSize="230px"
+                    backgroundRepeat="no-repeat"></Box>
+                  <Spacer />
 
-                <Flex w="full" justifyContent="center">
-                  <Button
-                    mt="3"
-                    size="lg"
-                    colorScheme="teal"
-                    variant="outline"
-                    borderRadius="xl"
-                    onClick={() => {
-                      navigate("/mintdata");
-                    }}>
-                    <Text color={colorMode === "dark" ? "white" : "black"}>Mint Your Data as a Data NFT</Text>
-                  </Button>
-                </Flex>
-              </Stack>
-            </Box>
+                  <Flex w="full" justifyContent="center">
+                    <Button
+                      mt="3"
+                      size="lg"
+                      colorScheme="teal"
+                      variant="outline"
+                      borderRadius="xl"
+                      onClick={() => {
+                        navigate("/mintdata");
+                      }}>
+                      <Text color={colorMode === "dark" ? "white" : "black"}>Mint Your Data as a Data NFT</Text>
+                    </Button>
+                  </Flex>
+                </Stack>
+              </Box>
 
-            <ChainSupportedComponent feature={MENU.FAUCET}>
-              <Faucet tileBoxW={tileBoxW} tileBoxH={tileBoxH}></Faucet>
-            </ChainSupportedComponent>
+              <Box m={{ base: "auto", md: "initial" }}>
+                <ChainSupportedComponent feature={MENU.FAUCET}>
+                  <Faucet tileBoxW={tileBoxW} tileBoxH={tileBoxH}></Faucet>
+                </ChainSupportedComponent>
+              </Box>
 
-            <Box w={[tileBoxW, "initial"]} border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
-              <Stack p="5" h={"430px"} bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg" alignItems={{ base: "center", xl: "start" }}>
-                <Heading size="md" fontFamily="Clash-Medium" pb={2}>
-                  NFMe ID Avatar
-                </Heading>
-                <Spacer />
-
-                <Flex w="full" justifyContent="center">
-                  <Badge borderRadius="full" px="2" bgColor="teal.200">
-                    <Text fontSize="md" fontWeight="600" color={colorMode === "light" ? "bgWhite" : "black"}>
-                      Coming Soon
-                    </Text>
-                  </Badge>
-                </Flex>
-              </Stack>
-            </Box>
-
-            <ChainSupportedComponent feature={MENU.CLAIMS}>
-              <Box w={[tileBoxW, "initial"]} border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
-                <Stack p="5" h={"430px"} minW={claimsStackMinW}>
-                  <Heading size="md" fontFamily="Clash-Medium" pb={2} textAlign={{ base: "center", xl: "start" }}>
-                    My Claims
+              <Box w={[tileBoxW, "initial"]} border="1px solid transparent" borderColor="#00C79740" borderRadius="16px" m={{ base: "auto", md: "initial" }}>
+                <Stack p="5" h={"430px"} alignItems={{ base: "center", xl: "start" }}>
+                  <Heading size="md" fontFamily="Clash-Medium" pb={2}>
+                    NFMe ID Vault
                   </Heading>
+                  <Spacer />
+                  <NftMediaComponent imageUrls={[myNFMe]} imageHeight="200px" imageWidth="200px" borderRadius="md" shouldDisplayArrows={false} />
+                  <Spacer />
 
-                  <Flex flexDirection="column" gap={7}>
-                    <HStack justifyContent={"space-between"}>
-                      <Text color="#929497">Rewards</Text>
-                      <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
-                        <Button isDisabled={shouldClaimButtonBeDisabled(0)} colorScheme="teal" variant="outline" w="6.1rem" onClick={onRewardsOpen}>
-                          {claimsBalances.claimBalanceValues[0] !== "-1" && claimsBalances.claimBalanceValues[0] !== "-2" ? (
-                            <Text color={colorMode === "dark" ? "white" : "black"} textOverflow="ellipsis">
-                              {formatNumberToShort(Number(claimsBalances.claimBalanceValues[0]))}
-                            </Text>
-                          ) : claimsBalances.claimBalanceValues[0] !== "-2" ? (
-                            <Spinner size="xs" />
-                          ) : (
-                            <WarningTwoIcon />
-                          )}
-                        </Button>
-                      </Tooltip>
+                  <Flex w="full" justifyContent="center">
+                    <Button
+                      mt="3"
+                      size="lg"
+                      colorScheme="teal"
+                      borderRadius="xl"
+                      onClick={() => {
+                        navigate("/mintdata?launchTemplate=nfmeidvault");
+                      }}>
+                      <Text>Mint Your NFMe ID Vault</Text>
+                    </Button>
+                  </Flex>
+                </Stack>
+              </Box>
 
-                      <ClaimModalMx {...rewardsModalData} />
-                    </HStack>
+              <Box m={{ base: "auto", md: "initial" }}>
+                <ChainSupportedComponent feature={MENU.CLAIMS}>
+                  <Box w={[tileBoxW, "initial"]} border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
+                    <Stack p="5" h={"430px"} minW={claimsStackMinW}>
+                      <Heading size="md" fontFamily="Clash-Medium" pb={2} textAlign={{ base: "center", xl: "start" }}>
+                        My Claims
+                      </Heading>
 
-                    <Spacer />
-                    <HStack justifyContent={"space-between"}>
-                      <Text color="#929497">Airdrops</Text>
-                      <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
-                        <Button isDisabled={shouldClaimButtonBeDisabled(1)} colorScheme="teal" variant="outline" w="6.1rem" onClick={onAirdropsOpen}>
-                          {claimsBalances.claimBalanceValues[1] !== "-1" && claimsBalances.claimBalanceValues[1] !== "-2" ? (
-                            <Text color={colorMode === "dark" ? "white" : "black"} textOverflow="ellipsis">
-                              {formatNumberToShort(Number(claimsBalances.claimBalanceValues[1]))}
-                            </Text>
-                          ) : claimsBalances.claimBalanceValues[1] !== "-2" ? (
-                            <Spinner size="xs" />
-                          ) : (
-                            <WarningTwoIcon />
-                          )}
-                        </Button>
-                      </Tooltip>
-
-                      <ClaimModalMx {...airdropsModalData} />
-                    </HStack>
-                    <Spacer />
-
-                    <HStack justifyContent={"space-between"}>
-                      <Text color="#929497">Royalties</Text>
-                      <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
-                        <Button isDisabled={shouldClaimButtonBeDisabled(3)} colorScheme="teal" variant="outline" w="6.1rem" onClick={onRoyaltiesOpen}>
-                          {claimsBalances.claimBalanceValues[3] !== "-1" && claimsBalances.claimBalanceValues[3] !== "-2" ? (
-                            <Text color={colorMode === "dark" ? "white" : "black"} textOverflow="ellipsis">
-                              {formatNumberToShort(Number(claimsBalances.claimBalanceValues[3]))}
-                            </Text>
-                          ) : claimsBalances.claimBalanceValues[3] !== "-2" ? (
-                            <Spinner size="xs" />
-                          ) : (
-                            <WarningTwoIcon />
-                          )}
-                        </Button>
-                      </Tooltip>
-
-                      <ClaimModalMx {...royaltiesModalData} />
-                    </HStack>
-                    <Spacer />
-
-                    {(Number(claimsBalances.claimBalanceValues[2]) > 0 && (
-                      <Box h="40px">
+                      <Flex flexDirection="column" gap={7}>
                         <HStack justifyContent={"space-between"}>
-                          <Text color="#929497">Allocations</Text>
+                          <Text color="#929497">Rewards</Text>
                           <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
-                            <Button isDisabled={shouldClaimButtonBeDisabled(2)} colorScheme="teal" variant="outline" w="6.1rem" onClick={onAllocationsOpen}>
-                              {claimsBalances.claimBalanceValues[2] !== "-1" && claimsBalances.claimBalanceValues[2] !== "-2" ? (
+                            <Button isDisabled={shouldClaimButtonBeDisabled(0)} colorScheme="teal" variant="outline" w="6.1rem" onClick={onRewardsOpen}>
+                              {claimsBalances.claimBalanceValues[0] !== "-1" && claimsBalances.claimBalanceValues[0] !== "-2" ? (
                                 <Text color={colorMode === "dark" ? "white" : "black"} textOverflow="ellipsis">
-                                  {formatNumberToShort(Number(claimsBalances.claimBalanceValues[2]))}
+                                  {formatNumberToShort(Number(claimsBalances.claimBalanceValues[0]))}
                                 </Text>
-                              ) : claimsBalances.claimBalanceValues[2] !== "-2" ? (
+                              ) : claimsBalances.claimBalanceValues[0] !== "-2" ? (
                                 <Spinner size="xs" />
                               ) : (
                                 <WarningTwoIcon />
                               )}
                             </Button>
                           </Tooltip>
-                          <ClaimModalMx {...allocationsModalData} />
-                        </HStack>
-                      </Box>
-                    )) || <Box h="40px" />}
 
-                    <Spacer />
-                  </Flex>
-                </Stack>
+                          <ClaimModalMx {...rewardsModalData} />
+                        </HStack>
+
+                        <Spacer />
+                        <HStack justifyContent={"space-between"}>
+                          <Text color="#929497">Airdrops</Text>
+                          <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
+                            <Button isDisabled={shouldClaimButtonBeDisabled(1)} colorScheme="teal" variant="outline" w="6.1rem" onClick={onAirdropsOpen}>
+                              {claimsBalances.claimBalanceValues[1] !== "-1" && claimsBalances.claimBalanceValues[1] !== "-2" ? (
+                                <Text color={colorMode === "dark" ? "white" : "black"} textOverflow="ellipsis">
+                                  {formatNumberToShort(Number(claimsBalances.claimBalanceValues[1]))}
+                                </Text>
+                              ) : claimsBalances.claimBalanceValues[1] !== "-2" ? (
+                                <Spinner size="xs" />
+                              ) : (
+                                <WarningTwoIcon />
+                              )}
+                            </Button>
+                          </Tooltip>
+
+                          <ClaimModalMx {...airdropsModalData} />
+                        </HStack>
+                        <Spacer />
+
+                        <HStack justifyContent={"space-between"}>
+                          <Text color="#929497">Royalties</Text>
+                          <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
+                            <Button isDisabled={shouldClaimButtonBeDisabled(3)} colorScheme="teal" variant="outline" w="6.1rem" onClick={onRoyaltiesOpen}>
+                              {claimsBalances.claimBalanceValues[3] !== "-1" && claimsBalances.claimBalanceValues[3] !== "-2" ? (
+                                <Text color={colorMode === "dark" ? "white" : "black"} textOverflow="ellipsis">
+                                  {formatNumberToShort(Number(claimsBalances.claimBalanceValues[3]))}
+                                </Text>
+                              ) : claimsBalances.claimBalanceValues[3] !== "-2" ? (
+                                <Spinner size="xs" />
+                              ) : (
+                                <WarningTwoIcon />
+                              )}
+                            </Button>
+                          </Tooltip>
+
+                          <ClaimModalMx {...royaltiesModalData} />
+                        </HStack>
+                        <Spacer />
+
+                        {(Number(claimsBalances.claimBalanceValues[2]) > 0 && (
+                          <Box h="40px">
+                            <HStack justifyContent={"space-between"}>
+                              <Text color="#929497">Allocations</Text>
+                              <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
+                                <Button isDisabled={shouldClaimButtonBeDisabled(2)} colorScheme="teal" variant="outline" w="6.1rem" onClick={onAllocationsOpen}>
+                                  {claimsBalances.claimBalanceValues[2] !== "-1" && claimsBalances.claimBalanceValues[2] !== "-2" ? (
+                                    <Text color={colorMode === "dark" ? "white" : "black"} textOverflow="ellipsis">
+                                      {formatNumberToShort(Number(claimsBalances.claimBalanceValues[2]))}
+                                    </Text>
+                                  ) : claimsBalances.claimBalanceValues[2] !== "-2" ? (
+                                    <Spinner size="xs" />
+                                  ) : (
+                                    <WarningTwoIcon />
+                                  )}
+                                </Button>
+                              </Tooltip>
+                              <ClaimModalMx {...allocationsModalData} />
+                            </HStack>
+                          </Box>
+                        )) || <Box h="40px" />}
+
+                        <Spacer />
+                      </Flex>
+                    </Stack>
+                  </Box>
+                </ChainSupportedComponent>
               </Box>
-            </ChainSupportedComponent>
-          </SimpleGrid>
+            </SimpleGrid>
+          </Box>
         </Box>
-        <Box m="auto" pt="10" pb="10" w={"100%"} bgGradient={colorMode === "light" ? "bgWhite" : "linear(to-b, bgDark, #6B46C160, #00C79730)"}>
+
+        <Box m="auto" pt="10" pb="10" w={"100%"} bgGradient={colorMode === "light" ? "bgWhite" : "linear(to-b, bgDark, #00C79730, bgDark)"}>
+          <NFMeIdCTA />
+        </Box>
+
+        <Box m="auto" pt="10" pb="10" w={"100%"} bgGradient={colorMode === "light" ? "bgWhite" : "linear(to-b, bgDark, #6B46C160, bgDark)"}>
           <NewCreatorCTA />
         </Box>
-        <Box m="auto" pt="10" pb="10" w={"100%"}>
-          <VolumesDataNfts />
-        </Box>
-        <Box m="auto" pt="10" pb="10" w={"100%"}>
-          <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" />
-        </Box>
-        <Box m="auto" pt="10" pb="10" w={"100%"}>
-          <TrendingData />
-        </Box>
-        <Box m="auto" pt="10" pb="10" w={"100%"}>
-          <Heading size="lg" fontFamily="Clash-Medium" fontWeight="semibold">
-            Get Started
-          </Heading>
 
-          <ExplainerArticles reduceGap={true} />
-        </Box>
-        <Box m="auto" pt="10" pb="6rem" w={"100%"}>
-          <AppMarketplace setMenuItem={setMenuItem} />
+        <Box mx={{ base: 5, lg: 24 }}>
+          <Box m="auto" pt="10" pb="10" w={"100%"}>
+            <VolumesDataNfts />
+          </Box>
+
+          <Box m="auto" pt="10" pb="10" w={"100%"}>
+            <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" />
+          </Box>
+
+          <Box m="auto" pt="10" pb="10" w={"100%"}>
+            <TrendingData />
+          </Box>
+
+          <Box m="auto" pt="10" pb="10" w={"100%"}>
+            <Heading size="lg" fontFamily="Clash-Medium" fontWeight="semibold">
+              Get Started
+            </Heading>
+
+            <ExplainerArticles reduceGap={true} />
+          </Box>
+
+          <Box m="auto" pt="10" pb="6rem" w={"100%"}>
+            <AppMarketplace setMenuItem={setMenuItem} />
+          </Box>
         </Box>
       </Stack>
     </>

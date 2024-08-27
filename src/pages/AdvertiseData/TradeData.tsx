@@ -1,17 +1,55 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Button, Heading, Image, Stack, Text, useColorMode, Wrap } from "@chakra-ui/react";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetNetworkConfig, useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import NewCreatorCTA from "components/NewCreatorCTA";
+import { dataCATDemoUserData, nfMeIDVaultConfig } from "libs/config";
+import { sleep } from "libs/utils";
+import { qsParams } from "libs/utils/util";
+import { useMintStore } from "store";
 import ProgramCard from "./components/ProgramCard";
 import { TradeFormModal } from "./components/TradeFormModal";
-import { dataCATDemoUserData } from "../../libs/config";
 
 export const TradeData: React.FC = () => {
-  const [dataCATAcccount] = useState<Record<any, any>>(dataCATDemoUserData);
-  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
-  const [prefilledData, setPrefilledData] = useState(null);
-  const { colorMode } = useColorMode();
+  const { address: mxAddress } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
+  const [dataCATAccount] = useState<Record<any, any>>(dataCATDemoUserData);
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const [prefilledData, setPrefilledData] = useState<any>(null);
+  const { colorMode } = useColorMode();
+  const lockPeriod = useMintStore((state) => state.lockPeriodForBond);
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, []);
+
+  useEffect(() => {
+    async function launchAutoTemplate() {
+      if (!chainID || !mxAddress) {
+        return;
+      }
+
+      // lockPeriod is a dependency in TradeForm, so we need to make sure it loads before open the form
+      if (!lockPeriod || lockPeriod?.length === 0) {
+        return;
+      }
+
+      const queryParams = qsParams();
+      const launchTemplate = queryParams?.launchTemplate;
+
+      if (launchTemplate) {
+        if (launchTemplate === "nfmeidvault") {
+          await sleep(1);
+          setIsDrawerOpen(true);
+          setPrefilledData(nfMeIDVaultConfig);
+        }
+      }
+    }
+
+    launchAutoTemplate();
+  }, [chainID, mxAddress, lockPeriod]);
 
   return (
     <Stack mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
@@ -21,7 +59,7 @@ export const TradeData: React.FC = () => {
       <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light">
         Mint your Data Streams or Data Assets as Data NFTs and list and trade them in the peer-to-peer Data NFT Marketplace.
       </Heading>
-      <Wrap shouldWrapChildren={true} spacing={5} display={"flex"} justifyContent={{ base: "center", md: "start" }} overflow={"unset"}>
+      <Wrap shouldWrapChildren={true} spacing={5} display={"flex"} flexDir={"row"} justifyContent={{ base: "center", md: "start" }} overflow={"unset"}>
         <Box maxW="xs" overflow="hidden" mt={5} border=".01rem solid transparent" borderColor="#00C79740" borderRadius="0.75rem">
           <Image src="https://itheum-static.s3.ap-southeast-2.amazonaws.com/data-stream.png" alt="" rounded="lg" />
 
@@ -44,26 +82,36 @@ export const TradeData: React.FC = () => {
             </Button>
           </Box>
         </Box>
+        <ProgramCard
+          key={nfMeIDVaultConfig.program}
+          item={nfMeIDVaultConfig}
+          setIsDrawerOpen={setIsDrawerOpen}
+          setPrefilledData={setPrefilledData}
+          isDrawerOpen={isDrawerOpen}
+          isNew={true}
+        />
       </Wrap>
-      <Box marginTop={10} bgGradient={colorMode === "light" ? "bgWhite" : "linear(to-b, bgDark, #6B46C160, #00C79730)"}>
+      <Box marginTop={10} bgGradient={colorMode === "light" ? "bgWhite" : "linear(to-b, bgDark, #6B46C160, bgDark)"}>
         <NewCreatorCTA />
       </Box>
-      {dataCATAcccount?.programsAllocation?.filter((program: any) => program.chainID === chainID).length > 0 && (
+      {dataCATAccount?.programsAllocation?.filter((program: any) => program.chainID === chainID).length > 0 && (
         <>
           <Heading size="lg" fontFamily="Clash-Medium" marginTop="6rem !important">
             Supported Data CAT Programs
           </Heading>
           <Wrap shouldWrapChildren={true} spacingX={5} mt="25px !important" marginBottom="8 !important">
-            {dataCATAcccount?.programsAllocation.map((item: any) => (
-              <ProgramCard
-                key={item.program}
-                item={item}
-                setIsDrawerOpen={setIsDrawerOpen}
-                setPrefilledData={setPrefilledData}
-                isDrawerOpen={isDrawerOpen}
-                isNew={true}
-              />
-            ))}
+            {dataCATAccount?.programsAllocation
+              .slice(0, 1)
+              .map((item: any) => (
+                <ProgramCard
+                  key={item.program}
+                  item={item}
+                  setIsDrawerOpen={setIsDrawerOpen}
+                  setPrefilledData={setPrefilledData}
+                  isDrawerOpen={isDrawerOpen}
+                  isNew={true}
+                />
+              ))}
           </Wrap>
         </>
       )}

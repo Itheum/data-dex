@@ -58,6 +58,7 @@ import { useMarketStore, useMintStore } from "store";
 import AccessDataStreamModal from "./AccessDatastreamModal";
 import BurnDataNFTModal from "./BurnDataNFTModal";
 import ListDataNFTModal from "../ListDataNFTModal";
+import { isNFMeIDVaultClassDataNFT } from "libs/utils";
 
 export default function WalletDataNFTMX(item: any) {
   const { chainID, network } = useGetNetworkConfig();
@@ -71,13 +72,8 @@ export default function WalletDataNFTMX(item: any) {
   const userData = useMintStore((state) => state.userData);
   const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
-
   const { isOpen: isAccessProgressModalOpen, onOpen: onAccessProgressModalOpen, onClose: onAccessProgressModalClose } = useDisclosure();
-  const [unlockAccessProgress, setUnlockAccessProgress] = useState({
-    s1: 0,
-    s2: 0,
-    s3: 0,
-  });
+  const [unlockAccessProgress, setUnlockAccessProgress] = useState({ s1: 0, s2: 0, s3: 0 });
   const [errUnlockAccessGeneric, setErrUnlockAccessGeneric] = useState<string>("");
   const marketContract = new DataNftMarketContract(chainID);
   const [selectedDataNft, setSelectedDataNft] = useState<DataNft | undefined>();
@@ -87,7 +83,7 @@ export default function WalletDataNFTMX(item: any) {
   const [amountError, setAmountError] = useState("");
   const [price, setPrice] = useState(10);
   const [priceError, setPriceError] = useState("");
-  const [maxPerAddress, setMaxPerAddress] = useState(0);
+  const [maxPerAddress, setMaxPerAddress] = useState(1);
   const [maxPerAddressError, setMaxPerAddressError] = useState("");
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
   const [webWalletListTxHash, setWebWalletListTxHash] = useState("");
@@ -234,11 +230,12 @@ export default function WalletDataNFTMX(item: any) {
         s1: 1,
         s2: 1,
       }));
+
       await sleep(3);
 
       // auto download the file without ever exposing the url
       if (!(tokenLogin && tokenLogin.nativeAuthToken)) {
-        throw Error(labels.NATIVE_AUTH_TOKEN_MISSING);
+        throw Error(labels.ERR_NATIVE_AUTH_TOKEN_MISSING);
       }
 
       DataNft.setNetworkConfig(network.id);
@@ -325,6 +322,8 @@ export default function WalletDataNFTMX(item: any) {
 
   const parsedCreationTime = moment(item.creationTime);
 
+  const isNFMeIDVaultDataNFT = isNFMeIDVaultClassDataNFT(item.tokenName);
+
   return (
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
       <Box
@@ -345,6 +344,7 @@ export default function WalletDataNFTMX(item: any) {
           onLoad={() => item.setHasLoaded(true)}
           openNftDetailsDrawer={() => item.openNftDetailsDrawer(item.id)}
           marginTop="1.5rem"
+          borderRadius="md"
         />
 
         <Flex h="28rem" mx={6} my={5} direction="column" justify={item.isProfile === true ? "initial" : "space-between"}>
@@ -353,6 +353,7 @@ export default function WalletDataNFTMX(item: any) {
               {item.tokenName} <ExternalLinkIcon mx="2px" />
             </Link>
           </Text>
+
           <Popover trigger="hover" placement="auto">
             <PopoverTrigger>
               <div>
@@ -380,6 +381,7 @@ export default function WalletDataNFTMX(item: any) {
               </PopoverBody>
             </PopoverContent>
           </Popover>
+
           <Box mt={1}>
             {item.creator && (
               <Box color="#8c8f92d0" fontSize="md" display="flex" alignItems="center">
@@ -429,32 +431,37 @@ export default function WalletDataNFTMX(item: any) {
                 <ExploreAppButton collection={item.collection} nonce={item.nonce} />
               </HStack>
             </Stack>
+
             <Box color="#8c8f92d0" fontSize="md" fontWeight="normal" my={2}>
               {item.balance === 0 ? `Balance: 1` : `Balance: ${item.balance}`} <br />
               {`Total supply: ${item.supply}`} <br />
               {`Royalty: ${convertToLocalString(item.royalties * 100)}%`}
             </Box>
 
-            <HStack mt="2">
-              <Tooltip
-                colorScheme="teal"
-                hasArrow
-                label={viewDataDisabledMessage(loginMethod)}
-                isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
-                <Button
-                  size="sm"
+            {!isNFMeIDVaultDataNFT ? (
+              <HStack mt="2" height="37px">
+                <Tooltip
                   colorScheme="teal"
-                  w="full"
-                  isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
-                  onClick={() => {
-                    accessDataStream(item.collection, item.nonce);
-                  }}>
-                  View Data
-                </Button>
-              </Tooltip>
+                  hasArrow
+                  label={viewDataDisabledMessage(loginMethod)}
+                  isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
+                  <Button
+                    size="sm"
+                    colorScheme="teal"
+                    w="full"
+                    isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
+                    onClick={() => {
+                      accessDataStream(item.collection, item.nonce);
+                    }}>
+                    View Data
+                  </Button>
+                </Tooltip>
 
-              <PreviewDataButton previewDataURL={item.dataPreview} />
-            </HStack>
+                <PreviewDataButton previewDataURL={item.dataPreview} tokenName={item.tokenName} />
+              </HStack>
+            ) : (
+              <Box height="37px">&nbsp;</Box>
+            )}
 
             <Flex mt="6" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
               <Text fontSize="md" color="#929497">
@@ -534,6 +541,7 @@ export default function WalletDataNFTMX(item: any) {
                 </NumberInputStepper>
               </NumberInput>
             </Flex>
+
             <Box h={3}>
               {priceError && (
                 <Text color="red.400" fontSize="xs">
@@ -543,7 +551,7 @@ export default function WalletDataNFTMX(item: any) {
             </Box>
 
             <Flex mt="3" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
-              <Tooltip label="This is a limit that you can impose in order to avoid someone buying your whole supply. Setting it to 0 will disable it">
+              <Tooltip label="This is a limit that you can impose in order to avoid someone buying your whole supply. Note that setting it to 0 will remove the limit, enabling the buyer to buy the whole supply if they want to.">
                 <Text fontSize="md" color="#929497">
                   Max buy per address:
                 </Text>
@@ -553,7 +561,7 @@ export default function WalletDataNFTMX(item: any) {
                 borderRadius="4.65px !important"
                 maxW={20}
                 step={1}
-                defaultValue={0}
+                defaultValue={1}
                 min={0}
                 max={Number(maxListNumber)}
                 isValidCharacter={isValidNumericCharacter}
@@ -561,6 +569,7 @@ export default function WalletDataNFTMX(item: any) {
                 onChange={(value) => {
                   let error = "";
                   const valueAsNumber = Number(value);
+
                   if (valueAsNumber < 0) {
                     error = "Cannot be negative";
                   } else if (valueAsNumber > item.balance) {
@@ -579,6 +588,11 @@ export default function WalletDataNFTMX(item: any) {
                 </NumberInputStepper>
               </NumberInput>
             </Flex>
+
+            <Text fontSize="sm" textAlign="right" mt="1" opacity="0.5">
+              {maxPerAddress === 0 ? "No Limit" : `${maxPerAddress} per address`}
+            </Text>
+
             <Box h={3}>
               {maxPerAddressError && (
                 <Text color="red.400" fontSize="xs">

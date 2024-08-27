@@ -18,7 +18,6 @@ export default function TokenTxTable(props: TokenTableProps) {
   const [loadingData, setLoadingData] = useState<boolean>(true);
   const linkIconStyle = { display: "flex" };
   const isApiUp = useMarketStore((state) => state.isApiUp);
-
   const columns = useMemo<ColumnDef<TransactionInTable, any>[]>(
     () => [
       {
@@ -26,9 +25,9 @@ export default function TokenTxTable(props: TokenTableProps) {
         accessorFn: (row) => row.hash,
         cell: (cellProps) => (
           <HStack>
-            <ShortAddress address={cellProps.getValue()} fontSize="lg" />
+            <ShortAddress address={cellProps.getValue()} marginLeftSet="1" fontSize="md" />
             <Link href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/transactions/${cellProps.getValue()}`} isExternal style={linkIconStyle}>
-              <ExternalLinkIcon fontSize="lg" />
+              <ExternalLinkIcon fontSize="sm" />
             </Link>
           </HStack>
         ),
@@ -40,9 +39,9 @@ export default function TokenTxTable(props: TokenTableProps) {
         accessorFn: (row) => row.from,
         cell: (cellProps) => (
           <HStack>
-            <ShortAddress address={cellProps.getValue()} fontSize="lg" />
+            <ShortAddress address={cellProps.getValue()} marginLeftSet="1" fontSize="md" />
             <Link href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/accounts/${cellProps.getValue()}`} isExternal style={linkIconStyle}>
-              <ExternalLinkIcon />
+              <ExternalLinkIcon fontSize="sm" />
             </Link>
           </HStack>
         ),
@@ -54,9 +53,9 @@ export default function TokenTxTable(props: TokenTableProps) {
         accessorFn: (row) => row.to,
         cell: (cellProps) => (
           <HStack>
-            <ShortAddress address={cellProps.getValue()} fontSize="lg" />
+            <ShortAddress address={cellProps.getValue()} marginLeftSet="1" fontSize="md" />
             <Link href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/accounts/${cellProps.getValue()}`} isExternal style={linkIconStyle}>
-              <ExternalLinkIcon fontSize="lg" />
+              <ExternalLinkIcon fontSize="sm" />
             </Link>
           </HStack>
         ),
@@ -90,7 +89,6 @@ export default function TokenTxTable(props: TokenTableProps) {
     async function getInteractions() {
       const response = await axios.get(`https://${getApi(chainID)}/nfts/${props.tokenId}/transactions?size=50&status=success`);
       const interactions = response.data;
-
       const dataTemp: TransactionInTable[] = [];
 
       for (const interaction of interactions) {
@@ -103,16 +101,14 @@ export default function TokenTxTable(props: TokenTableProps) {
           value: `${interaction?.action.arguments?.transfers[0].value} x ${interaction?.action.arguments?.transfers[0].identifier}`,
         });
       }
+
       setData(dataTemp);
     }
 
     async function getBackendInteractions() {
       const api = backendApi(chainID);
-
       const response = await axios.get(`${api}/interactions/${props.tokenId}`);
-
       const interactions = response.data;
-
       const dataTemp: TransactionInTable[] = [];
 
       for (const interaction of interactions) {
@@ -175,11 +171,13 @@ export default function TokenTxTable(props: TokenTableProps) {
       }
       setData(dataTemp);
     }
+
     if (isApiUp) {
       getBackendInteractions();
     } else {
       getInteractions();
     }
+
     setLoadingData(false);
   }, [isApiUp]);
 
@@ -192,6 +190,7 @@ export default function TokenTxTable(props: TokenTableProps) {
       ) : (
         <Flex direction="column" alignItems="center" justifyContent="center">
           <DataTable columns={columns} data={data} />
+
           {!isApiUp && (
             <Tooltip
               label="The backend is currently unavailable and full activity details are not displayed. Please try again later."

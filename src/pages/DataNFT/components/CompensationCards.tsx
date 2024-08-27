@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Flex, Skeleton, SkeletonText, Text, Tooltip, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, Flex, Skeleton, SkeletonText, Text, Tooltip, Alert, AlertIcon, Link, useDisclosure } from "@chakra-ui/react";
 import { Bond, BondContract, Compensation, DataNft, Refund } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
@@ -30,6 +30,43 @@ export const CompensationCards: React.FC = () => {
   const [blacklistedAddressesPerNft, setBlacklistedAddressesPerNft] = useState<Array<string>>([]);
   const cardsForLoading = new Array(8).fill(1);
   const { isOpen: isOpenCalculateCompensation, onOpen: onOpenCalculateCompensation, onClose: onCloseCalculateCompensation } = useDisclosure();
+
+  useEffect(() => {
+    setIsCompensationNftLoading(false);
+    (async () => {
+      const contractBonds = await bondContract.viewAllBonds();
+      const dataNftTicker = contractsForChain(chainID).dataNftTokens[0].id;
+      const dataNfts: DataNft[] = await DataNft.ownedByAddress(mxAddress, [dataNftTicker]);
+
+      const compensationsT = await getCompensationsFromBondSc(contractBonds);
+      const { compsInScT, compPairsT }: { compsInScT: Compensation[]; compPairsT: CompensationNftPair[] } = getNftsForCompensations(compensationsT, dataNfts);
+      const refundObjT: Record<number, Refund> = await getRefundsObject(mxAddress, compsInScT);
+
+      const nftsInScT = compsInScT.map((comp) => {
+        return { nonce: comp.nonce, tokenIdentifier: comp.tokenIdentifier };
+      });
+      const dataNftsInScT = [];
+      for (let i = 0; i < nftsInScT.length; i += 50) {
+        const dataNftsInScTChunk = await DataNft.createManyFromApi(nftsInScT.slice(i, i + 50));
+        dataNftsInScT.push(...dataNftsInScTChunk);
+      }
+      for (const compT of compsInScT) {
+        const dataNftForComp = dataNftsInScT.find((dataNft) => dataNft.nonce === compT.nonce && dataNft.collection === compT.tokenIdentifier);
+        if (dataNftForComp) {
+          const refundForComp = refundObjT[compT.compensationId];
+          if (refundForComp) {
+            dataNftForComp.updateDataNft({ balance: Number(refundForComp.proofOfRefund.amount) });
+            const compNftPair: CompensationNftPair = { compensation: compT, dataNft: dataNftForComp };
+            compPairsT.push(compNftPair);
+          }
+        }
+      }
+
+      setCompensationRefund(refundObjT);
+      setCompensationPairs(compPairsT.filter((pair) => pair.compensation.endDate > 0));
+      setIsCompensationNftLoading(true);
+    })();
+  }, [hasPendingTransactions]);
 
   const hasPassedSafeTime = (endDate: number) => {
     const currentTime = new Date().getTime();
@@ -78,43 +115,6 @@ export const CompensationCards: React.FC = () => {
     return await bondContract.viewCompensationBlacklist(compensationIds);
   };
 
-  useEffect(() => {
-    setIsCompensationNftLoading(false);
-    (async () => {
-      const contractBonds = await bondContract.viewAllBonds();
-      const dataNftTicker = contractsForChain(chainID).dataNftTokens[0].id;
-      const dataNfts: DataNft[] = await DataNft.ownedByAddress(mxAddress, [dataNftTicker]);
-
-      const compensationsT = await getCompensationsFromBondSc(contractBonds);
-      const { compsInScT, compPairsT }: { compsInScT: Compensation[]; compPairsT: CompensationNftPair[] } = getNftsForCompensations(compensationsT, dataNfts);
-      const refundObjT: Record<number, Refund> = await getRefundsObject(mxAddress, compsInScT);
-
-      const nftsInScT = compsInScT.map((comp) => {
-        return { nonce: comp.nonce, tokenIdentifier: comp.tokenIdentifier };
-      });
-      const dataNftsInScT = [];
-      for (let i = 0; i < nftsInScT.length; i += 50) {
-        const dataNftsInScTChunk = await DataNft.createManyFromApi(nftsInScT.slice(i, i + 50));
-        dataNftsInScT.push(...dataNftsInScTChunk);
-      }
-      for (const compT of compsInScT) {
-        const dataNftForComp = dataNftsInScT.find((dataNft) => dataNft.nonce === compT.nonce && dataNft.collection === compT.tokenIdentifier);
-        if (dataNftForComp) {
-          const refundForComp = refundObjT[compT.compensationId];
-          if (refundForComp) {
-            dataNftForComp.updateDataNft({ balance: Number(refundForComp.proofOfRefund.amount) });
-            const compNftPair: CompensationNftPair = { compensation: compT, dataNft: dataNftForComp };
-            compPairsT.push(compNftPair);
-          }
-        }
-      }
-
-      setCompensationRefund(refundObjT);
-      setCompensationPairs(compPairsT.filter((pair) => pair.compensation.endDate > 0));
-      setIsCompensationNftLoading(true);
-    })();
-  }, [hasPendingTransactions]);
-
   const handleDeposit = async (tokenIdentifier: string, nonce: number, amount: BigNumber.Value) => {
     const payments = { amount: amount, nonce: nonce, tokenIdentifier: tokenIdentifier };
     const tx = bondContract.proof(new Address(mxAddress), payments);
@@ -133,6 +133,18 @@ export const CompensationCards: React.FC = () => {
   return (
     <>
       <Flex flexDirection="column" gap={4}>
+        <Alert status="info" fontSize="md">
+          <AlertIcon />
+          <Text>
+            The{" "}
+            <Link href="https://docs.itheum.io/product-docs/protocol/governance/itheum-trailblazer-dao" isExternal color="teal.200">
+              Trailblazer DAO
+            </Link>{" "}
+            oversees Liveliness Bonds deposited from all Data Creators. If any bonds are slashed due to community verified mis-use of the system, the slashed
+            tokens are returned as compensation to Data NFT holders who were affected. If you are eligible for any compensation, it will appear below.
+          </Text>
+        </Alert>
+
         {compensationPairs.length === 0 ? (
           <>
             {isCompensationNftLoading && <NoDataHere />}

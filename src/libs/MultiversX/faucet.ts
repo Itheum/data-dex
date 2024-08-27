@@ -52,8 +52,8 @@ export class FaucetContract {
     const { sessionId, error } = await sendTransactions({
       transactions: faucetTransaction,
       transactionsDisplayInfo: {
-        processingMessage: "Getting faucet tokens",
-        errorMessage: "Faucet error",
+        processingMessage: "Getting Faucet Tokens",
+        errorMessage: "Faucet error :(",
         successMessage: "Faucet tokens sent",
       },
       redirectAfterSign: false,

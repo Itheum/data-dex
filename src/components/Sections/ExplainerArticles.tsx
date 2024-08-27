@@ -6,6 +6,12 @@ const ExplainerArticles = ({ reduceGap }: { reduceGap?: boolean }) => {
   return (
     <Flex flexWrap="wrap" gap={reduceGap ? 2 : 5} backgroundColor="none" justifyContent="space-between">
       <ArticleCard
+        imgTitle="NFMe ID + Liveliness Staking"
+        title="NFMe ID Vault + Liveliness Reputation Staking"
+        link="https://docs.itheum.io/product-docs/product/liveliness-on-chain-reputation/liveliness-staking-guide"
+      />
+
+      <ArticleCard
         imgTitle="Setting Up Your Wallets"
         title="Simple step-by-step guide to setting up your wallets"
         link="https://docs.itheum.io/product-docs/guides/supported-wallets"
@@ -45,12 +51,6 @@ const ExplainerArticles = ({ reduceGap }: { reduceGap?: boolean }) => {
         imgTitle="Itheum BiTz XP System"
         title="Boost your engagement with the Itheum BiTz XP System"
         link="https://docs.itheum.io/product-docs/protocol/itheum-life-liveliness-and-reputation-signalling/less-than-bitz-greater-than-xp-system"
-      />
-
-      <ArticleCard
-        imgTitle="The Trailblazer Quests Data NFT"
-        title="User guide to Trailblazer quests Data NFTs"
-        link="https://docs.itheum.io/product-docs/guides/trailblazer-guide"
       />
     </Flex>
   );

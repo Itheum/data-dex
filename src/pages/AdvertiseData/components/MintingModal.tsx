@@ -1,5 +1,5 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
-import { CheckCircleIcon, ExternalLinkIcon } from "@chakra-ui/icons";
+import React, { Dispatch, SetStateAction, memo, useState, useEffect } from "react";
+import { CheckCircleIcon } from "@chakra-ui/icons";
 import {
   Alert,
   AlertDescription,
@@ -10,7 +10,6 @@ import {
   Center,
   CloseButton,
   HStack,
-  Link,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -18,142 +17,253 @@ import {
   ModalHeader,
   ModalOverlay,
   Skeleton,
+  SkeletonText,
   Spinner,
   Stack,
   Text,
   useColorMode,
   VStack,
+  Flex,
+  Tag,
+  TagLabel,
+  Wrap,
 } from "@chakra-ui/react";
+import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { useNavigate } from "react-router-dom";
 import NftMediaComponent from "components/NftMediaComponent";
 
 type MintingModalProps = {
   isOpen: boolean;
-  setIsOpen: Dispatch<SetStateAction<boolean>>;
   errDataNFTStreamGeneric: any;
   saveProgress: Record<any, any>;
   setSaveProgress: any;
   dataNFTImg: string;
-  closeProgressModal: () => void;
+  dataNFTTraits: any;
   mintingSuccessful: boolean;
+  makePrimaryNFMeIdSuccessful: boolean;
   imageUrl: string;
   metadataUrl: string;
+  isNFMeIDMint: boolean;
+  isAutoVault: boolean;
+  nftImgAndMetadataLoadedOnIPFS: boolean;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  closeProgressModal: () => void;
   onChainMint: () => void;
 };
 
-export const MintingModal: React.FC<MintingModalProps> = (props) => {
+export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
   const {
     isOpen,
-    setIsOpen,
     errDataNFTStreamGeneric,
     saveProgress,
     dataNFTImg,
-    closeProgressModal,
+    dataNFTTraits,
     mintingSuccessful,
+    makePrimaryNFMeIdSuccessful,
     setSaveProgress,
     imageUrl,
     metadataUrl,
+    isNFMeIDMint,
+    isAutoVault,
+    nftImgAndMetadataLoadedOnIPFS,
+    setIsOpen,
+    closeProgressModal,
     onChainMint,
   } = props;
-  const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState<boolean>(false);
   const { colorMode } = useColorMode();
-
   const navigate = useNavigate();
   const onClose = () => {
     setIsOpen(false);
   };
+  const { hasPendingTransactions } = useGetPendingTransactions();
+  // some local state for better UX, i.e. to not sure the mint button once clicked (using only hasPendingTransactions has some delay and button flickers)
+  const [localMintJustClicked, setLocalMintJustClicked] = useState(false);
+
+  useEffect(() => {
+    setLocalMintJustClicked(false);
+  }, []);
+
+  useEffect(() => {
+    // if there was an error, let user try again if they want
+    if (localMintJustClicked) {
+      setLocalMintJustClicked(false);
+    }
+  }, [errDataNFTStreamGeneric]);
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false} blockScrollOnMount={false}>
+    <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false} blockScrollOnMount={false} size={{ base: "sm", md: "lg" }}>
       <ModalOverlay />
       <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-        <ModalHeader>Data NFT Collection Minting Progress</ModalHeader>
-        {!!errDataNFTStreamGeneric && <ModalCloseButton />}
+        <ModalHeader>{isNFMeIDMint ? "NFMe ID Vault" : "Data NFT Collection"} Minting Progress</ModalHeader>
+        {((!!errDataNFTStreamGeneric && !hasPendingTransactions) || mintingSuccessful) && <ModalCloseButton />}
         <ModalBody pb={6}>
+          {/* <Box fontSize=".8rem" rounded="lg" as="div" style={{ "display": "none" }}>
+            dataNFTImg: {dataNFTImg}, <br />
+            imageUrl: {imageUrl}, <br />
+            metadataUrl: {metadataUrl}, <br />
+            nftImgAndMetadataInitializing: {nftImgAndMetadataInitializing.toString()}, <br />
+            nftImgAndMetadataLoadedOnIPFS: {nftImgAndMetadataLoadedOnIPFS.toString()}
+          </Box> */}
           <Stack spacing={5}>
             <HStack>
               {(!saveProgress.s1 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
-              <Text>Generating encrypted data stream metadata</Text>
+              <Text fontSize="lg">Generating encrypted data stream metadata</Text>
             </HStack>
 
             <HStack>
               {(!saveProgress.s2 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
-              <Text>Generating unique tamper-proof data stream signature</Text>
+              <Text fontSize="lg">Building unique NFT image and traits based on data</Text>
             </HStack>
-
-            {dataNFTImg && (
-              <>
-                <Skeleton isLoaded={oneNFTImgLoaded} h={200} margin="auto">
-                  <Center>
-                    <NftMediaComponent
-                      imageUrls={[dataNFTImg]}
-                      imageHeight={"200px"}
-                      imageWidth={"200px"}
-                      borderRadius="md"
-                      onLoad={() => setOneNFTImgLoaded(true)}
-                    />
-                  </Center>
-                </Skeleton>
-                <Box textAlign="center">
-                  <Text fontSize="xs">This image was created using the unique data signature (it&apos;s one of a kind!)</Text>
-                </Box>
-              </>
-            )}
 
             <HStack>
               {(!saveProgress.s3 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
-              <Text>Saving NFT metadata to IPFS</Text>
+              <Text fontSize="lg">Loading metadata to durable decentralized storage</Text>
             </HStack>
 
-            {!saveProgress.s4 && saveProgress.s3 && (
+            <HStack>
+              {(!saveProgress.s4 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
               <VStack>
-                <HStack>
-                  <Link color="teal.500" fontSize="md" mb={1} href={imageUrl} isExternal>
-                    Image URL <ExternalLinkIcon mx="2px" />
-                  </Link>
-                  <Link color="teal.500" fontSize="md" mb={1} href={metadataUrl} isExternal>
-                    Metadata URL <ExternalLinkIcon mx="2px" />
-                  </Link>
-                </HStack>
-                <Button
-                  disabled={imageUrl === "" || metadataUrl === ""}
-                  onClick={() => {
-                    setSaveProgress((prev: any) => ({ ...prev, s4: 1 }));
-                    onChainMint();
-                  }}>
-                  Confirm you checked IPFS assets and they are available
-                </Button>
+                <Text fontSize="lg">
+                  Minting your new {isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} on the blockchain{" "}
+                  {isAutoVault ? "& setting it as your primary NFMe ID Vault" : ""}
+                </Text>
+              </VStack>
+            </HStack>
+
+            {!mintingSuccessful ? (
+              <Flex flexDirection={{ base: "column", md: "row" }} alignItems="center">
+                <Box w="255px">
+                  <Skeleton w="200px" h="200px" margin="auto" rounded="lg" />
+                </Box>
+
+                <Box w="180px" mt={{ base: "3", md: "0" }}>
+                  <Box>
+                    <SkeletonText noOfLines={4} spacing="2" skeletonHeight="2" />
+                    <SkeletonText mt="4" noOfLines={4} spacing="2" skeletonHeight="2" />
+                  </Box>
+                </Box>
+              </Flex>
+            ) : (
+              <>
+                <Flex flexDirection={{ base: "column", md: "row" }} alignItems="center">
+                  <Box w="255px">
+                    <NftMediaComponent imageUrls={[dataNFTImg]} imageHeight={"200px"} imageWidth={"200px"} borderRadius="md" />
+                  </Box>
+
+                  <Box w="220px" mt={{ base: "3", md: "0" }}>
+                    {dataNFTTraits && (
+                      <Box>
+                        <Text fontSize="sm" mb={2} fontWeight="bold">
+                          Traits:
+                        </Text>
+                        <Wrap spacing={2}>
+                          {dataNFTTraits
+                            .filter((i: any) => i.trait_type !== "Creator")
+                            .map((trait: any) => (
+                              <Tag size="sm" variant="solid" colorScheme="teal" key={trait.trait_type}>
+                                <TagLabel>
+                                  {trait.trait_type} : {trait.value}
+                                </TagLabel>
+                              </Tag>
+                            ))}
+                        </Wrap>
+                      </Box>
+                    )}
+                  </Box>
+                </Flex>
+
+                {dataNFTImg && (
+                  <Text fontSize="xs" align="center" mt={{ md: "-5" }}>
+                    Image and traits were created using the unique data signature (it&apos;s one of a kind!)
+                  </Text>
+                )}
+              </>
+            )}
+
+            {nftImgAndMetadataLoadedOnIPFS && !mintingSuccessful && (
+              <VStack>
+                <Box>
+                  <Button
+                    px={10}
+                    isLoading={hasPendingTransactions || localMintJustClicked}
+                    colorScheme="teal"
+                    onClick={() => {
+                      onChainMint();
+                      setLocalMintJustClicked(true);
+                    }}>
+                    Mint and Reveal your New {isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"}!
+                  </Button>
+                  <Text fontSize="sm" colorScheme="teal" align="center" mt={2}>
+                    (You will be asked to sign {isAutoVault ? "2 transactions" : "1 transaction"})
+                  </Text>
+                </Box>
               </VStack>
             )}
 
-            <HStack>
-              {(!saveProgress.s5 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
-              <Text>Minting your new Data NFT on the blockchain</Text>
-            </HStack>
-            {mintingSuccessful && (
-              <Box textAlign="center" mt="6">
-                <Alert status="success">
-                  <Text colorScheme="teal">Success! Your Data NFT has been minted on the MultiversX Blockchain</Text>
-                </Alert>
-                <HStack mt="4">
-                  <Button
-                    colorScheme="teal"
-                    onClick={() => {
-                      // setMenuItem(MENU.NFTMINE);
-                      navigate("/datanfts/wallet");
-                    }}>
-                    Visit your Data NFT Wallet to see it!
-                  </Button>
-                  <Button
-                    colorScheme="teal"
-                    variant="outline"
-                    onClick={() => {
-                      closeProgressModal();
-                      onClose();
-                    }}>
-                    Close & Return
-                  </Button>
-                </HStack>
-              </Box>
+            {isAutoVault ? (
+              <>
+                {mintingSuccessful && makePrimaryNFMeIdSuccessful && (
+                  <Box textAlign="center" mt="2">
+                    <Alert status="success">
+                      <Text fontSize="lg" colorScheme="teal">
+                        Success! {isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} Minted and set as your NFMe ID Vault.
+                      </Text>
+                    </Alert>
+                    <HStack mt="4">
+                      <Button
+                        colorScheme="teal"
+                        ml="auto"
+                        onClick={() => {
+                          navigate("/datanfts/wallet/liveliness");
+                        }}>
+                        Visit {"Wallet > Liveliness"} to see it!
+                      </Button>
+                      <Button
+                        colorScheme="teal"
+                        variant="outline"
+                        mr="auto"
+                        onClick={() => {
+                          closeProgressModal();
+                          onClose();
+                        }}>
+                        Close & Return
+                      </Button>
+                    </HStack>
+                  </Box>
+                )}
+              </>
+            ) : (
+              <>
+                {mintingSuccessful && (
+                  <Box textAlign="center" mt="2">
+                    <Alert status="success">
+                      <Text fontSize="lg" colorScheme="teal">
+                        Success! Your {isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} has been minted.
+                      </Text>
+                    </Alert>
+                    <HStack mt="4">
+                      <Button
+                        colorScheme="teal"
+                        ml="auto"
+                        onClick={() => {
+                          navigate("/datanfts/wallet");
+                        }}>
+                        Visit your {"Wallet"} to see it!
+                      </Button>
+                      <Button
+                        colorScheme="teal"
+                        variant="outline"
+                        mr="auto"
+                        onClick={() => {
+                          closeProgressModal();
+                          onClose();
+                        }}>
+                        Close & Return
+                      </Button>
+                    </HStack>
+                  </Box>
+                )}
+              </>
             )}
 
             {errDataNFTStreamGeneric && (
@@ -181,4 +291,4 @@ export const MintingModal: React.FC<MintingModalProps> = (props) => {
       </ModalContent>
     </Modal>
   );
-};
+});

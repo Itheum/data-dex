@@ -5,6 +5,7 @@ type ImageTooltipProps = {
   description: string;
   children: React.ReactNode;
 };
+
 export const ImageTooltip: React.FC<ImageTooltipProps> = (props) => {
   const { description, children } = props;
 
