@@ -644,8 +644,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       const { sessionId, error } = await sendTransactions({
         transactions: [vaultTx],
         transactionsDisplayInfo: {
-          processingMessage: "Setting NFT as primary NFMe ID",
-          errorMessage: "NFMe ID setting failed",
+          processingMessage: "Setting as NFMe ID Vault",
+          errorMessage: "NFMe ID setting failed :(",
           successMessage: "NFMe ID set successfully!",
         },
         redirectAfterSign: false,
