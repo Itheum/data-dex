@@ -131,7 +131,7 @@ export const LandingPage = ({ onShowConnectWalletModal }: { onShowConnectWalletM
               onClick={() => {
                 gtagGo("nfm", "mint", "sol");
               }}
-              href="https://docs.google.com/forms/d/e/1FAIpQLSdC_HBveamuFiHjI3dGIIXkOnODyYXxtZdJQCmTyzSfRY2i8A/viewform"
+              href="https://docs.google.com/forms/d/e/1FAIpQLScpguzOBjyQBj2iDzaI2E0wN9SIAQGoS92FPDM9qkk8B-rzFA/viewform"
               isExternal>
               Claim Whitelist NFMe ID NFT Airdrop on Solana
             </Button>
