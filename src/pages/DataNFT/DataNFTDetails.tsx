@@ -19,13 +19,16 @@ import {
   Stack,
   Text,
   Tooltip,
+  Wrap,
+  Tag,
+  TagLabel,
   useClipboard,
   useColorMode,
   useDisclosure,
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import { Offer } from "@itheum/sdk-mx-data-nft/out";
+import { DataNft, Offer } from "@itheum/sdk-mx-data-nft/out";
 import { parseDataNft } from "@itheum/sdk-mx-data-nft/out/common/utils";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -57,6 +60,7 @@ import {
   printPrice,
   tokenDecimals,
   transformDescription,
+  isNFMeIDVaultClassDataNFT,
 } from "libs/utils";
 import { useMarketStore } from "store";
 import { Favourite } from "../../components/Favourite/Favourite";
@@ -90,6 +94,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
   const isApiUp = useMarketStore((state) => state.isApiUp);
   const [nftData, setNftData] = useState<any>({});
+  const [nftTraits, setNftTraits] = useState<any>(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState<boolean>(true);
   const [isLoadingPrice, setIsLoadingPrice] = useState<boolean>(true);
   const [priceFromApi, setPriceFromApi] = useState<number>(0);
@@ -115,7 +120,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const maxBuyPerAddress = offer ? offer.maxQuantityPerAddress : 0;
   const boughtByAddressAlreadyForThisOffer =
     useMarketStore((state) => state.addressBoughtOffers).find((boughtOffer) => boughtOffer.offerId === (offer ? offer.index : -1))?.quantity ?? 0;
-
   const maxBuyForOfferForAddress = computeMaxBuyForOfferForAddress(offer, maxBuyPerTransaction, maxBuyPerAddress, boughtByAddressAlreadyForThisOffer);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -219,7 +223,10 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     axios
       .get(nftApiLink)
       .then((res) => {
+        console.log("res.data", res.data);
         const _nftData = parseDataNft(res.data);
+        console.log("_nftData", _nftData);
+
         setNftData(_nftData);
         setIsLoadingDetails(false);
 
@@ -228,6 +235,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         } else {
           setAddressCreatedNft(false);
         }
+
+        getTraits(_nftData);
       })
       .catch((err) => {
         if (err.response.status === 404) {
@@ -248,6 +257,23 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
           });
         }
       });
+  }
+
+  async function getTraits(_nftData: DataNft) {
+    if (_nftData?.metadataFile) {
+      const metadataCIDOnIPFS = _nftData?.metadataFile.split("ipfs/")[1];
+
+      await axios
+        .get(`https://gateway.pinata.cloud/ipfs/${metadataCIDOnIPFS}`)
+        .then((res) => {
+          const traits = res.data?.attributes;
+          setNftTraits(traits);
+        })
+        .catch((err) => {
+          console.error("error getting nft traits");
+          console.error(err);
+        });
+    }
   }
 
   async function getTokenHistory(tokenIdArg: string) {
@@ -322,6 +348,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   };
 
   const parsedCreationTime = moment(nftData.creationTime);
+  const isNFMeIDVaultDataNFT = isNFMeIDVaultClassDataNFT(nftData.tokenName);
 
   return (
     <Box mx={tokenIdParam ? { base: "5 !important", xl: "28 !important" } : 0}>
@@ -333,6 +360,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 <Heading size="xl" fontFamily="Clash-Medium" marginBottom={4} marginTop={10}>
                   Data NFT Details
                 </Heading>
+
                 <HStack>
                   <Button
                     marginTop={{ md: "25px" }}
@@ -350,6 +378,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 </HStack>
               </Box>
             )}
+
             <Box width={"100%"} marginY={tokenIdParam ? "20px" : "10px"} border="1px solid" borderColor="#00C79740" borderRadius="xl">
               <Stack flexDirection="column" m={5} justifyContent={{ base: "center", xl: "flex-start" }} alignItems={{ xl: "flex-start" }}>
                 <Flex
@@ -358,8 +387,9 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   alignItems={{ base: "initial", md: "initial" }}
                   justifyContent={{ xl: "space-between" }}>
                   <Box margin="auto" mb={6}>
-                    <NftMediaComponent nftMedia={nftData?.media} autoSlide marginTop="1rem" />
+                    <NftMediaComponent nftMedia={nftData?.media} autoSlide marginTop="1rem" borderRadius="md" />
                   </Box>
+
                   <Flex mr={tokenIdParam ? "75px" : "30px"}>
                     <Flex flexDirection="column" ml={5} h="250px" justifyContent="space-evenly">
                       <Box display="flex" gap={3} color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "md", md: "lg", xl: "xl" }}>
@@ -415,10 +445,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           </Button>
                         )}
                       </Flex>
+
                       {offer && address && address != offer.owner && (
                         <Box h={14}>
                           <HStack gap={5}>
                             <Text fontSize="xl">How many to {isCreatorListing() ? "mint" : "procure"} </Text>
+
                             <NumberInput
                               size="md"
                               maxW={24}
@@ -450,11 +482,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                               </NumberInputStepper>
                             </NumberInput>
                           </HStack>
+
                           <Text color="red.400" fontSize="sm" mt="2" ml="190px">
                             {amountError}
                           </Text>
                         </Box>
                       )}
+
                       <Flex flexDirection="row" gap={3} justifyContent={{ lg: "start" }} w="full">
                         <Tooltip colorScheme="teal" hasArrow placement="top" label="Data Market is Paused" isDisabled={!isMarketPaused}>
                           <Button
@@ -473,12 +507,17 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             hidden={!isMxLoggedIn || pathname === walletDrawer || !offer || address === offer.owner}
                             onClick={onProcureModalOpen}>
                             <Text px={tokenId ? 0 : 3} fontSize={{ base: "xs", md: "sm", xl: "md" }}>
-                              {isCreatorListing() ? "Mint Data NFT" : "Buy Data NFT"}
+                              {isCreatorListing() && !isNFMeIDVaultDataNFT ? "Mint Data NFT" : "Buy Data NFT"}
                             </Text>
                           </Button>
                         </Tooltip>
 
-                        <PreviewDataButton previewDataURL={nftData.dataPreview} buttonSize={{ base: "sm", md: "md", xl: "lg" }} buttonWidth="unset" />
+                        <PreviewDataButton
+                          previewDataURL={nftData.dataPreview}
+                          buttonSize={{ base: "sm", md: "md", xl: "lg" }}
+                          buttonWidth="unset"
+                          tokenName={nftData.tokenName}
+                        />
 
                         <ExploreAppButton
                           collection={nftData.collection}
@@ -566,6 +605,39 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     <LivelinessScore tokenIdentifier={tokenId ?? ""} />
                   </Flex>
                 </Flex>
+
+                {/* Traits */}
+                {nftTraits && (
+                  <Flex flexDirection="column" gap={2} w="100%">
+                    <Flex flexDirection="column" border="1px solid" borderColor="#00C79740" borderRadius="2xl" mt={3} justifyContent="right" w="100%">
+                      <Heading
+                        fontSize="20px"
+                        fontFamily="Clash-Medium"
+                        fontWeight="semibold"
+                        pl="28px"
+                        py={3}
+                        borderBottom="1px solid"
+                        borderColor="#00C79740"
+                        bgColor="#00C7970D"
+                        borderTopRadius="xl">
+                        Traits
+                      </Heading>
+                      <Flex direction={"column"} gap="1" px="28px" py="14px" color={colorMode === "dark" ? "white" : "black"} fontSize="lg">
+                        <Wrap spacing={2}>
+                          {nftTraits
+                            .filter((i: any) => i.trait_type !== "Creator" && i.trait_type !== "Data Preview URL")
+                            .map((trait: any) => (
+                              <Tag size="lg" borderRadius="full" variant="outline" colorScheme="teal" key={trait.trait_type}>
+                                <TagLabel>
+                                  {trait.trait_type} : {trait.value}
+                                </TagLabel>
+                              </Tag>
+                            ))}
+                        </Wrap>
+                      </Flex>
+                    </Flex>
+                  </Flex>
+                )}
 
                 <Grid templateColumns="repeat(8, 1fr)" gap={3} w="full" marginTop="1.5rem !important">
                   <GridItem colSpan={{ base: 8, xl: 5 }}>
@@ -682,6 +754,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       </Flex>
                     </Box>
                   </GridItem>
+
                   <GridItem colSpan={{ base: 8, xl: 3 }}>
                     <ConditionalRender fallback={<></>} checkFunction={isApiUp}>
                       <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl" w="full">

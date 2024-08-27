@@ -1,6 +1,6 @@
 {
   "name": "data-dex",
-  "version": "1.16.8",
+  "version": "1.17.14",
   "description": "The Itheum Data DEX enables you to trade your data using web3 tech",
   "dependencies": {
     "@chakra-ui/icons": "2.1.1",
@@ -8,27 +8,27 @@
     "@emotion/react": "11.11.4",
     "@emotion/styled": "11.11.5",
     "@hookform/resolvers": "3.6.0",
-    "@itheum/sdk-mx-data-nft": "3.5.1",
+    "@itheum/sdk-mx-data-nft": "3.6.1",
     "@itheum/sdk-mx-enterprise": "0.3.0",
     "@multiversx/sdk-core": "13.2.1",
-    "@multiversx/sdk-dapp": "2.33.5",
+    "@multiversx/sdk-dapp": "2.33.3",
     "@multiversx/sdk-native-auth-client": "1.0.8",
     "@multiversx/sdk-network-providers": "2.4.3",
     "@peerme/sdk": "0.2.1",
     "@sentry/react": "7.118.0",
     "@tanstack/match-sorter-utils": "8.15.1",
-    "@tanstack/react-table": "8.17.3",
+    "@tanstack/react-table": "8.19.3",
     "axios": "1.7.2",
     "bignumber.js": "9.1.2",
     "dotenv": "16.4.5",
-    "framer-motion": "11.2.12",
-    "mime": "4.0.3",
+    "framer-motion": "11.3.6",
+    "mime": "4.0.4",
     "moment": "2.30.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-hook-form": "7.52.0",
+    "react-hook-form": "7.52.1",
     "react-icons": "5.2.1",
-    "react-router-dom": "6.24.0",
+    "react-router-dom": "6.25.1",
     "web-vitals": "3.5.2",
     "yup": "1.4.0",
     "zustand": "4.5.4"
@@ -92,6 +92,6 @@
     "**/*/nth-check": "2.0.1"
   },
   "engines": {
-    "node": "18.20.2"
+    "node": "18.20.4"
   }
 }

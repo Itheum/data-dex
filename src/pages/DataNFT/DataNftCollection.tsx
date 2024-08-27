@@ -4,7 +4,7 @@ import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks
 import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
-import { convertToLocalString, shouldPreviewDataBeEnabled, viewDataDisabledMessage } from "libs/utils";
+import { convertToLocalString, shouldPreviewDataBeEnabled, viewDataDisabledMessage, isNFMeIDVaultClassDataNFT } from "libs/utils";
 import { useMarketStore } from "store";
 
 type DataNftCollectionCardComponentProps = {
@@ -39,6 +39,8 @@ export const DataNftCollectionCard: FC<DataNftCollectionCardComponentProps> = ({
   const { loginMethod } = useGetLoginInfo();
   const { colorMode } = useColorMode();
 
+  const isNFMeIDVaultDataNFT = isNFMeIDVaultClassDataNFT(title);
+
   return (
     <Skeleton
       transform={{ base: "scale(0.5) ", sm: "scale(0.6)", md: "scale(0.75)", xl: "scale(1)" }}
@@ -67,6 +69,7 @@ export const DataNftCollectionCard: FC<DataNftCollectionCardComponentProps> = ({
               {title}
             </Text>
           </Tooltip>
+
           <Stack overflow={"hidden"} _hover={{ overflowY: "auto" }} css={{ "&::-webkit-scrollbar": { display: "none" } }} w={"100%"} h={"25%"}>
             <Box>
               <Text textOverflow="ellipsis" opacity=".7" fontFamily="Satoshi-Regular" maxWidth="96%" pb="0.6rem">
@@ -82,6 +85,7 @@ export const DataNftCollectionCard: FC<DataNftCollectionCardComponentProps> = ({
               />
             </Box>
           </Stack>
+
           <HStack>
             <Text opacity=".7" fontFamily="Satoshi-Regular" maxWidth="100%">
               Total supply: {supply}
@@ -90,9 +94,11 @@ export const DataNftCollectionCard: FC<DataNftCollectionCardComponentProps> = ({
               Listed: {listed}
             </Text>
           </HStack>
+
           <Text opacity="1" fontFamily="Satoshi-Regular" maxWidth="100%">
             Floor price: {floorPrice} ITHEUM {floorPrice && itheumPrice ? `(~${convertToLocalString(floorPrice * itheumPrice, 2)} USD)` : ""}
           </Text>
+
           <Stack padding="8px" borderRadius="8px" direction="row" justify="center" align="center" spacing="10px" background="rgba(226, 174, 234, 0.1)">
             <Text opacity=".8" fontFamily="Inter" lineHeight="1.6" fontWeight="medium" fontSize="12px" color="#E2AEEA">
               Fully Transferable License
@@ -110,7 +116,8 @@ export const DataNftCollectionCard: FC<DataNftCollectionCardComponentProps> = ({
               View Data NFT Collection
             </Text>
           </Button>
-          {dataPreview && (
+
+          {dataPreview && !isNFMeIDVaultDataNFT && (
             <Tooltip label={viewDataDisabledMessage(loginMethod)} isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
               <Button
                 mt={"5px"}
@@ -133,6 +140,7 @@ export const DataNftCollectionCard: FC<DataNftCollectionCardComponentProps> = ({
             </Tooltip>
           )}
         </VStack>
+
         <VStack
           cursor={"pointer"}
           position={"relative"}

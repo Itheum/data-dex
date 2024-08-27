@@ -38,6 +38,7 @@ for (let i = 0; i < 10; i++) {
     media: [],
   });
 }
+
 const skeletonHeight = { base: "260px", md: "190px", "2xl": "220px" };
 
 const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
@@ -52,7 +53,6 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
       DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
 
       const dataNftsVolumes: DataNftVolume[] = await getTopVolumes(chainID, tokenLogin?.nativeAuthToken ?? "", 10);
-
       const _volumesData: { nonce: number; tokenIdentifier: string }[] = [];
 
       dataNftsVolumes.forEach((volumeObject) => {
@@ -78,9 +78,10 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
 
   return (
     <>
-      <Heading as="h2" size="lg" fontWeight="bold" mb="1rem">
+      <Heading as="h4" fontFamily="Clash-Medium" fontWeight="semibold" size="lg" mb="5" textAlign={["center", "initial"]}>
         Most Traded Data NFTs
       </Heading>
+
       <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(240px, 1fr))">
         {topVolumesDataNfts.map((volumeDataNft, index) => {
           return (
@@ -95,7 +96,7 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
               <CardBody>
                 <Skeleton height={skeletonHeight} isLoaded={!loadingOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
                   <Link to={`/datanfts/marketplace/${volumeDataNft.tokenIdentifier}`}>
-                    <NftMediaComponent nftMedia={volumeDataNft?.media} imageHeight="210px" imageWidth="210px" borderRadius="lg" shouldDisplayArrows={false} />
+                    <NftMediaComponent nftMedia={volumeDataNft?.media} imageHeight="210px" imageWidth="210px" borderRadius="md" shouldDisplayArrows={false} />
                   </Link>
                 </Skeleton>
                 <Skeleton height="56px" isLoaded={!loadingOffers} fadeDuration={2}>

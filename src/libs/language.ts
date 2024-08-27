@@ -16,6 +16,7 @@ export const labels = {
   "ERR_MINT_FORM_MINT_AGAIN_WAIT": "(ER-13) You can mint next Data NFT-FT after ",
   "ERR_MINT_FORM_NO_WALLET_CONN": "Connect your wallet to proceed with mint. (ER-14)",
   "ERR_MINT_NO_TX": "Cannot send transaction to the blockchain. (ER-15)",
+  "ERR_SET_AS_PRIMARY_NF_ME_ID_VAULT_TX": "Failed to set Data NFT as a primary NFMe ID Vault. (ER-30)",
   "ERR_PROCURE_UPTIME_CHECK_DOWN":
     "The Data Marshal is unavailable to provide a status check on this Data Stream URL. This may mean that the Data Stream is unavailable. Do not proceed with the transaction. (ER-16)",
   "ERR_MARKET_REQ_FAIL": "Could not fetch marketplace requirements. (ER-17)",
@@ -26,9 +27,14 @@ export const labels = {
   "ERR_API_ISSUE_DATA_NFT_DETAILS": "Could not fetch Data NFT-FT details. (ER-22)",
   "ERR_API_ISSUE_DATA_NFT_OFFERS": "Could not fetch Data NFT-FT offers. (ER-23)",
   "ERR_MARKET_OFFER_NOT_FOUND": "Data NFT offer not found (ER-24)",
-  "NATIVE_AUTH_TOKEN_MISSING": "Your wallet did not produce a Native Auth token (ER-25)",
+  "ERR_IPFS_ASSET_SAVE_FAILED":
+    "Could not save the img and or metadata assets to IPFS. There is a chance that your firewall is blocking IPFS, please disable it and try again. (ER-31)",
+  "ERR_MINT_TX_GEN_COMMAND_FAILED": "Could not generate the Data NFT mint transaction. (ER-32)",
+  "ERR_NATIVE_AUTH_TOKEN_MISSING": "Your wallet did not produce a Native Auth token (ER-25)",
   "ERR_PROCURE_UPTIME_CHECK_DOWN_NON_HTTP":
     "The Data Marshal is unavailable to provide a status check on this Data Stream URL. This may mean that the Data Stream is unavailable or that your network is blocking the check. You may proceed with the transaction at your own risk. (ER-26)",
+  "ERR_BONDING_STAKING_COULD_NOT_GET_DATA_NFTS":
+    "Could not get a list of all your Data NFTs to show liveliness bonding status on each. Could be related to you having too many or the network is slow (ER-33)",
 
   "MINT_FORM_POPUP_INFO_DATA_STREAM":
     "The URL of the hosted data asset that you would like to trade. This URL should be publicly accessible behind a secure domain (one that starts with https://)",

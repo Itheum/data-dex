@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, Text, ModalCloseButton, useColorMode, HStack } from "@chakra-ui/react";
 import ClaimsTxTable from "./Tables/ClaimsTxTable";
 
-export default function ChaimsHistory({ mxAddress, onAfterCloseChaimsHistory }: { mxAddress: string; onAfterCloseChaimsHistory: () => void }) {
+export default function ClaimsHistory({ mxAddress, onAfterCloseClaimsHistory }: { mxAddress: string; onAfterCloseClaimsHistory: () => void }) {
   const [claimTransactionsModalOpen, setClaimTransactionsModalOpen] = useState(true);
   const { colorMode } = useColorMode();
 
@@ -10,11 +10,12 @@ export default function ChaimsHistory({ mxAddress, onAfterCloseChaimsHistory }: 
     <Modal
       isOpen={claimTransactionsModalOpen}
       onClose={() => {
-        onAfterCloseChaimsHistory();
+        onAfterCloseClaimsHistory();
         setClaimTransactionsModalOpen(false);
       }}
       scrollBehavior="inside">
       <ModalOverlay backdropFilter="blur(10px)" />
+
       <ModalContent maxWidth={{ md: "70vw" }} overflowY="scroll" maxH="90%" backgroundColor={colorMode === "light" ? "bgWhite" : "bgDark"}>
         <ModalHeader paddingBottom={0} bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
           <HStack spacing="5">

@@ -42,7 +42,6 @@ export const TrendingData: React.FC = () => {
   const [trendingDataNfts, setTrendingDataNfts] = useState<Array<TrendingDataNftsType>>(latestOffersSkeleton);
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
   const { tokenLogin } = useGetLoginInfo();
-
   const favoriteNfts = useAccountStore((state) => state.favoriteNfts);
   const updateFavoriteNfts = useAccountStore((state) => state.updateFavoriteNfts);
 
@@ -58,7 +57,9 @@ export const TrendingData: React.FC = () => {
         const tokenIdentifier = splitedString[0] + "-" + splitedString[1];
         _trendingData.push({ nonce: nonce, tokenIdentifier: tokenIdentifier });
       });
+
       const dataNfts: DataNft[] = await DataNft.createManyFromApi(_trendingData);
+
       const trending = getTrendingData.map((dataNft) => {
         const ratingNfts = dataNfts.find((nft) => nft.tokenIdentifier === dataNft.tokenIdentifier);
         if (ratingNfts) {
@@ -71,6 +72,10 @@ export const TrendingData: React.FC = () => {
     })();
   }, []);
 
+  useEffect(() => {
+    getFavourite();
+  }, [favoriteNfts.length]);
+
   const getFavourite = async () => {
     if (tokenLogin?.nativeAuthToken) {
       const bearerToken = tokenLogin?.nativeAuthToken;
@@ -79,15 +84,12 @@ export const TrendingData: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    getFavourite();
-  }, [favoriteNfts.length]);
-
   return (
     <Box>
       <Heading as="h2" size="lg" fontWeight="bold" mb="1rem">
         Trending Data NFTs
       </Heading>
+
       <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(240px, 1fr))">
         {trendingDataNfts.map((trendingDataNft, index) => {
           return (
@@ -102,7 +104,7 @@ export const TrendingData: React.FC = () => {
               <CardBody>
                 <Skeleton height={skeletonHeight} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
                   <Link to={`/datanfts/marketplace/${trendingDataNft.tokenIdentifier}`} as={ReactRouterLink}>
-                    <NftMediaComponent nftMedia={trendingDataNft?.media} imageHeight="210px" imageWidth="210px" borderRadius="lg" shouldDisplayArrows={false} />
+                    <NftMediaComponent nftMedia={trendingDataNft?.media} imageHeight="210px" imageWidth="210px" borderRadius="md" shouldDisplayArrows={false} />
                   </Link>
                 </Skeleton>
                 <Skeleton height="76px" isLoaded={loadedOffers} fadeDuration={2}>

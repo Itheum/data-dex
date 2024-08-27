@@ -143,7 +143,7 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
                   <Tr key={row.id} borderColor="#00C79740">
                     {row.getVisibleCells().map((cell) => {
                       return (
-                        <Td fontSize="lg !important" key={cell.id}>
+                        <Td textAlign="center" fontSize="md !important" key={cell.id}>
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </Td>
                       );

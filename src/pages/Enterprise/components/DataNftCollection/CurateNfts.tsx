@@ -10,7 +10,7 @@ import axios from "axios";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { MdInfo, MdNavigateBefore, MdOutlineNavigateNext } from "react-icons/md";
 import { IS_DEVNET } from "libs/config";
-import { ImageTooltip } from "../../../../components/ImageTooltip";
+import { ImageTooltip } from "../../../../components/UtilComps/ImageTooltip";
 import { getApi, getExplorer } from "../../../../libs/MultiversX/api";
 
 type CurateNftsProp = {

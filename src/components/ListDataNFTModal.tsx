@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   Box,
   Text,
-  Image,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -20,7 +19,6 @@ import {
 import { Offer } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import axios from "axios";
-
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
 import { contractsForChain } from "libs/config";
@@ -63,22 +61,15 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
   const [isLiveUptimeSuccessful, setIsLiveUptimeSuccessful] = useState<boolean>(false);
   const [priceFromApi, setPriceFromApi] = useState<number>(-1);
   const { tokenLogin, loginMethod } = useGetLoginInfo();
-
   const backendUrl = backendApi(chainID);
-
   const { colorMode } = useColorMode();
-
   const isWebWallet = loginMethod === "wallet";
-
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
-
   const [listTxSessionId, setListTxSessionId] = useState<string>("");
   const [listTxHash, setListTxHash] = useState<string>("");
-
   const trackTransactionStatus = useTrackTransactionStatus({
     transactionId: listTxSessionId,
   });
-
   const { pendingTransactions } = useGetPendingTransactions();
 
   useEffect(() => {
@@ -93,6 +84,10 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
       setAmount(1);
     }
   }, [trackTransactionStatus]);
+
+  useEffect(() => {
+    getTokenHistory(nftData.tokenIdentifier);
+  }, [hasPendingTransactions]);
 
   async function addOfferBackend(
     txHash = listTxHash,
@@ -270,10 +265,6 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
     }
   }
 
-  useEffect(() => {
-    getTokenHistory(nftData.tokenIdentifier);
-  }, [hasPendingTransactions]);
-
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false}>
@@ -410,6 +401,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
             <DataNFTLiveUptime
               dataMarshal={getApiDataMarshal(chainID)}
               NFTId={nftData.tokenIdentifier}
+              tokenName={nftData.tokenName}
               handleFlagAsFailed={(hasFailed: boolean) => setLiveUptimeFAIL(hasFailed)}
               isLiveUptimeSuccessful={isLiveUptimeSuccessful}
               setIsLiveUptimeSuccessful={setIsLiveUptimeSuccessful}

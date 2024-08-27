@@ -79,7 +79,7 @@ export const FavoriteCards: React.FC = () => {
                 <CardBody mb={9}>
                   <Skeleton height={skeletonHeight} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
                     <Link to={`/datanfts/marketplace/${dataNft.tokenIdentifier}`} as={ReactRouterLink}>
-                      <NftMediaComponent imageUrls={[dataNft.nftImgUrl]} imageHeight={"175px"} imageWidth="175px" borderRadius="lg" />
+                      <NftMediaComponent imageUrls={[dataNft.nftImgUrl]} imageHeight="175px" imageWidth="175px" borderRadius="md" />
                     </Link>
                   </Skeleton>
                   <Skeleton height="76px" isLoaded={loadedOffers} fadeDuration={2}>

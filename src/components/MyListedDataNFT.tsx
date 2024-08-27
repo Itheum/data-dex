@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Flex,
-  Image,
   Link,
   Popover,
   PopoverArrow,
@@ -72,10 +71,10 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
   const ChainExplorer = CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER];
-
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const userData = useMintStore((state) => state.userData);
   const nftParsedCreationTime = moment(nftMetadata[index].creationTime);
+
   return (
     <Skeleton isLoaded={nftMetadataLoading}>
       <Flex wrap="wrap" gap="5" key={index}>
@@ -98,6 +97,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                     {nftMetadata[index].tokenName} <ExternalLinkIcon mx="2px" />
                   </Link>
                 </Text>
+
                 <Popover trigger="hover" placement="auto">
                   <PopoverTrigger>
                     <div>
@@ -127,6 +127,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                     </PopoverBody>
                   </PopoverContent>
                 </Popover>
+
                 <Flex display="flex" flexDirection="column">
                   <Box color="gray.600" fontSize="sm">
                     Creator:
@@ -182,7 +183,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                   </Text>
                 </Box>
 
-                <PreviewDataButton previewDataURL={nftMetadata[index].dataPreview} />
+                <PreviewDataButton previewDataURL={nftMetadata[index].dataPreview} tokenName={nftMetadata[index].tokenName} />
 
                 {address && (
                   <>

@@ -1,3 +1,4 @@
+//@TODO, is this used??
 import React, { Fragment, useEffect, useState } from "react";
 import { Box, Flex, Text } from "@chakra-ui/react";
 import { Bond, BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";

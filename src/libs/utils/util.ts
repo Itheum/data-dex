@@ -88,7 +88,6 @@ export const clearAppSessionsLaunchMode = () => {
   localStorage?.removeItem("itm-launch-env");
   localStorage?.removeItem("itm-datacat-linked");
   sessionStorage.removeItem("persist:sdk-dapp-signedMessageInfo"); // clear signedSessions
-  //sessionStorage.removeItem("itm-hub-access-token");
 };
 
 export const printPrice = (price: number, token: string): string => {
@@ -224,6 +223,15 @@ export function findNthOccurrenceFromEnd(string: string, char: string, n: number
 
   // Subtract the found index from the length of the string - 1 (because string index starts from 0)
   return string.length - 1 - index;
+}
+
+// Is an NFT a NFMeID Vault class (if so it will start with NFMeIDVault.. i.e NFMeIDVaultG1)
+export function isNFMeIDVaultClassDataNFT(tokenName: string | undefined) {
+  if (tokenName && tokenName.replaceAll(" ", "").toLowerCase().includes("nfmeid")) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 export const ITHEUM_EXPLORER_PROD_URL = "https://explorer.itheum.io";

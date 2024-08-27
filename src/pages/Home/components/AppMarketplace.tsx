@@ -17,7 +17,6 @@ export default function AppMarketplace(props: Props) {
   const { chainID } = useGetNetworkConfig();
   const [learnMoreProd, setLearnMoreProg] = useState<keyof typeof progInfoMeta>("rhc");
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
-
   const { isOpen: isPS4ModalOpen, onOpen: onPS4ModalOpen, onClose: onPS4ModalClose } = useDisclosure();
 
   const handleLearnMoreProg = (progCode: any) => {
@@ -35,6 +34,7 @@ export default function AppMarketplace(props: Props) {
         <Heading size="lg" fontFamily="Clash-Medium" fontWeight="semibold" mb="15px">
           App Marketplace
         </Heading>
+
         <SimpleGrid columns={{ sm: 1, md: 2, lg: 3, xl: 4 }} spacing={4}>
           <Box overflow="hidden" backgroundColor="none">
             <Image src={imgProgGaPa} height="160px" w="full" border="1px solid transparent" borderColor="#00C797" borderRadius="16px" />

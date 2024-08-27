@@ -189,21 +189,6 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
     })();
   }, [address, hasPendingTransactions]);
 
-  const getItheumPrice = () => {
-    (async () => {
-      const _itheumPrice = (await getItheumPriceFromApi()) ?? 0;
-      updateItheumPrice(_itheumPrice);
-    })();
-  };
-
-  const getFavourite = async () => {
-    if (tokenLogin?.nativeAuthToken) {
-      const bearerToken = tokenLogin?.nativeAuthToken;
-      const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
-      updateFavoriteNfts(getFavourites);
-    }
-  };
-
   useEffect(() => {
     getFavourite();
   }, [favoriteNfts.length]);
@@ -223,6 +208,21 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
       updateAddressBoughtOffers([]);
     }
   }, [address, hasPendingTransactions]);
+
+  const getItheumPrice = () => {
+    (async () => {
+      const _itheumPrice = (await getItheumPriceFromApi()) ?? 0;
+      updateItheumPrice(_itheumPrice);
+    })();
+  };
+
+  const getFavourite = async () => {
+    if (tokenLogin?.nativeAuthToken) {
+      const bearerToken = tokenLogin?.nativeAuthToken;
+      const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
+      updateFavoriteNfts(getFavourites);
+    }
+  };
 
   return <>{children}</>;
 };

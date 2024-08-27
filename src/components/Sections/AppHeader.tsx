@@ -43,7 +43,7 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { BsDot } from "react-icons/bs";
-import { FaStore, FaUserCheck, FaLaptop } from "react-icons/fa";
+import { FaStore, FaUserCheck, FaLaptop, FaUserAstronaut } from "react-icons/fa";
 import { LuFlaskRound } from "react-icons/lu";
 import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdPerson, MdSpaceDashboard } from "react-icons/md";
 import { RiExchangeFill } from "react-icons/ri";
@@ -56,9 +56,10 @@ import Countdown from "components/CountDown";
 import InteractionsHistory from "components/Tables/InteractionHistory";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU, BIT_GAME_WINDOW_HOURS, EXPLORER_APP_FOR_TOKEN } from "libs/config";
+import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU, EXPLORER_APP_FOR_TOKEN } from "libs/config";
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
+
 const exploreRouterMenu = [
   {
     sectionId: "MainSections",
@@ -104,19 +105,28 @@ const exploreRouterMenu = [
         menuEnum: MENU.NFTALL,
         path: "/datanfts/marketplace",
         label: "Data NFT Marketplace",
-        shortLbl: "Data Market",
+        shortLbl: "Market",
         Icon: FaStore,
         needToBeLoggedIn: false,
         isHidden: false,
       },
       {
         menuEnum: MENU.GETVERIFIED,
-        path: "/getverified",
+        path: "/getVerified",
         label: "Become a Verified Data Creator",
         shortLbl: "Get Verified",
         Icon: FaUserCheck,
         needToBeLoggedIn: false,
         needToBeLoggedOut: true,
+        isHidden: true,
+      },
+      {
+        menuEnum: MENU.NFMEID,
+        path: "/NFMeID",
+        label: "Get a NFMe ID",
+        shortLbl: "NFMe",
+        Icon: FaUserAstronaut,
+        needToBeLoggedIn: false,
         isHidden: false,
       },
     ],
@@ -131,14 +141,11 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
   const { address: mxAddress } = useGetAccountInfo();
   const { colorMode, setColorMode } = useColorMode();
   const { pathname } = useLocation();
-
   const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
   const [mxShowInteractionsHistory, setMxInteractionsHistory] = useState(false);
   const bitzBalance = useAccountStore((state) => state.bitzBalance);
   const cooldown = useAccountStore((state) => state.cooldown);
-
   const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet", md: "Connect MultiversX Wallet" });
-
   const navigate = useNavigate();
 
   const navigateToDiscover = (menuEnum: number) => {
@@ -188,7 +195,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
         borderBottom="solid .1rem"
         borderColor="teal.200"
         paddingY="5">
-        <HStack alignItems={"center"} backgroundColor="none" width={{ base: "full", md: "14.5rem" }} justifyContent={{ base: "initial", md: "space-around" }}>
+        <HStack alignItems={"center"} width={{ base: "full", md: "14.5rem" }} justifyContent={{ base: "initial", md: "space-around" }}>
           {isMxLoggedIn && (
             <IconButton
               fontSize="2rem"
@@ -230,7 +237,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
             </HStack>
           </Link>
         </HStack>
-        <Flex backgroundColor="none" mr={{ base: "1rem" }}>
+        <Flex mr={{ base: "1rem" }}>
           <HStack alignItems={"center"} spacing={2}>
             <HStack display={{ base: "none", md: "none", xl: "block", "2xl": "block" }}>
               {exploreRouterMenu[0].sectionItems.map((quickMenuItem) => {
@@ -425,8 +432,8 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                         What is {`<BiTz>`} XP?
                       </Text>
                       <Text fontSize="md" lineHeight="1.5rem" fontFamily="Satoshi-Regular" py={4} px={3}>
-                        {`<BiTz>`} are Itheum Protocol XP. {`<BiTz>`} can be collected every {BIT_GAME_WINDOW_HOURS} hours by playing the Get {`<BiTz>`} game
-                        Data Widget. Top LEADERBOARD climbers get special perks and drops!
+                        {`<BiTz>`} are Itheum Protocol XP. {`<BiTz>`} can be collected every few hours by playing the Get {`<BiTz>`} game Data Widget. Top
+                        LEADERBOARD climbers get special perks and drops!
                       </Text>
                       <Link as={ReactRouterLink} isExternal to={`${EXPLORER_APP_FOR_TOKEN[chainID]["bitzgame"]}/?accessToken=${tokenLogin?.nativeAuthToken}`}>
                         <Button
@@ -436,7 +443,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                           w="full"
                           _hover={{ backgroundImage: "linear-gradient(345deg, #171717, #38bdf8)" }}>
                           <span>
-                            {cooldown === -2 ? <span>...</span> : cooldown > 0 ? <Countdown unixTime={cooldown} /> : <span> Claim your {`<BiTz>`}</span>}
+                            {cooldown === -2 ? <span>...</span> : cooldown > 0 ? <Countdown unixTime={cooldown} /> : <span> Claim Your {`<BiTz>`} XP</span>}
                           </span>
                         </Button>
                       </Link>
@@ -445,6 +452,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 </Popover>
               </>
             )}
+
             {onShowConnectWalletModal && !isMxLoggedIn && (
               <Button
                 colorScheme="teal"
@@ -452,7 +460,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 size={{ base: "sm", lg: "lg" }}
                 onClick={() => {
                   localStorage?.removeItem("itm-datacat-linked");
-                  onShowConnectWalletModal("mx");
+                  onShowConnectWalletModal("mvx");
                 }}>
                 {connectBtnTitle}
               </Button>
@@ -499,7 +507,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
         </Flex>
       </Flex>
 
-      {mxShowClaimsHistory && <ClaimsHistory mxAddress={mxAddress} onAfterCloseChaimsHistory={() => setMxShowClaimsHistory(false)} />}
+      {mxShowClaimsHistory && <ClaimsHistory mxAddress={mxAddress} onAfterCloseClaimsHistory={() => setMxShowClaimsHistory(false)} />}
       {mxShowInteractionsHistory && <InteractionsHistory mxAddress={mxAddress} onAfterCloseInteractionsHistory={() => setMxInteractionsHistory(false)} />}
 
       <Drawer placement={"left"} onClose={onClose} isOpen={isOpen} blockScrollOnMount={false}>
@@ -574,8 +582,8 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                               What is {`<BiTz>`} XP?
                             </Text>
                             <Text fontSize="md" lineHeight="1.5rem" fontFamily="Satoshi-Regular" py={4} px={3}>
-                              {`<BiTz>`} are Itheum Protocol XP. {`<BiTz>`} can be collected every {BIT_GAME_WINDOW_HOURS} hours by playing the Get {`<BiTz>`}{" "}
-                              game Data Widget. Top LEADERBOARD climbers get special perks and drops!
+                              {`<BiTz>`} are Itheum Protocol XP. {`<BiTz>`} can be collected every few hours by playing the Get {`<BiTz>`} game Data Widget. Top
+                              LEADERBOARD climbers get special perks and drops!
                             </Text>
                             <Link
                               as={ReactRouterLink}
@@ -709,8 +717,6 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
   );
 };
 
-export default AppHeader;
-
 function shouldDisplayQuickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
   if (quickMenuItem.needToBeLoggedOut === undefined) {
     return quickMenuItem.needToBeLoggedIn ? (isMxLoggedIn ? "inline" : "none") : "inline";
@@ -762,3 +768,5 @@ function LoggedInChainBadge({ chain, displayParams }: { chain: any; displayParam
     </Box>
   );
 }
+
+export default AppHeader;
