@@ -357,7 +357,7 @@ export const nfMeIDVaultConfig = {
     "programName": "NFMe ID Vault",
     "dataStreamURL_PRD": "https://api.itheumcloud.com/datadexapi/nfmeIdVault/dataStream?dmf-allow-http403=1",
     "dataStreamURL": "https://api.itheumcloud-stg.com/datadexapi/nfmeIdVault/dataStream?dmf-allow-http403=1",
-    "dataPreviewURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport_preview.json",
+    "dataPreviewURL": "https://api.itheumcloud.com/datadexapi/nfmeIdVault/previewStream",
     "img": "nfme_id_vault_preview",
     "description": "Activate this Gen1 NFMe ID Vault Data NFT as your web3 identity.",
   },
