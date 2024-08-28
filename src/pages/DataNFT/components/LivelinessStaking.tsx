@@ -419,12 +419,12 @@ export const LivelinessStaking: React.FC = () => {
                 ) : (
                   <Box w="90%" mt="10">
                     <Text fontWeight="bold">
-                      You do not seem to have am active NFMe ID Vault yet. If you did, you can top-up bonus $ITHEUM tokens and earn extra staking rewards. Your
+                      You do not seem to have an Active NFMe ID Vault yet. If you did, you can top-up bonus $ITHEUM tokens and earn extra staking rewards. You
                       have a few options:
                     </Text>
 
                     <Text fontSize="md" my="5">
-                      1. Do you have other Data NFTs with an active Liveliness Bond? if so, you can set one of them as your NFMe ID Vault by clicking on the{" "}
+                      1. Do you have other Data NFTs with an active Liveliness Bond? If so, you can set one of them as your NFMe ID Vault by clicking on the{" "}
                       {"'Set as Primary NFMe ID'"} option below.
                     </Text>
 
@@ -432,7 +432,7 @@ export const LivelinessStaking: React.FC = () => {
                       2. Mint your very own new NFMe ID Vault!
                     </Text>
                     <Button colorScheme="teal" borderRadius="12px" variant="outline" size="sm" onClick={() => navigate("/mintdata?launchTemplate=nfmeidvault")}>
-                      <Text px={2}>Mint a NFMe ID Vault</Text>
+                      <Text px={2}>Mint NFMe ID Vault</Text>
                     </Button>
                   </Box>
                 )}

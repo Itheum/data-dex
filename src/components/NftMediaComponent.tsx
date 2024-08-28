@@ -77,7 +77,7 @@ const NftMediaComponent: React.FC<NftMediaComponentProps> = (props) => {
   }
 
   return (
-    <Container justifyContent="center" mt={"0"} h={imageHeight ? String(transformSizeInNumber(imageHeight) + 25) + "px" : "290px"} position="relative">
+    <Container justifyContent="center" mt="0" h={imageHeight ? String(transformSizeInNumber(imageHeight) + 25) + "px" : "290px"} position="relative">
       <Box style={{ marginTop: marginTop }} alignItems={"center"} justifyContent={"center"}>
         <Flex justifyContent={{ base: "center" }} alignItems={"center"} flexDirection="column">
           <Flex justifyContent="center">
