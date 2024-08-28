@@ -145,8 +145,9 @@ export const BondingCards: React.FC = () => {
     })();
   }, [hasPendingTransactions]);
 
-  const calculateNewPeriodAfterNewBond = (unbondTimestamp: number, lockPeriod: number) => {
-    const newExpiry = new Date((unbondTimestamp + lockPeriod) * 1000);
+  const calculateNewPeriodAfterNewBond = (lockPeriod: number) => {
+    const nowTSInSec = Math.round(Date.now() / 1000);
+    const newExpiry = new Date((nowTSInSec + lockPeriod) * 1000);
     return newExpiry.toDateString();
   };
 
@@ -279,7 +280,7 @@ export const BondingCards: React.FC = () => {
                               fontSize={{
                                 base: "sm",
                                 md: "md",
-                              }}>{`New expiry will be ${calculateNewPeriodAfterNewBond(contractBond.unbondTimestamp, contractBond.lockPeriod)}`}</Text>
+                              }}>{`New expiry will be ${calculateNewPeriodAfterNewBond(contractBond.lockPeriod)}`}</Text>
                           </Flex>
                           <Flex flexDirection={{ base: "column", md: "row" }} gap={4} pt={3} alignItems="center">
                             {!checkIfBondIsExpired(contractBond.unbondTimestamp) ? (

@@ -149,8 +149,9 @@ export const LivelinessStaking: React.FC = () => {
     });
   }
 
-  const calculateNewPeriodAfterNewBond = (unbondTimestamp: number, lockPeriod: number) => {
-    const newExpiry = new Date((unbondTimestamp + lockPeriod) * 1000);
+  const calculateNewPeriodAfterNewBond = (lockPeriod: number) => {
+    const nowTSInSec = Math.round(Date.now() / 1000);
+    const newExpiry = new Date((nowTSInSec + lockPeriod) * 1000);
     return newExpiry.toDateString();
   };
 
@@ -282,7 +283,7 @@ export const LivelinessStaking: React.FC = () => {
                             }}>
                             Renew Bond
                           </Button>
-                          <Text fontSize=".75rem">{`New expiry will be ${calculateNewPeriodAfterNewBond(nfmeIdBond?.unbondTimestamp ?? 0, nfmeIdBond?.lockPeriod ?? 0)}`}</Text>
+                          <Text fontSize=".75rem">{`New expiry will be ${calculateNewPeriodAfterNewBond(nfmeIdBond?.lockPeriod ?? 0)}`}</Text>
                         </Flex>
                         <Flex gap={4} pt={3} alignItems="center" w="100%">
                           <Flex flexDirection="column" gap={1}>
