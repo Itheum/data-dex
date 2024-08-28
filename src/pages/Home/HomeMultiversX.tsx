@@ -240,11 +240,11 @@ export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
                 </Stack>
               </Box>
 
-              <Box m={{ base: "auto", md: "initial" }}>
-                <ChainSupportedComponent feature={MENU.FAUCET}>
+              <ChainSupportedComponent feature={MENU.FAUCET}>
+                <Box m={{ base: "auto", md: "initial" }}>
                   <Faucet tileBoxW={tileBoxW} tileBoxH={tileBoxH}></Faucet>
-                </ChainSupportedComponent>
-              </Box>
+                </Box>
+              </ChainSupportedComponent>
 
               <Box w={[tileBoxW, "initial"]} border="1px solid transparent" borderColor="#00C79740" borderRadius="16px" m={{ base: "auto", md: "initial" }}>
                 <Stack p="5" h={"430px"} alignItems={{ base: "center", xl: "start" }}>

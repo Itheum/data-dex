@@ -705,6 +705,9 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     //TODO refactor this with react form hook
   };
 
+  // unit of time for bonding
+  const amountOfTimeUnit = amountOfTime?.unit || "-1";
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Box mb={10}>
@@ -725,7 +728,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               <AlertTitle mb={2}>How much $ITHEUM and $EGLD do you need for the mint?</AlertTitle>
               <AlertDescription fontSize="md">1. An anti-spam fee of {antiSpamTax < 0 ? "?" : antiSpamTax} $ITHEUM</AlertDescription>
               <AlertDescription fontSize="md">
-                2. Bond an amount of $ITHEUM tokens ({bondingAmount} $ITHEUM) for a period of time ({bondingPeriod} {amountOfTime.unit}). This bond can be
+                2. Bond an amount of $ITHEUM tokens ({bondingAmount} $ITHEUM) for a period of time ({bondingPeriod} {amountOfTimeUnit}). This bond can be
                 unlocked by you and earns Staking rewards when active.
               </AlertDescription>
               <AlertDescription fontSize="md">3. ~0.02 EGLD to cover the gas fees for the transaction.</AlertDescription>
@@ -1168,9 +1171,9 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             <Flex flexDirection="row">
               <Heading size="lg" fontSize="22px" mt={3} mb={5} lineHeight="tall">
                 <Highlight
-                  query={[`${bondingAmount.toLocaleString()} $ITHEUM`, `${bondingPeriod.toString()} days`, `${maxApy}% Max APR`]}
+                  query={[`${bondingAmount.toLocaleString()} $ITHEUM`, `${bondingPeriod.toString()} ${amountOfTimeUnit}`, `${maxApy}% Max APR`]}
                   styles={{ px: "2", py: "1", rounded: "full", bg: "teal.200" }}>
-                  {`To mint your ${isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} , you need to bond ${bondingAmount.toLocaleString()} $ITHEUM for ${bondingPeriod.toString()} days. Bonds earn an estimated ${maxApy}% Max APR as staking rewards.`}
+                  {`To mint your ${isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} , you need to bond ${bondingAmount.toLocaleString()} $ITHEUM for ${bondingPeriod.toString()} ${amountOfTimeUnit}. Bonds earn an estimated ${maxApy}% Max APR as staking rewards.`}
                 </Highlight>
               </Heading>
 

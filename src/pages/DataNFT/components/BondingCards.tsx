@@ -145,8 +145,9 @@ export const BondingCards: React.FC = () => {
     })();
   }, [hasPendingTransactions]);
 
-  const calculateNewPeriodAfterNewBond = (unbondTimestamp: number, lockPeriod: number) => {
-    const newExpiry = new Date((unbondTimestamp + lockPeriod) * 1000);
+  const calculateNewPeriodAfterNewBond = (lockPeriod: number) => {
+    const nowTSInSec = Math.round(Date.now() / 1000);
+    const newExpiry = new Date((nowTSInSec + lockPeriod) * 1000);
     return newExpiry.toDateString();
   };
 
@@ -231,25 +232,28 @@ export const BondingCards: React.FC = () => {
                     w="100%">
                     <Flex flexDirection={{ base: "column", md: "row" }}>
                       <Box minW="250px" textAlign="center">
-                        <NftMediaComponent nftMedia={dataNft?.media} imageHeight="220px" imageWidth="220px" borderRadius="10px" />
-
-                        {nfmeIdNonce !== dataNft.nonce ? (
-                          <Button
-                            colorScheme="teal"
-                            isDisabled={address === "" || hasPendingTransactions}
-                            onClick={() => {
-                              const tx = bondContract.setVaultNonce(new Address(address), dataNft.nonce, dataNft.collection);
-                              sendTransactions({
-                                transactions: [tx],
-                              });
-                            }}>
-                            Set as Primary NFMe ID
-                          </Button>
-                        ) : (
-                          <Text fontSize="md" w="200px" m="auto">
-                            ✅ Currently set as your Primary NFMe ID
-                          </Text>
-                        )}
+                        <Box minH="263px">
+                          <NftMediaComponent nftMedia={dataNft?.media} imageHeight="220px" imageWidth="220px" borderRadius="10px" />
+                        </Box>
+                        <Box>
+                          {nfmeIdNonce !== dataNft.nonce ? (
+                            <Button
+                              colorScheme="teal"
+                              isDisabled={address === "" || hasPendingTransactions}
+                              onClick={() => {
+                                const tx = bondContract.setVaultNonce(new Address(address), dataNft.nonce, dataNft.collection);
+                                sendTransactions({
+                                  transactions: [tx],
+                                });
+                              }}>
+                              Set as Primary NFMe ID
+                            </Button>
+                          ) : (
+                            <Text fontSize="md" w="200px" m="auto">
+                              ✅ Currently set as your Primary NFMe ID
+                            </Text>
+                          )}
+                        </Box>
                       </Box>
                       <Flex ml={{ md: "3" }} justifyContent="space-between" alignItems="center" w="full">
                         <Flex flexDirection="column" justifyContent="center" w="full">
@@ -276,7 +280,7 @@ export const BondingCards: React.FC = () => {
                               fontSize={{
                                 base: "sm",
                                 md: "md",
-                              }}>{`New expiry will be ${calculateNewPeriodAfterNewBond(contractBond.unbondTimestamp, contractBond.lockPeriod)}`}</Text>
+                              }}>{`New expiry will be ${calculateNewPeriodAfterNewBond(contractBond.lockPeriod)}`}</Text>
                           </Flex>
                           <Flex flexDirection={{ base: "column", md: "row" }} gap={4} pt={3} alignItems="center">
                             {!checkIfBondIsExpired(contractBond.unbondTimestamp) ? (
