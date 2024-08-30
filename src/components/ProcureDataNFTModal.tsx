@@ -190,7 +190,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
           <ModalBody py={6}>
             <HStack spacing="5" alignItems="center">
               <Box flex="4" alignContent="center">
-                <Text fontSize="lg">{showCustomMintMsg ? "Mint Data NFTs" : "Procure Access to Data NFTs"}</Text>
+                <Text fontSize="lg">{showCustomMintMsg ? "Mint Data NFTs" : "Buy Data NFTs"}</Text>
                 <Flex mt="1">
                   <Text
                     px="15px"

@@ -15,7 +15,7 @@ export const LandingPage = ({ onShowConnectWalletModal }: { onShowConnectWalletM
 
   return (
     <Box mb="10">
-      <Box width={{ base: "100%", md: "80%" }} textAlign={{ base: "center", md: "center" }} m="auto" pt="10">
+      <Box width={{ base: "90%", md: "80%" }} textAlign={{ base: "center", md: "center" }} m="auto" pt="10">
         <Heading as="h1" size={{ base: "xl", md: "xl" }} fontFamily="Clash-Regular" mt="5">
           NFMe ID Vault +{" "}
           <Text as="span" color="teal.200">
@@ -133,7 +133,7 @@ export const LandingPage = ({ onShowConnectWalletModal }: { onShowConnectWalletM
               }}
               href="https://docs.google.com/forms/d/e/1FAIpQLScpguzOBjyQBj2iDzaI2E0wN9SIAQGoS92FPDM9qkk8B-rzFA/viewform"
               isExternal>
-              Claim Whitelist NFMe ID NFT Airdrop on Solana
+              Claim NFMe ID NFT Airdrop on Solana
             </Button>
           </Flex>
         </Flex>
