@@ -16,7 +16,7 @@ export const LivelinessStaking = ({ onShowConnectWalletModal }: { onShowConnectW
   const navigate = useNavigate();
 
   return (
-    <Box mb="10" width={{ base: "100%", md: "80%" }} textAlign={{ base: "center", md: "center" }} m="auto" pt="5">
+    <Box mb="10" width={{ base: "95%", md: "80%" }} textAlign={{ base: "center", md: "center" }} m="auto" pt="5">
       <Flex id="liveliness" flexDirection="column" my={10} p={2}>
         <Heading as="h1" textAlign="center" fontSize={{ base: "34px", md: "50px" }} fontFamily="Clash-Medium">
           Liveliness Staking Rewards
@@ -27,7 +27,7 @@ export const LivelinessStaking = ({ onShowConnectWalletModal }: { onShowConnectW
 
         <Flex flexDirection="column">
           <Flex flexDirection={{ base: "column", md: "row" }} my="5" alignItems="center">
-            <Box minW={{ base: "400px", md: "500px" }}>
+            <Box minW={{ base: "330px", md: "500px" }}>
               <Image
                 boxSize="370px"
                 height="auto"

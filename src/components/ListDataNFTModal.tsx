@@ -149,16 +149,14 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
         maxQuantityPerAddress,
       };
 
-      const response = await fetch(`${backendUrl}/addOffer`, {
+      // add the offer to the web2 API
+      await fetch(`${backendUrl}/addOffer`, {
         method: "POST",
         headers: headers,
         body: JSON.stringify(requestBody),
       });
-
-      const data = await response.json();
-      console.log("Response:", data);
     } catch (error) {
-      console.log("Error:", error);
+      console.error(error);
     }
   }
 

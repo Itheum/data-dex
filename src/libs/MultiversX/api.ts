@@ -197,6 +197,6 @@ export const getTokenDecimalsRequest = async (tokenIdentifier: string | undefine
       return data.decimals;
     }
   } catch (error) {
-    console.log("Error finding token!");
+    console.error(error);
   }
 };
