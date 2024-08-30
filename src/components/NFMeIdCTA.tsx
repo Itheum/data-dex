@@ -43,6 +43,25 @@ const NFMeIdCTA = () => {
           }}>
           Mint Your NFMe ID Vault
         </Button>
+
+        <Button
+          as={Link}
+          variant="outline"
+          colorScheme="teal"
+          px={7}
+          py={6}
+          rounded="lg"
+          mt={7}
+          ml={{ base: "0", md: "5" }}
+          onClick={() => {
+            if (mxAddress) {
+              navigate("/liveliness");
+            } else {
+              navigate("/NFMeID?view=staking");
+            }
+          }}>
+          Get Liveliness Staking Rewards
+        </Button>
       </Box>
 
       <Box mt={{ base: "10", md: "0" }}>

@@ -22,6 +22,8 @@ import {
   Wrap,
   Tag,
   TagLabel,
+  Alert,
+  AlertIcon,
   useClipboard,
   useColorMode,
   useDisclosure,
@@ -38,6 +40,8 @@ import moment from "moment";
 import { FaStore } from "react-icons/fa";
 import { MdOutlineInfo } from "react-icons/md";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Favourite } from "components/Favourite/Favourite";
+import { LivelinessScore } from "components/Liveliness/LivelinessScore";
 import NftMediaComponent from "components/NftMediaComponent";
 import PreviewDataButton from "components/PreviewDataButton";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
@@ -46,7 +50,7 @@ import TokenTxTable from "components/Tables/TokenTxTable";
 import ConditionalRender from "components/UtilComps/ApiWrapper";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
+import { CHAIN_TX_VIEWER, REPORTED_TO_BE_BAD_DATA_NFTS, uxConfig } from "libs/config";
 import { labels } from "libs/language";
 import { getFavoritesFromBackendApi, getOffersByIdAndNoncesFromBackendApi, getVolumes } from "libs/MultiversX";
 import { getApi } from "libs/MultiversX/api";
@@ -63,8 +67,6 @@ import {
   isNFMeIDVaultClassDataNFT,
 } from "libs/utils";
 import { useMarketStore } from "store";
-import { Favourite } from "../../components/Favourite/Favourite";
-import { LivelinessScore } from "../../components/Liveliness/LivelinessScore";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -125,6 +127,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [searchParams, setSearchParams] = useSearchParams();
   const [volume, setVolume] = useState<number>();
+  const [livelinessScore, setLivelinessScore] = useState<number>(-1);
 
   useEffect(() => {
     if (tokenId && offerId && location.pathname === "/datanfts/marketplace/market") {
@@ -223,9 +226,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     axios
       .get(nftApiLink)
       .then((res) => {
-        console.log("res.data", res.data);
         const _nftData = parseDataNft(res.data);
-        console.log("_nftData", _nftData);
 
         setNftData(_nftData);
         setIsLoadingDetails(false);
@@ -239,7 +240,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         getTraits(_nftData);
       })
       .catch((err) => {
-        if (err.response.status === 404) {
+        if (err?.response?.status === 404) {
           toast({
             title: labels.ERR_MARKET_OFFER_NOT_FOUND,
             description: err.message,
@@ -347,13 +348,32 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     return nftData.creator === offer?.owner;
   };
 
+  const handleGettingLivelinessScore = (livelinessScore: number) => {
+    setLivelinessScore(livelinessScore);
+  };
+
   const parsedCreationTime = moment(nftData.creationTime);
   const isNFMeIDVaultDataNFT = isNFMeIDVaultClassDataNFT(nftData.tokenName);
 
   return (
     <Box mx={tokenIdParam ? { base: "5 !important", xl: "28 !important" } : 0}>
       {!isLoadingNftData() ? (
-        <Box mb="5">
+        <Box my={tokenIdParam ? "30px" : "0"}>
+          {livelinessScore !== -1 && livelinessScore < 20 && (
+            <Alert status="warning" rounded="lg" mt={3} fontSize="md">
+              <AlertIcon />
+              This {`creator's`} liveliness score is below 20%, which may suggest low engagement in keeping the data stream up-to-date. Proceed with caution.
+            </Alert>
+          )}
+
+          {nftData?.tokenIdentifier && REPORTED_TO_BE_BAD_DATA_NFTS.includes(nftData.tokenIdentifier) && (
+            <Alert status="error" rounded="lg" mt={3} fontSize="md">
+              <AlertIcon />
+              According to complaints from the Trailblazer Curation DAO, this Data {`NFT's`} stream is confirmed to be down, unstable, or unavailable. We
+              strongly advise against purchasing the Data NFT until the issue is resolved by the creator.
+            </Alert>
+          )}
+
           <Flex direction={"column"} alignItems={"flex-start"}>
             {tokenIdParam && (
               <Box display={{ md: "Flex" }} justifyContent="space-between" w="100%">
@@ -449,7 +469,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       {offer && address && address != offer.owner && (
                         <Box h={14}>
                           <HStack gap={5}>
-                            <Text fontSize="xl">How many to {isCreatorListing() ? "mint" : "procure"} </Text>
+                            <Text fontSize="xl">How many to {isCreatorListing() ? "mint" : "buy"} </Text>
 
                             <NumberInput
                               size="md"
@@ -602,7 +622,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         )}
                       </Flex>
                     </Flex>
-                    <LivelinessScore tokenIdentifier={tokenId ?? ""} />
+                    <LivelinessScore tokenIdentifier={tokenId ?? ""} onGettingLivelinessScore={handleGettingLivelinessScore} />
                   </Flex>
                 </Flex>
 

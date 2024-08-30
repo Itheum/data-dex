@@ -119,16 +119,14 @@ export async function updateOfferSupplyOnBackend(chainID: string, bearerToken: s
     };
 
     const requestBody = { supply: supply };
-    const response = await fetch(`${backendApi(chainID)}/updateOffer/${index}`, {
+
+    await fetch(`${backendApi(chainID)}/updateOffer/${index}`, {
       method: "POST",
       headers: headers,
       body: JSON.stringify(requestBody),
     });
-    if (response.ok) {
-      console.log("Response:", response.ok);
-    }
   } catch (error) {
-    console.log("Error:", error);
+    console.error(error);
   }
 }
 
@@ -140,17 +138,14 @@ export async function updatePriceOnBackend(chainID: string, bearerToken: string,
     };
 
     const requestBody = { price: newPrice };
-    const response = await fetch(`${backendApi(chainID)}/updateOffer/${index}`, {
+
+    await fetch(`${backendApi(chainID)}/updateOffer/${index}`, {
       method: "POST",
       headers: headers,
       body: JSON.stringify(requestBody),
     });
-
-    if (response.ok) {
-      console.log("Response:", response.ok);
-    }
   } catch (error) {
-    console.log("Error:", error);
+    console.error(error);
   }
 }
 

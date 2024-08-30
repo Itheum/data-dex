@@ -255,7 +255,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
             {/* Liveliness */}
             <TabPanel mt={2} width={"full"}>
               {tabState === 5 ? (
-                <Flex flexDirection={{ base: "column" }} alignItems="start" backgroundColor={"3white"}>
+                <Flex flexDirection={{ base: "column" }} alignItems="start">
                   <LivelinessStaking />
                   <BondingCards />
                 </Flex>
