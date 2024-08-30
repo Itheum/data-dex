@@ -83,7 +83,7 @@ export default function WalletDataNFTMX(item: any) {
   const [amountError, setAmountError] = useState("");
   const [price, setPrice] = useState(10);
   const [priceError, setPriceError] = useState("");
-  const [maxPerAddress, setMaxPerAddress] = useState(0);
+  const [maxPerAddress, setMaxPerAddress] = useState(1);
   const [maxPerAddressError, setMaxPerAddressError] = useState("");
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
   const [webWalletListTxHash, setWebWalletListTxHash] = useState("");
