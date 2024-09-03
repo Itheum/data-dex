@@ -8,6 +8,9 @@ type State = {
   givenBitzSum: number;
   bonusBitzSum: number;
   cooldown: number;
+  solPreaccessNonce: string;
+  solPreaccessSignature: string;
+  solPreaccessTimestamp: number;
 };
 
 type Action = {
@@ -18,6 +21,10 @@ type Action = {
   updateGivenBitzSum: (givenBitzSum: State["givenBitzSum"]) => void;
   updateBonusBitzSum: (bonusBitzSum: State["bonusBitzSum"]) => void;
   updateCooldown: (cooldown: State["cooldown"]) => void;
+
+  updateSolPreaccessNonce: (solPreaccessNonce: State["solPreaccessNonce"]) => void;
+  updateSolSignedPreaccess: (solSignedPreaccess: State["solPreaccessSignature"]) => void;
+  updateSolPreaccessTimestamp: (solPreaccessTimestamp: State["solPreaccessTimestamp"]) => void;
 };
 
 export const useAccountStore = create<State & Action>((set) => ({
@@ -35,4 +42,10 @@ export const useAccountStore = create<State & Action>((set) => ({
   updateGivenBitzSum: (value: number) => set(() => ({ givenBitzSum: value })),
   bonusBitzSum: -2,
   updateBonusBitzSum: (value: number) => set(() => ({ bonusBitzSum: value })),
+  solPreaccessNonce: "",
+  updateSolPreaccessNonce: (value: string) => set(() => ({ solPreaccessNonce: value })),
+  solPreaccessSignature: "",
+  updateSolSignedPreaccess: (value: string) => set(() => ({ solPreaccessSignature: value })),
+  solPreaccessTimestamp: -2,
+  updateSolPreaccessTimestamp: (value: number) => set(() => ({ solPreaccessTimestamp: value })),
 }));

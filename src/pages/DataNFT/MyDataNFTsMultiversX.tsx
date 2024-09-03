@@ -35,12 +35,16 @@ import useThrottle from "components/UtilComps/UseThrottle";
 import WalletDataNFTMX from "components/WalletDataNFTMX/WalletDataNFTMX";
 import { contractsForChain } from "libs/config";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
-import { useMarketStore } from "store";
+import { useAccountStore, useMarketStore } from "store";
+
 import { BondingCards } from "./components/BondingCards";
 import { CompensationCards } from "./components/CompensationCards";
 import { FavoriteCards } from "./components/FavoriteCards";
 import { LivelinessStaking } from "./components/LivelinessStaking";
 import DataNFTDetails from "./DataNFTDetails";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { getApiDataDex } from "libs/utils";
+// import { DasApiAsset } from "@metaplex-foundation/digital-asset-standard-api";
 
 export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { colorMode } = useColorMode();
@@ -56,6 +60,42 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { hasPendingTransactions } = useGetPendingTransactions();
   const [nftForDrawer, setNftForDrawer] = useState<DataNft | undefined>();
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
+  // const { mvxNfts, isLoadingMvx, solNfts, isLoadingSol } = useNftsStore();
+
+  /// Solana NFTs
+  const SHOW_NFTS_STEP = 10;
+  const [numberOfSolNftsShown, setNumberOfSolNftsShown] = useState<number>(SHOW_NFTS_STEP);
+  const [shownSolDataNfts, setShownSolDataNfts] = useState<any[]>([]);
+  const { publicKey, signMessage } = useWallet();
+  const addressSol = publicKey?.toBase58();
+  console.log("PUBLIC KEY SOL", addressSol);
+
+  const solPreaccessNonce = useAccountStore((state: any) => state.solPreaccessNonce);
+  const solPreaccessSignature = useAccountStore((state: any) => state.solPreaccessSignature);
+  const solPreaccessTimestamp = useAccountStore((state: any) => state.solPreaccessTimestamp);
+  const updateSolPreaccessNonce = useAccountStore((state: any) => state.updateSolPreaccessNonce);
+  const updateSolPreaccessTimestamp = useAccountStore((state: any) => state.updateSolPreaccessTimestamp);
+  const updateSolSignedPreaccess = useAccountStore((state: any) => state.updateSolSignedPreaccess);
+  const [fetchingSolNfts, setFetchingSolNfts] = useState<boolean>(false);
+
+  useEffect(() => {
+    async function fetchSolNfts() {
+      setFetchingSolNfts(true);
+
+      if (!addressSol) {
+        setShownSolDataNfts([]);
+      } else {
+        const resp = await fetch(`${getApiDataDex(chainID)}/bespoke/sol/getDataNFTsByOwner?publicKeyb58=${addressSol}`);
+        const data = await resp.json();
+        console.log("RESP  ", resp);
+        console.log("DATA NFTs", data);
+        setShownSolDataNfts(data.nfts);
+      }
+
+      setFetchingSolNfts(false);
+    }
+    fetchSolNfts();
+  }, [publicKey]);
 
   useEffect(() => {
     window.scrollTo({

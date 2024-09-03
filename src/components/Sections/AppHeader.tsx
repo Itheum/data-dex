@@ -59,6 +59,7 @@ import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU, EXPLORER_APP_FOR_TOKEN } from "libs/config";
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 const exploreRouterMenu = [
   {
@@ -465,6 +466,9 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 {connectBtnTitle}
               </Button>
             )}
+            <Flex direction="column" gap={2}>
+              <WalletMultiButton />
+            </Flex>
 
             <Box
               display={{
