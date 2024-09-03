@@ -29,7 +29,7 @@ import { getApi } from "libs/MultiversX/api";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
 import { gtagGo, clearAppSessionsLaunchMode, sleep } from "libs/utils";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { BaseWalletMultiButton, WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMode: any; redirectToRoute: null | string }) {
   const { address: mxAddress } = useGetAccountInfo();
@@ -41,7 +41,7 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
   const { colorMode } = useColorMode();
   const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
   const { publicKey } = useWallet();
-  console.log("publicKey Sol", publicKey);
+
   useEffect(() => {
     async function cleanOutRemoteXPortalAppWalletDisconnect() {
       clearAppSessionsLaunchMode();
@@ -167,8 +167,13 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
                   <Text fontSize="sm">Solana</Text>
                   <Stack>
                     <Wrap spacing="20px" justify="space-around" padding="10px">
-                      <WrapItem className="auth_wrap">
-                        <WalletMultiButton />
+                      <WrapItem
+                        onClick={() => {
+                          goMxLogin(WALLETS.SOLANA);
+                          console.log("SOLANA login");
+                          onProgressModalClose();
+                        }}>
+                        {!publicKey && <WalletMultiButton />}
                       </WrapItem>
                     </Wrap>
                   </Stack>

@@ -15,6 +15,7 @@ import {
   dataNftMarketContractAddress_Mx_Mainnet,
   dataNftMintContractAddress_Mx_Mainnet,
   dataNFTFTTicker_Mx_Mainnet,
+  itheumTokenContractAddress_Solana,
 } from "./contractAddresses";
 
 export function contractsForChain(chainID: string): ContractsType {
@@ -71,9 +72,18 @@ export function contractsForChain(chainID: string): ContractsType {
         ],
       };
     }
+    case "SD":
+      {
+        return {
+          itheumToken: itheumTokenContractAddress_Solana,
+          claims: new Address(""),
+          faucet: new Address(""),
+          market: new Address(""),
+          dataNftTokens: [],
+        };
+      }
+      throw Error("Undefined chainID");
   }
-
-  throw Error("Undefined chainID");
 }
 
 export const uxConfig = {
@@ -177,6 +187,7 @@ export const OPENSEA_CHAIN_NAMES: Record<string, string> = {
 export const SUPPORTED_CHAINS = ["1", "D", 5, 80001, 97, 1666700000, 43113];
 
 export const WALLETS = {
+  SOLANA: "solana", // not sure if i need to check explicitly for wich wallet is being used
   METAMASK: "evm_metamask",
   WC: "evm_wc",
   MX_XPORTALAPP: "el_maiar",
@@ -216,6 +227,7 @@ export const CHAIN_TX_VIEWER = {
   43113: "https://testnet.snowtrace.io/tx/",
   "1": "https://explorer.multiversx.com",
   "D": "https://devnet-explorer.multiversx.com",
+  "S1": "TODO",
 };
 
 export const CHAIN_TX_LIST = {
@@ -228,6 +240,7 @@ export const CHAIN_TX_LIST = {
 export const CHAIN_TOKEN_SYMBOL = (chainID: string) => {
   const mapping: Record<string, any[]> = {
     ITHEUM: ["1", "D"],
+    sITHEUM: ["S1", "SD"], /// TODO needed?
     eITHEUM: [5, 1],
     mITHEUM: [80001, 137],
     bITHEUM: [97, 56],

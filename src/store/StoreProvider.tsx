@@ -17,9 +17,15 @@ import { getAccountTokenFromApi, getItheumPriceFromApi } from "libs/MultiversX/a
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { computeRemainingCooldown, convertWeiToEsdt, decodeNativeAuthToken, tokenDecimals } from "libs/utils";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { Connection, PublicKey } from "@solana/web3.js";
+import { getAssociatedTokenAddressSync } from "@solana/spl-token";
+import { itheumTokenContractAddress_Solana } from "libs/contractAddresses";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { address } = useGetAccountInfo();
+  const { publicKey } = useWallet();
+  const solAddress = publicKey ? publicKey.toBase58() : "";
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { tokenLogin } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();
@@ -28,6 +34,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   // ACCOUNT STORE
   const favoriteNfts = useAccountStore((state) => state.favoriteNfts);
   const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
+  const updateItheumSolBalance = useAccountStore((state) => state.updateItheumSolBalance);
   const updateAccessToken = useAccountStore((state) => state.updateAccessToken);
   const updateFavoriteNfts = useAccountStore((state) => state.updateFavoriteNfts);
   const updateBitzBalance = useAccountStore((state) => state.updateBitzBalance);
@@ -188,6 +195,70 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
       updateUserData(_userData);
     })();
   }, [address, hasPendingTransactions]);
+
+  useEffect(() => {
+    if (!solAddress) return;
+    if (hasPendingTransactions) return;
+
+    (async () => {
+      console.log("SOL TOKEN", contractsForChain("SD").itheumToken);
+      const itheumTokens = (await getItheumBalance()) || 0;
+      updateItheumSolBalance(itheumTokens);
+    })();
+  }, [solAddress, hasPendingTransactions]);
+
+  const getItheumBalance = async () => {
+    try {
+      const connection = new Connection("https://api.testnet.solana.com"); // Replace with your desired cluster's RPC endpoint
+
+      const itheumTokenMint = new PublicKey(itheumTokenContractAddress_Solana); // Replace with actual mint address
+      const publicKey = new PublicKey(solAddress);
+
+      // Derive the associated token account address
+      const addressAta = getAssociatedTokenAddressSync(itheumTokenMint, publicKey, false);
+
+      // Check if the ATA exists
+      const accountInfo = await connection.getAccountInfo(addressAta);
+      console.log("acc info ata", accountInfo);
+      if (!accountInfo) {
+        console.warn(`Associated Token Account for ${solAddress} does not exist.`);
+        return 0; // Return 0 if the account doesn't exist
+      }
+
+      // Fetch the balance if the account exists
+      const balance = await connection.getTokenAccountBalance(addressAta);
+      console.log("BALANCE ITH", balance.value.uiAmount);
+      return balance.value.uiAmount; // Return the balance in the token's smallest unit
+    } catch (error) {
+      console.error("Error fetching Itheum balance:", error);
+      throw error;
+    }
+  };
+  // async function getAccountBalance() {
+  //   try {
+  //     if (!publicKey) {
+  //       console.error("Wallet not connected.");
+  //       return;
+  //     }
+  //     const accountInfo = await connection.getAccountInfo(publicKey);
+  //     console.log("acc info", accountInfo);
+  //     if (accountInfo) {
+  //       const balanceInLamports = accountInfo.lamports;
+  //       const balanceInSOL = balanceInLamports / 1000000000;
+  //       console.log(`Balance: ${balanceInSOL} SOL`);
+  //       const address_ata = await getAssociatedTokenAddressSync(new PublicKey(itheumTokenContractAddress_Solana), publicKey, false);
+  //       console.log("ATA", address_ata);
+  //       const balance = await connection.getTokenAccountBalance(address_ata);
+
+  //       console.log("BALANCE ITH:", balance);
+  //       console.log(`Balance sol: ${balance.value.amount}`);
+  //     } else {
+  //       console.error("Account not found.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching account balance:", error);
+  //   }
+  // }
 
   useEffect(() => {
     getFavourite();

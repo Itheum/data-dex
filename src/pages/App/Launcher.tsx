@@ -1,15 +1,12 @@
 import React, { useState } from "react";
-import { TransactionsToastList, SignTransactionsModals, NotificationModal } from "@multiversx/sdk-dapp/UI";
-import { DappProvider } from "@multiversx/sdk-dapp/wrappers";
 import { TermsChangedNoticeModal } from "components/TermsChangedNoticeModal";
-import { uxConfig } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
-import { walletConnectV2ProjectId, MX_TOAST_LIFETIME_IN_MS } from "libs/mxConstants";
 import { clearAppSessionsLaunchMode } from "libs/utils";
 import AppMx from "./AppMultiversX";
 import ModalAuthPickerMx from "./ModalAuthPickerMultiversX";
 import { MvxContextProvider } from "contexts/MvxContextProvider";
 import { SolContextProvider } from "contexts/sol/SolContextProvider";
+
 function Launcher() {
   const [launchModeSession, setLaunchModeSession] = useLocalStorage("itm-launch-mode", null);
   const [launchMode, setLaunchMode] = useState(launchModeSession || "no-auth");
@@ -48,6 +45,7 @@ function Launcher() {
 
         {launchMode === "mvx" && <ModalAuthPickerMx resetLaunchMode={() => handleLaunchMode("no-auth")} redirectToRoute={redirectToRoute} />}
       </DappProvider> */}
+
       <SolContextProvider>
         <MvxContextProvider>
           {launchMode === "mvx" && <ModalAuthPickerMx resetLaunchMode={() => handleLaunchMode("no-auth")} redirectToRoute={redirectToRoute} />}

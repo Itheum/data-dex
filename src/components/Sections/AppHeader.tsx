@@ -60,6 +60,7 @@ import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU, EXPLORER_APP_FOR_TOKEN } from "libs/c
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 const exploreRouterMenu = [
   {
@@ -140,6 +141,8 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
   const { isLoggedIn: isMxLoggedIn, tokenLogin } = useGetLoginInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
+  const { publicKey } = useWallet();
+  const solAddress = publicKey?.toBase58();
   const { colorMode, setColorMode } = useColorMode();
   const { pathname } = useLocation();
   const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
@@ -321,11 +324,15 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
 
                         <MenuGroup title="My Address Quick Copy">
                           <MenuItemOption closeOnSelect={false} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                            <Text as={"div"} color="teal.200" fontWeight={"bold"}>
+                            <Text as={"div"} flex={"row"} color="teal.200" fontWeight={"bold"}>
                               <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
                             </Text>
+                          </MenuItemOption>{" "}
+                          <MenuItemOption closeOnSelect={false} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                            <Text as={"div"} color="teal.200" fontWeight={"bold"}>
+                              <ShortAddress address={solAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
+                            </Text>
                           </MenuItemOption>
-
                           <MenuDivider />
                         </MenuGroup>
 
@@ -611,7 +618,9 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                       <Text as={"div"} m={"2 !important"} pl={8} color="teal.200" fontWeight={"bold"}>
                         <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
                       </Text>
-
+                      <Text as={"div"} m={"2 !important"} pl={8} color="teal.200" fontWeight={"bold"}>
+                        <ShortAddress address={solAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
+                      </Text>
                       <hr />
                       <List>
                         <Link as={ReactRouterLink} to={`/profile/${mxAddress}`} style={{ textDecoration: "none" }}>
@@ -732,7 +741,7 @@ function shouldDisplayQuickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
 function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
   const { chainID } = useGetNetworkConfig();
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
-
+  const itheumSolBalance = useAccountStore((state) => state.itheumSolBalance);
   return (
     <Box
       display={displayParams}
@@ -753,6 +762,8 @@ function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
           {CHAIN_TOKEN_SYMBOL(chainID)} {formatNumberRoundFloor(itheumBalance)}
         </>
       )}
+      <br />
+      {itheumSolBalance === -1 ? <Spinner size="xs" /> : itheumSolBalance === -2 ? <WarningTwoIcon /> : <> sITHEUM {itheumSolBalance}</>}
     </Box>
   );
 }

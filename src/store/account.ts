@@ -8,6 +8,8 @@ type State = {
   givenBitzSum: number;
   bonusBitzSum: number;
   cooldown: number;
+
+  itheumSolBalance: number;
   solPreaccessNonce: string;
   solPreaccessSignature: string;
   solPreaccessTimestamp: number;
@@ -22,6 +24,7 @@ type Action = {
   updateBonusBitzSum: (bonusBitzSum: State["bonusBitzSum"]) => void;
   updateCooldown: (cooldown: State["cooldown"]) => void;
 
+  updateItheumSolBalance: (itheumSolBalance: State["itheumSolBalance"]) => void;
   updateSolPreaccessNonce: (solPreaccessNonce: State["solPreaccessNonce"]) => void;
   updateSolSignedPreaccess: (solSignedPreaccess: State["solPreaccessSignature"]) => void;
   updateSolPreaccessTimestamp: (solPreaccessTimestamp: State["solPreaccessTimestamp"]) => void;
@@ -42,6 +45,9 @@ export const useAccountStore = create<State & Action>((set) => ({
   updateGivenBitzSum: (value: number) => set(() => ({ givenBitzSum: value })),
   bonusBitzSum: -2,
   updateBonusBitzSum: (value: number) => set(() => ({ bonusBitzSum: value })),
+
+  itheumSolBalance: -2,
+  updateItheumSolBalance: (value: number) => set(() => ({ itheumSolBalance: value })),
   solPreaccessNonce: "",
   updateSolPreaccessNonce: (value: string) => set(() => ({ solPreaccessNonce: value })),
   solPreaccessSignature: "",
