@@ -28,6 +28,8 @@ import { useLocalStorage } from "libs/hooks";
 import { getApi } from "libs/MultiversX/api";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
 import { gtagGo, clearAppSessionsLaunchMode, sleep } from "libs/utils";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMode: any; redirectToRoute: null | string }) {
   const { address: mxAddress } = useGetAccountInfo();
@@ -38,7 +40,8 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
   const navigate = useNavigate();
   const { colorMode } = useColorMode();
   const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
-
+  const { publicKey } = useWallet();
+  console.log("publicKey Sol", publicKey);
   useEffect(() => {
     async function cleanOutRemoteXPortalAppWalletDisconnect() {
       clearAppSessionsLaunchMode();
@@ -104,9 +107,10 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
               <Badge mb="1" mr="1" ml="1" variant="outline" fontSize="0.8em" colorScheme="teal">
                 {import.meta.env.VITE_ENV_NETWORK}
               </Badge>{" "}
-              MultiversX Wallet
+              Wallet
             </ModalHeader>
             <ModalBody pb={6}>
+              <Text fontSize="sm">MultiversX</Text>
               <Stack spacing="5">
                 <Box p="5px">
                   <Stack>
@@ -157,6 +161,14 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
                           buttonClassName="auth_button"
                           customWalletAddress={IS_DEVNET ? "https://devnet.xalias.com" : "https://xalias.com"}
                           {...commonProps}></WebWalletLoginButton>
+                      </WrapItem>
+                    </Wrap>
+                  </Stack>
+                  <Text fontSize="sm">Solana</Text>
+                  <Stack>
+                    <Wrap spacing="20px" justify="space-around" padding="10px">
+                      <WrapItem className="auth_wrap">
+                        <WalletMultiButton />
                       </WrapItem>
                     </Wrap>
                   </Stack>

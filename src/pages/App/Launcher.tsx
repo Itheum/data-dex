@@ -8,11 +8,13 @@ import { walletConnectV2ProjectId, MX_TOAST_LIFETIME_IN_MS } from "libs/mxConsta
 import { clearAppSessionsLaunchMode } from "libs/utils";
 import AppMx from "./AppMultiversX";
 import ModalAuthPickerMx from "./ModalAuthPickerMultiversX";
+import { MvxContextProvider } from "contexts/MvxContextProvider";
+import { SolContextProvider } from "contexts/sol/SolContextProvider";
 function Launcher() {
   const [launchModeSession, setLaunchModeSession] = useLocalStorage("itm-launch-mode", null);
   const [launchMode, setLaunchMode] = useState(launchModeSession || "no-auth");
   const [redirectToRoute, setRedirectToRoute] = useState<null | string>(null);
-
+  console.log(launchModeSession, "LAUBCH :", launchMode, redirectToRoute);
   // hoisting launchModeControl here allows us to go multi-chain easier in future
   // ... have a look at git history on this component
   const handleLaunchMode = (chainOption: string, redirectToRouteStr?: string) => {
@@ -30,7 +32,7 @@ function Launcher() {
 
   return (
     <>
-      <DappProvider
+      {/* <DappProvider
         environment={import.meta.env.VITE_ENV_NETWORK}
         customNetworkConfig={{
           name: "itheum-data-dex",
@@ -45,10 +47,13 @@ function Launcher() {
         <SignTransactionsModals className="itheum-data-dex-elrond-modals" />
 
         {launchMode === "mvx" && <ModalAuthPickerMx resetLaunchMode={() => handleLaunchMode("no-auth")} redirectToRoute={redirectToRoute} />}
-
-        <AppMx onShowConnectWalletModal={handleLaunchMode} />
-      </DappProvider>
-
+      </DappProvider> */}
+      <SolContextProvider>
+        <MvxContextProvider>
+          {launchMode === "mvx" && <ModalAuthPickerMx resetLaunchMode={() => handleLaunchMode("no-auth")} redirectToRoute={redirectToRoute} />}
+          <AppMx onShowConnectWalletModal={handleLaunchMode} />
+        </MvxContextProvider>
+      </SolContextProvider>
       <TermsChangedNoticeModal />
     </>
   );
