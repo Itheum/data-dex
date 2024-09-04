@@ -138,13 +138,14 @@ const exploreRouterMenu = [
 const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { onShowConnectWalletModal?: any; setMenuItem: any; handleLogout: any }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { chainID } = useGetNetworkConfig();
-
   const { isLoggedIn: isMxLoggedIn, tokenLogin } = useGetLoginInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
   // Solana
   const { publicKey } = useWallet();
   const solAddress = publicKey?.toBase58();
+  const connectedChain = publicKey ? "SD" : chainID;
+  const isUserLoggedIn = isMxLoggedIn || publicKey ? true : false;
 
   const { colorMode, setColorMode } = useColorMode();
   const { pathname } = useLocation();
@@ -184,7 +185,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
     return styleProps;
   };
 
-  const chainFriendlyName = CHAINS[chainID as keyof typeof CHAINS];
+  const chainFriendlyName = CHAINS[connectedChain as keyof typeof CHAINS];
 
   const handleGuardrails = () => {
     navigate("/guardrails");
@@ -195,15 +196,15 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
     <>
       <Flex
         h="6rem"
-        justifyContent={isMxLoggedIn ? "space-around" : "inherit"}
-        paddingX={!isMxLoggedIn ? { base: 5, md: 20, xl: 36 } : 0}
+        justifyContent={isUserLoggedIn ? "space-around" : "inherit"}
+        paddingX={!isUserLoggedIn ? { base: 5, md: 20, xl: 36 } : 0}
         alignItems="center"
         backgroundColor={colorMode === "light" ? "bgWhite" : "bgDark"}
         borderBottom="solid .1rem"
         borderColor="teal.200"
         paddingY="5">
         <HStack alignItems={"center"} width={{ base: "full", md: "14.5rem" }} justifyContent={{ base: "initial", md: "space-around" }}>
-          {isMxLoggedIn && (
+          {isUserLoggedIn && (
             <IconButton
               fontSize="2rem"
               variant="ghost"
@@ -256,7 +257,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                     mx={"4px"}
                     style={{ textDecoration: "none" }}
                     key={path}
-                    display={shouldDisplayQuickMenuItem(quickMenuItem, isMxLoggedIn)}>
+                    display={shouldDisplayQuickMenuItem(quickMenuItem, isUserLoggedIn)}>
                     <Button
                       borderColor="teal.200"
                       fontSize="md"
@@ -266,11 +267,11 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                       isDisabled={isMenuItemSelected(path) || hasPendingTransactions}
                       _disabled={menuButtonDisabledStyle(path)}
                       key={shortLbl}
-                      size={isMxLoggedIn ? "sm" : "md"}
+                      size={isUserLoggedIn ? "sm" : "md"}
                       onClick={() => navigateToDiscover(menuEnum)}>
                       <Flex justifyContent="center" alignItems="center" px={{ base: 0, "2xl": 1.5 }} color="teal.200" pointerEvents="none">
                         <Icon size={"1.6em"} />
-                        <Text pl={2} fontSize={{ base: isMxLoggedIn ? "sm" : "md", "2xl": "lg" }} color={colorMode === "dark" ? "white" : "black"}>
+                        <Text pl={2} fontSize={{ base: isUserLoggedIn ? "sm" : "md", "2xl": "lg" }} color={colorMode === "dark" ? "white" : "black"}>
                           {shortLbl}
                         </Text>
                       </Flex>
@@ -279,7 +280,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 );
               })}
             </HStack>
-            {isMxLoggedIn && (
+            {isUserLoggedIn && (
               <>
                 <ItheumTokenBalanceBadge displayParams={["none", null, "block"]} />
                 <LoggedInChainBadge chain={chainFriendlyName} displayParams={["none", null, "block"]} />
@@ -287,7 +288,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                   {exploreRouterMenu.map((menu) => (
                     <Menu key={menu.sectionId} isLazy>
                       <MenuButton as={Button} size={{ md: "md", "2xl": "lg" }} rightIcon={<TiArrowSortedDown size="18px" />}>
-                        <ShortAddress address={mxAddress} fontSize="md" />
+                        <ShortAddress address={mxAddress ? mxAddress : solAddress} fontSize="md" />
                       </MenuButton>
                       <MenuList maxW={"fit-content"} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                         <Link as={ReactRouterLink} to={`/profile/${mxAddress}`} style={{ textDecoration: "none" }}>
@@ -326,21 +327,25 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                         <MenuDivider />
 
                         <MenuGroup title="My Address Quick Copy">
-                          <MenuItemOption closeOnSelect={false} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                            <Text as={"div"} flex={"row"} color="teal.200" fontWeight={"bold"}>
-                              <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
-                            </Text>
-                          </MenuItemOption>{" "}
-                          <MenuItemOption closeOnSelect={false} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                            <Text as={"div"} color="teal.200" fontWeight={"bold"}>
-                              <ShortAddress address={solAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
-                            </Text>
-                          </MenuItemOption>
+                          {mxAddress && (
+                            <MenuItemOption closeOnSelect={false} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                              <Text as={"div"} flex={"row"} color="teal.200" fontWeight={"bold"}>
+                                <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
+                              </Text>
+                            </MenuItemOption>
+                          )}
+                          {solAddress && (
+                            <MenuItemOption closeOnSelect={false} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                              <Text as={"div"} color="teal.200" fontWeight={"bold"}>
+                                <ShortAddress address={solAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
+                              </Text>
+                            </MenuItemOption>
+                          )}
                           <MenuDivider />
                         </MenuGroup>
 
                         <MenuGroup>
-                          {isMxLoggedIn && (
+                          {isUserLoggedIn && (
                             <ChainSupportedComponent feature={MENU.CLAIMS}>
                               <MenuItem
                                 closeOnSelect={false}
@@ -464,25 +469,32 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
               </>
             )}
 
-            {onShowConnectWalletModal && !isMxLoggedIn && (
-              <Button
-                colorScheme="teal"
-                fontSize={{ base: "sm", md: "md" }}
-                size={{ base: "sm", lg: "lg" }}
-                onClick={() => {
-                  localStorage?.removeItem("itm-datacat-linked");
-                  onShowConnectWalletModal("mvx");
-                }}>
-                {connectBtnTitle}
-              </Button>
+            {onShowConnectWalletModal && !isUserLoggedIn && (
+              <>
+                <Button
+                  colorScheme="teal"
+                  fontSize={{ base: "sm", md: "md" }}
+                  size={{ base: "sm", lg: "lg" }}
+                  onClick={() => {
+                    localStorage?.removeItem("itm-datacat-linked");
+                    onShowConnectWalletModal("mvx");
+                  }}>
+                  {connectBtnTitle}
+                </Button>
+                <Flex direction="column" gap={2}>
+                  <WalletMultiButton
+                    onClick={() => {
+                      localStorage?.removeItem("network");
+                      onShowConnectWalletModal("solana");
+                    }}
+                  />
+                </Flex>
+              </>
             )}
-            <Flex direction="column" gap={2}>
-              <WalletMultiButton />
-            </Flex>
 
             <Box
               display={{
-                base: isMxLoggedIn ? "block" : "none",
+                base: isUserLoggedIn ? "block" : "none",
                 md: "block",
               }}>
               <Menu>
@@ -618,12 +630,16 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                       <Text as={"header"} fontWeight="700" fontSize="md" ml={4}>
                         My Address Quick Copy
                       </Text>
-                      <Text as={"div"} m={"2 !important"} pl={8} color="teal.200" fontWeight={"bold"}>
-                        <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
-                      </Text>
-                      <Text as={"div"} m={"2 !important"} pl={8} color="teal.200" fontWeight={"bold"}>
-                        <ShortAddress address={solAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
-                      </Text>
+                      {mxAddress && (
+                        <Text as={"div"} m={"2 !important"} pl={8} color="teal.200" fontWeight={"bold"}>
+                          <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
+                        </Text>
+                      )}
+                      {solAddress && (
+                        <Text as={"div"} m={"2 !important"} pl={8} color="teal.200" fontWeight={"bold"}>
+                          <ShortAddress address={solAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
+                        </Text>
+                      )}
                       <hr />
                       <List>
                         <Link as={ReactRouterLink} to={`/profile/${mxAddress}`} style={{ textDecoration: "none" }}>
@@ -733,18 +749,20 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
   );
 };
 
-function shouldDisplayQuickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
+function shouldDisplayQuickMenuItem(quickMenuItem: any, isUserLoggedIn: boolean) {
   if (quickMenuItem.needToBeLoggedOut === undefined) {
-    return quickMenuItem.needToBeLoggedIn ? (isMxLoggedIn ? "inline" : "none") : "inline";
+    return quickMenuItem.needToBeLoggedIn ? (isUserLoggedIn ? "inline" : "none") : "inline";
   } else {
-    return quickMenuItem.needToBeLoggedOut ? (isMxLoggedIn ? "none" : "inline") : "inline";
+    return quickMenuItem.needToBeLoggedOut ? (isUserLoggedIn ? "none" : "inline") : "inline";
   }
 }
 
 function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
   const { chainID } = useGetNetworkConfig();
-  const itheumBalance = useAccountStore((state) => state.itheumBalance);
+  const itheumMxBalance = useAccountStore((state) => state.itheumBalance);
   const itheumSolBalance = useAccountStore((state) => state.itheumSolBalance);
+  const itheumBalance = itheumSolBalance > 0 ? itheumSolBalance : itheumMxBalance;
+  console.log("Itheum Token Balance: ", itheumBalance, chainID);
   return (
     <Box
       display={displayParams}
@@ -765,8 +783,6 @@ function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
           {CHAIN_TOKEN_SYMBOL(chainID)} {formatNumberRoundFloor(itheumBalance)}
         </>
       )}
-      <br />
-      {itheumSolBalance >= 0 && <> sITHEUM {itheumSolBalance}</>}
     </Box>
   );
 }

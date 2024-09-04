@@ -44,6 +44,7 @@ import { LivelinessStaking } from "./components/LivelinessStaking";
 import DataNFTDetails from "./DataNFTDetails";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { getApiDataDex } from "libs/utils";
+import { DasApiAsset } from "@metaplex-foundation/digital-asset-standard-api";
 // import { DasApiAsset } from "@metaplex-foundation/digital-asset-standard-api";
 
 export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
@@ -65,7 +66,8 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   /// Solana NFTs
   const SHOW_NFTS_STEP = 10;
   const [numberOfSolNftsShown, setNumberOfSolNftsShown] = useState<number>(SHOW_NFTS_STEP);
-  const [shownSolDataNfts, setShownSolDataNfts] = useState<any[]>([]);
+  const [shownSolDataNfts, setShownSolDataNfts] = useState<DasApiAsset[]>([]);
+
   const { publicKey, signMessage } = useWallet();
   const addressSol = publicKey?.toBase58();
   console.log("PUBLIC KEY SOL", addressSol);
@@ -88,7 +90,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
         const resp = await fetch(`${getApiDataDex(chainID)}/bespoke/sol/getDataNFTsByOwner?publicKeyb58=${addressSol}`);
         const data = await resp.json();
         console.log("RESP  ", resp);
-        console.log("DATA NFTs", data);
+        console.log("DATA NFTs", data.nfts);
         setShownSolDataNfts(data.nfts);
       }
 

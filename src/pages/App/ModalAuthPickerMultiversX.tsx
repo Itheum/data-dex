@@ -29,7 +29,7 @@ import { getApi } from "libs/MultiversX/api";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
 import { gtagGo, clearAppSessionsLaunchMode, sleep } from "libs/utils";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { BaseWalletMultiButton, WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMode: any; redirectToRoute: null | string }) {
   const { address: mxAddress } = useGetAccountInfo();
@@ -40,7 +40,6 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
   const navigate = useNavigate();
   const { colorMode } = useColorMode();
   const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
-  const { publicKey } = useWallet();
 
   useEffect(() => {
     async function cleanOutRemoteXPortalAppWalletDisconnect() {
@@ -173,7 +172,7 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
                           console.log("SOLANA login");
                           onProgressModalClose();
                         }}>
-                        {!publicKey && <WalletMultiButton />}
+                        <WalletMultiButton />
                       </WrapItem>
                     </Wrap>
                   </Stack>

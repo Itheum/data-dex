@@ -6,11 +6,21 @@ import AppMx from "./AppMultiversX";
 import ModalAuthPickerMx from "./ModalAuthPickerMultiversX";
 import { MvxContextProvider } from "contexts/MvxContextProvider";
 import { SolContextProvider } from "contexts/sol/SolContextProvider";
+import { StoreProvider } from "store/StoreProvider";
+import { Container, Flex, useColorMode } from "@chakra-ui/react";
+import AppFooter from "components/Sections/AppFooter";
 
 function Launcher() {
   const [launchModeSession, setLaunchModeSession] = useLocalStorage("itm-launch-mode", null);
   const [launchMode, setLaunchMode] = useState(launchModeSession || "no-auth");
   const [redirectToRoute, setRedirectToRoute] = useState<null | string>(null);
+
+  const { colorMode } = useColorMode();
+  let containerShadow = "rgb(255 255 255 / 16%) 0px 10px 36px 0px, rgb(255 255 255 / 6%) 0px 0px 0px 1px";
+
+  if (colorMode === "light") {
+    containerShadow = "rgb(0 0 0 / 16%) 0px 10px 36px 0px, rgb(0 0 0 / 6%) 0px 0px 0px 1px";
+  }
   console.log(launchModeSession, "LAUBCH :", launchMode, redirectToRoute);
   // hoisting launchModeControl here allows us to go multi-chain easier in future
   // ... have a look at git history on this component
@@ -48,8 +58,25 @@ function Launcher() {
 
       <SolContextProvider>
         <MvxContextProvider>
-          {launchMode === "mvx" && <ModalAuthPickerMx resetLaunchMode={() => handleLaunchMode("no-auth")} redirectToRoute={redirectToRoute} />}
-          <AppMx onShowConnectWalletModal={handleLaunchMode} />
+          <StoreProvider>
+            <Container maxW="97.5rem">
+              <Flex
+                bgColor={colorMode === "dark" ? "bgDark" : "bgWhite"}
+                flexDirection="column"
+                justifyContent="space-between"
+                minH="100svh"
+                boxShadow={containerShadow}
+                zIndex={2}>
+                {/* App Header
+                <AppHeader onShowConnectWalletModal={onShowConnectWalletModal} setMenuItem={setMenuItem} handleLogout={handleLogout} /> */}
+
+                {launchMode === "mvx" && <ModalAuthPickerMx resetLaunchMode={() => handleLaunchMode("no-auth")} redirectToRoute={redirectToRoute} />}
+                <AppMx onShowConnectWalletModal={handleLaunchMode} />
+
+                <AppFooter />
+              </Flex>
+            </Container>
+          </StoreProvider>
         </MvxContextProvider>
       </SolContextProvider>
       <TermsChangedNoticeModal />

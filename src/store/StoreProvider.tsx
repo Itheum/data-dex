@@ -24,15 +24,16 @@ import { useAccountStore, useMarketStore, useMintStore } from "store";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { address } = useGetAccountInfo();
-  const { publicKey } = useWallet();
-  const { connection } = useConnection();
-  console.log("CONNECTION", connection);
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { tokenLogin } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();
   const [searchParams] = useSearchParams();
+
+  // SOLANA
+  const { publicKey } = useWallet();
+  const { connection } = useConnection();
   const { networkConfiguration } = useContext(NetworkConfigurationContext);
-  console.log("NETWORK CONFIG in store", networkConfiguration);
+
   // ACCOUNT STORE
   const favoriteNfts = useAccountStore((state) => state.favoriteNfts);
   const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);

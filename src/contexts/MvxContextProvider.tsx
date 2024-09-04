@@ -5,7 +5,6 @@ import { TransactionsToastList } from "@multiversx/sdk-dapp/UI/TransactionsToast
 import { DappProvider } from "@multiversx/sdk-dapp/wrappers/DappProvider/DappProvider";
 import { uxConfig } from "libs/config";
 import { MX_TOAST_LIFETIME_IN_MS, walletConnectV2ProjectId } from "libs/mxConstants";
-import ModalAuthPickerMx from "pages/App/ModalAuthPickerMultiversX";
 
 export const MvxContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
   return (

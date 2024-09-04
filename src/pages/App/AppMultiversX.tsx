@@ -11,7 +11,7 @@ import AppHeader from "components/Sections/AppHeader";
 import AppSettings from "components/UtilComps/AppSettings";
 import { consoleNotice, dataCATDemoUserData, MENU, PATHS } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
-import { clearAppSessionsLaunchMode, gtagGo, sleep } from "libs/utils";
+import { clearAppSessionsLaunchMode, clearAppSessionsLaunchModeSolana, gtagGo, sleep } from "libs/utils";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import DataNFTMarketplaceMultiversX from "pages/DataNFT/DataNFTMarketplaceMultiversX";
 import DataNFTs from "pages/DataNFT/DataNFTs";
@@ -20,13 +20,13 @@ import { GetNFMeID } from "pages/GetNFMeID";
 import { GetVerified } from "pages/GetVerified";
 import HomeMultiversX from "pages/Home/HomeMultiversX";
 import LandingPage from "pages/LandingPage";
-import { StoreProvider } from "store/StoreProvider";
 import { TradeData } from "../AdvertiseData/TradeData";
 import { Bonding } from "../Bonding/Bonding";
 import { MinterDashboard } from "../Enterprise/components/MinterDashboard";
 import { Enterprise } from "../Enterprise/Enterprise";
 import { GuardRails } from "../GuardRails/GuardRails";
 import { Profile } from "../Profile/Profile";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 
 const mxLogout = logout;
 
@@ -39,12 +39,12 @@ export const routes: RouteType[] = [
   {
     path: "mintdata",
     component: <></>,
-    authenticatedRoute: true,
+    authenticatedRoute: false,
   },
   {
     path: "datanfts/wallet",
     component: <></>,
-    authenticatedRoute: true,
+    authenticatedRoute: false,
   },
   {
     path: "profile",
@@ -73,8 +73,8 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   const [dataCATAccount, setDataCATAccount] = useState<any>(null);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loadingDataCATAccount, setLoadingDataCATAccount] = useState(true);
-
   let path = pathname?.split("/")[pathname?.split("/")?.length - 1]; // handling Route Path
+  const { wallet } = useWallet();
 
   useEffect(() => {
     if (path) {
@@ -126,15 +126,22 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
 
   const handleLogout = () => {
     clearAppSessionsLaunchMode();
-    // resetAppContexts();
-
-    gtagGo("auth", "logout", "el");
-    if (mxLoginMethod === "wallet") {
-      // if it's web wallet, we should not send redirect url of /, if you do redirects to web wallet and does not come back to data dex
-      mxLogout(undefined, undefined, false);
+    if (wallet) {
+      // we are connected to solana
+      wallet?.adapter.disconnect();
+      console.log("solana wallet disconnected");
+      clearAppSessionsLaunchModeSolana();
     } else {
-      // sending in / will reload the data dex after logout is done so it cleans up data dex state
-      mxLogout("/", undefined, false);
+      // resetAppContexts();
+      gtagGo("auth", "logout", "el");
+
+      if (mxLoginMethod === "wallet") {
+        // if it's web wallet, we should not send redirect url of /, if you do redirects to web wallet and does not come back to data dex
+        mxLogout(undefined, undefined, false);
+      } else {
+        // sending in / will reload the data dex after logout is done so it cleans up data dex state
+        mxLogout("/", undefined, false);
+      }
     }
   };
 
@@ -169,95 +176,84 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
 
   return (
     <>
-      {["1", "D"].includes(chainID) && (
-        <StoreProvider>
-          <Container maxW="97.5rem">
-            <Flex
-              bgColor={colorMode === "dark" ? "bgDark" : "bgWhite"}
-              flexDirection="column"
-              justifyContent="space-between"
-              minH="100svh"
-              boxShadow={containerShadow}
-              zIndex={2}>
-              {/* App Header */}
-              <AppHeader onShowConnectWalletModal={onShowConnectWalletModal} setMenuItem={setMenuItem} handleLogout={handleLogout} />
+      {["1", "D"].includes(chainID) && ( ///TODO check why chainID is hardcoded, should I add the solana here?
+        <>
+          {/* App Header */}
+          <AppHeader onShowConnectWalletModal={onShowConnectWalletModal} setMenuItem={setMenuItem} handleLogout={handleLogout} />
 
-              {/* App Body */}
-              <Box flexGrow={1} minH={{ base: "auto", lg: bodyMinHeightLg }}>
-                <AuthenticatedRoutesWrapper routes={routes} unlockRoute={"/"}>
-                  <Routes>
-                    <Route path="/" element={<LandingPage />} />
+          {/* App Body */}
+          <Box flexGrow={1} minH={{ base: "auto", lg: bodyMinHeightLg }}>
+            <AuthenticatedRoutesWrapper routes={routes} unlockRoute={"/"}>
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
 
-                    <Route path="getVerified" element={<Outlet />}>
-                      <Route path="" element={<GetVerified />} />
-                    </Route>
+                <Route path="getVerified" element={<Outlet />}>
+                  <Route path="" element={<GetVerified />} />
+                </Route>
 
-                    <Route path="NFMeID" element={<Outlet />}>
-                      <Route path="" element={<GetNFMeID onShowConnectWalletModal={onShowConnectWalletModal} />} />
-                    </Route>
+                <Route path="NFMeID" element={<Outlet />}>
+                  <Route path="" element={<GetNFMeID onShowConnectWalletModal={onShowConnectWalletModal} />} />
+                </Route>
 
-                    <Route path="guardrails" element={<Outlet />}>
-                      <Route path="" element={<GuardRails />} />
-                    </Route>
+                <Route path="guardrails" element={<Outlet />}>
+                  <Route path="" element={<GuardRails />} />
+                </Route>
 
-                    <Route path="/profile" element={<Outlet />}>
-                      <Route path=":profileAddress" element={<Profile tabState={1} />} />
-                      <Route path=":profileAddress/created" element={<Profile tabState={1} />} />
-                      <Route path=":profileAddress/listed" element={<Profile tabState={2} />} />
-                    </Route>
+                <Route path="/profile" element={<Outlet />}>
+                  <Route path=":profileAddress" element={<Profile tabState={1} />} />
+                  <Route path=":profileAddress/created" element={<Profile tabState={1} />} />
+                  <Route path=":profileAddress/listed" element={<Profile tabState={2} />} />
+                </Route>
 
-                    <Route path="dashboard" element={<HomeMultiversX key={rfKeys.tools} setMenuItem={setMenuItem} />} />
+                <Route path="dashboard" element={<HomeMultiversX key={rfKeys.tools} setMenuItem={setMenuItem} />} />
 
-                    <Route path="mintdata" element={<TradeData />} />
+                <Route path="mintdata" element={<TradeData />} />
 
-                    {isMxLoggedIn ? (
-                      <Route path="enterprise" element={<Outlet />}>
-                        <Route path="" element={<Enterprise />} />
-                        <Route path=":minterAddress" element={<MinterDashboard />} />
-                      </Route>
-                    ) : (
-                      <Route path="enterprise" element={<Navigate to={"/"} />} />
-                    )}
+                {isMxLoggedIn ? (
+                  <Route path="enterprise" element={<Outlet />}>
+                    <Route path="" element={<Enterprise />} />
+                    <Route path=":minterAddress" element={<MinterDashboard />} />
+                  </Route>
+                ) : (
+                  <Route path="enterprise" element={<Navigate to={"/"} />} />
+                )}
 
-                    <Route path="datanfts" element={<Outlet />}>
-                      <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
-                      <Route path="wallet" element={<MyDataNFTsMx tabState={1} />} />
-                      <Route path="wallet/purchased" element={<MyDataNFTsMx tabState={2} />} />
-                      <Route path="wallet/activity" element={<MyDataNFTsMx tabState={4} />} />
-                      <Route path="wallet/favorite" element={<MyDataNFTsMx tabState={3} />} />
-                      <Route path="wallet/liveliness" element={<MyDataNFTsMx tabState={5} />} />
-                      <Route path="wallet/compensation" element={<MyDataNFTsMx tabState={6} />} />
-                      <Route path="wallet/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={1} />} />
-                      <Route path="wallet/purchased/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={2} />} />
-                      <Route path="wallet/activity/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={4} />} />
-                      <Route path="marketplace/:tokenId/:offerId?" element={<DataNFTDetails />} />
-                      <Route path="marketplace" element={<Navigate to={"market"} />} />
-                      <Route path="marketplace/market" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
-                      <Route path="marketplace/market/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
-                      <Route path="marketplace/my" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
-                      <Route path="marketplace/my/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
-                    </Route>
+                <Route path="datanfts" element={<Outlet />}>
+                  <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
+                  <Route path="wallet" element={<MyDataNFTsMx tabState={1} />} />
+                  <Route path="wallet/purchased" element={<MyDataNFTsMx tabState={2} />} />
+                  <Route path="wallet/activity" element={<MyDataNFTsMx tabState={4} />} />
+                  <Route path="wallet/favorite" element={<MyDataNFTsMx tabState={3} />} />
+                  <Route path="wallet/liveliness" element={<MyDataNFTsMx tabState={5} />} />
+                  <Route path="wallet/compensation" element={<MyDataNFTsMx tabState={6} />} />
+                  <Route path="wallet/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={1} />} />
+                  <Route path="wallet/purchased/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={2} />} />
+                  <Route path="wallet/activity/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={4} />} />
+                  <Route path="marketplace/:tokenId/:offerId?" element={<DataNFTDetails />} />
+                  <Route path="marketplace" element={<Navigate to={"market"} />} />
+                  <Route path="marketplace/market" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
+                  <Route path="marketplace/market/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
+                  <Route path="marketplace/my" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
+                  <Route path="marketplace/my/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
+                </Route>
 
-                    {/* This are admin whitelisted routes */}
-                    <Route path="bonding/" element={<Bonding />} />
-                    <Route path="bonding/:bondingPageNumber" element={<Bonding />}>
-                      <Route path="compensation/:compensationPageNumber" element={<Bonding />} />
-                    </Route>
+                {/* This are admin whitelisted routes */}
+                <Route path="bonding/" element={<Bonding />} />
+                <Route path="bonding/:bondingPageNumber" element={<Bonding />}>
+                  <Route path="compensation/:compensationPageNumber" element={<Bonding />} />
+                </Route>
 
-                    <Route path="settings" element={<AppSettings />} />
+                <Route path="settings" element={<AppSettings />} />
 
-                    {isMxLoggedIn ? (
-                      <Route path="liveliness" element={<Navigate to={"/datanfts/wallet/liveliness"} />} />
-                    ) : (
-                      <Route path="liveliness" element={<Navigate to={"/NFMeID"} />} />
-                    )}
-                  </Routes>
-                </AuthenticatedRoutesWrapper>
-              </Box>
-              <AppFooter />
-            </Flex>
-          </Container>
-        </StoreProvider>
+                {isMxLoggedIn ? (
+                  <Route path="liveliness" element={<Navigate to={"/datanfts/wallet/liveliness"} />} />
+                ) : (
+                  <Route path="liveliness" element={<Navigate to={"/NFMeID"} />} />
+                )}
+              </Routes>
+            </AuthenticatedRoutesWrapper>
+          </Box>
+        </>
       )}
     </>
   );
