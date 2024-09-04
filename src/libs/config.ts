@@ -15,7 +15,8 @@ import {
   dataNftMarketContractAddress_Mx_Mainnet,
   dataNftMintContractAddress_Mx_Mainnet,
   dataNFTFTTicker_Mx_Mainnet,
-  itheumTokenContractAddress_Solana,
+  itheumTokenContractAddress_Solana_Testnet,
+  itheumTokenContractAddress_Solana_Mainnet,
 } from "./contractAddresses";
 
 export function contractsForChain(chainID: string): ContractsType {
@@ -72,16 +73,26 @@ export function contractsForChain(chainID: string): ContractsType {
         ],
       };
     }
-    case "SD":
+    case "SD": {
+      return {
+        itheumToken: itheumTokenContractAddress_Solana_Testnet,
+        claims: new Address(""),
+        faucet: new Address(""),
+        market: new Address(""),
+        dataNftTokens: [],
+      };
+    }
+    case "S1":
       {
         return {
-          itheumToken: itheumTokenContractAddress_Solana,
+          itheumToken: itheumTokenContractAddress_Solana_Mainnet,
           claims: new Address(""),
           faucet: new Address(""),
           market: new Address(""),
           dataNftTokens: [],
         };
       }
+
       throw Error("Undefined chainID");
   }
 }
@@ -162,6 +173,8 @@ export const CHAINS = {
   43113: "Avalanche - Testnet",
   "1": "MultiversX - Mainnet",
   "D": "MultiversX - Devnet",
+  "SD": "Solana - Devnet",
+  "S1": "Solana - Mainnet",
 };
 
 // these are used by moralis SDK to identify the chain (e.g. Web3Api.account.getNFTs)

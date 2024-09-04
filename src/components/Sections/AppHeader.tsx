@@ -138,18 +138,21 @@ const exploreRouterMenu = [
 const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { onShowConnectWalletModal?: any; setMenuItem: any; handleLogout: any }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { chainID } = useGetNetworkConfig();
+
   const { isLoggedIn: isMxLoggedIn, tokenLogin } = useGetLoginInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
+  // Solana
   const { publicKey } = useWallet();
   const solAddress = publicKey?.toBase58();
+
   const { colorMode, setColorMode } = useColorMode();
   const { pathname } = useLocation();
   const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
   const [mxShowInteractionsHistory, setMxInteractionsHistory] = useState(false);
   const bitzBalance = useAccountStore((state) => state.bitzBalance);
   const cooldown = useAccountStore((state) => state.cooldown);
-  const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet", md: "Connect MultiversX Wallet" });
+  const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet" }); //, md: "Connect MultiversX Wallet" });
   const navigate = useNavigate();
 
   const navigateToDiscover = (menuEnum: number) => {
@@ -763,7 +766,7 @@ function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
         </>
       )}
       <br />
-      {itheumSolBalance === -1 ? <Spinner size="xs" /> : itheumSolBalance === -2 ? <WarningTwoIcon /> : <> sITHEUM {itheumSolBalance}</>}
+      {itheumSolBalance >= 0 && <> sITHEUM {itheumSolBalance}</>}
     </Box>
   );
 }

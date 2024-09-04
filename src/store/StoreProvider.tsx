@@ -1,9 +1,13 @@
-import React, { PropsWithChildren, useEffect } from "react";
+import React, { PropsWithChildren, useContext, useEffect } from "react";
 import { BondContract, DataNft, DataNftMarket, MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { getAssociatedTokenAddressSync } from "@solana/spl-token";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
 import { useSearchParams } from "react-router-dom";
+import { NetworkConfigurationContext } from "contexts/sol/SolNetworkConfigurationProvider";
 import { GET_BITZ_TOKEN, IS_DEVNET, viewDataJSONCore } from "libs/config";
 import {
   contractsForChain,
@@ -17,20 +21,18 @@ import { getAccountTokenFromApi, getItheumPriceFromApi } from "libs/MultiversX/a
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { computeRemainingCooldown, convertWeiToEsdt, decodeNativeAuthToken, tokenDecimals } from "libs/utils";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { Connection, PublicKey } from "@solana/web3.js";
-import { getAssociatedTokenAddressSync } from "@solana/spl-token";
-import { itheumTokenContractAddress_Solana } from "libs/contractAddresses";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { address } = useGetAccountInfo();
   const { publicKey } = useWallet();
-  const solAddress = publicKey ? publicKey.toBase58() : "";
+  const { connection } = useConnection();
+  console.log("CONNECTION", connection);
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { tokenLogin } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();
   const [searchParams] = useSearchParams();
-
+  const { networkConfiguration } = useContext(NetworkConfigurationContext);
+  console.log("NETWORK CONFIG in store", networkConfiguration);
   // ACCOUNT STORE
   const favoriteNfts = useAccountStore((state) => state.favoriteNfts);
   const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
@@ -196,69 +198,32 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
     })();
   }, [address, hasPendingTransactions]);
 
+  // get the itheum balance on solana blockchain
   useEffect(() => {
-    if (!solAddress) return;
+    if (!publicKey) return;
     if (hasPendingTransactions) return;
 
     (async () => {
-      console.log("SOL TOKEN", contractsForChain("SD").itheumToken);
-      const itheumTokens = (await getItheumBalance()) || 0;
+      const itheumTokens = (await getItheumBalanceOnSolana()) || -1;
       updateItheumSolBalance(itheumTokens);
     })();
-  }, [solAddress, hasPendingTransactions]);
+  }, [publicKey, hasPendingTransactions]);
 
-  const getItheumBalance = async () => {
+  const getItheumBalanceOnSolana = async () => {
     try {
-      const connection = new Connection("https://api.testnet.solana.com"); // Replace with your desired cluster's RPC endpoint
-
-      const itheumTokenMint = new PublicKey(itheumTokenContractAddress_Solana); // Replace with actual mint address
-      const publicKey = new PublicKey(solAddress);
-
-      // Derive the associated token account address
-      const addressAta = getAssociatedTokenAddressSync(itheumTokenMint, publicKey, false);
-
-      // Check if the ATA exists
-      const accountInfo = await connection.getAccountInfo(addressAta);
-      console.log("acc info ata", accountInfo);
-      if (!accountInfo) {
-        console.warn(`Associated Token Account for ${solAddress} does not exist.`);
-        return 0; // Return 0 if the account doesn't exist
+      if (!publicKey) {
+        console.error("Wallet not connected.");
+        return;
       }
-
-      // Fetch the balance if the account exists
+      const itheumTokenMint = new PublicKey(contractsForChain(networkConfiguration === "testnet" ? "SD" : "S1").itheumToken); // TODO add the mainnet address
+      const addressAta = getAssociatedTokenAddressSync(itheumTokenMint, publicKey, false);
       const balance = await connection.getTokenAccountBalance(addressAta);
-      console.log("BALANCE ITH", balance.value.uiAmount);
-      return balance.value.uiAmount; // Return the balance in the token's smallest unit
+      return balance.value.uiAmount;
     } catch (error) {
-      console.error("Error fetching Itheum balance:", error);
+      console.error("Error fetching Itheum balance on Solana " + networkConfiguration + " blockchain:", error);
       throw error;
     }
   };
-  // async function getAccountBalance() {
-  //   try {
-  //     if (!publicKey) {
-  //       console.error("Wallet not connected.");
-  //       return;
-  //     }
-  //     const accountInfo = await connection.getAccountInfo(publicKey);
-  //     console.log("acc info", accountInfo);
-  //     if (accountInfo) {
-  //       const balanceInLamports = accountInfo.lamports;
-  //       const balanceInSOL = balanceInLamports / 1000000000;
-  //       console.log(`Balance: ${balanceInSOL} SOL`);
-  //       const address_ata = await getAssociatedTokenAddressSync(new PublicKey(itheumTokenContractAddress_Solana), publicKey, false);
-  //       console.log("ATA", address_ata);
-  //       const balance = await connection.getTokenAccountBalance(address_ata);
-
-  //       console.log("BALANCE ITH:", balance);
-  //       console.log(`Balance sol: ${balance.value.amount}`);
-  //     } else {
-  //       console.error("Account not found.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching account balance:", error);
-  //   }
-  // }
 
   useEffect(() => {
     getFavourite();
