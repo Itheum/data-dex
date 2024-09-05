@@ -82,17 +82,17 @@ export function contractsForChain(chainID: string): ContractsType {
         dataNftTokens: [],
       };
     }
-    case "S1":
-      {
-        return {
-          itheumToken: itheumTokenContractAddress_Solana_Mainnet,
-          claims: new Address(""),
-          faucet: new Address(""),
-          market: new Address(""),
-          dataNftTokens: [],
-        };
-      }
+    case "S1": {
+      return {
+        itheumToken: itheumTokenContractAddress_Solana_Mainnet,
+        claims: new Address(""),
+        faucet: new Address(""),
+        market: new Address(""),
+        dataNftTokens: [],
+      };
+    }
 
+    default:
       throw Error("Undefined chainID");
   }
 }
@@ -240,7 +240,7 @@ export const CHAIN_TX_VIEWER = {
   43113: "https://testnet.snowtrace.io/tx/",
   "1": "https://explorer.multiversx.com",
   "D": "https://devnet-explorer.multiversx.com",
-  "S1": "TODO",
+  "SD": "///TODO",
 };
 
 export const CHAIN_TX_LIST = {

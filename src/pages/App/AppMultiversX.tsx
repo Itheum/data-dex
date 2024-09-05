@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Box, Container, Flex, useColorMode } from "@chakra-ui/react";
+import { Box, useColorMode } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { RouteType } from "@multiversx/sdk-dapp/types";
 import { logout } from "@multiversx/sdk-dapp/utils";
 import { AuthenticatedRoutesWrapper } from "@multiversx/sdk-dapp/wrappers";
 import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
-import AppFooter from "components/Sections/AppFooter";
 import AppHeader from "components/Sections/AppHeader";
 import AppSettings from "components/UtilComps/AppSettings";
 import { consoleNotice, dataCATDemoUserData, MENU, PATHS } from "libs/config";
@@ -26,7 +25,7 @@ import { MinterDashboard } from "../Enterprise/components/MinterDashboard";
 import { Enterprise } from "../Enterprise/Enterprise";
 import { GuardRails } from "../GuardRails/GuardRails";
 import { Profile } from "../Profile/Profile";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 const mxLogout = logout;
 
@@ -39,12 +38,12 @@ export const routes: RouteType[] = [
   {
     path: "mintdata",
     component: <></>,
-    authenticatedRoute: false,
+    authenticatedRoute: true,
   },
   {
     path: "datanfts/wallet",
     component: <></>,
-    authenticatedRoute: false,
+    authenticatedRoute: true,
   },
   {
     path: "profile",
@@ -76,6 +75,28 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   let path = pathname?.split("/")[pathname?.split("/")?.length - 1]; // handling Route Path
   const { wallet } = useWallet();
 
+  const routes: RouteType[] = [
+    {
+      path: "dashboard",
+      component: <></>,
+      authenticatedRoute: wallet ? false : true,
+    },
+    {
+      path: "mintdata",
+      component: <></>,
+      authenticatedRoute: wallet ? false : true,
+    },
+    {
+      path: "datanfts/wallet",
+      component: <></>,
+      authenticatedRoute: wallet ? false : true,
+    },
+    {
+      path: "profile",
+      component: <></>,
+      authenticatedRoute: wallet ? false : true,
+    },
+  ];
   useEffect(() => {
     if (path) {
       // we can use - to tag path keys. e.g. offer-44 is path key offer. So remove anything after - if needed

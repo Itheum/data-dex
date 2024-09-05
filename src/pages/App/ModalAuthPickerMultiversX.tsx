@@ -28,7 +28,6 @@ import { useLocalStorage } from "libs/hooks";
 import { getApi } from "libs/MultiversX/api";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
 import { gtagGo, clearAppSessionsLaunchMode, sleep } from "libs/utils";
-import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMode: any; redirectToRoute: null | string }) {

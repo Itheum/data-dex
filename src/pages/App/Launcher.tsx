@@ -67,7 +67,12 @@ function Launcher() {
                 minH="100svh"
                 boxShadow={containerShadow}
                 zIndex={2}>
-                {/* App Header
+                {/* 
+                ///TODO analyze this launch mode, maybe transform it somehow to 
+                open the modal when the user clicks on the button  because i think the problem wiht the button not working
+                only after a refresh is because of the launchModeSession variable stored in local storage
+                
+                App Header
                 <AppHeader onShowConnectWalletModal={onShowConnectWalletModal} setMenuItem={setMenuItem} handleLogout={handleLogout} /> */}
 
                 {launchMode === "mvx" && <ModalAuthPickerMx resetLaunchMode={() => handleLaunchMode("no-auth")} redirectToRoute={redirectToRoute} />}
