@@ -400,15 +400,15 @@ export default function WalletDataNFTMX(item: any) {
             )}
 
             <Stack display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" my="2" height="7rem">
-              <Badge borderRadius="md" px="3" py="1" mt="1" colorScheme="teal">
-                <Text fontSize={"sm"} fontWeight="semibold">
-                  You are the {item.creator !== address ? "Owner" : "Creator"}
+              <Badge borderRadius="md" px="3" py="1" mt="1" bgColor={item.creator !== address ? "#0ab8ff30" : "#00C79730"}>
+                <Text fontSize={{ base: "xs", "2xl": "sm" }} fontWeight="semibold" color={item.creator !== address ? "#0ab8ff" : "#00C797"}>
+                  You {item.creator !== address ? "Own" : "Created"} this
                 </Text>
               </Badge>
 
               {item?.isDataNFTPH && (
                 <Badge borderRadius="md" px="3" py="1" bgColor="#E2AEEA30">
-                  <Text fontSize={"sm"} fontWeight="semibold" color={colorMode === "dark" ? "#E2AEEA" : "#af82b5"}>
+                  <Text fontSize={{ base: "xs", "2xl": "sm" }} fontWeight="semibold" color={colorMode === "dark" ? "#E2AEEA" : "#af82b5"}>
                     Data NFT-PH (Plug-In Hybrid)
                   </Text>
                 </Badge>
