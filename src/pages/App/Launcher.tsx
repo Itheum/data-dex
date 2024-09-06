@@ -24,7 +24,6 @@ function Launcher() {
   if (colorMode === "light") {
     containerShadow = "rgb(0 0 0 / 16%) 0px 10px 36px 0px, rgb(0 0 0 / 6%) 0px 0px 0px 1px";
   }
-  console.log(launchModeSession, "LAUBCH :", launchMode, redirectToRoute);
   // hoisting launchModeControl here allows us to go multi-chain easier in future
   // ... have a look at git history on this component
   const handleLaunchMode = (chainOption: string, redirectToRouteStr?: string) => {

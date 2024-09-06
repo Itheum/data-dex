@@ -83,7 +83,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
       const nativeAuthTokenData = decodeNativeAuthToken(tokenLogin.nativeAuthToken);
       if (nativeAuthTokenData.extraInfo.timestamp) {
         const currentTime = new Date().getTime();
-        console.log(currentTime, (nativeAuthTokenData.extraInfo.timestamp + nativeAuthTokenData.ttl) * 1000);
+        // console.log(currentTime, (nativeAuthTokenData.extraInfo.timestamp + nativeAuthTokenData.ttl) * 1000);
         if (currentTime > (nativeAuthTokenData.extraInfo.timestamp + nativeAuthTokenData.ttl) * 1000) {
           return;
         }
@@ -99,7 +99,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
       // only get the bitz balance if the user owns the token
       if (hasGameDataNFT) {
-        console.log("info: user OWNs the bitz score data nft, so get balance");
+        // console.log("info: user OWNs the bitz score data nft, so get balance");
 
         const viewDataArgs = {
           mvxNativeAuthOrigins: [nativeAuthTokenData.origin],
@@ -130,7 +130,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
           updateBonusBitzSum(sumBonusBitz);
         }
       } else {
-        console.log("info: user does NOT OWN the bitz score data nft");
+        // console.log("info: user does NOT OWN the bitz score data nft");
         updateBitzBalance(-1);
         updateCooldown(-1);
       }

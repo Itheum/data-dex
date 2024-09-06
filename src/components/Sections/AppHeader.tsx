@@ -837,7 +837,6 @@ function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
   const itheumMxBalance = useAccountStore((state) => state.itheumBalance);
   const itheumSolBalance = useAccountStore((state) => state.itheumSolBalance);
   const itheumBalance = itheumSolBalance > 0 ? itheumSolBalance : itheumMxBalance;
-  console.log("Itheum Token Balance: ", itheumBalance, chainID);
   return (
     <Box
       display={displayParams}

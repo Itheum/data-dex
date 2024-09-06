@@ -89,8 +89,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       } else {
         const resp = await fetch(`${getApiDataDex(chainID)}/bespoke/sol/getDataNFTsByOwner?publicKeyb58=${solAddress}`);
         const data = await resp.json();
-        console.log("RESP  ", resp);
-        console.log("DATA NFTs", data.nfts);
+
         setShownSolDataNfts(data.nfts);
       }
 
