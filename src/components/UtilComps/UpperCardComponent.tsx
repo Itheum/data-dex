@@ -149,7 +149,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
                 <Stack display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" my="2" height="5rem">
                   {address && address == nftMetadata.creator && (
                     <Box borderRadius="md" px="3" py="1" bgColor="#00C79730">
-                      <Text fontSize={"sm"} fontWeight="semibold" color="#00C797">
+                      <Text fontSize={{ base: "xs", "2xl": "sm" }} fontWeight="semibold" color="#00C797" textTransform="uppercase">
                         You Created this
                       </Text>
                     </Box>
@@ -157,14 +157,18 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
 
                   {address && address == offer?.owner && (
                     <Box borderRadius="md" px="3" py="1" bgColor="#0ab8ff30">
-                      <Text fontSize={"sm"} fontWeight="semibold" color="#0ab8ff">
+                      <Text fontSize={{ base: "xs", "2xl": "sm" }} fontWeight="semibold" color="#0ab8ff" textTransform="uppercase">
                         You Own this
                       </Text>
                     </Box>
                   )}
 
                   <Box borderRadius="md" px="3" py="1" bgColor="#E2AEEA30">
-                    <Text fontSize={{ base: "xs", "2xl": "sm" }} fontWeight="semibold" color={colorMode === "dark" ? "#E2AEEA" : "#af82b5"}>
+                    <Text
+                      fontSize={{ base: "xs", "2xl": "sm" }}
+                      fontWeight="semibold"
+                      color={colorMode === "dark" ? "#E2AEEA" : "#af82b5"}
+                      textTransform="uppercase">
                       Fully Transferable License
                     </Text>
                   </Box>
