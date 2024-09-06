@@ -145,17 +145,17 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                   <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" my="1" height="5rem">
                     {address && address == nftMetadata[index].creator && (
                       <Badge borderRadius="full" px="2" colorScheme="teal">
-                        <Text>You Created this</Text>
+                        <Text textTransform="uppercase">You Created this</Text>
                       </Badge>
                     )}
 
                     {address && address == offer.owner && (
                       <Badge borderRadius="full" px="2" colorScheme="teal">
-                        <Text>You Own this</Text>
+                        <Text textTransform="uppercase">You Own this</Text>
                       </Badge>
                     )}
 
-                    <Badge borderRadius="full" px="2" colorScheme="blue">
+                    <Badge borderRadius="full" px="2" colorScheme="blue" textTransform="uppercase">
                       Fully Transferable License
                     </Badge>
                   </Box>
