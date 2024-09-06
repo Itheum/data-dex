@@ -157,8 +157,6 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       isDisabled: false,
     },
   ];
-  console.log("wallets", walletTabs);
-  console.log("wallets", publicKey, dataNfts.length, shownSolDataNfts.length);
 
   const getOnChainNFTs = async () => {
     const dataNftsT: DataNft[] = await getNftsOfACollectionForAnAddress(

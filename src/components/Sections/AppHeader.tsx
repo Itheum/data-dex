@@ -156,6 +156,78 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
   const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet" }); //, md: "Connect MultiversX Wallet" });
   const navigate = useNavigate();
 
+  const exploreRouterMenu = [
+    {
+      sectionId: "MainSections",
+      sectionLabel: "Main Sections",
+      sectionItems: [
+        {
+          menuEnum: MENU.PROFILE,
+          path: "/profile",
+          label: "Profile",
+          shortLbl: "Profile",
+          Icon: MdPerson,
+          needToBeLoggedIn: true,
+          isHidden: true,
+        },
+        {
+          menuEnum: MENU.HOME,
+          path: "/dashboard",
+          label: "Dashboard",
+          shortLbl: "Dash",
+          Icon: MdSpaceDashboard,
+          needToBeLoggedIn: true,
+          isHidden: true,
+        },
+        {
+          menuEnum: MENU.SELL,
+          path: "/mintdata",
+          label: "Mint Data",
+          shortLbl: "Mint",
+          Icon: RiExchangeFill,
+          needToBeLoggedIn: true,
+          isHidden: false,
+        },
+        {
+          menuEnum: MENU.NFTMINE,
+          path: "/datanfts/wallet",
+          label: "Data NFT Wallet",
+          shortLbl: "Wallet",
+          Icon: MdAccountBalanceWallet,
+          needToBeLoggedIn: true,
+          isHidden: false,
+        },
+        {
+          menuEnum: MENU.NFTALL,
+          path: "/datanfts/marketplace",
+          label: "Data NFT Marketplace",
+          shortLbl: "Market",
+          Icon: FaStore,
+          needToBeLoggedIn: false,
+          isHidden: false,
+        },
+        {
+          menuEnum: MENU.GETVERIFIED,
+          path: "/getVerified",
+          label: "Become a Verified Data Creator",
+          shortLbl: "Get Verified",
+          Icon: FaUserCheck,
+          needToBeLoggedIn: false,
+          needToBeLoggedOut: true,
+          isHidden: true,
+        },
+        {
+          menuEnum: MENU.NFMEID,
+          path: "/NFMeID",
+          label: "Get a NFMe ID",
+          shortLbl: "NFMe",
+          Icon: FaUserAstronaut,
+          needToBeLoggedIn: false,
+          isHidden: false,
+        },
+      ],
+    },
+  ];
   const navigateToDiscover = (menuEnum: number) => {
     setMenuItem(menuEnum);
 
@@ -299,6 +371,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                               isMenuItemSelected(`/profile/${mxAddress}/created`) ||
                               isMenuItemSelected(`/profile/${mxAddress}/listed`)
                             }
+                            hidden={solAddress !== undefined || hasPendingTransactions}
                             onClick={() => navigateToDiscover(MENU.PROFILE)}
                             color="teal.200"
                             backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
@@ -345,7 +418,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                         </MenuGroup>
 
                         <MenuGroup>
-                          {isUserLoggedIn && (
+                          {isMxLoggedIn && (
                             <ChainSupportedComponent feature={MENU.CLAIMS}>
                               <MenuItem
                                 closeOnSelect={false}
@@ -646,6 +719,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                           <ListItem
                             onClick={() => navigateToDiscover(MENU.PROFILE)}
                             as={Button}
+                            hidden={solAddress !== undefined || hasPendingTransactions}
                             variant={"ghost"}
                             w={"full"}
                             borderRadius={"0"}
@@ -683,9 +757,9 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                             </Link>
                           );
                         })}
-
                         <ListItem
                           as={Button}
+                          hidden={solAddress !== undefined || hasPendingTransactions}
                           variant={"ghost"}
                           w={"full"}
                           borderRadius={"0"}
@@ -697,6 +771,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                         </ListItem>
                         <ListItem
                           as={Button}
+                          hidden={solAddress !== undefined || hasPendingTransactions}
                           variant={"ghost"}
                           w={"full"}
                           borderRadius={"0"}

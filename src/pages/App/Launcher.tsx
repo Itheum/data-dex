@@ -9,11 +9,14 @@ import { SolContextProvider } from "contexts/sol/SolContextProvider";
 import { StoreProvider } from "store/StoreProvider";
 import { Container, Flex, useColorMode } from "@chakra-ui/react";
 import AppFooter from "components/Sections/AppFooter";
+import AppHeader from "components/Sections/AppHeader";
+import AppSolana from "./AppSolana";
 
 function Launcher() {
   const [launchModeSession, setLaunchModeSession] = useLocalStorage("itm-launch-mode", null);
   const [launchMode, setLaunchMode] = useState(launchModeSession || "no-auth");
   const [redirectToRoute, setRedirectToRoute] = useState<null | string>(null);
+  const [openConnectModal, setOpenConnectModal] = useState(false);
 
   const { colorMode } = useColorMode();
   let containerShadow = "rgb(255 255 255 / 16%) 0px 10px 36px 0px, rgb(255 255 255 / 6%) 0px 0px 0px 1px";
@@ -25,6 +28,8 @@ function Launcher() {
   // hoisting launchModeControl here allows us to go multi-chain easier in future
   // ... have a look at git history on this component
   const handleLaunchMode = (chainOption: string, redirectToRouteStr?: string) => {
+    if (chainOption == "no-auth") setOpenConnectModal(false);
+    else setOpenConnectModal(true);
     setLaunchMode(chainOption);
     setLaunchModeSession(chainOption);
 
@@ -74,10 +79,12 @@ function Launcher() {
                 
                 App Header
                 <AppHeader onShowConnectWalletModal={onShowConnectWalletModal} setMenuItem={setMenuItem} handleLogout={handleLogout} /> */}
+                {/* <AppHeader onShowConnectWalletModal={handleLaunchMode} setMenuItem={() => {}} handleLogout={() => console.log("LOGOUT BUTTON")} /> */}
 
-                {launchMode === "mvx" && <ModalAuthPickerMx resetLaunchMode={() => handleLaunchMode("no-auth")} redirectToRoute={redirectToRoute} />}
+                <ModalAuthPickerMx openConnectModal={openConnectModal} resetLaunchMode={() => handleLaunchMode("no-auth")} redirectToRoute={redirectToRoute} />
+                {/* {launchMode === "solana" && <AppSolana onShowConnectWalletModal={handleLaunchMode} />} */}
                 <AppMx onShowConnectWalletModal={handleLaunchMode} />
-
+                {/* <ModalAuthPickerMx resetLaunchMode={() => handleLaunchMode("no-auth")} redirectToRoute={redirectToRoute} /> */}
                 <AppFooter />
               </Flex>
             </Container>

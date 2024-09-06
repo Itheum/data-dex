@@ -30,7 +30,15 @@ import { walletConnectV2ProjectId } from "libs/mxConstants";
 import { gtagGo, clearAppSessionsLaunchMode, sleep } from "libs/utils";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
-function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMode: any; redirectToRoute: null | string }) {
+function ModalAuthPickerMx({
+  openConnectModal,
+  resetLaunchMode,
+  redirectToRoute,
+}: {
+  openConnectModal: boolean;
+  resetLaunchMode: any;
+  redirectToRoute: null | string;
+}) {
   const { address: mxAddress } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
@@ -54,9 +62,10 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
       // if a user disconnects the mobile xPortal app, it logs out user
       //... via dapp-core internally but redirects to a /unlock. We need to clean out the sessions correctly in this case
       cleanOutRemoteXPortalAppWalletDisconnect();
-    } else {
-      onProgressModalOpen();
     }
+    // else {
+    //   onProgressModalOpen();
+    // }
   }, []);
 
   useEffect(() => {
@@ -64,6 +73,12 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
       handleProgressModalClose();
     }
   }, [mxAddress]);
+
+  useEffect(() => {
+    if (openConnectModal) {
+      onProgressModalOpen();
+    }
+  }, [openConnectModal]);
 
   const handleProgressModalClose = () => {
     onProgressModalClose();
@@ -108,7 +123,9 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
               Wallet
             </ModalHeader>
             <ModalBody pb={6}>
-              <Text fontSize="sm">MultiversX</Text>
+              <Text fontSize="xl" fontWeight="bold">
+                MultiversX
+              </Text>
               <Stack spacing="5">
                 <Box p="5px">
                   <Stack>
@@ -162,13 +179,14 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
                       </WrapItem>
                     </Wrap>
                   </Stack>
-                  <Text fontSize="sm">Solana</Text>
+                  <Text fontSize="xl" fontWeight="bold">
+                    Solana
+                  </Text>
                   <Stack>
                     <Wrap spacing="20px" justify="space-around" padding="10px">
                       <WrapItem
                         onClick={() => {
                           goMxLogin(WALLETS.SOLANA);
-                          console.log("SOLANA login");
                           onProgressModalClose();
                         }}>
                         <WalletMultiButton />
