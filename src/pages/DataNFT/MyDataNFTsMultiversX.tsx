@@ -38,7 +38,7 @@ import WalletDataNFTMX from "components/WalletDataNFTMX/WalletDataNFTMX";
 import { contractsForChain } from "libs/config";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
 import { getApiDataDex } from "libs/utils";
-import { useAccountStore, useMarketStore } from "store";
+import { useMarketStore } from "store";
 
 import { BondingCards } from "./components/BondingCards";
 import { CompensationCards } from "./components/CompensationCards";
@@ -65,19 +65,19 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   // const { mvxNfts, isLoadingMvx, solNfts, isLoadingSol } = useNftsStore();
 
   /// Solana NFTs
-  const SHOW_NFTS_STEP = 10;
-  const [numberOfSolNftsShown, setNumberOfSolNftsShown] = useState<number>(SHOW_NFTS_STEP);
+  // const SHOW_NFTS_STEP = 10;
+  // const [numberOfSolNftsShown, setNumberOfSolNftsShown] = useState<number>(SHOW_NFTS_STEP);
   const [shownSolDataNfts, setShownSolDataNfts] = useState<DasApiAsset[]>([]);
 
   const { publicKey } = useWallet();
   const solAddress = publicKey?.toBase58();
 
-  const solPreaccessNonce = useAccountStore((state: any) => state.solPreaccessNonce);
-  const solPreaccessSignature = useAccountStore((state: any) => state.solPreaccessSignature);
-  const solPreaccessTimestamp = useAccountStore((state: any) => state.solPreaccessTimestamp);
-  const updateSolPreaccessNonce = useAccountStore((state: any) => state.updateSolPreaccessNonce);
-  const updateSolPreaccessTimestamp = useAccountStore((state: any) => state.updateSolPreaccessTimestamp);
-  const updateSolSignedPreaccess = useAccountStore((state: any) => state.updateSolSignedPreaccess);
+  // const solPreaccessNonce = useAccountStore((state: any) => state.solPreaccessNonce);
+  // const solPreaccessSignature = useAccountStore((state: any) => state.solPreaccessSignature);
+  // const solPreaccessTimestamp = useAccountStore((state: any) => state.solPreaccessTimestamp);
+  // const updateSolPreaccessNonce = useAccountStore((state: any) => state.updateSolPreaccessNonce);
+  // const updateSolPreaccessTimestamp = useAccountStore((state: any) => state.updateSolPreaccessTimestamp);
+  // const updateSolSignedPreaccess = useAccountStore((state: any) => state.updateSolSignedPreaccess);
   const [fetchingSolNfts, setFetchingSolNfts] = useState<boolean>(false);
 
   useEffect(() => {
@@ -132,18 +132,18 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     {
       tabName: "Purchased",
       icon: MdOutlineShoppingBag,
-      isDisabled: false,
+      isDisabled: solAddress ? true : false,
       pieces: purchasedDataNfts.length,
     },
     {
       tabName: "Favorite",
       icon: MdFavoriteBorder,
-      isDisabled: false,
+      isDisabled: solAddress ? true : false,
     },
     {
       tabName: "Activity",
       icon: BsClockHistory,
-      isDisabled: false,
+      isDisabled: solAddress ? true : false,
     },
     {
       tabName: "Liveliness",
@@ -153,7 +153,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     {
       tabName: "Compensation",
       icon: FaCoins,
-      isDisabled: false,
+      isDisabled: solAddress ? true : false,
     },
   ];
 
