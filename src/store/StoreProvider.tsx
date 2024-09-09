@@ -21,6 +21,7 @@ import { getAccountTokenFromApi, getItheumPriceFromApi } from "libs/MultiversX/a
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { computeRemainingCooldown, convertWeiToEsdt, decodeNativeAuthToken, tokenDecimals } from "libs/utils";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
+import { SolEnvEnum } from "libs/Solana/SolViewData";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { address } = useGetAccountInfo();
@@ -32,12 +33,10 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   // SOLANA
   const { publicKey } = useWallet();
   const { connection } = useConnection();
-  const { networkConfiguration } = useContext(NetworkConfigurationContext);
 
   // ACCOUNT STORE
   const favoriteNfts = useAccountStore((state) => state.favoriteNfts);
   const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
-  const updateItheumSolBalance = useAccountStore((state) => state.updateItheumSolBalance);
   const updateAccessToken = useAccountStore((state) => state.updateAccessToken);
   const updateFavoriteNfts = useAccountStore((state) => state.updateFavoriteNfts);
   const updateBitzBalance = useAccountStore((state) => state.updateBitzBalance);
@@ -201,27 +200,28 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
   // get the itheum balance on solana blockchain
   useEffect(() => {
-    if (!publicKey) return;
+    if (!publicKey) {
+      console.error("Wallet not connected.");
+      return;
+    }
     if (hasPendingTransactions) return;
 
     (async () => {
       const itheumTokens = (await getItheumBalanceOnSolana()) || -1;
-      updateItheumSolBalance(itheumTokens);
+      updateItheumBalance(itheumTokens);
     })();
   }, [publicKey, hasPendingTransactions]);
 
   const getItheumBalanceOnSolana = async () => {
     try {
-      if (!publicKey) {
-        console.error("Wallet not connected.");
-        return;
-      }
-      const itheumTokenMint = new PublicKey(contractsForChain(networkConfiguration === "testnet" ? "SD" : "S1").itheumToken); // TODO add the mainnet address
-      const addressAta = getAssociatedTokenAddressSync(itheumTokenMint, publicKey, false);
+      const itheumTokenMint = new PublicKey(
+        contractsForChain(import.meta.env.VITE_ENV_NETWORK === "devnet" ? SolEnvEnum.devnet : SolEnvEnum.mainnet).itheumToken
+      ); // TODO add the mainnet contract address
+      const addressAta = getAssociatedTokenAddressSync(itheumTokenMint, publicKey!, false);
       const balance = await connection.getTokenAccountBalance(addressAta);
       return balance.value.uiAmount;
     } catch (error) {
-      console.error("Error fetching Itheum balance on Solana " + networkConfiguration + " blockchain:", error);
+      console.error("Error fetching Itheum balance on Solana " + import.meta.env.VITE_ENV_NETWORK + " blockchain:", error);
       throw error;
     }
   };

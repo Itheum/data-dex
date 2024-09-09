@@ -833,10 +833,8 @@ function shouldDisplayQuickMenuItem(quickMenuItem: any, isUserLoggedIn: boolean)
 
 function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
   const { chainID } = useGetNetworkConfig();
-  const itheumMxBalance = useAccountStore((state) => state.itheumBalance);
-  const itheumSolBalance = useAccountStore((state) => state.itheumSolBalance);
-  const itheumBalance = itheumSolBalance > 0 ? itheumSolBalance : itheumMxBalance;
-  return (
+  const itheumBalance = useAccountStore((state) => state.itheumBalance);
+    return (
     <Box
       display={displayParams}
       fontSize={{ md: "sm", "2xl": "md" }}
