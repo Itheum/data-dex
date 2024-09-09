@@ -40,6 +40,7 @@ import AppMarketplace from "pages/Home/components/AppMarketplace";
 import { TrendingData } from "./components/TrendingData";
 import VolumesDataNfts from "./components/VolumesDataNfts";
 import NftMediaComponent from "../../components/NftMediaComponent";
+import liveliness from "assets/img/nfme/liveliness.png";
 
 export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
   const { colorMode } = useColorMode();
@@ -247,7 +248,7 @@ export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
               </ChainSupportedComponent>
 
               <Box w={[tileBoxW, "initial"]} border="1px solid transparent" borderColor="#00C79740" borderRadius="16px" m={{ base: "auto", md: "initial" }}>
-                <Stack p="5" h={"430px"} alignItems={{ base: "center", xl: "start" }}>
+                <Stack p="5" h={"430px"} alignItems="center">
                   <Heading size="md" fontFamily="Clash-Medium" pb={2}>
                     NFMe ID Vault
                   </Heading>
@@ -270,11 +271,34 @@ export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
                 </Stack>
               </Box>
 
+              <Box w={[tileBoxW, "initial"]} border="1px solid transparent" borderColor="#00C79740" borderRadius="16px" m={{ base: "auto", md: "initial" }}>
+                <Stack p="5" h={"430px"} alignItems="center">
+                  <Heading size="md" fontFamily="Clash-Medium" pb={2}>
+                    Liveliness Staking Rewards
+                  </Heading>
+                  <Box h="100%" w="100%" bgPosition="50% 30%" bgImage={liveliness} bgSize="400px" backgroundRepeat="no-repeat"></Box>
+                  <Spacer />
+
+                  <Flex w="full" justifyContent="center">
+                    <Button
+                      mt="3"
+                      size="lg"
+                      colorScheme="teal"
+                      borderRadius="xl"
+                      onClick={() => {
+                        navigate("/liveliness");
+                      }}>
+                      <Text>Liveliness Staking</Text>
+                    </Button>
+                  </Flex>
+                </Stack>
+              </Box>
+
               <Box m={{ base: "auto", md: "initial" }}>
                 <ChainSupportedComponent feature={MENU.CLAIMS}>
                   <Box w={[tileBoxW, "initial"]} border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
                     <Stack p="5" h={"430px"} minW={claimsStackMinW}>
-                      <Heading size="md" fontFamily="Clash-Medium" pb={2} textAlign={{ base: "center", xl: "start" }}>
+                      <Heading size="md" fontFamily="Clash-Medium" pb={2} textAlign="center">
                         My Claims
                       </Heading>
 
