@@ -723,24 +723,23 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
         {isMintFeeInfoVisible ? (
           <Alert status="info" mt={3} rounded="lg">
-            <AlertIcon />
             <Box display="flex" flexDirection="column" w="full">
-              <AlertTitle mb={2}>How much $ITHEUM and $EGLD do you need for the mint?</AlertTitle>
+              <AlertTitle mb={2}>How much $ITHEUM and $EGLD is needed for the mint?</AlertTitle>
               <AlertDescription fontSize="md">1. An anti-spam fee of {antiSpamTax < 0 ? "?" : antiSpamTax} $ITHEUM</AlertDescription>
               <AlertDescription fontSize="md">
                 2. Bond an amount of $ITHEUM tokens ({bondingAmount} $ITHEUM) for a period of time ({bondingPeriod} {amountOfTimeUnit}). This bond can be
                 unlocked by you and earns Staking rewards when active.
               </AlertDescription>
               <AlertDescription fontSize="md">3. ~0.02 EGLD to cover the gas fees for the transaction.</AlertDescription>
-              <AlertDescription fontSize="lg" display="flex" gap={1} mt={2} fontWeight="bold">
+              <AlertDescription fontSize="lg" display={{ base: "block", md: "flex" }} gap={1} mt={2} fontWeight="bold">
                 Resulting in a total of <Text color="teal.200">{antiSpamTax + bondingAmount} $ITHEUM</Text> tokens and <Text color="teal.200">~0.02</Text> EGLD
               </AlertDescription>
             </Box>
             <CloseButton alignSelf="flex-start" position="relative" right={-1} top={-1} onClick={onClose} />
           </Alert>
         ) : (
-          <Button onClick={onOpen} mt={3} size="md" variant="outline">
-            How much $ITHEUM and $EGLD do you need for the mint?
+          <Button onClick={onOpen} mt={3} size={{ base: "sm", md: "md" }} variant="outline">
+            How much $ITHEUM and $EGLD is needed for the mint?
           </Button>
         )}
 
