@@ -1,16 +1,13 @@
 import React, { useState } from "react";
+import { Container, Flex, useColorMode } from "@chakra-ui/react";
 import { TermsChangedNoticeModal } from "components/TermsChangedNoticeModal";
-import { useLocalStorage } from "libs/hooks";
-import { clearAppSessionsLaunchMode } from "libs/utils";
-import AppMx from "./AppMultiversX";
-import ModalAuthPickerMx from "./ModalAuthPickerMultiversX";
 import { MvxContextProvider } from "contexts/MvxContextProvider";
 import { SolContextProvider } from "contexts/sol/SolContextProvider";
+import { useLocalStorage } from "libs/hooks";
+import { clearAppSessionsLaunchMode } from "libs/utils";
 import { StoreProvider } from "store/StoreProvider";
-import { Container, Flex, useColorMode } from "@chakra-ui/react";
-import AppFooter from "components/Sections/AppFooter";
-import AppHeader from "components/Sections/AppHeader";
-import AppSolana from "./AppSolana";
+import App from "./App";
+import ModalAuthPicker from "./ModalAuthPicker";
 
 function Launcher() {
   const [launchModeSession, setLaunchModeSession] = useLocalStorage("itm-launch-mode", null);
@@ -43,23 +40,6 @@ function Launcher() {
 
   return (
     <>
-      {/* <DappProvider
-        environment={import.meta.env.VITE_ENV_NETWORK}
-        customNetworkConfig={{
-          name: "itheum-data-dex",
-          apiTimeout: uxConfig.mxAPITimeoutMs,
-          walletConnectV2ProjectId,
-        }}
-        dappConfig={{
-          shouldUseWebViewProvider: true,
-        }}>
-        <TransactionsToastList successfulToastLifetime={MX_TOAST_LIFETIME_IN_MS} />
-        <NotificationModal />
-        <SignTransactionsModals className="itheum-data-dex-elrond-modals" />
-
-        {launchMode === "mvx" && <ModalAuthPickerMx resetLaunchMode={() => handleLaunchMode("no-auth")} redirectToRoute={redirectToRoute} />}
-      </DappProvider> */}
-
       <SolContextProvider>
         <MvxContextProvider>
           <StoreProvider>
@@ -71,20 +51,8 @@ function Launcher() {
                 minH="100svh"
                 boxShadow={containerShadow}
                 zIndex={2}>
-                {/* 
-                ///TODO analyze this launch mode, maybe transform it somehow to 
-                open the modal when the user clicks on the button  because i think the problem wiht the button not working
-                only after a refresh is because of the launchModeSession variable stored in local storage
-                
-                App Header
-                <AppHeader onShowConnectWalletModal={onShowConnectWalletModal} setMenuItem={setMenuItem} handleLogout={handleLogout} /> */}
-                {/* <AppHeader onShowConnectWalletModal={handleLaunchMode} setMenuItem={() => {}} handleLogout={() => console.log("LOGOUT BUTTON")} /> */}
-
-                <ModalAuthPickerMx openConnectModal={openConnectModal} resetLaunchMode={() => handleLaunchMode("no-auth")} redirectToRoute={redirectToRoute} />
-                {/* {launchMode === "solana" && <AppSolana onShowConnectWalletModal={handleLaunchMode} />} */}
-                <AppMx onShowConnectWalletModal={handleLaunchMode} />
-                {/* <ModalAuthPickerMx resetLaunchMode={() => handleLaunchMode("no-auth")} redirectToRoute={redirectToRoute} /> */}
-                <AppFooter />
+                <ModalAuthPicker openConnectModal={openConnectModal} resetLaunchMode={() => handleLaunchMode("no-auth")} redirectToRoute={redirectToRoute} />
+                <App onShowConnectWalletModal={handleLaunchMode} />
               </Flex>
             </Container>
           </StoreProvider>

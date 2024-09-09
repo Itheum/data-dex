@@ -46,7 +46,6 @@ import { FavoriteCards } from "./components/FavoriteCards";
 import { LivelinessStaking } from "./components/LivelinessStaking";
 import DataNFTDetails from "./DataNFTDetails";
 import WalletDataNftSol from "components/SolanaNfts/WalletDataNftSol";
-// import { DasApiAsset } from "@metaplex-foundation/digital-asset-standard-api";
 
 export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { colorMode } = useColorMode();
@@ -81,6 +80,13 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const [fetchingSolNfts, setFetchingSolNfts] = useState<boolean>(false);
 
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, []);
+
+  useEffect(() => {
     async function fetchSolNfts() {
       setFetchingSolNfts(true);
 
@@ -97,13 +103,6 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     }
     fetchSolNfts();
   }, [publicKey]);
-
-  useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  }, []);
 
   useEffect(() => {
     if (hasPendingTransactions) return;
@@ -218,6 +217,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
           </TabList>
           <TabPanels>
             {/* Your Data NFTs */}
+
             <TabPanel mt={2} width={"full"}>
               {tabState === 1 && (dataNfts.length > 0 || shownSolDataNfts.length > 0) ? (
                 <SimpleGrid

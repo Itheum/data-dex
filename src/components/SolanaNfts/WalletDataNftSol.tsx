@@ -1,8 +1,8 @@
 import React from "react";
 
 import { Box, Skeleton } from "@chakra-ui/react";
-import NftMediaComponent from "components/NftMediaComponent";
 import { DasApiAsset } from "@metaplex-foundation/digital-asset-standard-api";
+import NftMediaComponent from "components/NftMediaComponent";
 
 interface WalletDataNftSolProps {
   index: number;

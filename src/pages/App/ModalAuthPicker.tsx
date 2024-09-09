@@ -22,15 +22,15 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { NativeAuthConfigType } from "@multiversx/sdk-dapp/types";
 import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from "@multiversx/sdk-dapp/UI";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useLocation, useNavigate } from "react-router-dom";
 import { IS_DEVNET, WALLETS } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { getApi } from "libs/MultiversX/api";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
 import { gtagGo, clearAppSessionsLaunchMode, sleep } from "libs/utils";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
-function ModalAuthPickerMx({
+function ModalAuthPicker({
   openConnectModal,
   resetLaunchMode,
   redirectToRoute,
@@ -214,4 +214,4 @@ function ModalAuthPickerMx({
   );
 }
 
-export default ModalAuthPickerMx;
+export default ModalAuthPicker;
