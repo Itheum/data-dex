@@ -27,7 +27,6 @@ import { MinterDashboard } from "../Enterprise/components/MinterDashboard";
 import { Enterprise } from "../Enterprise/Enterprise";
 import { GuardRails } from "../GuardRails/GuardRails";
 import { Profile } from "../Profile/Profile";
-import GetBitz from "pages/GetBitz";
 
 const mxLogout = logout;
 

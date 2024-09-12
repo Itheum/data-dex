@@ -59,6 +59,7 @@ import { GET_BITZ_TOKEN, MARKETPLACE_DETAILS_PAGE } from "libs/config";
 import { LuMousePointerClick } from "react-icons/lu";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
 import Countdown from "react-countdown";
+import { useNftsStore } from "store/nfts";
 
 const MEME_IMGS = [
   Meme1,
@@ -130,6 +131,7 @@ export const GetBitzMvx = (props: any) => {
   ///TODO add ?r=${address}
   const [usingReferralCode, setUsingReferralCode] = useState<string>("");
   // const tweetTextReferral = `url=https://explorer.itheum.io/getbitz?r=${address}&text=Join the %23itheum <BiTz> XP Game and be part of the %23web3 data ownership revolution.%0A%0AJoin via my referral link and get a bonus chance to win <BiTz> XP 🙌. Click below to %23GetBiTz!`;
+  const { mvxNfts } = useNftsStore();
 
   // Game canvas related
   const [loadBlankGameCanvas, setLoadBlankGameCanvas] = useState<boolean>(false);
@@ -237,7 +239,7 @@ export const GetBitzMvx = (props: any) => {
   async function fetchMyNfts() {
     if (gameDataNFT) {
       //fetch only the required Data NFT for the game of the user
-      const _dataNfts: DataNft[] = await getNftsOfACollectionForAnAddress(address, [GET_BITZ_TOKEN.tokenIdentifier], chainID);
+      const _dataNfts: DataNft[] = mvxNfts; // await getNftsOfACollectionForAnAddress(address, [GET_BITZ_TOKEN.tokenIdentifier], chainID);
       const hasRequiredDataNFT = _dataNfts.find((dNft: { tokenIdentifier: string }) => gameDataNFT.tokenIdentifier === dNft.tokenIdentifier);
       setHasGameDataNFT(hasRequiredDataNFT ? true : false);
       setCheckingIfHasGameDataNFT(false);

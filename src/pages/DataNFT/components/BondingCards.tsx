@@ -33,6 +33,7 @@ import { contractsForChain } from "libs/config";
 import { labels } from "libs/language";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
 import { formatNumberToShort } from "libs/utils";
+import { useNftsStore } from "store/nfts";
 
 type CompensationNftsType = {
   nonce: number;
@@ -55,7 +56,7 @@ export const BondingCards: React.FC = () => {
   DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
   const [bondingOffers, setBondingOffers] = useState<Array<DataNft>>([]);
   const [dataNftsWithNoBond, setDataNftsWithNoBond] = useState<Array<DataNft>>([]);
-
+  const { mvxNfts } = useNftsStore();
   const [contractConfiguration, setContractConfiguration] = useState<BondConfiguration>({
     contractState: 0,
     bondPaymentTokenIdentifier: "",
@@ -92,7 +93,7 @@ export const BondingCards: React.FC = () => {
       setAllInfoLoading(true);
 
       // get all the users data NFTs (so we know which ones they withdrew)
-      const allMyDataNFTs = await getOnChainNFTs();
+      const allMyDataNFTs = mvxNfts ;///TODO CHECKawait getOnChainNFTs();
       const allMyDataNFTsWithBalance = allMyDataNFTs.map((nft) => new DataNft({ ...nft, balance: nft.balance ? nft.balance : 1 }));
 
       const itemsForCompensation: Array<CompensationNftsType> = [];
@@ -180,14 +181,14 @@ export const BondingCards: React.FC = () => {
     });
   };
 
-  const getOnChainNFTs = async () => {
-    const dataNftsT: DataNft[] = await getNftsOfACollectionForAnAddress(
-      address,
-      contractsForChain(chainID).dataNftTokens.map((v) => v.id),
-      chainID
-    );
-    return dataNftsT;
-  };
+  // const getOnChainNFTs = async () => {
+  //   const dataNftsT: DataNft[] = await getNftsOfACollectionForAnAddress(
+  //     address,
+  //     contractsForChain(chainID).dataNftTokens.map((v) => v.id),
+  //     chainID
+  //   );
+  //   return dataNftsT;
+  // };
 
   return (
     <Flex width="100%" flexWrap="wrap" gap={7} px={{ base: 0, md: 12 }} mt={10}>

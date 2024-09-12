@@ -598,3 +598,7 @@ export const PEERME_TEAM_NAME: string = IS_DEVNET ? "itheum-dao" : "itheum-trail
 export const REPORTED_TO_BE_BAD_DATA_NFTS: string[] = IS_DEVNET ? [] : ["DATANFTFT-e936d4-02", "DATANFTFT-e936d4-03", "DATANFTFT-e936d4-08"];
 
 export const MARKETPLACE_DETAILS_PAGE = IS_DEVNET ? "https://test.datadex.itheum.io/datanfts/marketplace/" : "https://datadex.itheum.io/datanfts/marketplace/";
+
+export const SUPPORTED_MVX_COLLECTIONS = IS_DEVNET
+  ? ["DATANFTFT-e0b917", "DNFTPHMA-9e2b1c", "OASISMUSIC-9b3433", "OASMUSICPL-47b186", "FOOWLDMSC-5ee8ec"]
+  : ["DATANFTFT-e936d4", "DFEE-72425b"];
