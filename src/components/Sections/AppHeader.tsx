@@ -60,6 +60,8 @@ import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU, EXPLORER_APP_FOR_TOKEN } from "libs/c
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
 import { useWallet } from "@solana/wallet-adapter-react";
+import GetBitz from "pages/GetBitz";
+import { PlayBitzModal } from "pages/GetBitz/PlayBitzModal";
 
 const exploreRouterMenu = [
   {
@@ -154,6 +156,8 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
   const cooldown = useAccountStore((state) => state.cooldown);
   const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet" }); //, md: "Connect MultiversX Wallet" });
   const navigate = useNavigate();
+  const [openMiniGame, setOpenMiniGame] = useState(false);
+  const [showPlayBitzModal, setShowPlayBitzModal] = useState(false);
 
   const exploreRouterMenu = [
     {
@@ -516,6 +520,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                           </Flex>
                         </Box>
                       </Flex>
+
                       <Text textAlign="center" fontFamily="Clash-Medium" fontSize="2xl">
                         What is {`<BiTz>`} XP?
                       </Text>
@@ -523,18 +528,17 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                         {`<BiTz>`} are Itheum Protocol XP. {`<BiTz>`} can be collected every few hours by playing the Get {`<BiTz>`} game Data Widget. Top
                         LEADERBOARD climbers get special perks and drops!
                       </Text>
-                      <Link as={ReactRouterLink} isExternal to={`${EXPLORER_APP_FOR_TOKEN[chainID]["bitzgame"]}/?accessToken=${tokenLogin?.nativeAuthToken}`}>
-                        <Button
-                          variant="outline"
-                          borderColor="#38bdf8"
-                          rounded="full"
-                          w="full"
-                          _hover={{ backgroundImage: "linear-gradient(345deg, #171717, #38bdf8)" }}>
-                          <span>
-                            {cooldown === -2 ? <span>...</span> : cooldown > 0 ? <Countdown unixTime={cooldown} /> : <span> Claim Your {`<BiTz>`} XP</span>}
-                          </span>
-                        </Button>
-                      </Link>
+                      <Button
+                        onClick={() => setShowPlayBitzModal(true)}
+                        variant="outline"
+                        borderColor="#38bdf8"
+                        rounded="full"
+                        w="full"
+                        _hover={{ backgroundImage: "linear-gradient(345deg, #171717, #38bdf8)" }}>
+                        <span>
+                          {cooldown === -2 ? <span>...</span> : cooldown > 0 ? <Countdown unixTime={cooldown} /> : <span> Claim Your {`<BiTz>`} XP</span>}
+                        </span>
+                      </Button>
                     </PopoverBody>
                   </PopoverContent>
                 </Popover>
@@ -819,6 +823,8 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
           </DrawerBody>
         </DrawerContent>
       </Drawer>
+
+      {showPlayBitzModal && <PlayBitzModal showPlayBitzModel={showPlayBitzModal} handleHideBitzModel={() => setShowPlayBitzModal(false)} />}
     </>
   );
 };
@@ -834,7 +840,7 @@ function shouldDisplayQuickMenuItem(quickMenuItem: any, isUserLoggedIn: boolean)
 function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
   const { chainID } = useGetNetworkConfig();
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
-    return (
+  return (
     <Box
       display={displayParams}
       fontSize={{ md: "sm", "2xl": "md" }}

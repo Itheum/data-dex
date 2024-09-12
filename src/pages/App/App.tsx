@@ -27,6 +27,7 @@ import { MinterDashboard } from "../Enterprise/components/MinterDashboard";
 import { Enterprise } from "../Enterprise/Enterprise";
 import { GuardRails } from "../GuardRails/GuardRails";
 import { Profile } from "../Profile/Profile";
+import GetBitz from "pages/GetBitz";
 
 const mxLogout = logout;
 
@@ -222,7 +223,6 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
     <>
       {/* App Header */}
       <AppHeader onShowConnectWalletModal={onShowConnectWalletModal} setMenuItem={setMenuItem} handleLogout={handleLogout} />
-
       {isSolLoggedIn ? (
         <Box flexGrow={1} minH={{ base: "auto", lg: bodyMinHeightLg }}>
           <Routes>{commonRoutes()}</Routes>

@@ -32,11 +32,13 @@ import { FaBrush, FaCoins } from "react-icons/fa";
 import { MdFavoriteBorder, MdLockOutline, MdOutlineShoppingBag } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { NoDataHere } from "components/Sections/NoDataHere";
+import WalletDataNftSol from "components/SolanaNfts/WalletDataNftSol";
 import InteractionTxTable from "components/Tables/InteractionTxTable";
 import useThrottle from "components/UtilComps/UseThrottle";
 import WalletDataNFTMX from "components/WalletDataNFTMX/WalletDataNFTMX";
 import { contractsForChain } from "libs/config";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
+import { fetchSolNfts } from "libs/Solana/utils";
 import { getApiDataDex } from "libs/utils";
 import { useMarketStore } from "store";
 
@@ -45,7 +47,6 @@ import { CompensationCards } from "./components/CompensationCards";
 import { FavoriteCards } from "./components/FavoriteCards";
 import { LivelinessStaking } from "./components/LivelinessStaking";
 import DataNFTDetails from "./DataNFTDetails";
-import WalletDataNftSol from "components/SolanaNfts/WalletDataNftSol";
 
 export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { colorMode } = useColorMode();
@@ -61,12 +62,11 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { hasPendingTransactions } = useGetPendingTransactions();
   const [nftForDrawer, setNftForDrawer] = useState<DataNft | undefined>();
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
-  // const { mvxNfts, isLoadingMvx, solNfts, isLoadingSol } = useNftsStore();
 
   /// Solana NFTs
   // const SHOW_NFTS_STEP = 10;
   // const [numberOfSolNftsShown, setNumberOfSolNftsShown] = useState<number>(SHOW_NFTS_STEP);
-  const [shownSolDataNfts, setShownSolDataNfts] = useState<DasApiAsset[]>([]);
+  const [solDataNfts, setSolDataNfts] = useState<DasApiAsset[]>([]);
 
   const { publicKey } = useWallet();
   const solAddress = publicKey?.toBase58();
@@ -77,7 +77,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   // const updateSolPreaccessNonce = useAccountStore((state: any) => state.updateSolPreaccessNonce);
   // const updateSolPreaccessTimestamp = useAccountStore((state: any) => state.updateSolPreaccessTimestamp);
   // const updateSolSignedPreaccess = useAccountStore((state: any) => state.updateSolSignedPreaccess);
-  const [fetchingSolNfts, setFetchingSolNfts] = useState<boolean>(false);
+  // const [fetchingSolNfts, setFetchingSolNfts] = useState<boolean>(false);
 
   useEffect(() => {
     window.scrollTo({
@@ -86,22 +86,10 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     });
   }, []);
 
-  useEffect(() => {
-    async function fetchSolNfts() {
-      setFetchingSolNfts(true);
-
-      if (!solAddress) {
-        setShownSolDataNfts([]);
-      } else {
-        const resp = await fetch(`${getApiDataDex(chainID)}/bespoke/sol/getDataNFTsByOwner?publicKeyb58=${solAddress}`);
-        const data = await resp.json();
-
-        setShownSolDataNfts(data.nfts);
-      }
-
-      setFetchingSolNfts(false);
-    }
-    fetchSolNfts();
+  useEffect(() => { ///TODO MAYBE ADD NFTS TO STORE 
+    fetchSolNfts(solAddress).then((data) => {
+      setSolDataNfts(data);
+    });
   }, [publicKey]);
 
   useEffect(() => {
@@ -126,7 +114,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       tabName: "Your Data NFT(s)",
       icon: FaBrush,
       isDisabled: false,
-      pieces: dataNfts.length + shownSolDataNfts.length, ///TODO not best sollution but works, think of something else
+      pieces: dataNfts.length + solDataNfts.length, ///TODO not best sollution but works, think of something else
     },
     {
       tabName: "Purchased",
@@ -219,7 +207,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
             {/* Your Data NFTs */}
 
             <TabPanel mt={2} width={"full"}>
-              {tabState === 1 && (dataNfts.length > 0 || shownSolDataNfts.length > 0) ? (
+              {tabState === 1 && (dataNfts.length > 0 || solDataNfts.length > 0) ? (
                 <SimpleGrid
                   columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
                   spacingY={4}
@@ -240,7 +228,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                           {...item}
                         />
                       ))
-                    : shownSolDataNfts.map((item, index) => <WalletDataNftSol key={index} index={index} solDataNft={item} />)}
+                    : solDataNfts.map((item, index) => <WalletDataNftSol key={index} index={index} solDataNft={item} />)}
                 </SimpleGrid>
               ) : (
                 <Flex onClick={getOnChainNFTs}>

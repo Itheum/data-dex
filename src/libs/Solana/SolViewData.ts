@@ -1,10 +1,6 @@
 import { PublicKey } from "@solana/web3.js";
 import { getApiDataMarshal } from "libs/utils";
-
-export enum SolEnvEnum {
-  devnet = "SD",
-  mainnet = "S1",
-}
+import { SolEnvEnum } from "./config";
 
 export async function itheumSolPreaccess() {
   const chainId = import.meta.env.VITE_ENV_NETWORK === "devnet" ? SolEnvEnum.devnet : SolEnvEnum.mainnet;

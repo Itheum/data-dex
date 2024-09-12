@@ -111,7 +111,14 @@ function ModalAuthPicker({
   return (
     <>
       {!mxAddress && isProgressModalOpen && (
-        <Modal isCentered size={modelSize} isOpen={isProgressModalOpen} onClose={handleProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
+        <Modal
+          isCentered
+          size={modelSize}
+          isOpen={isProgressModalOpen}
+          onClose={handleProgressModalClose}
+          closeOnEsc={false}
+          closeOnOverlayClick={false}
+          blockScrollOnMount={false}>
           <ModalOverlay backdropFilter="blur(10px)" />
           <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
             <ModalCloseButton />
@@ -189,7 +196,7 @@ function ModalAuthPicker({
                           goMxLogin(WALLETS.SOLANA);
                           onProgressModalClose();
                         }}>
-                        <WalletMultiButton />
+                        <WalletMultiButton tabIndex={2} />
                       </WrapItem>
                     </Wrap>
                   </Stack>

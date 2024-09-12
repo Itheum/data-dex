@@ -223,6 +223,8 @@ export function notSupportedOnChain(menuItem: any, chainID: string) {
     43113: [MENU.CLAIMS, MENU.TX],
     "D": [MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
     "1": [MENU.FAUCET, MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.DATACAT, BUTTONS.JOIN_NOW],
+    "SD": [MENU.PROFILE, MENU.TX, MENU.CLAIMS, MENU.PURCHASED, MENU.DATACAT, MENU.GUARDRAILS],
+    "S1": [MENU.PROFILE, MENU.TX, MENU.CLAIMS, MENU.PURCHASED, MENU.DATACAT, MENU.GUARDRAILS],
   };
 
   if (UNSUPPORTED_CHAIN_FEATURES[chainID]) {
@@ -594,3 +596,5 @@ export const EXPLORER_APP_FOR_TOKEN: Record<string, Record<string, string>> = {
 export const PEERME_TEAM_NAME: string = IS_DEVNET ? "itheum-dao" : "itheum-trailblazer-dao";
 
 export const REPORTED_TO_BE_BAD_DATA_NFTS: string[] = IS_DEVNET ? [] : ["DATANFTFT-e936d4-02", "DATANFTFT-e936d4-03", "DATANFTFT-e936d4-08"];
+
+export const MARKETPLACE_DETAILS_PAGE = IS_DEVNET ? "https://test.datadex.itheum.io/datanfts/marketplace/" : "https://datadex.itheum.io/datanfts/marketplace/";
