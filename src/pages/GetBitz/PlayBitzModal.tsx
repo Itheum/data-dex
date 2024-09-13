@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import GetBitz from ".";
 import { EXPLORER_APP_FOR_TOKEN } from "libs/config";
 import { getChainID } from "@multiversx/sdk-dapp/utils";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useAccountStore } from "store";
+import { LuFlaskRound } from "react-icons/lu";
 
 type PathwaysModalProps = {
   showPlayBitzModel?: boolean;
@@ -11,6 +14,8 @@ type PathwaysModalProps = {
 
 export const PlayBitzModal: React.FC<PathwaysModalProps> = (props) => {
   const { showPlayBitzModel, handleHideBitzModel } = props;
+  const { connected } = useWallet();
+  const bitzBalance = useAccountStore((state: any) => state.bitzBalance);
 
   return (
     <div
@@ -20,7 +25,12 @@ export const PlayBitzModal: React.FC<PathwaysModalProps> = (props) => {
       <div className="relative p-4 w-full max-w-2xl max-h-full">
         <div className="relative bg-white rounded-lg dark:bg-[#171717] drop-shadow-[0_0px_100px_rgba(250,250,250,.8)]">
           <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Play To Get BiTz XP</h3>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Play To Get {connected ? " SOL " : " MVX "} BiTz XP</h3>
+            <div className="flex flex-row">
+              {" "}
+              {bitzBalance === -2 ? <span>...</span> : <>{bitzBalance === -1 ? <div>0</div> : <div>{bitzBalance}</div>}</>}
+              <LuFlaskRound fontSize={"1.4rem"} fill="#38bdf8" />
+            </div>
             <div>
               <Link target="_blank" to={`${EXPLORER_APP_FOR_TOKEN[getChainID()]["bitzgame"]}`} onClick={handleHideBitzModel}>
                 <button className="relative inline-flex items-center justify-center p-0.5 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">

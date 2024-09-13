@@ -23,7 +23,7 @@ const WalletDataNftSol: React.FC<WalletDataNftSolProps> = ({ index, solDataNft }
         mb="1rem"
         position="relative">
         <NftMediaComponent
-          imageUrls={[(solDataNft.content.links?.["image"] as string) ?? ""]}
+          imageUrls={[solDataNft.content.links ? (solDataNft.content.links["image"] as string) : "todoAddDefaultImage"]}
           autoSlide
           imageHeight="236px"
           imageWidth="236px"

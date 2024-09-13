@@ -536,7 +536,13 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                         w="full"
                         _hover={{ backgroundImage: "linear-gradient(345deg, #171717, #38bdf8)" }}>
                         <span>
-                          {cooldown === -2 ? <span>...</span> : cooldown > 0 ? <Countdown unixTime={cooldown} /> : <span> Claim Your {`<BiTz>`} XP</span>}
+                          {cooldown === -2 ? (
+                            <span>Check balance & Play</span>
+                          ) : cooldown > 0 ? (
+                            <Countdown unixTime={cooldown} />
+                          ) : (
+                            <span> Claim Your {`<BiTz>`} XP</span>
+                          )}
                         </span>
                       </Button>
                     </PopoverBody>

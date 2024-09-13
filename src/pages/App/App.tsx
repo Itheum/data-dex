@@ -27,6 +27,7 @@ import { MinterDashboard } from "../Enterprise/components/MinterDashboard";
 import { Enterprise } from "../Enterprise/Enterprise";
 import { GuardRails } from "../GuardRails/GuardRails";
 import { Profile } from "../Profile/Profile";
+import { useAccountStore } from "store";
 
 const mxLogout = logout;
 
@@ -75,6 +76,9 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   let path = pathname?.split("/")[pathname?.split("/")?.length - 1]; // handling Route Path
 
   const { connected: isSolLoggedIn, disconnect: disconnectSolWallet } = useWallet();
+  const updateBitzBalance = useAccountStore((state: any) => state.updateBitzBalance);
+  const updateItheumBalance = useAccountStore((state: any) => state.updateItheumBalance);
+  const updateCooldown = useAccountStore((state: any) => state.updateCooldown);
 
   useEffect(() => {
     if (path) {
@@ -124,8 +128,15 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
     }
   }, [mxAddress]);
 
+  const resetCommonStoreValuesBitzContext = () => {
+    updateBitzBalance(-2);
+    updateItheumBalance(-2);
+    updateCooldown(-2);
+  };
+
   const handleLogout = () => {
     clearAppSessionsLaunchMode();
+    resetCommonStoreValuesBitzContext();
     gtagGo("auth", "logout", "el");
     // if we are connected to solana
     if (isSolLoggedIn) {
