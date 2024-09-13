@@ -16,6 +16,7 @@ import {
   dataNftMintContractAddress_Mx_Mainnet,
   dataNFTFTTicker_Mx_Mainnet,
   itheumTokenContractAddress_Solana_Testnet,
+  itheumTokenContractAddress_Solana_Devnet,
   itheumTokenContractAddress_Solana_Mainnet,
 } from "./contractAddresses";
 
@@ -75,7 +76,7 @@ export function contractsForChain(chainID: string): ContractsType {
     }
     case "SD": {
       return {
-        itheumToken: itheumTokenContractAddress_Solana_Testnet,
+        itheumToken: itheumTokenContractAddress_Solana_Devnet,
         claims: new Address(""),
         faucet: new Address(""),
         market: new Address(""),

@@ -49,6 +49,9 @@ const contracts = {
     testnet: {
       itheumTokenContractAddress: "iTHdo2NJbcxy5rKKMwNaffUxZA2zK6DPJirgLgwRkA1",
     },
+    devnet: {
+      itheumTokenContractAddress: "iTH89rapYE2GG4B77UjoEqnY7bRAPQrUs6LRAXQEHUo",
+    },
     mainnet: {
       itheumTokenContractAddress: "iTHdo2NJbcxy5rKKMwNaffUxZA2zK6DPJirgLgwRkA1", ///TODO change whit the correct one
     },
@@ -89,6 +92,7 @@ export const dataNftMarketContractAddress_Mx_Mainnet = contracts.mx["mainnet"].d
 
 // Solana Contracts
 export const itheumTokenContractAddress_Solana_Testnet = contracts.solana["testnet"].itheumTokenContractAddress;
+export const itheumTokenContractAddress_Solana_Devnet = contracts.solana["devnet"].itheumTokenContractAddress;
 export const itheumTokenContractAddress_Solana_Mainnet = contracts.solana["mainnet"].itheumTokenContractAddress;
 
 // OTHER CHAIN CONTRACTS
