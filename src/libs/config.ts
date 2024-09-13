@@ -137,6 +137,7 @@ export const MENU = {
   PROFILE: 20,
   GUARDRAILS: 21,
   NFMEID: 22,
+  LIVELINESS: 22,
 };
 
 export const BUTTONS = {
@@ -171,8 +172,8 @@ export const CHAINS = {
   56: "BSC - Mainnet",
   1666700000: "Harmony - Testnet",
   43113: "Avalanche - Testnet",
-  "1": "MultiversX - Mainnet",
-  "D": "MultiversX - Devnet",
+  "1": "MVX - Mainnet",
+  "D": "MVX - Devnet",
   "SD": "Solana - Devnet",
   "S1": "Solana - Mainnet",
 };

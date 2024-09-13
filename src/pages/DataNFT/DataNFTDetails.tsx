@@ -684,13 +684,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             px="3"
                             py="1.5"
                             bgColor="#E2AEEA30"
-                            w="11rem"
+                            w="14rem"
                             ml="28px"
                             textAlign="center"
                             display="flex"
                             alignItems="center"
                             justifyContent="center">
-                            <Text fontSize={"sm"} fontWeight="semibold" color="#E2AEEA">
+                            <Text fontSize={"sm"} fontWeight="semibold" color="#E2AEEA" textTransform="uppercase">
                               Fully Transferable License
                             </Text>
                           </Box>
@@ -704,7 +704,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                               display="flex"
                               alignItems="center"
                               justifyContent="center">
-                              <Text fontSize={"sm"} fontWeight="semibold" color="#0ab8ff">
+                              <Text fontSize={"sm"} fontWeight="semibold" color="#0ab8ff" textTransform="uppercase">
                                 You Own this
                               </Text>
                             </Box>
@@ -720,7 +720,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                               display="flex"
                               alignItems="center"
                               justifyContent="center">
-                              <Text fontSize={"sm"} fontWeight="semibold" color="#00C797">
+                              <Text fontSize={"sm"} fontWeight="semibold" color="#00C797" textTransform="uppercase">
                                 You Created this
                               </Text>
                             </Box>

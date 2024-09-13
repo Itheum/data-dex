@@ -43,7 +43,7 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { BsDot } from "react-icons/bs";
-import { FaStore, FaUserCheck, FaLaptop, FaUserAstronaut } from "react-icons/fa";
+import { FaStore, FaUserCheck, FaLaptop, FaUserAstronaut, FaTachometerAlt } from "react-icons/fa";
 import { LuFlaskRound } from "react-icons/lu";
 import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdPerson, MdSpaceDashboard } from "react-icons/md";
 import { RiExchangeFill } from "react-icons/ri";
@@ -130,6 +130,15 @@ const exploreRouterMenu = [
         shortLbl: "NFMe",
         Icon: FaUserAstronaut,
         needToBeLoggedIn: false,
+        isHidden: false,
+      },
+      {
+        menuEnum: MENU.LIVELINESS,
+        path: "/datanfts/wallet/liveliness",
+        label: "Liveliness Staking",
+        shortLbl: "Liveliness",
+        Icon: FaTachometerAlt,
+        needToBeLoggedIn: true,
         isHidden: false,
       },
     ],
@@ -345,8 +354,8 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                       size={isUserLoggedIn ? "sm" : "md"}
                       onClick={() => navigateToDiscover(menuEnum)}>
                       <Flex justifyContent="center" alignItems="center" px={{ base: 0, "2xl": 1.5 }} color="teal.200" pointerEvents="none">
-                        <Icon size={"1.6em"} />
-                        <Text pl={2} fontSize={{ base: isUserLoggedIn ? "sm" : "md", "2xl": "lg" }} color={colorMode === "dark" ? "white" : "black"}>
+                        <Icon size={"1.3em"} />
+                        <Text pl={2} fontSize={{ base: isMxLoggedIn ? "sm" : "md", "2xl": "lg" }} color={colorMode === "dark" ? "white" : "black"}>
                           {shortLbl}
                         </Text>
                       </Flex>

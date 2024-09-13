@@ -43,7 +43,7 @@ type CompensationNftsType = {
 export const BondingCards: React.FC = () => {
   const { chainID } = useGetNetworkConfig();
   const { colorMode } = useColorMode();
-  const { address } = useGetAccountInfo();
+  const { address: mxAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   const [contractBonds, setContractBonds] = useState<Bond[]>([]);
@@ -78,13 +78,15 @@ export const BondingCards: React.FC = () => {
     async function fetchNfmeId() {
       const envNetwork = import.meta.env.VITE_ENV_NETWORK as string;
       const nfmeIdNonceT = await bondContract.viewAddressVaultNonce(
-        new Address(address),
+        new Address(mxAddress),
         envNetwork === "mainnet" ? dataNftTokenIdentifier.mainnet : dataNftTokenIdentifier.devnet
       );
+
       setNfmeIdNonce(nfmeIdNonceT);
     }
+
     fetchNfmeId();
-  }, [address, hasPendingTransactions]);
+  }, [mxAddress, hasPendingTransactions]);
 
   useEffect(() => {
     if (hasPendingTransactions) return;
@@ -93,14 +95,14 @@ export const BondingCards: React.FC = () => {
       setAllInfoLoading(true);
 
       // get all the users data NFTs (so we know which ones they withdrew)
-      const allMyDataNFTs = mvxNfts ;///TODO CHECKawait getOnChainNFTs();
+      const allMyDataNFTs = mvxNfts; ///TODO CHECKawait getOnChainNFTs();
       const allMyDataNFTsWithBalance = allMyDataNFTs.map((nft) => new DataNft({ ...nft, balance: nft.balance ? nft.balance : 1 }));
 
       const itemsForCompensation: Array<CompensationNftsType> = [];
       const contractConfigurationRequest = await bondContract.viewContractConfiguration();
 
       const contractBondsReq = await bondContract.viewAllBonds();
-      const myBonds = contractBondsReq.filter((bond) => bond.address === address);
+      const myBonds = contractBondsReq.filter((bond) => bond.address === mxAddress);
 
       let bondedDataNfts: DataNft[] = [];
 
@@ -113,7 +115,11 @@ export const BondingCards: React.FC = () => {
       console.log("E: myBonds ---->");
 
       // a list of Data NFTs the user never put a bond on OR they withdrew the bond and "exited"
-      const myDataNFTsThatHaveNoBonds = allMyDataNFTsWithBalance.filter((nft) => !bondsNonceList.includes(nft.nonce));
+      const myCreatedDataNFTsThatHaveNoBonds = allMyDataNFTsWithBalance
+        .filter((i) => i.creator === mxAddress)
+        .filter((nft) => {
+          return !bondsNonceList.includes(nft.nonce);
+        });
 
       try {
         bondedDataNfts = await DataNft.createManyFromApi(myBonds.map((bond) => ({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier })));
@@ -130,7 +136,7 @@ export const BondingCards: React.FC = () => {
 
       setContractConfiguration(contractConfigurationRequest);
       setBondingOffers(bondedDataNfts);
-      setDataNftsWithNoBond(myDataNFTsThatHaveNoBonds);
+      setDataNftsWithNoBond(myCreatedDataNFTsThatHaveNoBonds);
       setContractBonds(myBonds.reverse());
       setAllCompensation(compensation.reverse());
 
@@ -138,9 +144,9 @@ export const BondingCards: React.FC = () => {
       console.log(bondedDataNfts);
       console.log("E: bondedDataNfts ---->");
 
-      console.log("S: myDataNFTsThatHaveNoBonds ---->");
-      console.log(myDataNFTsThatHaveNoBonds);
-      console.log("E: myDataNFTsThatHaveNoBonds ---->");
+      console.log("S: myCreatedDataNFTsThatHaveNoBonds ---->");
+      console.log(myCreatedDataNFTsThatHaveNoBonds);
+      console.log("E: myCreatedDataNFTsThatHaveNoBonds ---->");
 
       setAllInfoLoading(false);
     })();
@@ -166,7 +172,7 @@ export const BondingCards: React.FC = () => {
 
   const renewBond = async (tokenIdentifier: string, nonce: number) => {
     console.log(tokenIdentifier, nonce);
-    const tx = bondContract.renew(new Address(address), tokenIdentifier, nonce);
+    const tx = bondContract.renew(new Address(mxAddress), tokenIdentifier, nonce);
     tx.setGasLimit(100000000);
     await sendTransactions({
       transactions: [tx],
@@ -174,7 +180,7 @@ export const BondingCards: React.FC = () => {
   };
 
   const withdrawBonds = async (tokenIdentifier: string, nonce: number) => {
-    const tx = bondContract.withdraw(new Address(address), tokenIdentifier, nonce);
+    const tx = bondContract.withdraw(new Address(mxAddress), tokenIdentifier, nonce);
     tx.setGasLimit(100000000);
     await sendTransactions({
       transactions: [tx],
@@ -183,7 +189,7 @@ export const BondingCards: React.FC = () => {
 
   // const getOnChainNFTs = async () => {
   //   const dataNftsT: DataNft[] = await getNftsOfACollectionForAnAddress(
-  //     address,
+  //     mxAddress,
   //     contractsForChain(chainID).dataNftTokens.map((v) => v.id),
   //     chainID
   //   );
@@ -240,9 +246,9 @@ export const BondingCards: React.FC = () => {
                           {nfmeIdNonce !== dataNft.nonce ? (
                             <Button
                               colorScheme="teal"
-                              isDisabled={address === "" || hasPendingTransactions}
+                              isDisabled={mxAddress === "" || hasPendingTransactions}
                               onClick={() => {
-                                const tx = bondContract.setVaultNonce(new Address(address), dataNft.nonce, dataNft.collection);
+                                const tx = bondContract.setVaultNonce(new Address(mxAddress), dataNft.nonce, dataNft.collection);
                                 sendTransactions({
                                   transactions: [tx],
                                 });
@@ -273,7 +279,7 @@ export const BondingCards: React.FC = () => {
                             <Button
                               colorScheme="teal"
                               px={6}
-                              isDisabled={address === "" || hasPendingTransactions}
+                              isDisabled={mxAddress === "" || hasPendingTransactions}
                               onClick={() => renewBond(dataNft.collection, dataNft.nonce)}>
                               Renew Bond
                             </Button>
@@ -291,7 +297,7 @@ export const BondingCards: React.FC = () => {
                                 textColor="indianred"
                                 fontWeight="400"
                                 isDisabled={
-                                  address === "" ||
+                                  mxAddress === "" ||
                                   hasPendingTransactions ||
                                   calculateRemainedAmountAfterPenalty(BigNumber(contractBond.remainingAmount), BigNumber(contractBond.bondAmount)) <=
                                     new BigNumber(0)
@@ -307,7 +313,7 @@ export const BondingCards: React.FC = () => {
                                 variant="outline"
                                 textColor="teal.200"
                                 fontWeight="400"
-                                isDisabled={address === "" || hasPendingTransactions}
+                                isDisabled={mxAddress === "" || hasPendingTransactions}
                                 onClick={() => {
                                   setWithdrawBondConfirmationWorkflow({ collection: dataNft.collection, nonce: dataNft.nonce });
                                 }}>
@@ -393,17 +399,17 @@ export const BondingCards: React.FC = () => {
                           borderColor="#00C79740"
                           borderRadius="3xl"
                           p={5}>
-                          <Flex flexDirection={{ base: "column", md: "row" }}>
-                            <Box minW="200px" minH="345px" textAlign="center">
-                              <Text fontFamily="Clash-Medium" pb={3} mt={{ base: 3, md: "auto" }}>
-                                {dataNft.tokenName}
-                              </Text>
-                              <NftMediaComponent nftMedia={dataNft?.media} imageHeight="180px" imageWidth="180px" borderRadius="5px" />
+                          <Flex flexDirection="column" justifyContent="center" minW="200px" minH="320px" textAlign="center">
+                            <Text fontFamily="Clash-Medium" pb={3}>
+                              {dataNft.tokenName}
+                            </Text>
+                            <NftMediaComponent nftMedia={dataNft?.media} imageHeight="180px" imageWidth="180px" borderRadius="5px" />
 
+                            <Box>
                               {nfmeIdNonce === dataNft.nonce && (
-                                <Text fontSize="sm" w="200px" m="auto">
+                                <Text fontSize="xs" w="200px" m="auto">
                                   ⚠️ This is Currently set as your Primary NFMe ID. Select and set another Data NFT with an active bond as your Primary NFT ID
-                                  by using the {"'Set as Primary NFMe ID'"} above.
+                                  using the {"'Set as Primary NFMe ID'"} button above.
                                 </Text>
                               )}
                             </Box>
