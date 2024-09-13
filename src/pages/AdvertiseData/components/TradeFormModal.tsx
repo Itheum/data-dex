@@ -171,8 +171,10 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
       setDataNFTImgGenService(isSuccess);
     });
   };
+
   console.log("userData", userData);
   console.log(lockPeriod, "lockPeriod", dataNFTMarshalServiceStatus, "dataNFTMarshalServiceStatus", dataNFTImgGenServiceValid, "dataNFTImgGenServiceValid");
+
   return (
     <Modal onClose={onClose} isOpen={isOpen} size="6xl" closeOnEsc={true} closeOnOverlayClick={false} blockScrollOnMount={false}>
       <ModalOverlay backdropFilter="blur(10px)" />

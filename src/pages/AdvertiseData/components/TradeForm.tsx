@@ -47,7 +47,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { BondContract, dataNftTokenIdentifier, SftMinter, LivelinessStake } from "@itheum/sdk-mx-data-nft/out";
+import { BondContract, dataNftTokenIdentifier, SftMinter, LivelinessStake, CNftSolMinter } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
@@ -299,7 +299,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     mode: "onChange", // mode stay for when the validation should be applied
     resolver: yupResolver(validationSchema), // telling to React Hook Form that we want to use yupResolver as the validation schema
   });
-  console.log("validationSchema:", "errors:", errors, "isValid:", isValid);
+  // console.log("validationSchema:", "errors:", errors, "isValid:", isValid);
   const dataNFTStreamUrl: string = isNFMeIDMint ? generatePrefilledNFMeIDDataStreamURL() : getValues("dataStreamUrlForm");
   const dataNFTPreviewUrl: string = getValues("dataPreviewUrlForm");
   const dataNFTTokenName: string = getValues("tokenNameForm");
@@ -398,18 +398,23 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
   function shouldMintYourDataNftBeDisabled(): boolean | undefined {
     console.log("shouldMintYourDataNftBeDisabled");
-    console.log(isValid);
-    console.log(dataNFTStreamUrl);
-    console.log(dataNFTPreviewUrl);
-    console.log(dataNFTTokenName);
-    console.log(datasetTitle);
-    console.log(datasetDescription);
-    console.log(extraAssets);
-    console.log(donatePercentage);
-    console.log(dataNFTCopies);
-    console.log(dataNFTRoyalties);
-    console.log(bondingAmount);
-    console.log(bondingPeriod);
+    // console.log(isValid);
+    // // console.log(dataNFTStreamUrl);
+    // // console.log(dataNFTPreviewUrl);
+    // // console.log(dataNFTTokenName);
+    // // console.log(datasetTitle);
+    // // console.log(datasetDescription);
+    // // console.log(extraAssets);
+    // // console.log(donatePercentage);
+    // // console.log(dataNFTCopies);
+    // // console.log(dataNFTRoyalties);
+    // // console.log(bondingAmount);
+    // // console.log(bondingPeriod);
+    // console.log(itheumBalance < antiSpamTax + bondingAmount);
+    // console.log(!readTermsChecked);
+    // console.log(!readAntiSpamFeeChecked);
+    // console.log(!readLivelinessBonding);
+
     //return !isValid || !readTermsChecked || !readAntiSpamFeeChecked || !readLivelinessBonding || itheumBalance < antiSpamTax + bondingAmount;
     return !readTermsChecked || !readAntiSpamFeeChecked || !readLivelinessBonding || itheumBalance < antiSpamTax + bondingAmount;
   }
@@ -627,23 +632,60 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     setMintingSuccessful(true);
   };
 
-  //TODO : Implement SolMinter  --- this is a mocked answer
-  const SolMinter = () => {
-    console.log("sol MInter");
-    return {
-      imageUrl: "https://ipfs.io/ipfs/QmRKHRigigDYcQFQwSX3szA3a5iVGRW89DN6Hd8j9g4Ddc",
-      metadataUrl: "https://ipfs.io/ipfs/QmRLk71T95YMxKY6Gu1yrmTHXsvdXd6FoiBKmcN1Xu3MkE",
-      tx: [],
-    };
-  };
-
   const mintDataNftSol = async () => {
     try {
-      const { imageUrl: _imageUrl, metadataUrl: _metadataUrl, tx: dataNFTMintTX } = SolMinter();
+      const cNftSolMinter = new CNftSolMinter(IS_DEVNET ? "devnet" : "mainnet");
+      const optionalSDKMintCallFields: Record<string, any> = {
+        nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
+        extraAssets: [],
+      };
 
-      await checkIfNftImgAndMetadataIsAvailableOnIPFS(_imageUrl, _metadataUrl);
+      if (extraAssets && extraAssets.trim() !== "" && extraAssets.trim().toUpperCase() !== "NA") {
+        optionalSDKMintCallFields["extraAssets"] = [extraAssets.trim()];
+      }
+
+      // if it's nfme id vault, get the custom image layers
+      if (isNFMeIDMint) {
+        optionalSDKMintCallFields["imgGenBg"] = "bg5_series_nfmeid_gen1";
+        optionalSDKMintCallFields["imgGenSet"] = "set9_series_nfmeid_gen1";
+      }
+      if (!publicKey) return;
+      const {
+        imageUrl: _imageUrl,
+        metadataUrl: _metadataUrl,
+        mintMeta,
+      } = await cNftSolMinter.mint(
+        publicKey?.toBase58(), // Solana User Wallet Address
+        dataNFTTokenName,
+        dataNFTMarshalService,
+        dataNFTStreamUrl,
+        dataNFTPreviewUrl,
+        datasetTitle,
+        datasetDescription,
+        optionalSDKMintCallFields
+      );
+
+      // The actual data nft mint TX we will execute once we confirm the IPFS metadata has loaded
+      // setMintTx(dataNFTMintTX);
+      console.log("mintMeta", _imageUrl, _metadataUrl, mintMeta);
+      if (!_imageUrl || _imageUrl.trim() === "" || !_metadataUrl || _metadataUrl.trim() === "") {
+        setErrDataNFTStreamGeneric(new Error(labels.ERR_IPFS_ASSET_SAVE_FAILED));
+      } else if (!mintMeta || mintMeta?.error || Object.keys(mintMeta).length === 0) {
+        setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_TX_GEN_COMMAND_FAILED));
+      } else {
+        console.log("mintMeta --> these values are needed for the NEXT step, which is to get user to BOND");
+        console.log(mintMeta);
+
+        // let's attempt to checks 3 times if the IPFS data is loaded and available on the gateway
+        await checkIfNftImgAndMetadataIsAvailableOnIPFS(_imageUrl, _metadataUrl);
+
+        // in solana, the mint was a success already
+        setMintingSuccessful(true);
+        setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s4: 1 }));
+      }
     } catch (e) {
-      console.error("Some solana errror add message for it", e);
+      console.error(e);
+      setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_TX_GEN_COMMAND_FAILED));
     }
   };
 
