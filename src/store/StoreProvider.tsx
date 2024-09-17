@@ -1,10 +1,14 @@
-import React, { PropsWithChildren, useEffect } from "react";
+import React, { PropsWithChildren, useContext, useEffect, useState } from "react";
 import { BondContract, DataNft, DataNftMarket, MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { getAssociatedTokenAddressSync } from "@solana/spl-token";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
 import { useSearchParams } from "react-router-dom";
-import { GET_BITZ_TOKEN, IS_DEVNET, viewDataJSONCore } from "libs/config";
+import { NetworkConfigurationContext } from "contexts/sol/SolNetworkConfigurationProvider";
+import { GET_BITZ_TOKEN, IS_DEVNET, SUPPORTED_MVX_COLLECTIONS, viewDataJSONCore } from "libs/config";
 import {
   contractsForChain,
   getAddressBoughtOffersFromBackendApi,
@@ -17,6 +21,11 @@ import { getAccountTokenFromApi, getItheumPriceFromApi } from "libs/MultiversX/a
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { computeRemainingCooldown, convertWeiToEsdt, decodeNativeAuthToken, tokenDecimals } from "libs/utils";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
+import { SolEnvEnum } from "libs/Solana/config";
+import { DasApiAsset } from "@metaplex-foundation/digital-asset-standard-api";
+import { fetchSolNfts } from "libs/Solana/utils";
+
+import { useNftsStore } from "./nfts";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { address } = useGetAccountInfo();
@@ -24,6 +33,10 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { tokenLogin } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();
   const [searchParams] = useSearchParams();
+  console.log(address, hasPendingTransactions, tokenLogin, chainID, searchParams);
+  // SOLANA
+  const { publicKey } = useWallet();
+  const { connection } = useConnection();
 
   // ACCOUNT STORE
   const favoriteNfts = useAccountStore((state) => state.favoriteNfts);
@@ -53,15 +66,52 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const mintContract = new DataNftMintContract(chainID);
   DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
 
+  // NFT Store
+  const { mvxNfts, updateMvxNfts, updateIsLoadingMvx, solNfts, updateSolNfts, updateIsLoadingSol } = useNftsStore();
+  // flag to check locally if we got the MVX NFTs
+  const [mvxNFTsFetched, setMvxNFTsFetched] = useState<boolean>(false);
+
   useEffect(() => {
     (async () => {
       if (bondingContract) {
+        ///TODOD && address ?
         const bondingAmount = await bondingContract.viewLockPeriodsWithBonds();
         updateLockPeriodForBond(bondingAmount);
       }
     })();
   }, []);
 
+  useEffect(() => {
+    async function fetchMvxNfts() {
+      updateIsLoadingMvx(true);
+      if (!address || !(tokenLogin && tokenLogin.nativeAuthToken)) {
+        updateMvxNfts([]);
+      } else {
+        const collections = SUPPORTED_MVX_COLLECTIONS;
+        const nftsT = await DataNft.ownedByAddress(address, collections);
+        updateMvxNfts(nftsT);
+      }
+      updateIsLoadingMvx(false);
+      setMvxNFTsFetched(true);
+    }
+    fetchMvxNfts();
+  }, [address, tokenLogin]);
+
+  ///TODO save nfts in a store maybe ?
+
+  useEffect(() => {
+    if (!publicKey) return;
+
+    updateIsLoadingSol(true);
+
+    fetchSolNfts(publicKey?.toBase58()).then((nfts) => {
+      updateSolNfts(nfts);
+    });
+
+    updateIsLoadingSol(false);
+  }, [publicKey]);
+
+  // fetch the Mx Bitz balance and cooldown
   useEffect(() => {
     (async () => {
       if (!address || !(tokenLogin && tokenLogin.nativeAuthToken)) {
@@ -73,7 +123,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
       const nativeAuthTokenData = decodeNativeAuthToken(tokenLogin.nativeAuthToken);
       if (nativeAuthTokenData.extraInfo.timestamp) {
         const currentTime = new Date().getTime();
-        console.log(currentTime, (nativeAuthTokenData.extraInfo.timestamp + nativeAuthTokenData.ttl) * 1000);
+        // console.log(currentTime, (nativeAuthTokenData.extraInfo.timestamp + nativeAuthTokenData.ttl) * 1000);
         if (currentTime > (nativeAuthTokenData.extraInfo.timestamp + nativeAuthTokenData.ttl) * 1000) {
           return;
         }
@@ -84,12 +134,13 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
       // does the logged in user actually OWN the bitz game data nft
       const _myDataNfts = await DataNft.ownedByAddress(address);
+      updateMvxNfts(_myDataNfts);
       const hasRequiredDataNFT = _myDataNfts.find((dNft) => bitzGameDataNFT.nonce === dNft.nonce);
       const hasGameDataNFT = hasRequiredDataNFT ? true : false;
 
       // only get the bitz balance if the user owns the token
       if (hasGameDataNFT) {
-        console.log("info: user OWNs the bitz score data nft, so get balance");
+        // console.log("info: user OWNs the bitz score data nft, so get balance");
 
         const viewDataArgs = {
           mvxNativeAuthOrigins: [nativeAuthTokenData.origin],
@@ -120,7 +171,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
           updateBonusBitzSum(sumBonusBitz);
         }
       } else {
-        console.log("info: user does NOT OWN the bitz score data nft");
+        // console.log("info: user does NOT OWN the bitz score data nft");
         updateBitzBalance(-1);
         updateCooldown(-1);
       }
@@ -188,6 +239,34 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
       updateUserData(_userData);
     })();
   }, [address, hasPendingTransactions]);
+
+  // get the itheum balance on solana blockchain
+  useEffect(() => {
+    if (!publicKey) {
+      console.error("Wallet not connected.");
+      return;
+    }
+    if (hasPendingTransactions) return;
+
+    (async () => {
+      const itheumTokens = (await getItheumBalanceOnSolana()) || -1;
+      updateItheumBalance(itheumTokens);
+    })();
+  }, [publicKey, hasPendingTransactions]);
+
+  const getItheumBalanceOnSolana = async () => {
+    try {
+      const itheumTokenMint = new PublicKey(
+        contractsForChain(import.meta.env.VITE_ENV_NETWORK === "devnet" ? SolEnvEnum.devnet : SolEnvEnum.mainnet).itheumToken
+      ); // TODO add the mainnet contract address
+      const addressAta = getAssociatedTokenAddressSync(itheumTokenMint, publicKey!, false);
+      const balance = await connection.getTokenAccountBalance(addressAta);
+      return balance.value.uiAmount;
+    } catch (error) {
+      console.error("Error fetching Itheum balance on Solana " + import.meta.env.VITE_ENV_NETWORK + " blockchain:", error);
+      throw error;
+    }
+  };
 
   useEffect(() => {
     getFavourite();

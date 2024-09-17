@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "@chakra-ui/react";
+import { twMerge } from "tailwind-merge";
+import clsx, { ClassValue } from "clsx";
 
 // Function to transform description that have a link into an actual link
 export const transformDescription = (description: string) => {
@@ -16,3 +18,7 @@ export const transformDescription = (description: string) => {
     return word;
   });
 };
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}

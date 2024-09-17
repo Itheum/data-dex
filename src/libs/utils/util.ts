@@ -88,7 +88,10 @@ export const clearAppSessionsLaunchMode = () => {
   localStorage?.removeItem("itm-launch-env");
   localStorage?.removeItem("itm-datacat-linked");
   sessionStorage.removeItem("persist:sdk-dapp-signedMessageInfo"); // clear signedSessions
+  localStorage?.removeItem("network"); // clear solana network
 };
+
+export const DRIP_PAGE = "https://drip.haus/itheum";
 
 export const printPrice = (price: number, token: string): string => {
   return price <= 0 ? "FREE" : `${convertToLocalString(price)} ${token}`;

@@ -117,7 +117,7 @@ const PSPassportModal: React.FC<Props> = (props) => {
           setPSNValid(null);
           setPSNUsernameValid(null);
         } else {
-          console.log("ERROR ********");
+          console.error("ERROR ********");
           setPSNFullCheckError("NPSSO and PSN Username check has failed. Please enter a valid details.");
           setPSNCheckInProgress(false);
         }
