@@ -274,6 +274,7 @@ export const BondingCards: React.FC = () => {
                             key={dataNft.collection + dataNft.nonce}
                             unbondTimestamp={contractBond.unbondTimestamp}
                             lockPeriod={contractBond.lockPeriod}
+                            showExpiryDate={true}
                           />
                           <Flex gap={4} pt={3} alignItems="center">
                             <Button

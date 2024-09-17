@@ -390,8 +390,8 @@ export function timeUntil(lockPeriod: number): { count: number; unit: string } {
     { seconds: 60, unit: "minute" },
     { seconds: 1, unit: "second" },
   ];
-  const interval = intervals.find((i) => i.seconds <= seconds) ?? intervals[0];
 
+  const interval = intervals.find((i) => i.seconds <= seconds) ?? intervals[0];
   const count = Math.floor(seconds / interval!.seconds);
   const unit = count === 1 ? interval!.unit : interval!.unit + "s";
 

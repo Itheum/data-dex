@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { Box, Flex, Progress, Text, Link } from "@chakra-ui/react";
-import { settingLivelinessScore } from "../../libs/utils";
+import moment from "moment/moment";
+import { settingLivelinessScore } from "libs/utils";
 
 type LivelinessScoreProp = {
   tokenIdentifier?: string;
   unbondTimestamp?: number;
   lockPeriod?: number;
   onGettingLivelinessScore?: any;
+  showExpiryDate?: boolean;
 };
 
 export const LivelinessScore: React.FC<LivelinessScoreProp> = (props) => {
-  const { tokenIdentifier, unbondTimestamp, lockPeriod, onGettingLivelinessScore } = props;
+  const { tokenIdentifier, unbondTimestamp, lockPeriod, onGettingLivelinessScore, showExpiryDate } = props;
   const [livelinessScore, setLivelinessScore] = useState<number>(-1);
 
   useEffect(() => {
@@ -24,6 +26,12 @@ export const LivelinessScore: React.FC<LivelinessScoreProp> = (props) => {
       }
     })();
   }, [tokenIdentifier, unbondTimestamp]);
+
+  let nftParsedCreationTime = null;
+
+  if (showExpiryDate && unbondTimestamp) {
+    nftParsedCreationTime = moment(unbondTimestamp * 1000);
+  }
 
   return (
     <Box w={"100%"}>
@@ -65,6 +73,11 @@ export const LivelinessScore: React.FC<LivelinessScoreProp> = (props) => {
               <Box border="1px solid" borderColor="teal.200" borderRadius="sm">
                 <Progress hasStripe value={livelinessScore} rounded="xs" colorScheme="teal" />
               </Box>
+              {nftParsedCreationTime && (
+                <Text fontSize="9px" mt="3px" opacity=".8">
+                  Current bond expires on {nftParsedCreationTime.format("DD/MM/YYYY LT")}
+                </Text>
+              )}
             </Flex>
           ) : (
             <Flex flexDirection="column">
