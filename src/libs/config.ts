@@ -21,6 +21,8 @@ import {
 } from "./contractAddresses";
 
 export function contractsForChain(chainID: string): ContractsType {
+  console.log("Undefined chainID", chainID);
+
   switch (chainID) {
     case "D": {
       return {
@@ -83,17 +85,16 @@ export function contractsForChain(chainID: string): ContractsType {
         dataNftTokens: [],
       };
     }
-    case "S1": {
-      return {
-        itheumToken: itheumTokenContractAddress_Solana_Mainnet,
-        claims: new Address(""),
-        faucet: new Address(""),
-        market: new Address(""),
-        dataNftTokens: [],
-      };
-    }
-
-    default:
+    case "S1":
+      {
+        return {
+          itheumToken: itheumTokenContractAddress_Solana_Mainnet,
+          claims: new Address(""),
+          faucet: new Address(""),
+          market: new Address(""),
+          dataNftTokens: [],
+        };
+      }
       throw Error("Undefined chainID");
   }
 }
