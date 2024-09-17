@@ -482,15 +482,15 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   // once we save the img and json to IPFS, we have to ping to make sure it's there in order to verify the ipfs service worked
   // ... or else we mint a NFT that may have broken img and json. We can try upto 3 times to confirm, and if not - show an error to user
   async function confirmIfNftImgAndMetadataIsAvailableOnIPFS(imageUrlOnIPFS: string, metadataUrlOnIPFS: string) {
-    console.log("confirmIfNftImgAndMetadataIsAvailableOnIPFS");
-    console.log("imageUrlOnIPFS : ", imageUrlOnIPFS);
-    console.log("metadataUrlOnIPFS : ", metadataUrlOnIPFS);
+    // console.log("confirmIfNftImgAndMetadataIsAvailableOnIPFS");
+    // console.log("imageUrlOnIPFS : ", imageUrlOnIPFS);
+    // console.log("metadataUrlOnIPFS : ", metadataUrlOnIPFS);
 
     const imgCIDOnIPFS = imageUrlOnIPFS.split("ipfs/")[1];
     const metadataCIDOnIPFS = metadataUrlOnIPFS.split("ipfs/")[1];
 
-    console.log("imgCIDOnIPFS : ", imgCIDOnIPFS);
-    console.log("metadataCIDOnIPFS : ", metadataCIDOnIPFS);
+    // console.log("imgCIDOnIPFS : ", imgCIDOnIPFS);
+    // console.log("metadataCIDOnIPFS : ", metadataCIDOnIPFS);
 
     const imgOnIPFSCheckResult = await checkUrlReturns200(`https://gateway.pinata.cloud/ipfs/${imgCIDOnIPFS}`);
     const metadataOnIPFSCheckResult = await checkUrlReturns200(`https://gateway.pinata.cloud/ipfs/${metadataCIDOnIPFS}`, true);
@@ -514,7 +514,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   // Step 1 of minting (user clicked on mint button on main form)
   const dataNFTSellSubmit = async () => {
     if (publicKey) {
-      console.log("publicKey:", publicKey.toBase58());
+      // console.log("publicKey:", publicKey.toBase58());
     } else {
       if (!mxAddress) {
         toast({
@@ -673,14 +673,14 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
       // The actual data nft mint TX we will execute once we confirm the IPFS metadata has loaded
       // setMintTx(dataNFTMintTX);
-      console.log("mintMeta", _imageUrl, _metadataUrl, mintMeta);
+      // console.log("mintMeta", _imageUrl, _metadataUrl, mintMeta);
       if (!_imageUrl || _imageUrl.trim() === "" || !_metadataUrl || _metadataUrl.trim() === "") {
         setErrDataNFTStreamGeneric(new Error(labels.ERR_IPFS_ASSET_SAVE_FAILED));
       } else if (!mintMeta || mintMeta?.error || Object.keys(mintMeta).length === 0) {
         setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_TX_GEN_COMMAND_FAILED));
       } else {
         console.log("mintMeta --> these values are needed for the NEXT step, which is to get user to BOND");
-        console.log(mintMeta);
+        // console.log(mintMeta);
 
         // let's attempt to checks 3 times if the IPFS data is loaded and available on the gateway
         await checkIfNftImgAndMetadataIsAvailableOnIPFS(_imageUrl, _metadataUrl);

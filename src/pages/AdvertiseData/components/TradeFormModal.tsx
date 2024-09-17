@@ -172,8 +172,8 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
     });
   };
 
-  console.log("userData", userData);
-  console.log(lockPeriod, "lockPeriod", dataNFTMarshalServiceStatus, "dataNFTMarshalServiceStatus", dataNFTImgGenServiceValid, "dataNFTImgGenServiceValid");
+  // console.log("userData", userData);
+  // console.log(lockPeriod, "lockPeriod", dataNFTMarshalServiceStatus, "dataNFTMarshalServiceStatus", dataNFTImgGenServiceValid, "dataNFTImgGenServiceValid");
 
   return (
     <Modal onClose={onClose} isOpen={isOpen} size="6xl" closeOnEsc={true} closeOnOverlayClick={false} blockScrollOnMount={false}>
