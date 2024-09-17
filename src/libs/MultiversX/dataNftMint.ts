@@ -20,7 +20,7 @@ export class DataNftMintContract {
       env = "mainnet";
     }
     this.contract = new SftMinter(env, uxConfig.mxAPITimeoutMs);
-    this.itheumToken = contractsForChain(chainID).itheumToken as unknown as string; // TODO: check if working without last part
+    this.itheumToken = contractsForChain(this.contract.chainID).itheumToken as unknown as string; // TODO: check if working without last part
   }
 
   async sendMintTransaction({
