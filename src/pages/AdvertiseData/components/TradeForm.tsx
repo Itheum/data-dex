@@ -99,8 +99,14 @@ type TradeFormProps = {
 export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const { checkUrlReturns200, maxSupply, minRoyalties, maxRoyalties, antiSpamTax, dataNFTMarshalServiceStatus, userData, dataToPrefill, closeTradeFormModal } =
     props;
-  console.log("Props:", props);
-
+  // fa le constante astea
+  // console.log("maxSupply:", maxSupply);
+  // console.log("minRoyalties:", minRoyalties);
+  // console.log("maxRoyalties:", maxRoyalties);
+  // console.log("antiSpamTax:", antiSpamTax);
+  // console.log("dataNFTMarshalServiceStatus:", dataNFTMarshalServiceStatus);
+  // console.log("userData:", userData);
+  // console.log("dataToPrefill:", dataToPrefill);
   const showInlineErrorsBeforeAction = false;
   const enableBondingInputForm = false;
 
@@ -682,6 +688,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         // in solana, the mint was a success already
         setMintingSuccessful(true);
         setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s4: 1 }));
+        setMakePrimaryNFMeIdSuccessful(true);
+        ///TODO Make the bonding call and set the makePrimaryNFMeIdSuccessfulw
       }
     } catch (e) {
       console.error(e);
