@@ -51,9 +51,9 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   useEffect(() => {
     (async () => {
       const minRoyaltiesT = userData?.minRoyalties ?? 0;
-      const maxRoyaltiesT = userData?.maxRoyalties ?? 0;
-      const maxSupplyT = userData?.maxSupply ?? 0;
-      const antiSpamTaxT = userData?.antiSpamTaxValue ?? 0;
+      const maxRoyaltiesT = userData?.maxRoyalties ?? 8000;
+      const maxSupplyT = userData?.maxSupply ?? 10000;
+      const antiSpamTaxT = userData?.antiSpamTaxValue ?? 25 * 10 ** 18;
 
       onChangeDataNFTMarshalService(getApiDataMarshal(chainID));
       onChangeDataNFTImageGenService();
@@ -172,8 +172,8 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
     });
   };
 
-  console.log("userData", userData);
-  console.log(lockPeriod, "lockPeriod", dataNFTMarshalServiceStatus, "dataNFTMarshalServiceStatus", dataNFTImgGenServiceValid, "dataNFTImgGenServiceValid");
+  // console.log("userData", userData);
+  // console.log(lockPeriod, "lockPeriod", dataNFTMarshalServiceStatus, "dataNFTMarshalServiceStatus", dataNFTImgGenServiceValid, "dataNFTImgGenServiceValid");
 
   return (
     <Modal onClose={onClose} isOpen={isOpen} size="6xl" closeOnEsc={true} closeOnOverlayClick={false} blockScrollOnMount={false}>

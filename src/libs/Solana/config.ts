@@ -8,3 +8,5 @@ export enum SolEnvEnum {
   devnet = "SD",
   mainnet = "S1",
 }
+
+export const BONDING_PROGRAM_ID = IS_DEVNET ? "4zAKaiW68x31n7mRbYQBUgTC9BWL3q4uATjuBc5txYSN" : "///todo ADD MAINNET ID";

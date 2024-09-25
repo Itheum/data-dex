@@ -50,4 +50,6 @@ export const labels = {
   "REMOVE_FAVORITE_FAILS": "Could not remove from favorites. (ER-28)",
   "ERR_MARKET_NR_OFFERS_FAIL": "Could not fetch number of marketplace offers. (ER-29)",
   "ERR_MINT_FORM_NOT_ENOUGH_BOND": "You have insufficient ITHEUM tokens for the Liveliness Bonding.",
+  "ERR_SUCCESS_MINT_BUT_BOND_NOT_CREATED": "Your mint was a success, but could not create a bonding transaction. (ER-34)",
+  "ERR_SUCCESS_MINT_BUT_BONDING_TRANSACTION_FAILED": "Your mint was a success, but the bonding transaction has failed (ER-35)",
 };

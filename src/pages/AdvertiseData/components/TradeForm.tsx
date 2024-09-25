@@ -47,11 +47,12 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { BondContract, dataNftTokenIdentifier, SftMinter, LivelinessStake, CNftSolMinter } from "@itheum/sdk-mx-data-nft/out";
+import { BondContract, dataNftTokenIdentifier, SftMinter, LivelinessStake, CNftSolMinter, CNftSolPostMintMetaType } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import BigNumber from "bignumber.js";
 import { Controller, useForm } from "react-hook-form";
@@ -68,7 +69,12 @@ import { UserDataType } from "libs/MultiversX/types";
 import { getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "libs/utils";
 import { useAccountStore, useMintStore } from "store";
 import { MintingModal } from "./MintingModal";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { createBondTransaction, fetchBondingConfig, fetchRewardsConfig } from "libs/Solana/utils";
+import { PublicKey } from "@solana/web3.js";
+import { BONDING_PROGRAM_ID, SolEnvEnum } from "libs/Solana/config";
+import { CoreSolBondStakeSc, IDL } from "libs/Solana/CoreSolBondStakeSc";
+import { Program } from "@coral-xyz/anchor";
+import { error } from "console";
 
 type TradeDataFormType = {
   dataStreamUrlForm: string;
@@ -99,7 +105,6 @@ type TradeFormProps = {
 export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const { checkUrlReturns200, maxSupply, minRoyalties, maxRoyalties, antiSpamTax, dataNFTMarshalServiceStatus, userData, dataToPrefill, closeTradeFormModal } =
     props;
-  // fa le constante astea
   // console.log("maxSupply:", maxSupply);
   // console.log("minRoyalties:", minRoyalties);
   // console.log("maxRoyalties:", maxRoyalties);
@@ -110,7 +115,9 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const showInlineErrorsBeforeAction = false;
   const enableBondingInputForm = false;
 
-  const { publicKey } = useWallet();
+  const { publicKey, sendTransaction } = useWallet();
+  const { connection } = useConnection();
+  const [programSol, setProgramSol] = useState<any>(undefined);
 
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
   const { colorMode } = useColorMode();
@@ -118,6 +125,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const { address: mxAddress } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
   const lockPeriod = useMintStore((state) => state.lockPeriodForBond);
+  // console.log("lockPeriod", lockPeriod); ///todo these are from a MX contract , what to do in the case of Solana?
   const dataNFTMarshalService: string = getApiDataMarshal(chainID);
   const bond = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   const [isNFMeIDMint, setIsNFMeIDMint] = useState<boolean>(false);
@@ -156,7 +164,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const [nftImgAndMetadataLoadedOnIPFS, setNftImgAndMetadataLoadedOnIPFS] = useState<boolean>(false);
   const [mintTx, setMintTx] = useState<any>(undefined);
   const [bondVaultNonce, setBondVaultNonce] = useState<number | undefined>(0);
-  const [maxApy, setMaxApy] = useState<number>(0);
+  const [maxApy, setMaxApy] = useState<number>(80);
   const [needsMoreITHEUMToProceed, setNeedsMoreITHEUMToProceed] = useState<boolean>(false);
   // S: React hook form + yup integration ---->
   // Declaring a validation schema for the form with the validation needed
@@ -375,18 +383,23 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     async function fetchBondingRelatedDataFromSolana() {
       if (publicKey) {
         console.log("fetchBondingRelatedDataFromSolana");
-        // bond.viewLockPeriodsWithBonds().then((periodsT) => {
-        //   setPeriods(periodsT);
-        // });
-        ///TODO SET Periods
-        ///TODO set maxApy
-        // const envNetwork = import.meta.env.VITE_ENV_NETWORK;
-        // const liveContract = new LivelinessStake(envNetwork);
-        // const data = await liveContract.getUserDataOut(new Address(mxAddress));
-        // setMaxApy(Math.floor(data.contractDetails.maxApr * 100) / 100);
+        const programId = new PublicKey(BONDING_PROGRAM_ID);
+        const program = new Program<CoreSolBondStakeSc>(IDL, programId, {
+          connection,
+        });
+        setProgramSol(program);
+        fetchBondingConfig(program).then((periodsT: any) => {
+          console.log("fetchBondingConfig", periodsT);
+          const lockPeriod = periodsT.lockPeriod;
+          const amount = periodsT.bondAmount;
+          setPeriods({ lockPeriod, amount });
+        });
+        fetchRewardsConfig(program).then((rewardsT: any) => {
+          console.log("fetchRewardsConfig", rewardsT);
+          setMaxApy(rewardsT.maxApr);
+        });
       }
     }
-
     fetchBondingRelatedDataFromSolana();
   }, [publicKey]);
 
@@ -403,26 +416,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   }, [itheumBalance, antiSpamTax, bondingAmount]);
 
   function shouldMintYourDataNftBeDisabled(): boolean | undefined {
-    console.log("shouldMintYourDataNftBeDisabled");
-    // console.log(isValid);
-    // // console.log(dataNFTStreamUrl);
-    // // console.log(dataNFTPreviewUrl);
-    // // console.log(dataNFTTokenName);
-    // // console.log(datasetTitle);
-    // // console.log(datasetDescription);
-    // // console.log(extraAssets);
-    // // console.log(donatePercentage);
-    // // console.log(dataNFTCopies);
-    // // console.log(dataNFTRoyalties);
-    // // console.log(bondingAmount);
-    // // console.log(bondingPeriod);
-    // console.log(itheumBalance < antiSpamTax + bondingAmount);
-    // console.log(!readTermsChecked);
-    // console.log(!readAntiSpamFeeChecked);
-    // console.log(!readLivelinessBonding);
-
-    //return !isValid || !readTermsChecked || !readAntiSpamFeeChecked || !readLivelinessBonding || itheumBalance < antiSpamTax + bondingAmount;
-    return !readTermsChecked || !readAntiSpamFeeChecked || !readLivelinessBonding || itheumBalance < antiSpamTax + bondingAmount;
+    return !isValid || !readTermsChecked || !readAntiSpamFeeChecked || !readLivelinessBonding || itheumBalance < antiSpamTax + bondingAmount;
   }
 
   const closeProgressModal = () => {
@@ -482,15 +476,12 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   // once we save the img and json to IPFS, we have to ping to make sure it's there in order to verify the ipfs service worked
   // ... or else we mint a NFT that may have broken img and json. We can try upto 3 times to confirm, and if not - show an error to user
   async function confirmIfNftImgAndMetadataIsAvailableOnIPFS(imageUrlOnIPFS: string, metadataUrlOnIPFS: string) {
-    console.log("confirmIfNftImgAndMetadataIsAvailableOnIPFS");
-    console.log("imageUrlOnIPFS : ", imageUrlOnIPFS);
-    console.log("metadataUrlOnIPFS : ", metadataUrlOnIPFS);
+    // console.log("confirmIfNftImgAndMetadataIsAvailableOnIPFS");
+    // console.log("imageUrlOnIPFS : ", imageUrlOnIPFS);
+    // console.log("metadataUrlOnIPFS : ", metadataUrlOnIPFS);
 
     const imgCIDOnIPFS = imageUrlOnIPFS.split("ipfs/")[1];
     const metadataCIDOnIPFS = metadataUrlOnIPFS.split("ipfs/")[1];
-
-    console.log("imgCIDOnIPFS : ", imgCIDOnIPFS);
-    console.log("metadataCIDOnIPFS : ", metadataCIDOnIPFS);
 
     const imgOnIPFSCheckResult = await checkUrlReturns200(`https://gateway.pinata.cloud/ipfs/${imgCIDOnIPFS}`);
     const metadataOnIPFSCheckResult = await checkUrlReturns200(`https://gateway.pinata.cloud/ipfs/${metadataCIDOnIPFS}`, true);
@@ -514,7 +505,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   // Step 1 of minting (user clicked on mint button on main form)
   const dataNFTSellSubmit = async () => {
     if (publicKey) {
-      console.log("publicKey:", publicKey.toBase58());
+      console.log("///TODO publicKey:", publicKey.toBase58());
     } else {
       if (!mxAddress) {
         toast({
@@ -659,7 +650,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       const {
         imageUrl: _imageUrl,
         metadataUrl: _metadataUrl,
-        mintMeta,
+        mintMeta: mintMeta,
       } = await cNftSolMinter.mint(
         publicKey?.toBase58(), // Solana User Wallet Address
         dataNFTTokenName,
@@ -673,23 +664,41 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
       // The actual data nft mint TX we will execute once we confirm the IPFS metadata has loaded
       // setMintTx(dataNFTMintTX);
-      console.log("mintMeta", _imageUrl, _metadataUrl, mintMeta);
+      // console.log("mintMeta", _imageUrl, _metadataUrl, mintMeta);
       if (!_imageUrl || _imageUrl.trim() === "" || !_metadataUrl || _metadataUrl.trim() === "") {
         setErrDataNFTStreamGeneric(new Error(labels.ERR_IPFS_ASSET_SAVE_FAILED));
       } else if (!mintMeta || mintMeta?.error || Object.keys(mintMeta).length === 0) {
         setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_TX_GEN_COMMAND_FAILED));
       } else {
-        console.log("mintMeta --> these values are needed for the NEXT step, which is to get user to BOND");
-        console.log(mintMeta);
-
         // let's attempt to checks 3 times if the IPFS data is loaded and available on the gateway
         await checkIfNftImgAndMetadataIsAvailableOnIPFS(_imageUrl, _metadataUrl);
 
         // in solana, the mint was a success already
+
+        // if we have to auto-vault -- i.e most likely user first nfme id, then we can auto vault it with this TX
+        // setNftIdMEPrimaryVault();
         setMintingSuccessful(true);
         setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s4: 1 }));
-        setMakePrimaryNFMeIdSuccessful(true);
-        ///TODO Make the bonding call and set the makePrimaryNFMeIdSuccessfulw
+
+        const isVault = !bondVaultNonce ? true : false;
+        const bondTransaction = await createBondTransaction(isVault, mintMeta, publicKey, connection);
+
+        if (bondTransaction) {
+          try {
+            const txId = await sendTransaction(bondTransaction, connection, {
+              skipPreflight: true, // Skips preflight check
+              preflightCommitment: "confirmed", // Adjust the preflightCommitment if needed
+            });
+            console.log("bondTransaction txId", txId);
+            setMakePrimaryNFMeIdSuccessful(true);
+          } catch (error) {
+            setErrDataNFTStreamGeneric(new Error(labels.ERR_SUCCESS_MINT_BUT_BONDING_TRANSACTION_FAILED));
+            console.error("createBondTransaction failed to sign and send bond transaction", error);
+          }
+        } else {
+          setErrDataNFTStreamGeneric(new Error(labels.ERR_SUCCESS_MINT_BUT_BOND_NOT_CREATED));
+          console.error("createBondTransaction failed to create bond transaction", error);
+        }
       }
     } catch (e) {
       console.error(e);

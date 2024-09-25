@@ -33,7 +33,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { tokenLogin } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();
   const [searchParams] = useSearchParams();
-  console.log(address, hasPendingTransactions, tokenLogin, chainID, searchParams);
+  // console.log(address, hasPendingTransactions, tokenLogin, chainID, searchParams);
   // SOLANA
   const { publicKey } = useWallet();
   const { connection } = useConnection();
@@ -74,7 +74,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   useEffect(() => {
     (async () => {
       if (bondingContract) {
-        ///TODOD && address ?
+        ///TODOD && address ? should I fetch here the bonding amount from solana also ??
         const bondingAmount = await bondingContract.viewLockPeriodsWithBonds();
         updateLockPeriodForBond(bondingAmount);
       }

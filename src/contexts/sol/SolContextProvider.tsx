@@ -23,16 +23,7 @@ const SolWalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => 
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const wallets = useMemo(
-    () => [
-      new TipLinkWalletAdapter({
-        title: "Itheum Explorer",
-        clientId: "df83f3c6-9727-4d23-9f0b-e23785848800",
-        theme: "system",
-      }),
-    ],
-    [network]
-  );
+  const wallets = useMemo(() => [], [network]);
 
   const onError = useCallback((error: WalletError) => {
     console.error(error);
@@ -41,9 +32,7 @@ const SolWalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => 
   return (
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} onError={onError} autoConnect={autoConnect}>
-        <TipLinkWalletAutoConnectV2 isReady query={searchParams}>
-          <WalletModalProvider>{children}</WalletModalProvider>
-        </TipLinkWalletAutoConnectV2>
+        <WalletModalProvider>{children}</WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
   );

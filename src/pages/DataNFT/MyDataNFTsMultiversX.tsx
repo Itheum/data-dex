@@ -24,7 +24,7 @@ import {
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+// import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { BsClockHistory } from "react-icons/bs";
 import { FaBrush, FaCoins } from "react-icons/fa";
@@ -37,8 +37,8 @@ import useThrottle from "components/UtilComps/UseThrottle";
 import WalletDataNFTMX from "components/WalletDataNFTMX/WalletDataNFTMX";
 import { contractsForChain } from "libs/config";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
-import { fetchSolNfts } from "libs/Solana/utils";
-import { getApiDataDex } from "libs/utils";
+// import { fetchSolNfts } from "libs/Solana/utils";
+// import { getApiDataDex } from "libs/utils";
 import { useMarketStore } from "store";
 
 import { BondingCards } from "./components/BondingCards";
@@ -47,6 +47,8 @@ import { FavoriteCards } from "./components/FavoriteCards";
 import { LivelinessStaking } from "./components/LivelinessStaking";
 import DataNFTDetails from "./DataNFTDetails";
 import { useNftsStore } from "store/nfts";
+import { LivelinessStakingSol } from "components/Liveliness/LivelinessStakingSol";
+import { BondingCardsSol } from "components/Liveliness/BondingCardsSol";
 
 export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { colorMode } = useColorMode();
@@ -57,7 +59,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
-  const { hasPendingTransactions } = useGetPendingTransactions();
+  // const { hasPendingTransactions } = useGetPendingTransactions();
   const [nftForDrawer, setNftForDrawer] = useState<DataNft | undefined>();
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
 
@@ -67,7 +69,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { mvxNfts, solNfts } = useNftsStore();
   const purchasedDataNfts: DataNft[] = mvxNfts.filter((item) => item.creator != address);
 
-  const { publicKey } = useWallet();
+  const { publicKey, connected } = useWallet();
   const solAddress = publicKey?.toBase58();
 
   useEffect(() => {
@@ -274,8 +276,17 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
             <TabPanel mt={2} width={"full"}>
               {tabState === 5 ? (
                 <Flex flexDirection={{ base: "column" }} alignItems="start">
-                  <LivelinessStaking />
-                  <BondingCards />
+                  {connected ? (
+                    <>
+                      <LivelinessStakingSol />
+                      <BondingCardsSol />
+                    </>
+                  ) : (
+                    <>
+                      <LivelinessStaking />
+                      <BondingCards />
+                    </>
+                  )}
                 </Flex>
               ) : (
                 <Flex onClick={getOnChainNFTs}>

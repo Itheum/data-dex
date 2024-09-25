@@ -3,6 +3,7 @@ import React from "react";
 import { Box, Skeleton } from "@chakra-ui/react";
 import { DasApiAsset } from "@metaplex-foundation/digital-asset-standard-api";
 import NftMediaComponent from "components/NftMediaComponent";
+import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 
 interface WalletDataNftSolProps {
   index: number;
@@ -11,11 +12,11 @@ interface WalletDataNftSolProps {
 
 const WalletDataNftSol: React.FC<WalletDataNftSolProps> = ({ index, solDataNft }) => {
   return (
-    <Skeleton fitContent={true} isLoaded={true} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
+    <Skeleton fitContent={true} isLoaded={true} borderRadius="16px" display="flex" alignItems="center" justifyContent="center">
       <Box
         key={index}
         w="275px"
-        h={"660px"}
+        h={"460px"}
         mx="3 !important"
         border="1px solid transparent"
         borderColor="#00C79740"
@@ -23,7 +24,7 @@ const WalletDataNftSol: React.FC<WalletDataNftSolProps> = ({ index, solDataNft }
         mb="1rem"
         position="relative">
         <NftMediaComponent
-          imageUrls={[solDataNft.content.links ? (solDataNft.content.links["image"] as string) : "todoAddDefaultImage"]}
+          imageUrls={[solDataNft.content.links && solDataNft.content.links["image"] ? (solDataNft.content.links["image"] as string) : DEFAULT_NFT_IMAGE]}
           autoSlide
           imageHeight="236px"
           imageWidth="236px"
@@ -31,13 +32,13 @@ const WalletDataNftSol: React.FC<WalletDataNftSolProps> = ({ index, solDataNft }
           onLoad={() => {}}
           openNftDetailsDrawer={() => {}}
           marginTop="1.5rem"
-          borderRadius="md"
+          borderRadius="16px"
         />
-        <div>
+        <Box gap={"16px"} mx="3 !important">
           <h3>{solDataNft.content.metadata.description}</h3>
           <p>Name: {solDataNft.content.metadata.name}</p>
           <p>Token Standard: {solDataNft.content.metadata.token_standard}</p>
-        </div>
+        </Box>
       </Box>
     </Skeleton>
   );
