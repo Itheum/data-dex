@@ -69,7 +69,7 @@ import { UserDataType } from "libs/MultiversX/types";
 import { getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "libs/utils";
 import { useAccountStore, useMintStore } from "store";
 import { MintingModal } from "./MintingModal";
-import { createBondTransaction, fetchBondingConfig, fetchRewardsConfig } from "libs/Solana/utils";
+import { createBondTransaction, fetchBondingConfig, fetchRewardsConfig, retrieveBondsAndNftMeIdVault } from "libs/Solana/utils";
 import { PublicKey } from "@solana/web3.js";
 import { BONDING_PROGRAM_ID, SolEnvEnum } from "libs/Solana/config";
 import { CoreSolBondStakeSc, IDL } from "libs/Solana/CoreSolBondStakeSc";
@@ -664,7 +664,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
       // The actual data nft mint TX we will execute once we confirm the IPFS metadata has loaded
       // setMintTx(dataNFTMintTX);
-      // console.log("mintMeta", _imageUrl, _metadataUrl, mintMeta);
+
       if (!_imageUrl || _imageUrl.trim() === "" || !_metadataUrl || _metadataUrl.trim() === "") {
         setErrDataNFTStreamGeneric(new Error(labels.ERR_IPFS_ASSET_SAVE_FAILED));
       } else if (!mintMeta || mintMeta?.error || Object.keys(mintMeta).length === 0) {
@@ -680,16 +680,17 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         setMintingSuccessful(true);
         setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s4: 1 }));
 
-        const isVault = !bondVaultNonce ? true : false;
-        const bondTransaction = await createBondTransaction(isVault, mintMeta, publicKey, connection);
+        const bondTransaction = await createBondTransaction(mintMeta, publicKey, connection);
 
         if (bondTransaction) {
           try {
             const txId = await sendTransaction(bondTransaction, connection, {
-              skipPreflight: true, // Skips preflight check
-              preflightCommitment: "confirmed", // Adjust the preflightCommitment if needed
+              skipPreflight: true,
+              preflightCommitment: "confirmed",
             });
+
             console.log("bondTransaction txId", txId);
+            setMintTx(txId);
             setMakePrimaryNFMeIdSuccessful(true);
           } catch (error) {
             setErrDataNFTStreamGeneric(new Error(labels.ERR_SUCCESS_MINT_BUT_BONDING_TRANSACTION_FAILED));

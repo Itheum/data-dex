@@ -17,10 +17,11 @@ import {
   Tooltip,
   VStack,
   Spinner,
+  Toast,
 } from "@chakra-ui/react";
 import { Program, BN } from "@coral-xyz/anchor";
 import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
-import { Bond, DataNft } from "@itheum/sdk-mx-data-nft/out";
+import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 
 // import { CoreSolBondStakeSc } from "../target/types/core_sol_bond_stake_sc";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
@@ -36,7 +37,12 @@ import { useAccountStore } from "store";
 import { LivelinessScore } from "./LivelinessScore";
 import { set } from "@coral-xyz/anchor/dist/cjs/utils/features";
 import { useNftsStore } from "store/nfts";
-import { BONDING_PROGRAM_ID } from "libs/Solana/config";
+import { BOND_CONFIG_INDEX, BONDING_PROGRAM_ID } from "libs/Solana/config";
+import { Bond } from "libs/Solana/types";
+import { computeCurrentLivelinessScore, ITHEUM_TOKEN_ADDRESS, retrieveBondsAndNftMeIdVault, SLOTS_IN_YEAR } from "libs/Solana/utils";
+import { DasApiAsset } from "@metaplex-foundation/digital-asset-standard-api";
+import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { SPL_ACCOUNT_COMPRESSION_PROGRAM_ID } from "@solana/spl-account-compression";
 
 interface LivelinessStakingSolProps {
   combinedLiveliness: number;
@@ -74,16 +80,16 @@ export const LivelinessStakingSol: React.FC = () => {
   const { publicKey: userPublicKey, wallet, signTransaction, sendTransaction } = useWallet();
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
   const [topUpItheumValue, setTopUpItheumValue] = useState<number>(0);
-  const [estAnnualRewards, setEstAnnualRewards] = useState<number>(0);
+  const [estAnnualRewards, setEstAnnualRewards] = useState<BigNumber>(BigNumber(0));
   const navigate = useNavigate();
 
   const [combinedLiveliness, setCombinedLiveliness] = useState<number>(0);
-  const [combinedBondsStaked, setCombinedBondsStaked] = useState<number>(0);
+  const [combinedBondsStaked, setCombinedBondsStaked] = useState<BigNumber>(BigNumber(0));
   const [rewardApr, setRewardApr] = useState<number>(0);
   const [maxApr, setMaxApr] = useState<number>(0);
 
   const [accumulatedRewards, setAccumulatedRewards] = useState<number>(0);
-  const [globalTotalBond, setGlobalTotalBond] = useState<number>(0);
+  const [globalTotalBond, setGlobalTotalBond] = useState<BigNumber>(BigNumber(0));
   const [globalRewardsPerBlock, setGlobalRewardsPerBlock] = useState<number>(0);
 
   const [withdrawPenalty, setWithdrawPenalty] = useState<number>(0);
@@ -97,19 +103,32 @@ export const LivelinessStakingSol: React.FC = () => {
   const [rewardsConfigData, setRewardsConfigData] = useState<any>();
 
   const [vaultConfigPda, setVaultConfigPda] = useState<PublicKey | undefined>();
-  const [bonds, setBonds] = useState<any[]>();
+  const [bonds, setBonds] = useState<Bond[]>();
   const [allInfoLoading, setAllInfoLoading] = useState<boolean>(true);
-  const [nftMeId, setNftMeId] = useState<any>();
+  const [nftMeId, setNftMeId] = useState<DasApiAsset>();
+  const [numberOfBonds, setNumberOfBonds] = useState<number>();
   const [claimRewardsConfirmationWorkflow, setClaimRewardsConfirmationWorkflow] = useState<boolean>(false);
   const [reinvestRewardsConfirmationWorkflow, setReinvestRewardsConfirmationWorkflow] = useState<boolean>(false);
-  const [nftMeIdBond, setNftMeIdBond] = useState<any>();
+  const [nftMeIdBond, setNftMeIdBond] = useState<Bond>();
+  console.log("nftMeIdBond", nftMeIdBond);
   const { solNfts } = useNftsStore();
 
   // console.log("solNfts", solNfts);
 
+  /// check when the data is loaded
   useEffect(() => {
     if (bondConfigData && rewardsConfigData && addressBondsRewardsData) {
       setAllInfoLoading(false);
+
+      const newCombinedLiveliness =
+        Math.floor(
+          computeCurrentLivelinessScore(
+            addressBondsRewardsData.lastUpdateTimestamp.toNumber(),
+            bondConfigData.lockPeriod.toNumber(),
+            addressBondsRewardsData.weightedLivelinessScore.toNumber()
+          )
+        ) / 100;
+      setCombinedLiveliness(newCombinedLiveliness);
     }
   }, [bondConfigData, rewardsConfigData, addressBondsRewardsData]);
 
@@ -118,7 +137,7 @@ export const LivelinessStakingSol: React.FC = () => {
     const program = new Program<CoreSolBondStakeSc>(IDL, programId, {
       connection,
     });
-    console.log("PROGRAM", program);
+    // console.log("PROGRAM", program);
     setProgramSol(program);
 
     async function fetchBondConfigPdas() {
@@ -152,25 +171,17 @@ export const LivelinessStakingSol: React.FC = () => {
 
             console.log("addressBondsRewardsDATAAAA", data);
             setAddressBondsRewardsData(data);
-            setCombinedBondsStaked(new BigNumber(data.addressTotalBondAmount).dividedBy(10 ** 9).toNumber());
-            setCombinedLiveliness(Math.floor(data.weightedLivelinessScore.toNumber() * 100) / 100);
+            setCombinedBondsStaked(new BigNumber(data.addressTotalBondAmount).dividedBy(10 ** 9));
+
+            setCombinedLiveliness(Math.floor(data.weightedLivelinessScore.toNumber() / 100));
+
             setAccumulatedRewards(Math.floor(new BigNumber(data.claimableAmount).dividedBy(10 ** 2).toNumber() * 100) / 100);
+            setNumberOfBonds(data.currentIndex);
             // setGlobalTotalBond(new BigNumber(data.userData.totalStakedAmount).dividedBy(10 ** 2).toNumber());
             // console.log("time", data.lastUpdateTimestamp.toNumber());
             // console.log("pershare", data.addressRewardsPerShare.toNumber());
             // console.log("amount", data.addressTotalBondAmount.toNumber());
           });
-          let bondIdd = -10;
-          await programSol.account.addressBondsRewards.fetch(addressBondsRewardsPda).then((data: any) => {
-            console.log("addressBondsRewards", data);
-            const bondId = data.currentIndex + 1;
-            bondIdd = bondId;
-            // const amount = new BigNumber(data.bondConfig).dividedBy(10 ** 9);
-            console.log("bondId", bondId);
-            // console.log("amount", amount);
-            return { bondId: bondId };
-          });
-          console.log("bondIdd", bondIdd);
         }
       }
     }
@@ -180,12 +191,38 @@ export const LivelinessStakingSol: React.FC = () => {
   }, [addressBondsRewardsPda, programSol]);
 
   useEffect(() => {
+    async function fetchBonds() {
+      if (numberOfBonds && userPublicKey && programSol) {
+        retrieveBondsAndNftMeIdVault(userPublicKey, numberOfBonds, programSol).then(({ bonds, nftMeIdVault }) => {
+          setBonds(bonds);
+          setNftMeIdBond(nftMeIdVault);
+        });
+      }
+    }
+    fetchBonds();
+  }, [numberOfBonds]);
+
+  console.log("nftMeIdBond", nftMeIdBond);
+  useEffect(() => {
+    if (nftMeIdBond && solNfts && userPublicKey) {
+      const nftMeId = solNfts.find((nft) => nft.id == nftMeIdBond.assetId.toString());
+      console.log("nftMeId", nftMeId);
+      setNftMeId(nftMeId);
+    }
+  }, [nftMeIdBond]);
+  console.log("nftMeId", nftMeId);
+
+  useEffect(() => {
     if (programSol && userPublicKey && rewardsConfigPda) {
       programSol?.account.rewardsConfig.fetch(rewardsConfigPda).then((data: any) => {
         setRewardsConfigData(data);
 
-        setAccumulatedRewards(new BigNumber(data.accumulatedRewards.toNumber()).dividedBy(10 ** 2).toNumber());
-        setGlobalRewardsPerBlock(new BigNumber(data.rewardsPerSlot.toNumber()).dividedBy(10 ** 2).toNumber());
+        setAccumulatedRewards(BN(data.accumulatedRewards.div(10 ** 9)).toNumber());
+        setGlobalRewardsPerBlock(
+          BN(data.rewardsPerSlot)
+            .div(10 ** 9)
+            .toNumber()
+        );
         // rewardsPerShare, accumulatedRewards, lastRewardSlot,  rewardsPerSlot, rewardsReserve, rewardsPerShare, maxApr, rewardsState
 
         // setGlobalTotalBond(new BigNumber(data.rewardsReserve.toNumber()).dividedBy(10 ** 2).toNumber());
@@ -233,16 +270,16 @@ export const LivelinessStakingSol: React.FC = () => {
   }, [vaultConfigPda, programSol]);
 
   useEffect(() => {
-    if (combinedBondsStaked === 0) setRewardApr(0);
+    if (combinedBondsStaked.isEqualTo(0)) setRewardApr(0);
 
-    if (globalTotalBond > 0) {
-      const percentage = combinedBondsStaked / globalTotalBond;
-      const localRewardsPerBlock = globalRewardsPerBlock * percentage;
-      // Solana: Approx. 0.4 seconds per block
-      const blockPerYear = 31536000 / 0.4;
-      const rewardPerYear = localRewardsPerBlock * blockPerYear;
+    if (globalTotalBond.gt(0)) {
+      const percentage = combinedBondsStaked.dividedBy(globalTotalBond);
+      const localRewardsPerBlock = percentage.multipliedBy(globalRewardsPerBlock);
+      // Solana: Approx. 0.4 seconds per block or slot
+      const blockPerYear = SLOTS_IN_YEAR;
+      const rewardPerYear = localRewardsPerBlock.multipliedBy(blockPerYear);
 
-      const calculatedRewardApr = Math.floor((rewardPerYear / combinedBondsStaked) * 10000) / 100;
+      const calculatedRewardApr = Number(rewardPerYear.dividedBy(combinedBondsStaked).multipliedBy(1000).dividedToIntegerBy(100));
 
       console.log("=======================");
       console.log("globalTotalBond :", globalTotalBond);
@@ -257,12 +294,86 @@ export const LivelinessStakingSol: React.FC = () => {
       }
 
       if (maxApr === 0 || calculatedRewardApr < maxApr) {
-        setEstAnnualRewards(Math.floor(rewardPerYear));
+        setEstAnnualRewards(rewardPerYear);
       } else {
-        setEstAnnualRewards(Math.floor((combinedBondsStaked * maxApr) / 100));
+        setEstAnnualRewards(combinedBondsStaked.multipliedBy(maxApr).dividedToIntegerBy(100));
       }
     }
   }, [globalTotalBond, combinedBondsStaked, maxApr]);
+
+  async function renewBondSol(bondId: number) {
+    try {
+      const bondIdPda = PublicKey.findProgramAddressSync([Buffer.from("bond"), userPublicKey!.toBuffer(), Buffer.from([bondId])], programSol!.programId)[0];
+
+      const transaction = await programSol!.methods
+        .renew(BOND_CONFIG_INDEX, bondId)
+        .accounts({
+          bondConfig: bondConfigPda,
+          rewardsConfig: rewardsConfigPda,
+          vaultConfig: vaultConfigPda,
+          addressBondsRewards: addressBondsRewardsPda,
+          bond: bondIdPda,
+          authority: userPublicKey!,
+        })
+        .transaction();
+      const latestBlockhash = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = latestBlockhash.blockhash;
+      transaction.feePayer = userPublicKey!;
+      const signedTransaction = await sendTransaction(transaction, connection, {
+        skipPreflight: true,
+        preflightCommitment: "confirmed",
+      });
+
+      console.log("Transaction sent with signature:", signedTransaction);
+    } catch (error) {
+      Toast({ title: "Error", description: "Failed to renew bond" + error, status: "error" });
+      console.error("Transaction failed:", error);
+    }
+  }
+
+  async function topUpBondSol(bondId: number, amount?: number) {
+    try {
+      if (bondId === 0) {
+        console.error("Bond not found, id is 0");
+        return;
+      }
+      const bondIdPda = PublicKey.findProgramAddressSync([Buffer.from("bond"), userPublicKey!.toBuffer(), Buffer.from([bondId])], programSol!.programId)[0];
+      const vaultAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), vaultConfigPda!, true);
+      const userItheumAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), userPublicKey!, true);
+      console.log(amount, topUpItheumValue);
+
+      const amountToSend: BN = new BN(amount ? amount : topUpItheumValue).mul(new BN(10 ** 9));
+      console.log("amountToSend", amountToSend);
+      const transaction = await programSol!.methods
+        .topUp(BOND_CONFIG_INDEX, bondId, amountToSend)
+        .accounts({
+          addressBondsRewards: addressBondsRewardsPda,
+          bondConfig: bondConfigPda,
+          rewardsConfig: rewardsConfigPda,
+          mintOfTokenSent: new PublicKey(ITHEUM_TOKEN_ADDRESS),
+          bond: bondIdPda,
+          vaultConfig: vaultConfigPda,
+          vault: vaultAta,
+          authority: userPublicKey!,
+          authorityTokenAccount: userItheumAta,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        })
+        .transaction();
+      const latestBlockhash = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = latestBlockhash.blockhash;
+      transaction.feePayer = userPublicKey!;
+      const signedTransaction = await sendTransaction(transaction, connection, {
+        skipPreflight: true,
+        preflightCommitment: "confirmed",
+      });
+
+      console.log("Transaction sent with signature:", signedTransaction);
+    } catch (error) {
+      Toast({ title: "Error", description: "Failed to top up" + error, status: "error" });
+      console.error("Transaction failed:", error);
+    }
+  }
 
   async function initializeAddress() {
     try {
@@ -345,8 +456,9 @@ export const LivelinessStakingSol: React.FC = () => {
             <>
               <Text fontSize="3xl">Combined Liveliness: {combinedLiveliness}%</Text>
               <Progress hasStripe isAnimated value={combinedLiveliness} rounded="xs" colorScheme="teal" width={"100%"} />
-              <Text fontSize="xl">Combined Bonds Staked: {formatNumberToShort(combinedBondsStaked)} $ITHEUM</Text>
-              <Text fontSize="xl">Global Total Bonded: {formatNumberToShort(globalTotalBond)} $ITHEUM</Text>
+              <Text fontSize="xl">Combined Bonds Staked: {formatNumberToShort(combinedBondsStaked.toNumber())} $ITHEUM</Text>
+              {/* ///todo - check this BigNUmbers.toNUmber() is not correct !!! */}
+              <Text fontSize="xl">Global Total Bonded: {formatNumberToShort(globalTotalBond.toNumber())} $ITHEUM</Text>
               <Text fontSize="xl">Current Staking APR: {isNaN(rewardApr) ? 0 : rewardApr}%</Text>
               {maxApr > 0 && <Text fontSize="xl">Max APR: {maxApr}%</Text>}
               <Text fontSize="xl">
@@ -435,25 +547,25 @@ export const LivelinessStakingSol: React.FC = () => {
                           h="100px"
                           m="auto"
                           borderRadius={"md"}
-                          src={nftMeId.nftImgUrl}
+                          src={nftMeId.content.links["image"] ?? DEFAULT_NFT_IMAGE}
                           onError={({ currentTarget }) => {
                             currentTarget.src = DEFAULT_NFT_IMAGE;
                           }}
                         />
                       </Box>
                       <VStack mt={{ base: "5", md: "auto" }}>
-                        <LivelinessScore unbondTimestamp={nftMeIdBond?.unbondTimestamp} lockPeriod={nftMeId?.lockPeriod} />
+                        <LivelinessScore unbondTimestamp={nftMeIdBond?.unbondTimestamp} lockPeriod={bondConfigData?.lockPeriod.toNumber()} />
                         <Flex gap={4} pt={3} alignItems="center" w="100%">
                           <Button
                             colorScheme="teal"
                             px={6}
                             isDisabled={!userPublicKey}
                             onClick={() => {
-                              console.log("RENEW BOND");
+                              renewBondSol(nftMeIdBond?.bondId ?? 0);
                             }}>
                             Renew Bond
                           </Button>
-                          <Text fontSize=".75rem">{`New expiry will be ${calculateNewPeriodAfterNewBond(nftMeIdBond?.lockPeriod ?? 0)}`}</Text>
+                          <Text fontSize=".75rem">{`New expiry will be ${calculateNewPeriodAfterNewBond(bondConfigData?.lockPeriod.toNumber())}`}</Text>
                         </Flex>
                         <Flex gap={4} pt={3} alignItems="center" w="100%">
                           <Flex flexDirection="column" gap={1}>
@@ -461,7 +573,7 @@ export const LivelinessStakingSol: React.FC = () => {
                               <Text fontSize=".75rem" textColor="teal.200">
                                 {formatNumberToShort(
                                   BigNumber(nftMeIdBond?.bondAmount ?? 0)
-                                    .dividedBy(10 ** 18)
+                                    .dividedBy(10 ** 9)
                                     .toNumber()
                                 )}
                                 &nbsp;$ITHEUM Bonded
@@ -470,19 +582,19 @@ export const LivelinessStakingSol: React.FC = () => {
                               <Text fontSize=".75rem" textColor="indianred">
                                 {formatNumberToShort(
                                   BigNumber(nftMeIdBond?.bondAmount ?? 0)
-                                    .minus(nftMeIdBond?.remainingAmount ?? 0)
-                                    .dividedBy(10 ** 18)
+                                    // .minus(nftMeIdBond?.remainingAmount ?? 0)
+                                    .dividedBy(10 ** 9)
                                     .toNumber()
                                 )}
                                 &nbsp;$ITHEUM Penalized
                               </Text>
                               <Text fontSize=".75rem">|</Text>
                               <Text fontSize=".75rem" textColor="#39bdf8">
-                                {formatNumberToShort(
+                                {/* {formatNumberToShort(
                                   BigNumber(nftMeIdBond?.remainingAmount ?? 0)
-                                    .dividedBy(10 ** 18)
+                                    .dividedBy(10 ** 9)
                                     .toNumber()
-                                )}
+                                )} */}
                                 &nbsp;$ITHEUM Remaining
                               </Text>
                             </Flex>
@@ -515,18 +627,16 @@ export const LivelinessStakingSol: React.FC = () => {
                                 value={topUpItheumValue}
                                 onChange={(value) => {
                                   setTopUpItheumValue(Number(value));
-
-                                  const percentage = (combinedBondsStaked + Number(value)) / globalTotalBond;
-                                  const localRewardsPerBlock = globalRewardsPerBlock * percentage;
-                                  const blockPerYear = 31536000 / 6;
-                                  const rewardPerYear = localRewardsPerBlock * blockPerYear;
-                                  const calculatedRewardApr = Math.floor((rewardPerYear / combinedBondsStaked) * 10000) / 100;
-
-                                  if (maxApr === 0 || calculatedRewardApr < maxApr) {
-                                    setEstAnnualRewards(Math.floor(rewardPerYear));
-                                  } else {
-                                    setEstAnnualRewards(Math.floor(((combinedBondsStaked + Number(value)) * maxApr) / 100));
-                                  }
+                                  // const percentage = (combinedBondsStaked + Number(value)) / globalTotalBond;
+                                  // const localRewardsPerBlock = globalRewardsPerBlock * percentage;
+                                  // const blockPerYear = 31536000 / 6;
+                                  // const rewardPerYear = localRewardsPerBlock * blockPerYear;
+                                  // const calculatedRewardApr = Math.floor((rewardPerYear / combinedBondsStaked) * 10000) / 100;
+                                  // if (maxApr === 0 || calculatedRewardApr < maxApr) {
+                                  //   setEstAnnualRewards(Math.floor(rewardPerYear));
+                                  // } else {
+                                  //   setEstAnnualRewards(Math.floor(((combinedBondsStaked + Number(value)) * maxApr) / 100));
+                                  // }
                                 }}
                                 keepWithinRange={true}>
                                 <NumberInputField />
@@ -543,17 +653,16 @@ export const LivelinessStakingSol: React.FC = () => {
                                 isDisabled={!userPublicKey}
                                 onClick={() => {
                                   setTopUpItheumValue(Math.floor(itheumBalance));
-                                  const percentage = (combinedBondsStaked + Math.floor(itheumBalance)) / globalTotalBond;
-                                  const localRewardsPerBlock = globalRewardsPerBlock * percentage;
-                                  const blockPerYear = 31536000 / 6;
-                                  const rewardPerYear = localRewardsPerBlock * blockPerYear;
-                                  const calculatedRewardApr = Math.floor((rewardPerYear / combinedBondsStaked) * 10000) / 100;
-
-                                  if (maxApr === 0 || calculatedRewardApr < maxApr) {
-                                    setEstAnnualRewards(Math.floor(rewardPerYear));
-                                  } else {
-                                    setEstAnnualRewards(Math.floor(((combinedBondsStaked + Math.floor(itheumBalance)) * maxApr) / 100));
-                                  }
+                                  // const percentage = (combinedBondsStaked + Math.floor(itheumBalance)) / globalTotalBond;
+                                  // const localRewardsPerBlock = globalRewardsPerBlock * percentage;
+                                  // const blockPerYear = 31536000 / 6;
+                                  // const rewardPerYear = localRewardsPerBlock * blockPerYear;
+                                  // const calculatedRewardApr = Math.floor((rewardPerYear / combinedBondsStaked) * 10000) / 100;
+                                  // if (maxApr === 0 || calculatedRewardApr < maxApr) {
+                                  //   setEstAnnualRewards(Math.floor(rewardPerYear));
+                                  // } else {
+                                  //   setEstAnnualRewards(Math.floor(((combinedBondsStaked + Math.floor(itheumBalance)) * maxApr) / 100));
+                                  // }
                                 }}>
                                 MAX
                               </Button>
@@ -566,7 +675,7 @@ export const LivelinessStakingSol: React.FC = () => {
                               size="sm"
                               isDisabled={!userPublicKey || topUpItheumValue < 1}
                               onClick={() => {
-                                handleTopUpClick(); ///TODO
+                                topUpBondSol(nftMeIdBond?.bondId ?? 0);
                               }}>
                               Top-Up Now
                             </Button>
@@ -576,7 +685,7 @@ export const LivelinessStakingSol: React.FC = () => {
                           </Box>
                         </Flex>
                         <Text m={{ base: "auto", md: "initial" }} mt={{ base: "10", md: "auto" }} fontSize="lg">
-                          Est. Annual Rewards: {formatNumberToShort(estAnnualRewards)} $ITHEUM
+                          Est. Annual Rewards: {formatNumberToShort(estAnnualRewards.dividedBy(10 ** 9).toNumber())} $ITHEUM
                         </Text>
                       </VStack>
                     </HStack>

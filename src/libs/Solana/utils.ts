@@ -1,22 +1,21 @@
-import { connect } from "http2";
-import { BN, Program, web3 } from "@coral-xyz/anchor";
+import { BN, Program } from "@coral-xyz/anchor";
 import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
 import { CNftSolPostMintMetaType } from "@itheum/sdk-mx-data-nft/out";
 import { getChainID } from "@multiversx/sdk-dapp/utils";
 import { SPL_ACCOUNT_COMPRESSION_PROGRAM_ID } from "@solana/spl-account-compression";
 import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { Wallet } from "@solana/wallet-adapter-react";
 import { AccountMeta, Connection, PublicKey, Transaction } from "@solana/web3.js";
 import BigNumber from "bignumber.js";
 import { contractsForChain, IS_DEVNET } from "libs/config";
 import { getApiDataDex } from "libs/utils";
 
-import { BONDING_PROGRAM_ID, SolEnvEnum } from "./config";
+import { BOND_CONFIG_INDEX, BONDING_PROGRAM_ID, SolEnvEnum } from "./config";
 import { CoreSolBondStakeSc, IDL } from "./CoreSolBondStakeSc";
+import { Bond } from "./types";
 
-const MAX_PERCENT = 100;
-const SLOTS_IN_YEAR = 78840000; // solana slots in a year
-const ITHEUM_TOKEN = contractsForChain(IS_DEVNET ? SolEnvEnum.devnet : SolEnvEnum.mainnet).itheumToken;
+export const MAX_PERCENT = 100;
+export const SLOTS_IN_YEAR = 78840000; // solana slots in a year
+export const ITHEUM_TOKEN_ADDRESS = contractsForChain(IS_DEVNET ? SolEnvEnum.devnet : SolEnvEnum.mainnet).itheumToken;
 
 export async function fetchSolNfts(solAddress: string | undefined) {
   if (!solAddress) {
@@ -30,29 +29,26 @@ export async function fetchSolNfts(solAddress: string | undefined) {
 }
 
 // BONDING
+
+function bufferToArray(buffer: Buffer): number[] {
+  const nums: number[] = [];
+  for (let i = 0; i < buffer.length; i++) {
+    nums.push(buffer[i]);
+  }
+  return nums;
+}
+
+function decode(stuff: string) {
+  return bufferToArray(bs58.decode(stuff));
+}
+
 export async function fetchBondingConfig(programSol: any) {
   /// bondAmount, bondState, lockPeriod, withdrawPenalty, merkleTree
-
   try {
     const bondConfigPda = await PublicKey.findProgramAddressSync([Buffer.from("bond_config"), Buffer.from([1])], programSol.programId)[0];
 
-    const res = await programSol?.account.bondConfig.fetch(bondConfigPda); //.then((data: any) => {
-    //   // console.log("bondConfigggggg", data);
-
-    //   const lockPeriod = data.lockPeriod.toNumber();
-    //   const bondAmount = new BigNumber(data.bondAmount).dividedBy(10 ** 9);
-    //   const withdrawPenalty = data.withdrawPenalty.toNumber().dividedBy(10 ** 2); // Convert to decimal % value
-    //   console.log("Values", lockPeriod, bondAmount, withdrawPenalty);
-    //   // console.log("lockPeriod", lockPeriod);
-    //   // console.log("bondAmount", bondAmount);
-    //   // console.log("withdrawPenalty", withdrawPenalty);
-    //   res = { bondConfigPda: bondConfigPda, lockPeriod: lockPeriod, bondAmount: bondAmount, withdrawPenalty: withdrawPenalty };
-    // });
-    // console.log("res", res);
-    // const lockPeriod = res.lockPeriod.toNumber();
-    // const bondAmount = new BigNumber(res.bondAmount).dividedBy(10 ** 9);
-    // const withdrawPenalty = res.withdrawPenalty.toNumber() / 100; // Convert to decimal % value
-
+    const res = await programSol?.account.bondConfig.fetch(bondConfigPda);
+    // console.log("bondConfigggggg", data);
     return {
       bondConfigPda: bondConfigPda,
       lockPeriod: res.lockPeriod.toNumber(),
@@ -68,7 +64,6 @@ export async function fetchBondingConfig(programSol: any) {
 
 export async function fetchRewardsConfig(programSol: any) {
   // rewardsPerShare, accumulatedRewards, lastRewardSlot,  rewardsPerSlot, rewardsReserve,  maxApr, rewardsState
-
   try {
     const _rewardsConfigPda = PublicKey.findProgramAddressSync([Buffer.from("rewards_config")], programSol.programId)[0];
 
@@ -89,15 +84,14 @@ export async function fetchRewardsConfig(programSol: any) {
   }
 }
 
-function computeCurrentLivelinessScore(lastUpdateTimestamp: number, lockPeriod: number, weightedLivelinessScore: number) {
-  // din config lockPeriod
+export function computeCurrentLivelinessScore(lastUpdateTimestamp: number, lockPeriod: number, weightedLivelinessScore: number): number {
   const currentTimestamp = Math.round(Date.now() / 1000);
   const decay = (currentTimestamp - lastUpdateTimestamp) / lockPeriod;
   const livelinessScore = weightedLivelinessScore * (1 - decay);
   return livelinessScore; // daca apare 9823 inseamna ca e 98.23% impart la 100
 }
 
-function computeClaimableAmount(
+export function computeClaimableAmount(
   addressRewardsPerShare: number,
   addressTotalBondAmount: number,
   currentWeightedLivelinessScore: number,
@@ -108,16 +102,7 @@ enum RewardsState {
   Inactive = 0,
   Active = 1,
 }
-function bufferToArray(buffer: Buffer): number[] {
-  const nums: number[] = [];
-  for (let i = 0; i < buffer.length; i++) {
-    nums.push(buffer[i]);
-  }
-  return nums;
-}
-function decode(stuff: string) {
-  return bufferToArray(bs58.decode(stuff));
-}
+
 // calculate_rewards_since_last_allocation function
 async function calculateRewardsSinceLastAllocation(connection: Connection, rewardsConfig: any): Promise<BigNumber> {
   const currentSlot = new BigNumber(await connection.getSlot());
@@ -176,13 +161,7 @@ const mapProof = (proof: string[]): AccountMeta[] => {
   }));
 };
 
-// fetch addressBondsRewardsData from addressBondsRewardsData
-///  bondId  = currentIndex + 1 ( din addressBondsRewardsData)
-//  amont = bondConfig
-//foloseste bigNumber  // fetch addressBondsRewardsData from addressBondsRewardsData
-
 export async function createBondTransaction(
-  isVault: boolean,
   mintMeta: CNftSolPostMintMetaType,
   userPublicKey: PublicKey,
   connection: Connection
@@ -214,14 +193,15 @@ export async function createBondTransaction(
       const _bondId = data.currentIndex + 1;
       return _bondId;
     });
-    console.log("bondId", typeof bondId);
-    //todo check if this is correct number
+
+    const { nftMeIdVault } = await retrieveBondsAndNftMeIdVault(userPublicKey, bondId - 1, program);
+    const isVault = nftMeIdVault ? false : true;
 
     const bondPda = PublicKey.findProgramAddressSync([Buffer.from("bond"), userPublicKey.toBuffer(), Buffer.from([bondId])], program.programId)[0];
     const assetUsagePda = PublicKey.findProgramAddressSync([new PublicKey(assetId).toBuffer()], program.programId)[0];
     const vaultConfigPda = PublicKey.findProgramAddressSync([Buffer.from("vault_config")], programId)[0];
-    const vaultAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN), vaultConfigPda, true);
-    const userItheumAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN), userPublicKey, true);
+    const vaultAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), vaultConfigPda, true);
+    const userItheumAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), userPublicKey, true);
     const rewardsConfigPda = PublicKey.findProgramAddressSync([Buffer.from("rewards_config")], program.programId)[0];
 
     const bondConfigPda = await PublicKey.findProgramAddressSync([Buffer.from("bond_config"), Buffer.from([1])], program.programId)[0];
@@ -231,12 +211,9 @@ export async function createBondTransaction(
       return { amount: bondAmount, merkleTree: merkleTree };
     });
 
-    console.log("bondConfigData", bondConfigData);
-    console.log("add", addressBondsRewardsPda);
-
     // Create the transaction using bond method from program
     const transaction = await program.methods
-      .bond(1, bondId, bondConfigData.amount, new PublicKey(assetId), isVault, proofRoot, _dataHash, _creatorHash, new BN(nonce), index)
+      .bond(BOND_CONFIG_INDEX, bondId, bondConfigData.amount, new PublicKey(assetId), isVault, proofRoot, _dataHash, _creatorHash, new BN(nonce), index)
       .accounts({
         addressBondsRewards: addressBondsRewardsPda,
         assetUsage: assetUsagePda,
@@ -245,7 +222,7 @@ export async function createBondTransaction(
         rewardsConfig: rewardsConfigPda,
         vaultConfig: vaultConfigPda,
         vault: vaultAta,
-        mintOfTokenSent: new PublicKey(ITHEUM_TOKEN),
+        mintOfTokenSent: new PublicKey(ITHEUM_TOKEN_ADDRESS),
         authority: userPublicKey,
         merkleTree: bondConfigData.merkleTree,
         authorityTokenAccount: userItheumAta,
@@ -268,31 +245,82 @@ export async function createBondTransaction(
   }
 }
 
-async function initializeAddress(programSol: Program, userPublicKey: PublicKey, connection: Connection) {
+// export async function sendTransaction(transaction: Transaction, connection: Connection): Promise<string> {
+//   try {
+//     const signedTransaction = await connection.sendTransaction(transaction, [], {
+//       skipPreflight: false,
+//       preflightCommitment: "singleGossip",
+//     });
+
+//     return signedTransaction;
+//   } catch (error) {
+//     console.error("Transaction failed:", error);
+//     return "";
+//   }
+// }
+
+// export async function initializeAddress(programSol: Program, userPublicKey: PublicKey, connection: Connection) {
+//   try {
+//     // console.log("initializeAddress", programSol, userPublicKey, rewardsConfigPda, addressBondsRewardsPda);
+
+//     if (!programSol || !userPublicKey) return;
+
+//     // Build the transaction
+//     const transaction = await programSol.methods
+//       .initializeAddress()
+//       .accounts({
+//         addressBondsRewards: addressBondsRewardsPda,
+//         rewardsConfig: rewardsConfigPda,
+//         authority: userPublicKey,
+//       })
+//       .transaction();
+
+//     // Step 4: Get the latest blockhash to include in the transaction
+//     const latestBlockhash = await connection.getLatestBlockhash();
+//     transaction.recentBlockhash = latestBlockhash.blockhash;
+//     transaction.feePayer = userPublicKey;
+
+//     const signedTransaction = await sendTransaction(transaction, connection);
+
+//     console.log("Transaction sent with signature:", signedTransaction);
+//   } catch (error) {
+//     console.error("Transaction failed:", error);
+//   }
+// }
+
+export async function retrieveBondsAndNftMeIdVault(
+  userPublicKey: PublicKey,
+  lastIndex: number,
+  program?: Program<CoreSolBondStakeSc>,
+  connection?: Connection
+): Promise<{ bonds: Bond[]; nftMeIdVault: Bond | undefined }> {
   try {
-    // console.log("initializeAddress", programSol, userPublicKey, rewardsConfigPda, addressBondsRewardsPda);
+    if (program === undefined) {
+      const programId = new PublicKey(BONDING_PROGRAM_ID);
+      if (connection) {
+        program = new Program<CoreSolBondStakeSc>(IDL, programId, {
+          connection: connection,
+        });
+      } else {
+        throw new Error("Connection is required to retrieve bonds");
+      }
+    }
+    const bonds: Bond[] = [];
+    let nftMeIdVault: Bond | undefined;
+    for (let i = 1; i <= lastIndex; i++) {
+      const bondPda = PublicKey.findProgramAddressSync([Buffer.from("bond"), userPublicKey.toBuffer(), Buffer.from([i])], program.programId)[0];
+      const bond = await program.account.bond.fetch(bondPda);
+      const bondUpgraded = { ...bond, bondId: i, unbondTimestamp: bond.unbondTimestamp.toNumber(), bondTimestamp: bond.bondTimestamp.toNumber() };
+      if (bond.isVault) {
+        nftMeIdVault = bondUpgraded;
+      }
+      bonds.push(bondUpgraded);
+    }
 
-    if (!programSol || !userPublicKey) return;
-
-    // Build the transaction
-    const transaction = await programSol.methods
-      .initializeAddress()
-      .accounts({
-        addressBondsRewards: addressBondsRewardsPda,
-        rewardsConfig: rewardsConfigPda,
-        authority: userPublicKey,
-      })
-      .transaction();
-
-    // Step 4: Get the latest blockhash to include in the transaction
-    const latestBlockhash = await connection.getLatestBlockhash();
-    transaction.recentBlockhash = latestBlockhash.blockhash;
-    transaction.feePayer = userPublicKey;
-
-    const signedTransaction = await sendTransaction(transaction, connection);
-
-    console.log("Transaction sent with signature:", signedTransaction);
+    return { bonds: bonds, nftMeIdVault: nftMeIdVault };
   } catch (error) {
-    console.error("Transaction failed:", error);
+    console.error("retrieveBondsError", error);
+
+    throw new Error("Retrieve Bonds Error: Not able to fetch the bonds from the blockchain");
   }
 }

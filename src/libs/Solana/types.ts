@@ -1,5 +1,5 @@
+import { BN } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
-
 export interface BondConfig {
   bump: number;
   index: number;
@@ -9,6 +9,19 @@ export interface BondConfig {
   bondAmount: bigint;
   withdrawPenalty: bigint;
   padding: Uint8Array;
+}
+
+export interface Bond {
+  bump: number;
+  bondId: number;
+  state: number;
+  isVault: boolean;
+  bondTimestamp: number;
+  unbondTimestamp: number;
+  bondAmount: BN;
+  assetId: PublicKey;
+  owner: PublicKey;
+  padding: number[];
 }
 
 const bondConfig: BondConfig = {
