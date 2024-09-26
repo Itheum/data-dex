@@ -279,7 +279,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                   {connected ? (
                     <>
                       <LivelinessStakingSol />
-                      <BondingCardsSol />
+                      {/* <BondingCardsSol /> */}
                     </>
                   ) : (
                     <>

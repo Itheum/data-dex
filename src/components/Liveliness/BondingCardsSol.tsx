@@ -27,13 +27,16 @@ import { ConfirmationDialog } from "components/UtilComps/ConfirmationDialog";
 import { formatNumberToShort } from "libs/utils";
 import { useNftsStore } from "store/nfts";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { retrieveBondsAndNftMeIdVault } from "libs/Solana/utils";
 
 // type CompensationNftsType = {
 //   nonce: number;
 //   tokenIdentifier: string;
 // };
 
-export const BondingCardsSol: React.FC = () => {
+export const BondingCardsSol: React.FC = (props) => {
+  const { lockPeriod, bondAmount, remainingAmount, unbondTimestamp } = props;
+
   const { colorMode } = useColorMode();
   const { connection } = useConnection();
   const { publicKey: userPublicKey, wallet, signTransaction, sendTransaction } = useWallet();
@@ -50,7 +53,10 @@ export const BondingCardsSol: React.FC = () => {
   const [bondingOffers, setBondingOffers] = useState<Array<DataNft>>([]);
   //   const [dataNftsWithNoBond, setDataNftsWithNoBond] = useState<Array<DataNft>>([]);
   const { solNfts } = useNftsStore();
-  console.log("solNfts", solNfts);
+  const [bonds, setBonds] = useState<Bond[]>([]);
+  const [nftMeIdBond, setNftMeIdBond] = useState<Bond | null>(null);
+  const [numberOfBonds, setNumberOfBonds] = useState<number>(0);
+
   const [contractConfiguration, setContractConfiguration] = useState<BondConfiguration>({
     contractState: 0,
     bondPaymentTokenIdentifier: "",
@@ -74,6 +80,18 @@ export const BondingCardsSol: React.FC = () => {
 
     fetchNfmeId();
   }, [userPublicKey]);
+
+  useEffect(() => {
+    async function fetchBonds() {
+      if (numberOfBonds && userPublicKey && programSol) {
+        retrieveBondsAndNftMeIdVault(userPublicKey, numberOfBonds, programSol).then(({ bonds, nftMeIdVault }) => {
+          setBonds(bonds);
+          setNftMeIdBond(nftMeIdVault);
+        });
+      }
+    }
+    fetchBonds();
+  }, [numberOfBonds]);
 
   useEffect(() => {
     (async () => {
@@ -124,7 +142,7 @@ export const BondingCardsSol: React.FC = () => {
         </Alert>
       )}
 
-      {/* {allInfoLoading ? (
+      {allInfoLoading ? (
         <Flex w="100%" h="20rem" justifyContent="center" alignItems="center">
           <Spinner size="md" color="teal.200" />
         </Flex>
@@ -181,7 +199,7 @@ export const BondingCardsSol: React.FC = () => {
                           <Text fontSize="sm" pb={3}>
                             {`Id: ${dataNft.id}`}
                           </Text>
-                          <LivelinessScore
+                          {/* <LivelinessScore
                             key={dataNft.id}
                             unbondTimestamp={1} //contractBond.unbondTimestamp}
                             lockPeriod={1} //contractBond.lockPeriod}
@@ -195,7 +213,7 @@ export const BondingCardsSol: React.FC = () => {
                               fontSize={{
                                 base: "sm",
                                 md: "md",
-                              }}>{`New expiry will be ${calculateNewPeriodAfterNewBond(contractBond.lockPeriod)}`}</Text>
+                              }}>{`New expiry will be ${calculateNewPeriodAfterNewBond(lockPeriod)}`}</Text>
                           </Flex>
                           <Flex flexDirection={{ base: "column", md: "row" }} gap={4} pt={3} alignItems="center">
                             {!checkIfBondIsExpired(contractBond.unbondTimestamp) ? (
@@ -205,15 +223,15 @@ export const BondingCardsSol: React.FC = () => {
                                 textColor="indianred"
                                 fontWeight="400"
                                 isDisabled={
-                                  !userPublicKey ||
-                                  calculateRemainedAmountAfterPenalty(BigNumber(contractBond.remainingAmount), BigNumber(contractBond.bondAmount)) <=
-                                    new BigNumber(0)
+                                  !userPublicKey
+                                  // calculateRemainedAmountAfterPenalty(BigNumber(contractBond.remainingAmount), BigNumber(contractBond.bondAmount)) <=
+                                  //   new BigNumber(0)
                                 }
                                 onClick={() => {
                                   setWithdrawBondConfirmationWorkflow({ collection: dataNft.collection, nonce: dataNft.nonce });
                                 }}>
                                 Withdraw Bond
-                              </Button>
+                              </Button> 
                             ) : (
                               <Button
                                 colorScheme="teal"
@@ -226,12 +244,12 @@ export const BondingCardsSol: React.FC = () => {
                                 }}>
                                 Withdraw Bond
                               </Button>
-                            )}
-                            <Flex flexDirection="column" gap={1}>
+                            )}*/}
+                          {/* <Flex flexDirection="column" gap={1}>
                               <Flex flexDirection="row" gap={4}>
                                 <Text fontSize=".75rem" textColor="teal.200">
                                   {formatNumberToShort(
-                                    BigNumber(contractBond.bondAmount)
+                                    BigNumber( bondAmount)
                                       .dividedBy(10 ** 18)
                                       .toNumber()
                                   )}
@@ -279,7 +297,7 @@ export const BondingCardsSol: React.FC = () => {
                                 </Text>
                               )}
                             </Flex>
-                          </Flex>
+                          </Flex> */}
                         </Flex>
                       </Flex>
                     </Flex>
@@ -289,7 +307,7 @@ export const BondingCardsSol: React.FC = () => {
             )}
           </>
         </>
-      )} */}
+      )}
 
       {/* Confirmation Dialogs for actions that need explanation */}
       <>
