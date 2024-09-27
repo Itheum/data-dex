@@ -13,9 +13,15 @@ import { BOND_CONFIG_INDEX, BONDING_PROGRAM_ID, SolEnvEnum } from "./config";
 import { CoreSolBondStakeSc, IDL } from "./CoreSolBondStakeSc";
 import { Bond } from "./types";
 
+enum RewardsState {
+  Inactive = 0,
+  Active = 1,
+}
+
 export const MAX_PERCENT = 100;
 export const SLOTS_IN_YEAR = 78840000; // solana slots in a year
 export const ITHEUM_TOKEN_ADDRESS = contractsForChain(IS_DEVNET ? SolEnvEnum.devnet : SolEnvEnum.mainnet).itheumToken;
+export const DIVISION_SAFETY_CONST = 1000000;
 
 export async function fetchSolNfts(solAddress: string | undefined) {
   if (!solAddress) {
@@ -30,6 +36,7 @@ export async function fetchSolNfts(solAddress: string | undefined) {
 
 // BONDING
 
+// helper functions
 function bufferToArray(buffer: Buffer): number[] {
   const nums: number[] = [];
   for (let i = 0; i < buffer.length; i++) {
@@ -37,11 +44,37 @@ function bufferToArray(buffer: Buffer): number[] {
   }
   return nums;
 }
-
 function decode(stuff: string) {
   return bufferToArray(bs58.decode(stuff));
 }
+const mapProof = (proof: string[]): AccountMeta[] => {
+  return proof.map((node) => ({
+    pubkey: new PublicKey(node),
+    isSigner: false,
+    isWritable: false,
+  }));
+};
 
+function calculateRewardsSinceLastAllocation(currentSlot: BN, rewardsConfig: any): BN {
+  if (rewardsConfig.rewardsState === RewardsState.Inactive) {
+    return new BN(0);
+  }
+
+  if (currentSlot.lte(rewardsConfig.lastRewardSlot)) {
+    return new BN(0);
+  }
+
+  const slotDiff = currentSlot.sub(rewardsConfig.lastRewardSlot);
+  rewardsConfig.lastRewardSlot = currentSlot; ///TODO not needed ?
+
+  return rewardsConfig.rewardsPerSlot.mul(slotDiff);
+}
+
+function getAmountAprBounded(maxApr: BN, amount: BN): BN {
+  return amount.mul(maxApr).div(new BN(MAX_PERCENT)).div(new BN(SLOTS_IN_YEAR));
+}
+
+// fetch Data from the blockchain
 export async function fetchBondingConfig(programSol: any) {
   /// bondAmount, bondState, lockPeriod, withdrawPenalty, merkleTree
   try {
@@ -84,82 +117,137 @@ export async function fetchRewardsConfig(programSol: any) {
   }
 }
 
+// compute the rewards functions
+
 export function computeCurrentLivelinessScore(lastUpdateTimestamp: number, lockPeriod: number, weightedLivelinessScore: number): number {
   const currentTimestamp = Math.round(Date.now() / 1000);
   const decay = (currentTimestamp - lastUpdateTimestamp) / lockPeriod;
   const livelinessScore = weightedLivelinessScore * (1 - decay);
-  return livelinessScore; // daca apare 9823 inseamna ca e 98.23% impart la 100
+  return livelinessScore; // returns 9456 for 95.46%
 }
-
-export function computeClaimableAmount(
-  addressRewardsPerShare: number,
-  addressTotalBondAmount: number,
+export function computeAddressClaimableAmount(
+  currentSlot: BN,
+  rewardsConfig: any,
+  addressRewardsPerShare: BN,
+  addressTotalBondAmount: BN,
   currentWeightedLivelinessScore: number,
-  globalTotalBond: number
-) {}
+  globalTotalBond: BN
+) {
+  ///TODO ADD THE GENERATE AGGREGATED REWARDS FUNCTION
+  //generateAggregatedRewards(new BN(0), rewardsConfig, globalTotalBond);
+  const newRewardsConfig = generateAggregatedRewards(currentSlot, rewardsConfig, globalTotalBond);
+  console.log("newRewardsConfig", newRewardsConfig);
 
-enum RewardsState {
-  Inactive = 0,
-  Active = 1,
+  const addressClaimableRewards = calculateAddressShareInRewards(
+    newRewardsConfig.accumulatedRewards,
+    newRewardsConfig.rewardsPerShare,
+    addressTotalBondAmount,
+    addressRewardsPerShare,
+    globalTotalBond,
+    currentWeightedLivelinessScore ///TODO ASK is this from address or the cumulative liveliness score
+  );
+
+  return addressClaimableRewards.toNumber();
 }
 
-// calculate_rewards_since_last_allocation function
-async function calculateRewardsSinceLastAllocation(connection: Connection, rewardsConfig: any): Promise<BigNumber> {
-  const currentSlot = new BigNumber(await connection.getSlot());
+function generateAggregatedRewards(currentSlot: BN, rewardsConfig: any, totalBondAmount: BN): any {
+  const lastRewardSlot: BN = rewardsConfig.lastRewardSlot;
 
-  if (rewardsConfig.rewardsState === RewardsState.Inactive) {
-    return new BigNumber(0);
-  }
-
-  if (currentSlot.lte(rewardsConfig.lastRewardSlot)) {
-    return new BigNumber(0);
-  }
-
-  const slotDiff = currentSlot.minus(rewardsConfig.lastRewardSlot);
-  rewardsConfig.lastRewardSlot = currentSlot;
-
-  return rewardsConfig.rewardsPerSlot.mul(slotDiff);
-}
-
-function getAmountAprBounded(maxApr: number, amount: BigNumber): BigNumber {
-  return amount.multipliedBy(maxApr).dividedBy(MAX_PERCENT).dividedBy(SLOTS_IN_YEAR);
-}
-
-async function generateAggregatedRewards(connection: Connection, rewardsConfig: any, vaultConfig: any): Promise<void> {
-  const lastRewardSlot = rewardsConfig.lastRewardSlot;
-  const extraRewardsUnbounded = calculateRewardsSinceLastAllocation(connection, rewardsConfig);
+  const extraRewardsUnbounded = calculateRewardsSinceLastAllocation(currentSlot, rewardsConfig);
   const maxApr = rewardsConfig.maxApr;
 
-  let extraRewards: number;
+  let extraRewards: BN;
 
-  if (maxApr.gt(new number(0))) {
-    const extraRewardsAprBondedPerSlot = getAmountAprBounded(rewardsConfig.maxApr, vaultConfig.totalBondAmount);
+  if (maxApr.gt(new BN(0))) {
+    const extraRewardsAprBondedPerSlot = getAmountAprBounded(rewardsConfig.maxApr, totalBondAmount);
 
-    const currentSlot = await getCurrentSlot();
     const slotDiff = currentSlot.sub(lastRewardSlot);
     const extraRewardsAprBonded = extraRewardsAprBondedPerSlot.mul(slotDiff);
 
-    extraRewards = number.min(extraRewardsUnbounded, extraRewardsAprBonded);
+    extraRewards = BN.min(extraRewardsUnbounded, extraRewardsAprBonded);
   } else {
     extraRewards = extraRewardsUnbounded;
   }
 
-  if (extraRewards.gt(new number(0)) && extraRewards.lte(rewardsConfig.rewardsReserve)) {
-    const increment = extraRewards.mul(DIVISION_SAFETY_CONST).div(vaultConfig.totalBondAmount);
+  if (extraRewards.gt(new BN(0)) && extraRewards.lte(rewardsConfig.rewardsReserve)) {
+    const increment = extraRewards.mul(new BN(DIVISION_SAFETY_CONST)).div(totalBondAmount);
 
     rewardsConfig.rewardsPerShare = rewardsConfig.rewardsPerShare.add(increment);
     rewardsConfig.rewardsReserve = rewardsConfig.rewardsReserve.sub(extraRewards);
     rewardsConfig.accumulatedRewards = rewardsConfig.accumulatedRewards.add(extraRewards);
   }
+  return rewardsConfig;
 }
 
-const mapProof = (proof: string[]): AccountMeta[] => {
-  return proof.map((node) => ({
-    pubkey: new PublicKey(node),
-    isSigner: false,
-    isWritable: false,
-  }));
-};
+function calculateAddressShareInRewards(
+  accumulatedRewards: BN,
+  rewardsPerShare: BN,
+  addressBondAmount: BN,
+  addressRewardsPerShare: BN,
+  totalBondAmount: BN,
+  livelinessScore: number
+  // bypassLivelinessScore: boolean
+): BN {
+  // If no total bond or rewards, return 0
+  if (totalBondAmount.isZero() || accumulatedRewards.isZero()) {
+    return new BN(0);
+  }
+
+  // Calculate the difference between rewards per share and the user's rewards per share
+  const diff: BN = rewardsPerShare.sub(addressRewardsPerShare);
+
+  // Calculate the address's rewards
+  const addressRewards = addressBondAmount.mul(diff).div(new BN(DIVISION_SAFETY_CONST));
+
+  // Apply liveliness score if necessary
+  if (livelinessScore > 95) {
+    //|| bypassLivelinessScore) {
+    return addressRewards;
+  } else {
+    return addressRewards.mul(livelinessScore).div(new BN(MAX_PERCENT));
+  }
+}
+
+function updateAddressClaimableRewards(
+  rewardsConfig: {
+    accumulatedRewards: BN;
+    rewardsPerShare: BN;
+  },
+  vaultConfig: {
+    totalBondAmount: BN;
+  },
+  addressBondsRewards: {
+    addressTotalBondAmount: BN;
+    addressRewardsPerShare: BN;
+    claimableAmount: BN;
+  },
+  weightedLivelinessScoreDecayed: BN,
+  bypassLivelinessScore: boolean
+): void {
+  // Function generateAggregatedRewards would be called here if it is needed
+  // For now, we'll skip it as we're focusing on `updateAddressClaimableRewards`.
+
+  let livelinessScore = new BN(0); // Initialize as 0
+
+  if (!bypassLivelinessScore) {
+    livelinessScore = weightedLivelinessScoreDecayed;
+  }
+
+  // Calculate the address's claimable rewards using the `calculateAddressShareInRewards` function.
+  const addressClaimableRewards = calculateAddressShareInRewards(
+    rewardsConfig.accumulatedRewards,
+    rewardsConfig.rewardsPerShare,
+    addressBondsRewards.addressTotalBondAmount,
+    addressBondsRewards.addressRewardsPerShare,
+    vaultConfig.totalBondAmount,
+    livelinessScore
+    // bypassLivelinessScore
+  );
+
+  // Update `address_rewards_per_share` and `claimable_amount`.
+  addressBondsRewards.addressRewardsPerShare = rewardsConfig.rewardsPerShare;
+  addressBondsRewards.claimableAmount = addressBondsRewards.claimableAmount.add(addressClaimableRewards);
+}
 
 export async function createBondTransaction(
   mintMeta: CNftSolPostMintMetaType,

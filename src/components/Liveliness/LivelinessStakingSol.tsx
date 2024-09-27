@@ -20,8 +20,10 @@ import {
   Toast,
   Card,
   useColorMode,
+  UnorderedList,
+  ListItem,
 } from "@chakra-ui/react";
-import { Program, BN } from "@coral-xyz/anchor";
+import { Program, BN, AnchorProvider, setProvider } from "@coral-xyz/anchor";
 
 // import { CoreSolBondStakeSc } from "../target/types/core_sol_bond_stake_sc";
 import { DasApiAsset } from "@metaplex-foundation/digital-asset-standard-api";
@@ -30,25 +32,32 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 
 import { useNavigate } from "react-router-dom";
+import NftMediaComponent from "components/NftMediaComponent";
+import { NoDataHere } from "components/Sections/NoDataHere";
 import { ConfirmationDialog } from "components/UtilComps/ConfirmationDialog";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { BOND_CONFIG_INDEX, BONDING_PROGRAM_ID } from "libs/Solana/config";
 import { CoreSolBondStakeSc, IDL } from "libs/Solana/CoreSolBondStakeSc";
 import { Bond } from "libs/Solana/types";
-import { computeCurrentLivelinessScore, ITHEUM_TOKEN_ADDRESS, retrieveBondsAndNftMeIdVault, SLOTS_IN_YEAR } from "libs/Solana/utils";
+import {
+  computeAddressClaimableAmount,
+  computeCurrentLivelinessScore,
+  ITHEUM_TOKEN_ADDRESS,
+  retrieveBondsAndNftMeIdVault,
+  SLOTS_IN_YEAR,
+} from "libs/Solana/utils";
 import { formatNumberToShort, isValidNumericCharacter } from "libs/utils";
 import { useAccountStore } from "store";
 import { useNftsStore } from "store/nfts";
 import { LivelinessScore } from "./LivelinessScore";
-import { NoDataHere } from "components/Sections/NoDataHere";
-import NftMediaComponent from "components/NftMediaComponent";
+import { set } from "@coral-xyz/anchor/dist/cjs/utils/features";
 
 const BN10_9 = new BN(10 ** 9);
 const BN10_2 = new BN(10 ** 2);
 
 export const LivelinessStakingSol: React.FC = () => {
   const { connection } = useConnection();
-  const { publicKey: userPublicKey, sendTransaction } = useWallet();
+  const { publicKey: userPublicKey, sendTransaction, wallet } = useWallet();
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
   const [topUpItheumValue, setTopUpItheumValue] = useState<number>(0);
   const [estAnnualRewards, setEstAnnualRewards] = useState<BN>(new BN(0));
@@ -76,16 +85,19 @@ export const LivelinessStakingSol: React.FC = () => {
   const [bonds, setBonds] = useState<Bond[]>();
   const [allInfoLoading, setAllInfoLoading] = useState<boolean>(true);
   const [nftMeId, setNftMeId] = useState<DasApiAsset>();
+
   const [numberOfBonds, setNumberOfBonds] = useState<number>();
   const [claimRewardsConfirmationWorkflow, setClaimRewardsConfirmationWorkflow] = useState<boolean>(false); ///TODO dialogs
   const [reinvestRewardsConfirmationWorkflow, setReinvestRewardsConfirmationWorkflow] = useState<boolean>(false);
   const [nftMeIdBond, setNftMeIdBond] = useState<Bond>();
   const { solNfts } = useNftsStore();
   const { colorMode } = useColorMode();
-
-  /// check when the data is loaded
+  const [claimableAmount, setClaimableAmount] = useState<number>(0);
+  const [withdrawBondConfirmationWorkflow, setWithdrawBondConfirmationWorkflow] = useState<boolean>(false);
+  // check when the data is loaded
   useEffect(() => {
-    if (bondConfigData && rewardsConfigData && addressBondsRewardsData) {
+    if (bondConfigData && rewardsConfigData && addressBondsRewardsData && globalTotalBond) {
+      ///TODO check when nftIDmeBond is loaded
       setAllInfoLoading(false);
 
       const newCombinedLiveliness =
@@ -96,15 +108,37 @@ export const LivelinessStakingSol: React.FC = () => {
             addressBondsRewardsData.weightedLivelinessScore.toNumber()
           )
         ) / 100;
-      setCombinedLiveliness(newCombinedLiveliness);
+      setCombinedLiveliness(newCombinedLiveliness > 0 ? newCombinedLiveliness : 0);
+      computeAndSetClaimableAmount(newCombinedLiveliness);
     }
   }, [bondConfigData, rewardsConfigData, addressBondsRewardsData]);
+
+  async function computeAndSetClaimableAmount(_combinedLiveliness: number) {
+    const currentSLot = await connection.getSlot();
+    const _claimableAmount = computeAddressClaimableAmount(
+      new BN(currentSLot),
+      rewardsConfigData,
+      addressBondsRewardsData.addressRewardsPerShare,
+      addressBondsRewardsData.addressTotalBondAmount,
+      _combinedLiveliness,
+      globalTotalBond
+    );
+    console.log("claimableAmount OF THE USERRRRRR", _claimableAmount);
+    setClaimableAmount(_claimableAmount);
+    setClaimableAmount(1);
+  }
 
   useEffect(() => {
     const programId = new PublicKey(BONDING_PROGRAM_ID); ///TODO Set constatnt address sm
     const program = new Program<CoreSolBondStakeSc>(IDL, programId, {
       connection,
     });
+    // if (!wallet) return;
+    // const provider = new AnchorProvider(connection, wallet, {
+    //   preflightCommitment: "processed",
+    // });
+
+    // setProvider(provider);
     setProgramSol(program);
 
     async function fetchBondConfigPdas() {
@@ -136,10 +170,10 @@ export const LivelinessStakingSol: React.FC = () => {
           await programSol.account.addressBondsRewards.fetch(addressBondsRewardsPda).then((data: any) => {
             /// addressRewardsPerShare , addressTotalBondAmount,  claimableAmount , weightedLivelinessScore, lastUpdateTimestamp
             setAddressBondsRewardsData(data);
-
+            // console.log("addressBondsRewardsData", data, data.claimableAmount.div(BN10_2).toNumber());
             setCombinedBondsStaked(data.addressTotalBondAmount);
             setCombinedLiveliness(Math.floor(data.weightedLivelinessScore.toNumber() / 100));
-            setAccumulatedRewards(Math.floor(data.claimableAmount.div(BN10_2).toNumber() * 100) / 100);
+            // setAccumulatedRewards(Math.floor(data.claimableAmount.div(BN10_2).toNumber() * 100) / 100);
             setNumberOfBonds(data.currentIndex);
           });
         }
@@ -208,25 +242,27 @@ export const LivelinessStakingSol: React.FC = () => {
     }
 
     if (globalTotalBond.toNumber() > 0) {
-      /// TODO
       const percentage: BN = combinedBondsStaked.div(globalTotalBond);
-      console.log("percentage", percentage.toNumber());
-      console.log("globalRewardsPerBlock", globalRewardsPerBlock);
+
       const localRewardsPerBlock: BN = percentage.mul(new BN(globalRewardsPerBlock));
       // Solana: Approx. 0.4 seconds per block or slot
       const blockPerYear = new BN(SLOTS_IN_YEAR);
-      console.log("localRewardsPerBlock", localRewardsPerBlock.toNumber());
       const rewardPerYear: BN = localRewardsPerBlock.mul(blockPerYear);
-      console.log("rewardPerYear", rewardPerYear.toNumber());
-      console.log("combinedBondsStaked", combinedBondsStaked.toNumber());
-      console.log("calc", rewardPerYear.div(combinedBondsStaked).mul(new BN(10000)));
-      const calculatedRewardApr = rewardPerYear.div(combinedBondsStaked).mul(new BN(10000)).div(BN10_2).toNumber();
 
-      console.log("=======================");
-      console.log("globalTotalBond :", globalTotalBond);
-      console.log("calculatedRewardApr :", calculatedRewardApr);
-      console.log("maxApr :", maxApr);
-      console.log("=======================");
+      const calculatedRewardApr = rewardPerYear.div(combinedBondsStaked).mul(new BN(10000)).div(BN10_2).toNumber();
+      ///TODO
+      // console.log("percentage", percentage.toNumber());
+      // console.log("globalRewardsPerBlock", globalRewardsPerBlock);
+      // console.log("localRewardsPerBlock", localRewardsPerBlock.toNumber());
+
+      // console.log("rewardPerYear", rewardPerYear.toNumber());
+      // console.log("combinedBondsStaked", combinedBondsStaked.toNumber());
+      // console.log("calc", rewardPerYear.div(combinedBondsStaked).mul(new BN(10000)));
+      // console.log("=======================");
+      // console.log("globalTotalBond :", globalTotalBond);
+      // console.log("calculatedRewardApr :", calculatedRewardApr);
+      // console.log("maxApr :", maxApr);
+      // console.log("=======================");
 
       if (maxApr === 0) {
         setRewardApr(calculatedRewardApr);
@@ -281,7 +317,6 @@ export const LivelinessStakingSol: React.FC = () => {
       const bondIdPda = PublicKey.findProgramAddressSync([Buffer.from("bond"), userPublicKey!.toBuffer(), Buffer.from([bondId])], programSol!.programId)[0];
       const vaultAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), vaultConfigPda!, true);
       const userItheumAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), userPublicKey!, true);
-      console.log(amount, topUpItheumValue);
 
       const amountToSend: BN = new BN(amount ? amount : topUpItheumValue).mul(BN10_9);
       console.log("amountToSend", amountToSend);
@@ -318,11 +353,8 @@ export const LivelinessStakingSol: React.FC = () => {
 
   async function initializeAddress() {
     try {
-      // console.log("initializeAddress", programSol, userPublicKey, rewardsConfigPda, addressBondsRewardsPda);
-
       if (!programSol || !userPublicKey) return;
 
-      // Build the transaction
       const transaction = await programSol.methods
         .initializeAddress()
         .accounts({
@@ -332,7 +364,6 @@ export const LivelinessStakingSol: React.FC = () => {
         })
         .transaction();
 
-      // Step 4: Get the latest blockhash to include in the transaction
       const latestBlockhash = await connection.getLatestBlockhash();
       transaction.recentBlockhash = latestBlockhash.blockhash;
       transaction.feePayer = userPublicKey;
@@ -350,12 +381,109 @@ export const LivelinessStakingSol: React.FC = () => {
     return newExpiry.toDateString();
   };
 
-  function handleClaimRewardsClick() {
-    throw new Error("Function not implemented.");
+  async function handleClaimRewardsClick() {
+    try {
+      if (!programSol || !userPublicKey) return;
+      const vaultAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), vaultConfigPda!, true);
+      const userItheumAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), userPublicKey!, true);
+      const transaction = await programSol.methods
+        .claimRewards(BOND_CONFIG_INDEX)
+        .accounts({
+          addressBondsRewards: addressBondsRewardsPda,
+          bondConfig: bondConfigPda,
+          rewardsConfig: rewardsConfigPda,
+          mintOfTokenToReceive: new PublicKey(ITHEUM_TOKEN_ADDRESS),
+          vaultConfig: vaultConfigPda,
+          vault: vaultAta,
+          authority: userPublicKey,
+          authorityTokenAccount: userItheumAta,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        })
+        .transaction();
+
+      const latestBlockhash = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = latestBlockhash.blockhash;
+      transaction.feePayer = userPublicKey;
+      const signedTransaction = await sendTransaction(transaction, connection, {
+        skipPreflight: true,
+        preflightCommitment: "confirmed",
+      });
+
+      console.log("Transaction Claiming the rewards sent with signature:", signedTransaction);
+    } catch (error) {
+      console.error("Transaction ClaimingRewards  failed:", error);
+    }
   }
 
-  function handleReinvestRewardsClick() {
-    throw new Error("Function not implemented.");
+  async function handleReinvestRewardsClick() {
+    try {
+      if (!programSol || !userPublicKey || !nftMeIdBond) return;
+      const bondId = nftMeIdBond.bondId;
+      const bondIdPda = PublicKey.findProgramAddressSync([Buffer.from("bond"), userPublicKey!.toBuffer(), Buffer.from([bondId])], programSol!.programId)[0];
+
+      const transaction = await programSol.methods
+        .stakeRewards(BOND_CONFIG_INDEX, nftMeIdBond.bondId)
+        .accounts({
+          addressBondsRewards: addressBondsRewardsPda,
+          bondConfig: bondConfigPda,
+          rewardsConfig: rewardsConfigPda,
+          bond: bondIdPda,
+          vaultConfig: vaultConfigPda,
+          authority: userPublicKey,
+        })
+        .transaction();
+
+      const latestBlockhash = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = latestBlockhash.blockhash;
+      transaction.feePayer = userPublicKey;
+      const signedTransaction = await sendTransaction(transaction, connection, {
+        skipPreflight: true,
+        preflightCommitment: "confirmed",
+      });
+      console.log("Transaction Re-Investing the rewards sent with signature:", signedTransaction);
+    } catch (error) {
+      console.error("Transaction Re-Investing failed:", error);
+    }
+  }
+
+  async function handleWithdrawBondClick() {
+    try {
+      if (!programSol || !userPublicKey || !nftMeIdBond) return;
+
+      const bondId = nftMeIdBond.bondId;
+      const bondIdPda = PublicKey.findProgramAddressSync([Buffer.from("bond"), userPublicKey.toBuffer(), Buffer.from([bondId])], programSol.programId)[0];
+      const vaultAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), vaultConfigPda!, true);
+      const userItheumAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), userPublicKey!, true);
+
+      const transaction = await programSol.methods
+        .withdraw(BOND_CONFIG_INDEX, bondId)
+        .accounts({
+          addressBondsRewards: addressBondsRewardsPda,
+          bondConfig: bondConfigPda,
+          rewardsConfig: rewardsConfigPda,
+          mintOfTokenToReceive: new PublicKey(ITHEUM_TOKEN_ADDRESS),
+          bond: bondIdPda,
+          vaultConfig: vaultConfigPda,
+          vault: vaultAta,
+          authority: userPublicKey!,
+          authorityTokenAccount: userItheumAta,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        })
+        .transaction();
+
+      const latestBlockhash = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = latestBlockhash.blockhash;
+      transaction.feePayer = userPublicKey;
+      const signedTransaction = await sendTransaction(transaction, connection, {
+        skipPreflight: true,
+        preflightCommitment: "confirmed",
+      });
+      console.log("Transaction withdraw sent with signature:", signedTransaction);
+    } catch (error) {
+      console.error("Transaction withdraw failed:", error);
+    }
   }
 
   const LivelinessContainer: React.FC<{ bond: Bond }> = ({ bond }) => {
@@ -395,7 +523,7 @@ export const LivelinessStakingSol: React.FC = () => {
                   //   new BigNumber(0)
                 }
                 onClick={() => {
-                  // setWithdrawBondConfirmationWorkflow({ collection: dataNft.collection, nonce: dataNft.nonce });
+                  setWithdrawBondConfirmationWorkflow(true);
                 }}>
                 Withdraw Bond
               </Button>
@@ -407,7 +535,7 @@ export const LivelinessStakingSol: React.FC = () => {
                 fontWeight="400"
                 isDisabled={false}
                 onClick={() => {
-                  // setWithdrawBondConfirmationWorkflow({ collection: dataNft.collection, nonce: dataNft.nonce });
+                  setWithdrawBondConfirmationWorkflow(true);
                 }}>
                 Withdraw Bond
               </Button>
@@ -466,7 +594,7 @@ export const LivelinessStakingSol: React.FC = () => {
                 <Text fontSize="xl">Current Staking APR: {isNaN(rewardApr) ? 0 : rewardApr}%</Text>
                 {maxApr > 0 && <Text fontSize="xl">Max APR: {maxApr}%</Text>}
                 <Text fontSize="xl">
-                  Current Accumulated Rewards:{" "}
+                  Current Accumulated Rewards: {claimableAmount} $ITHEUM
                   {formatNumberToShort(combinedLiveliness >= 95 ? accumulatedRewards : (combinedLiveliness * accumulatedRewards) / 100)} $ITHEUM
                 </Text>
                 <Text fontSize="xl">Potential Rewards If Combined Liveliness &gt;95%: {formatNumberToShort(accumulatedRewards)} $ITHEUM</Text>
@@ -491,7 +619,7 @@ export const LivelinessStakingSol: React.FC = () => {
                               setClaimRewardsConfirmationWorkflow(true);
                             }
                           }}
-                          isDisabled={!userPublicKey || accumulatedRewards < 1 || combinedLiveliness === 0}>
+                          isDisabled={!userPublicKey || claimableAmount < 1 || combinedLiveliness === 0}>
                           Claim Rewards
                         </Button>
                       </Tooltip>
@@ -500,7 +628,7 @@ export const LivelinessStakingSol: React.FC = () => {
                       <Tooltip
                         hasArrow
                         shouldWrapChildren
-                        isDisabled={!(!userPublicKey || nftMeId === undefined || accumulatedRewards < 1 || combinedLiveliness === 0)}
+                        isDisabled={!(!userPublicKey || nftMeId === undefined || claimableAmount < 1 || combinedLiveliness === 0)}
                         label={
                           "Rewards reinvesting is disabled if you have no NFT as a Primary NFMe ID, liveliness is 0, rewards amount is lower than 1 or there are transactions pending"
                         }>
@@ -509,7 +637,7 @@ export const LivelinessStakingSol: React.FC = () => {
                           colorScheme="teal"
                           px={6}
                           width="180px"
-                          isDisabled={!userPublicKey || nftMeId === undefined || accumulatedRewards < 1 || combinedLiveliness === 0}
+                          isDisabled={!userPublicKey || nftMeId === undefined || claimableAmount < 1 || combinedLiveliness === 0}
                           onClick={() => {
                             if (combinedLiveliness >= 95) {
                               handleReinvestRewardsClick();
@@ -815,6 +943,41 @@ export const LivelinessStakingSol: React.FC = () => {
             cancelBtnText: "Cancel and Close",
           }}
         />
+        <>
+          <ConfirmationDialog
+            isOpen={withdrawBondConfirmationWorkflow}
+            onCancel={() => {
+              setWithdrawBondConfirmationWorkflow(false);
+            }}
+            onProceed={() => {
+              handleWithdrawBondClick();
+              setWithdrawBondConfirmationWorkflow(false);
+            }}
+            bodyContent={
+              <>
+                <Text fontSize="sm" pb={3} opacity=".8">
+                  {`Collection: ${nftMeId?.id}, Bond ID: ${nftMeIdBond?.bondId}`}
+                </Text>
+                <Text mb="5">There are a few items to consider before you proceed with the bond withdraw:</Text>
+                <UnorderedList mt="2" p="2">
+                  <ListItem>Withdrawing before bond expiry incurs a penalty; no penalty after expiry, and you get the full amount back.</ListItem>
+                  <ListItem>Penalties are non-refundable.</ListItem>
+                  <ListItem>After withdrawal, your Liveliness score drops to zero, visible to buyers if your Data NFT is listed.</ListItem>
+                  <ListItem>Once withdrawn, you {`can't `}re-bond to regain the Liveliness score or earn staking rewards.</ListItem>
+                  <ListItem>If the bond was linked to your Primary NFMe ID Vault, {`you'll`} need to set up a new one as your primary.</ListItem>
+                </UnorderedList>
+
+                <Text mt="5">With the above in mind, are your SURE you want to proceed and Withdraw Bond?</Text>
+              </>
+            }
+            dialogData={{
+              title: "Are you sure you want to Withdraw Bond?",
+              proceedBtnTxt: "Proceed with Withdraw Bond",
+              cancelBtnText: "Cancel and Close",
+              proceedBtnColorScheme: "red",
+            }}
+          />
+        </>
       </>
     </Flex>
   );
