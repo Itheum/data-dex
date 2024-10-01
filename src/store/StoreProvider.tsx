@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useContext, useEffect, useState } from "react";
+import React, { PropsWithChildren, useEffect, useState } from "react";
 import { BondContract, DataNft, DataNftMarket, MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
@@ -7,7 +7,6 @@ import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { useSearchParams } from "react-router-dom";
-import { NetworkConfigurationContext } from "contexts/sol/SolNetworkConfigurationProvider";
 import { GET_BITZ_TOKEN, IS_DEVNET, SUPPORTED_MVX_COLLECTIONS, viewDataJSONCore } from "libs/config";
 import {
   contractsForChain,
@@ -21,11 +20,14 @@ import { getAccountTokenFromApi, getItheumPriceFromApi } from "libs/MultiversX/a
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { computeRemainingCooldown, convertWeiToEsdt, decodeNativeAuthToken, tokenDecimals } from "libs/utils";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
-import { SolEnvEnum } from "libs/Solana/config";
-import { DasApiAsset } from "@metaplex-foundation/digital-asset-standard-api";
-import { fetchSolNfts } from "libs/Solana/utils";
+import { BONDING_PROGRAM_ID, SolEnvEnum } from "libs/Solana/config";
+import { fetchBondingConfig, fetchSolNfts } from "libs/Solana/utils";
 
 import { useNftsStore } from "./nfts";
+import { CoreSolBondStakeSc, IDL } from "libs/Solana/CoreSolBondStakeSc";
+import { Program } from "@coral-xyz/anchor";
+import { number } from "yup";
+import BigNumber from "bignumber.js";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { address } = useGetAccountInfo();
@@ -33,7 +35,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { tokenLogin } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();
   const [searchParams] = useSearchParams();
-  // console.log(address, hasPendingTransactions, tokenLogin, chainID, searchParams);
+
   // SOLANA
   const { publicKey } = useWallet();
   const { connection } = useConnection();
@@ -67,13 +69,24 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
 
   // NFT Store
-  const { mvxNfts, updateMvxNfts, updateIsLoadingMvx, solNfts, updateSolNfts, updateIsLoadingSol } = useNftsStore();
+  const { updateMvxNfts, updateIsLoadingMvx, updateSolNfts, updateIsLoadingSol } = useNftsStore();
   // flag to check locally if we got the MVX NFTs
   const [mvxNFTsFetched, setMvxNFTsFetched] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
-      if (bondingContract) {
+      if (publicKey) {
+        const programId = new PublicKey(BONDING_PROGRAM_ID);
+        const program = new Program<CoreSolBondStakeSc>(IDL, programId, {
+          connection,
+        });
+        fetchBondingConfig(program).then((periodsT: any) => {
+          const lockPeriod: number = periodsT.lockPeriod;
+          const amount: BigNumber.Value = periodsT.bondAmount;
+          const userData = [{ lockPeriod, amount }];
+          updateLockPeriodForBond(userData);
+        });
+      } else if (bondingContract) {
         ///TODOD && address ? should I fetch here the bonding amount from solana also ??
         const bondingAmount = await bondingContract.viewLockPeriodsWithBonds();
         updateLockPeriodForBond(bondingAmount);

@@ -48,7 +48,6 @@ import { LivelinessStaking } from "./components/LivelinessStaking";
 import DataNFTDetails from "./DataNFTDetails";
 import { useNftsStore } from "store/nfts";
 import { LivelinessStakingSol } from "components/Liveliness/LivelinessStakingSol";
-import { BondingCardsSol } from "components/Liveliness/BondingCardsSol";
 
 export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { colorMode } = useColorMode();

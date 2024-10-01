@@ -81,7 +81,6 @@ export async function fetchBondingConfig(programSol: any) {
     const bondConfigPda = await PublicKey.findProgramAddressSync([Buffer.from("bond_config"), Buffer.from([1])], programSol.programId)[0];
 
     const res = await programSol?.account.bondConfig.fetch(bondConfigPda);
-    // console.log("bondConfigggggg", data);
     return {
       bondConfigPda: bondConfigPda,
       lockPeriod: res.lockPeriod.toNumber(),
@@ -255,9 +254,7 @@ export async function createBondTransaction(
   connection: Connection
 ): Promise<Transaction | undefined> {
   try {
-    // console.log("mintMeta", typeof mintMeta);
     const mintMetaJSON = JSON.parse(mintMeta.toString());
-    // console.log("mintMetaJSON", mintMetaJSON);
     const {
       assetId,
       leafSchema: { dataHash, creatorHash, nonce },
@@ -276,21 +273,26 @@ export async function createBondTransaction(
     const _dataHash = Object.values(dataHash) as number[];
     const _creatorHash = Object.values(creatorHash as number[]);
 
+    const rewardsConfigPda = PublicKey.findProgramAddressSync([Buffer.from("rewards_config")], program.programId)[0];
     const addressBondsRewardsPda = PublicKey.findProgramAddressSync([Buffer.from("address_bonds_rewards"), userPublicKey.toBuffer()], program.programId)[0];
+    console.log("addressBondsRewardsPda", addressBondsRewardsPda.toBase58());
+
     const bondId = await program.account.addressBondsRewards.fetch(addressBondsRewardsPda).then((data: any) => {
       const _bondId = data.currentIndex + 1;
       return _bondId;
     });
+    console.log("bondId", bondId);
 
-    const { nftMeIdVault } = await retrieveBondsAndNftMeIdVault(userPublicKey, bondId - 1, program);
-    const isVault = nftMeIdVault ? false : true;
+    // const { nftMeIdVault } = await retrieveBondsAndNftMeIdVault(userPublicKey, bondId - 1, program);
+
+    ///TODO ASK if this is correct ... should i let the primary nft that is active bond be the vault or the last one
+    const isVault = true; ///nftMeIdVault ? false : true;
 
     const bondPda = PublicKey.findProgramAddressSync([Buffer.from("bond"), userPublicKey.toBuffer(), Buffer.from([bondId])], program.programId)[0];
     const assetUsagePda = PublicKey.findProgramAddressSync([new PublicKey(assetId).toBuffer()], program.programId)[0];
     const vaultConfigPda = PublicKey.findProgramAddressSync([Buffer.from("vault_config")], programId)[0];
     const vaultAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), vaultConfigPda, true);
     const userItheumAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), userPublicKey, true);
-    const rewardsConfigPda = PublicKey.findProgramAddressSync([Buffer.from("rewards_config")], program.programId)[0];
 
     const bondConfigPda = await PublicKey.findProgramAddressSync([Buffer.from("bond_config"), Buffer.from([1])], program.programId)[0];
     const bondConfigData = await program.account.bondConfig.fetch(bondConfigPda).then((data: any) => {
@@ -314,7 +316,6 @@ export async function createBondTransaction(
         authority: userPublicKey,
         merkleTree: bondConfigData.merkleTree,
         authorityTokenAccount: userItheumAta,
-        // systemProgram: web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         compressionProgram: SPL_ACCOUNT_COMPRESSION_PROGRAM_ID,

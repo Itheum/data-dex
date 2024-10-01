@@ -1,9 +1,9 @@
+import { error } from "console";
 import React, { useEffect, useState } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Alert,
   AlertDescription,
-  AlertIcon,
   AlertTitle,
   Box,
   Button,
@@ -46,13 +46,15 @@ import {
   useSteps,
   useToast,
 } from "@chakra-ui/react";
+import { Program } from "@coral-xyz/anchor";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { BondContract, dataNftTokenIdentifier, SftMinter, LivelinessStake, CNftSolMinter, CNftSolPostMintMetaType } from "@itheum/sdk-mx-data-nft/out";
+import { BondContract, dataNftTokenIdentifier, SftMinter, LivelinessStake, CNftSolMinter } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { Commitment, PublicKey, Transaction, TransactionConfirmationStrategy } from "@solana/web3.js";
 import axios from "axios";
 import BigNumber from "bignumber.js";
 import { Controller, useForm } from "react-hook-form";
@@ -66,15 +68,12 @@ import { IS_DEVNET, MENU, PRINT_UI_DEBUG_PANELS } from "libs/config";
 import { labels } from "libs/language";
 import { getApi } from "libs/MultiversX/api";
 import { UserDataType } from "libs/MultiversX/types";
+import { BONDING_PROGRAM_ID } from "libs/Solana/config";
+import { CoreSolBondStakeSc, IDL } from "libs/Solana/CoreSolBondStakeSc";
+import { createBondTransaction, fetchBondingConfig, fetchRewardsConfig } from "libs/Solana/utils";
 import { getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "libs/utils";
 import { useAccountStore, useMintStore } from "store";
 import { MintingModal } from "./MintingModal";
-import { createBondTransaction, fetchBondingConfig, fetchRewardsConfig, retrieveBondsAndNftMeIdVault } from "libs/Solana/utils";
-import { PublicKey } from "@solana/web3.js";
-import { BONDING_PROGRAM_ID, SolEnvEnum } from "libs/Solana/config";
-import { CoreSolBondStakeSc, IDL } from "libs/Solana/CoreSolBondStakeSc";
-import { Program } from "@coral-xyz/anchor";
-import { error } from "console";
 
 type TradeDataFormType = {
   dataStreamUrlForm: string;
@@ -105,19 +104,11 @@ type TradeFormProps = {
 export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const { checkUrlReturns200, maxSupply, minRoyalties, maxRoyalties, antiSpamTax, dataNFTMarshalServiceStatus, userData, dataToPrefill, closeTradeFormModal } =
     props;
-  // console.log("maxSupply:", maxSupply);
-  // console.log("minRoyalties:", minRoyalties);
-  // console.log("maxRoyalties:", maxRoyalties);
-  // console.log("antiSpamTax:", antiSpamTax);
-  // console.log("dataNFTMarshalServiceStatus:", dataNFTMarshalServiceStatus);
-  // console.log("userData:", userData);
-  // console.log("dataToPrefill:", dataToPrefill);
   const showInlineErrorsBeforeAction = false;
   const enableBondingInputForm = false;
 
   const { publicKey, sendTransaction } = useWallet();
   const { connection } = useConnection();
-  const [programSol, setProgramSol] = useState<any>(undefined);
 
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
   const { colorMode } = useColorMode();
@@ -125,7 +116,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const { address: mxAddress } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
   const lockPeriod = useMintStore((state) => state.lockPeriodForBond);
-  // console.log("lockPeriod", lockPeriod); ///todo these are from a MX contract , what to do in the case of Solana?
   const dataNFTMarshalService: string = getApiDataMarshal(chainID);
   const bond = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   const [isNFMeIDMint, setIsNFMeIDMint] = useState<boolean>(false);
@@ -143,10 +133,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const [mintSessionId, setMintSessionId] = useState<any>(null);
   const [makePrimaryNFMeIdSessionId, setMakePrimaryNFMeIdSessionId] = useState<any>(null);
-  const [periods, setPeriods] = useState<any>([
-    { amount: "10000000000000000000", lockPeriod: 900 },
-    { amount: "10000000000000000000", lockPeriod: 2 },
-  ]);
+  const [periods, setPeriods] = useState<any>({ amount: "10000000000000000000", lockPeriod: 9000 });
   const [previousDataNFTStreamUrl, setPreviousDataNFTStreamUrl] = useState<string>("");
   const [wasPreviousCheck200StreamSuccess, setWasPreviousCheck200StreamSuccess] = useState<boolean>(false);
   const { isOpen: isMintFeeInfoVisible, onClose, onOpen } = useDisclosure({ defaultIsOpen: false });
@@ -281,9 +268,9 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   };
 
   preSchema = { ...preSchema, ...bondingPreSchema };
+  const amountOfTime = timeUntil(lockPeriod[0].lockPeriod);
 
   const validationSchema = Yup.object().shape(preSchema);
-  const amountOfTime = timeUntil(lockPeriod[0].lockPeriod);
   // Destructure the methods needed from React Hook Form useForm component
   const {
     control,
@@ -304,15 +291,19 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       royaltiesForm: 0,
       bondingAmount:
         lockPeriod.length > 0
-          ? BigNumber(lockPeriod[0]?.amount)
-              .dividedBy(10 ** 18)
-              .toNumber()
+          ? publicKey
+            ? BigNumber(lockPeriod[0]?.amount).toNumber()
+            : BigNumber(lockPeriod[0]?.amount)
+                .dividedBy(10 ** 18)
+                .toNumber()
           : -1,
+
       bondingPeriod: lockPeriod.length > 0 ? amountOfTime.count : -1,
     }, // declaring default values for inputs not necessary to declare
     mode: "onChange", // mode stay for when the validation should be applied
     resolver: yupResolver(validationSchema), // telling to React Hook Form that we want to use yupResolver as the validation schema
   });
+
   // console.log("validationSchema:", "errors:", errors, "isValid:", isValid);
   const dataNFTStreamUrl: string = isNFMeIDMint ? generatePrefilledNFMeIDDataStreamURL() : getValues("dataStreamUrlForm");
   const dataNFTPreviewUrl: string = getValues("dataPreviewUrlForm");
@@ -366,6 +357,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     async function fetchBondingRelatedData() {
       if (mxAddress) {
         bond.viewLockPeriodsWithBonds().then((periodsT) => {
+          console.log("periodsT MVX ", periodsT);
           setPeriods(periodsT);
         });
 
@@ -382,20 +374,17 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   useEffect(() => {
     async function fetchBondingRelatedDataFromSolana() {
       if (publicKey) {
-        console.log("fetchBondingRelatedDataFromSolana");
         const programId = new PublicKey(BONDING_PROGRAM_ID);
         const program = new Program<CoreSolBondStakeSc>(IDL, programId, {
           connection,
         });
-        setProgramSol(program);
         fetchBondingConfig(program).then((periodsT: any) => {
-          console.log("fetchBondingConfig", periodsT);
+          ///TODO this can be changed with lockedPediod
           const lockPeriod = periodsT.lockPeriod;
           const amount = periodsT.bondAmount;
           setPeriods({ lockPeriod, amount });
         });
         fetchRewardsConfig(program).then((rewardsT: any) => {
-          console.log("fetchRewardsConfig", rewardsT);
           setMaxApy(rewardsT.maxApr);
         });
       }
@@ -629,6 +618,71 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     setMintingSuccessful(true);
   };
 
+  async function sendAndConfirmTransaction({
+    transaction,
+    customErrorMessage = "Transaction failed",
+    explorerLinkMessage = "View transaction on Solana Explorer",
+  }: {
+    transaction: Transaction;
+    customErrorMessage?: string;
+    explorerLinkMessage?: string;
+  }) {
+    try {
+      if (publicKey === null) {
+        throw new Error("Wallet not connected");
+      }
+      const latestBlockhash = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = latestBlockhash.blockhash;
+      transaction.feePayer = publicKey;
+
+      const txSignature = await sendTransaction(transaction, connection, {
+        skipPreflight: true,
+        preflightCommitment: "finalized",
+      });
+
+      const strategy: TransactionConfirmationStrategy = {
+        signature: txSignature,
+        blockhash: latestBlockhash.blockhash,
+        lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
+      };
+
+      const result = await connection.confirmTransaction(strategy, "finalized" as Commitment);
+      const toastStatus = result.value.err ? "info" : "success";
+
+      const cluster = import.meta.env.VITE_ENV_NETWORK === "mainnet" ? "mainnet-beta" : import.meta.env.VITE_ENV_NETWORK;
+
+      // Show success toast with link to Explorer SOLANA
+      toast({
+        title: explorerLinkMessage,
+        description: (
+          <a href={`https://explorer.solana.com/tx/${txSignature}?cluster=${cluster}`} target="_blank" rel="noreferrer" style={{ textDecoration: "underline" }}>
+            {txSignature.slice(0, 11)}...{txSignature.slice(-11)} <ExternalLinkIcon margin={3} />
+          </a>
+        ),
+        status: toastStatus,
+        duration: 15000,
+        isClosable: true,
+      });
+
+      if (result.value.err) {
+        throw new Error(customErrorMessage);
+      }
+      console.log("Transaction confirmed:", result, txSignature);
+      return txSignature;
+    } catch (error) {
+      // Show error toast
+      toast({
+        title: "Transaction Failed",
+        description: customErrorMessage, //|| (error as Error).message,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+
+      throw error;
+    }
+  }
+
   const mintDataNftSol = async () => {
     try {
       const cNftSolMinter = new CNftSolMinter(IS_DEVNET ? "devnet" : "mainnet");
@@ -679,18 +733,35 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         // setNftIdMEPrimaryVault();
         setMintingSuccessful(true);
         setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s4: 1 }));
+        const programId = new PublicKey(BONDING_PROGRAM_ID);
 
+        const addressBondsRewardsPda = PublicKey.findProgramAddressSync([Buffer.from("address_bonds_rewards"), publicKey?.toBuffer()], programId)[0];
+
+        const accountInfo = await connection.getAccountInfo(addressBondsRewardsPda);
+        const isExist = accountInfo !== null;
+        if (!isExist) {
+          const program = new Program<CoreSolBondStakeSc>(IDL, programId, {
+            connection,
+          });
+          const rewardsConfigPda = PublicKey.findProgramAddressSync([Buffer.from("rewards_config")], programId)[0];
+
+          const transactionInitializeAddress = await program.methods
+            .initializeAddress()
+            .accounts({
+              addressBondsRewards: addressBondsRewardsPda,
+              rewardsConfig: rewardsConfigPda,
+              authority: publicKey,
+            })
+            .transaction();
+
+          await sendAndConfirmTransaction({ transaction: transactionInitializeAddress, customErrorMessage: "Bonding Program Initialize Failed" });
+        }
         const bondTransaction = await createBondTransaction(mintMeta, publicKey, connection);
 
         if (bondTransaction) {
           try {
-            const txId = await sendTransaction(bondTransaction, connection, {
-              skipPreflight: true,
-              preflightCommitment: "confirmed",
-            });
+            await sendAndConfirmTransaction({ transaction: bondTransaction, customErrorMessage: "Failed to send the bonding transaction" });
 
-            console.log("bondTransaction txId", txId);
-            setMintTx(txId);
             setMakePrimaryNFMeIdSuccessful(true);
           } catch (error) {
             setErrDataNFTStreamGeneric(new Error(labels.ERR_SUCCESS_MINT_BUT_BONDING_TRANSACTION_FAILED));
