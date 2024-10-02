@@ -75,18 +75,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     (async () => {
-      if (publicKey) {
-        const programId = new PublicKey(BONDING_PROGRAM_ID);
-        const program = new Program<CoreSolBondStakeSc>(IDL, programId, {
-          connection,
-        });
-        fetchBondingConfig(program).then((periodsT: any) => {
-          const lockPeriod: number = periodsT.lockPeriod;
-          const amount: BigNumber.Value = periodsT.bondAmount;
-          const userData = [{ lockPeriod, amount }];
-          updateLockPeriodForBond(userData);
-        });
-      } else if (bondingContract) {
+      if (!publicKey && bondingContract) {
         ///TODOD && address ? should I fetch here the bonding amount from solana also ??
         const bondingAmount = await bondingContract.viewLockPeriodsWithBonds();
         updateLockPeriodForBond(bondingAmount);
@@ -110,15 +99,31 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
     fetchMvxNfts();
   }, [address, tokenLogin]);
 
-  ///TODO save nfts in a store maybe ?
-
   useEffect(() => {
-    if (!publicKey) return;
+    if (!publicKey) {
+      console.error("Wallet not connected.");
+      return;
+    }
 
     updateIsLoadingSol(true);
 
+    (async () => {
+      const itheumTokens = (await getItheumBalanceOnSolana()) || -1;
+      updateItheumBalance(itheumTokens);
+    })();
+
     fetchSolNfts(publicKey?.toBase58()).then((nfts) => {
       updateSolNfts(nfts);
+    });
+
+    const programId = new PublicKey(BONDING_PROGRAM_ID);
+    const program = new Program<CoreSolBondStakeSc>(IDL, programId, {
+      connection,
+    });
+    fetchBondingConfig(program).then((periodsT: any) => {
+      const lockPeriod: number = periodsT.lockPeriod;
+      const amount: BigNumber.Value = periodsT.bondAmount;
+      updateLockPeriodForBond([{ lockPeriod, amount }]);
     });
 
     updateIsLoadingSol(false);
@@ -252,20 +257,6 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
       updateUserData(_userData);
     })();
   }, [address, hasPendingTransactions]);
-
-  // get the itheum balance on solana blockchain
-  useEffect(() => {
-    if (!publicKey) {
-      console.error("Wallet not connected.");
-      return;
-    }
-    if (hasPendingTransactions) return;
-
-    (async () => {
-      const itheumTokens = (await getItheumBalanceOnSolana()) || -1;
-      updateItheumBalance(itheumTokens);
-    })();
-  }, [publicKey, hasPendingTransactions]);
 
   const getItheumBalanceOnSolana = async () => {
     try {

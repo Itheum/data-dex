@@ -58,7 +58,9 @@ export const LivelinessStakingSol: React.FC = () => {
   const { publicKey: userPublicKey, sendTransaction } = useWallet();
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
   const [topUpItheumValue, setTopUpItheumValue] = useState<number>(0);
-  const [estAnnualRewards, setEstAnnualRewards] = useState<BN>(new BN(0));
+  const [estAnnualRewards, setEstAnnualRewards] = useState<number>(0);
+  const [estCombinedAnnualRewards, setEstCombinedAnnualRewards] = useState<number>(0);
+
   const navigate = useNavigate();
 
   const [combinedLiveliness, setCombinedLiveliness] = useState<number>(0);
@@ -96,9 +98,6 @@ export const LivelinessStakingSol: React.FC = () => {
 
   useEffect(() => {
     if (bondConfigData && rewardsConfigData && addressBondsRewardsData && globalTotalBond) {
-      ///TODO check when nftIDmeBond is loaded
-      ///setAllInfoLoading(false);
-
       const newCombinedLiveliness =
         Math.floor(
           computeCurrentLivelinessScore(
@@ -108,23 +107,23 @@ export const LivelinessStakingSol: React.FC = () => {
           )
         ) / 100;
       setCombinedLiveliness(newCombinedLiveliness > 0 ? newCombinedLiveliness : 0);
-      computeAndSetClaimableAmount(newCombinedLiveliness);
+      computeAndSetClaimableAmount();
     }
   }, [bondConfigData, rewardsConfigData, addressBondsRewardsData]);
 
-  async function computeAndSetClaimableAmount(_combinedLiveliness: number) {
+  ///todo set a useEffect to update the claimable amount  newCombinedLiveliness at the start
+  async function computeAndSetClaimableAmount() {
     const currentSLot = await connection.getSlot();
     const _claimableAmount = computeAddressClaimableAmount(
       new BN(currentSLot),
       rewardsConfigData,
       addressBondsRewardsData.addressRewardsPerShare,
       addressBondsRewardsData.addressTotalBondAmount,
-      _combinedLiveliness,
       globalTotalBond
     );
     // console.log("claimableAmount OF THE USERRRRRR", _claimableAmount);
-    setClaimableAmount(_claimableAmount);
-    setClaimableAmount(1); ///TODO remove this
+    setClaimableAmount(_claimableAmount / 10 ** 9);
+    // setClaimableAmount(1); ///TODO remove this
   }
 
   useEffect(() => {
@@ -189,6 +188,7 @@ export const LivelinessStakingSol: React.FC = () => {
 
   useEffect(() => {
     if (nftMeIdBond && solNfts && userPublicKey) {
+      calculateRewardAprAndEstAnnualRewards(0, nftMeIdBond.bondAmount);
       const nftMeId = solNfts.find((nft) => nft.id == nftMeIdBond.assetId.toString());
       setNftMeId(nftMeId);
       setAllInfoLoading(false); ///TODO what if nftMeId is not found
@@ -201,6 +201,7 @@ export const LivelinessStakingSol: React.FC = () => {
       programSol?.account.rewardsConfig.fetch(rewardsConfigPda).then((data: any) => {
         setRewardsConfigData(data);
         // console.log("rewardsConfigData", data);
+        // console.log("rewardsConfigData", data.accumulatedRewards.toNumber());
         setAccumulatedRewards(data.accumulatedRewards.div(BN10_9).toNumber());
         setGlobalRewardsPerBlock(data.rewardsPerSlot.toNumber());
 
@@ -234,20 +235,31 @@ export const LivelinessStakingSol: React.FC = () => {
     calculateRewardAprAndEstAnnualRewards();
   }, [globalTotalBond, combinedBondsStaked, maxApr]);
 
-  function calculateRewardAprAndEstAnnualRewards(value?: number) {
+  function calculateRewardAprAndEstAnnualRewards(value?: number, amount?: BN) {
     if (combinedBondsStaked.toNumber() === 0) {
       setRewardApr(0);
       return;
     }
 
     if (globalTotalBond.toNumber() > 0) {
-      const _newCombinedBondsStaked = combinedBondsStaked.add(new BN(value ? value : 0));
-      const percentage: BN = _newCombinedBondsStaked.div(globalTotalBond);
-      const localRewardsPerBlock: BN = percentage.mul(new BN(globalRewardsPerBlock));
+      ///todo bond Amount + value
+      console.log(value, amount);
+      if (value) value = value * 10 ** 9;
+      else value = 0;
+      const amountToCompute = amount ? amount.add(new BN(value)) : combinedBondsStaked.add(new BN(value));
+
+      console.log("amount to compute ", amountToCompute.toNumber() / 10 ** 9);
+      const percentage: BN = amountToCompute.toNumber() / globalTotalBond.toNumber();
+      console.log("percentage", percentage);
+      // console.log("globalRewardsPerBlock", globalRewardsPerBlock);
+      const localRewardsPerBlock: number = globalRewardsPerBlock * percentage; ///1000 / 10 ** 9
       // Solana: Approx. 0.4 seconds per block or slot
-      const blockPerYear = new BN(SLOTS_IN_YEAR);
-      const rewardPerYear: BN = localRewardsPerBlock.mul(blockPerYear);
-      const calculatedRewardApr = rewardPerYear.div(_newCombinedBondsStaked).mul(new BN(10000)).div(BN10_2).toNumber();
+      console.log("REWARDS PER BLOCK", localRewardsPerBlock);
+      const rewardPerYear: number = localRewardsPerBlock * SLOTS_IN_YEAR;
+      console.log("REWARDS YEAR", rewardPerYear);
+      const calculatedRewardApr = Math.floor((rewardPerYear / amountToCompute.toNumber()) * 10000) / 100; ///* 10000) / 100;
+
+      //rewardPerYear.div(amountToCompute).mul(new BN(10000)).div(BN10_2).toNumber();
       if (!value) {
         if (maxApr === 0) {
           setRewardApr(calculatedRewardApr);
@@ -257,13 +269,47 @@ export const LivelinessStakingSol: React.FC = () => {
       }
       console.log("calculatedRewardApr", calculatedRewardApr);
       if (maxApr === 0 || calculatedRewardApr < maxApr) {
-        setEstAnnualRewards(rewardPerYear);
+        !amount ? setEstCombinedAnnualRewards(rewardPerYear) : setEstAnnualRewards(rewardPerYear);
       } else {
-        setEstAnnualRewards(_newCombinedBondsStaked.mul(new BN(maxApr)).div(BN10_2));
+        !amount ? setEstCombinedAnnualRewards((amountToCompute.toNumber() * maxApr) / 100) : setEstAnnualRewards((amountToCompute.toNumber() * maxApr) / 100);
       }
     }
-  }
+  } ///TODO afis estAnnualRewards per total cumulative staked bonded
 
+  // function calculateRewardAprAndEstAnnualRewards(amount?: number, value?: number) {
+  //   if (combinedBondsStaked.toNumber() === 0) {
+  //     setRewardApr(0);
+  //     return;
+  //   }
+
+  //   if (globalTotalBond.toNumber() > 0) {
+  //     ///todo bond Amount + value
+  //     const amountToCompute = amount ? new BN(amount + (value ? value : 0)) : combinedBondsStaked.add(new BN(value ? value : 0));
+  //     const percentage: BN = amountToCompute.mul(new BN(10 ** 4)).div(globalTotalBond);
+  //     console.log("percentage", percentage, percentage.toNumber());
+  //     // console.log("globalRewardsPerBlock", globalRewardsPerBlock);
+  //     const localRewardsPerBlock: BN = percentage.mul(new BN(globalRewardsPerBlock)); ///1000 / 10 ** 9
+  //     // Solana: Approx. 0.4 seconds per block or slot
+  //     const blockPerYear = new BN(SLOTS_IN_YEAR);
+  //     console.log("REWARDS PER BLOCK", localRewardsPerBlock);
+  //     const rewardPerYear: BN = localRewardsPerBlock.mul(blockPerYear).div(new BN(10 ** 4));
+  //     console.log("REWARDS YEAR", rewardPerYear);
+  //     const calculatedRewardApr = rewardPerYear.div(amountToCompute).mul(new BN(10000)).div(BN10_2).toNumber();
+  //     if (!value) {
+  //       if (maxApr === 0) {
+  //         setRewardApr(calculatedRewardApr);
+  //       } else {
+  //         setRewardApr(Math.min(calculatedRewardApr, maxApr));
+  //       }
+  //     }
+  //     console.log("calculatedRewardApr", calculatedRewardApr);
+  //     if (maxApr === 0 || calculatedRewardApr < maxApr) {
+  //       setEstAnnualRewards(rewardPerYear);
+  //     } else {
+  //       setEstAnnualRewards(amountToCompute.mul(new BN(maxApr)));
+  //     }
+  //   }
+  // }
   async function sendAndConfirmTransaction({
     transaction,
     customErrorMessage = "Transaction failed",
@@ -586,16 +632,16 @@ export const LivelinessStakingSol: React.FC = () => {
               <>
                 <Text fontSize="3xl">Combined Liveliness: {combinedLiveliness}%</Text>
                 <Progress hasStripe isAnimated value={combinedLiveliness} rounded="xs" colorScheme="teal" width={"100%"} />
-                <Text fontSize="xl">Combined Bonds Staked: {formatNumberToShort(combinedBondsStaked.div(BN10_9).toNumber())} $ITHEUM</Text>
+                <Text fontSize="xl">Combined Bonds Staked: {formatNumberToShort(combinedBondsStaked.toNumber() / 10 ** 9)} $ITHEUM</Text>
                 {/* ///todo - check this BigNUmbers.toNUmber() is not correct !!! */}
                 <Text fontSize="xl">Global Total Bonded: {formatNumberToShort(globalTotalBond.div(BN10_9).toNumber())} $ITHEUM</Text>
                 <Text fontSize="xl">Current Staking APR: {isNaN(rewardApr) ? 0 : rewardApr}%</Text>
                 {maxApr > 0 && <Text fontSize="xl">Max APR: {maxApr}%</Text>}
                 <Text fontSize="xl">
-                  Current Accumulated Rewards: {claimableAmount} $ITHEUM
-                  {formatNumberToShort(combinedLiveliness >= 95 ? accumulatedRewards : (combinedLiveliness * accumulatedRewards) / 100)} $ITHEUM
+                  Current Accumulated Rewards: {formatNumberToShort(combinedLiveliness >= 95 ? claimableAmount : (combinedLiveliness * claimableAmount) / 100)}{" "}
+                  $ITHEUM
                 </Text>
-                <Text fontSize="xl">Potential Rewards If Combined Liveliness &gt;95%: {formatNumberToShort(accumulatedRewards)} $ITHEUM</Text>
+                <Text fontSize="xl">Potential Rewards If Combined Liveliness &gt;95%: {formatNumberToShort(claimableAmount)} $ITHEUM</Text>
 
                 <HStack mt={5} justifyContent="center" alignItems="flex-start" width="100%">
                   <Flex flexDirection={{ base: "column", md: "row" }}>
@@ -603,7 +649,7 @@ export const LivelinessStakingSol: React.FC = () => {
                       <Tooltip
                         hasArrow
                         shouldWrapChildren
-                        isDisabled={!(!userPublicKey || accumulatedRewards < 1 || combinedLiveliness === 0)}
+                        isDisabled={!(!userPublicKey || claimableAmount < 1 || combinedLiveliness === 0)}
                         label={"Rewards claiming is disabled if liveliness is 0, rewards amount is lower than 1 or there are transactions pending"}>
                         <Button
                           fontSize="lg"
@@ -648,6 +694,9 @@ export const LivelinessStakingSol: React.FC = () => {
                       </Tooltip>
                       <Text fontSize="sm" color="grey" ml={{ md: "55px" }}>
                         Reinvesting rewards will also renew bond
+                      </Text>
+                      <Text m={{ base: "auto", md: "initial" }} mt={{ base: "10", md: "auto" }} fontSize="lg">
+                        Est. Annual Rewards: {formatNumberToShort(estCombinedAnnualRewards / 10 ** 9)} $ITHEUM
                       </Text>
                     </VStack>
                   </Flex>
@@ -710,7 +759,7 @@ export const LivelinessStakingSol: React.FC = () => {
                                   value={topUpItheumValue}
                                   onChange={(value) => {
                                     setTopUpItheumValue(Number(value));
-                                    calculateRewardAprAndEstAnnualRewards(Number(value));
+                                    calculateRewardAprAndEstAnnualRewards(Number(value), nftMeIdBond?.bondAmount);
                                   }}
                                   keepWithinRange={true}>
                                   <NumberInputField />
@@ -727,7 +776,7 @@ export const LivelinessStakingSol: React.FC = () => {
                                   isDisabled={!userPublicKey}
                                   onClick={() => {
                                     setTopUpItheumValue(Math.floor(itheumBalance));
-                                    calculateRewardAprAndEstAnnualRewards(itheumBalance);
+                                    calculateRewardAprAndEstAnnualRewards(itheumBalance, nftMeIdBond?.bondAmount);
                                   }}>
                                   MAX
                                 </Button>
@@ -750,7 +799,7 @@ export const LivelinessStakingSol: React.FC = () => {
                             </Box>
                           </Flex>
                           <Text m={{ base: "auto", md: "initial" }} mt={{ base: "10", md: "auto" }} fontSize="lg">
-                            Est. Annual Rewards: {formatNumberToShort(estAnnualRewards.div(BN10_9).toNumber())} $ITHEUM
+                            Est. Bond Annual Rewards: {formatNumberToShort(estAnnualRewards / 10 ** 9)} $ITHEUM
                           </Text>
                         </VStack>
                       </HStack>
@@ -815,7 +864,7 @@ export const LivelinessStakingSol: React.FC = () => {
             const dataNft = solNfts?.find((dataNft) => currentBond.assetId.toString() === dataNft.id);
             if (!dataNft) return null;
             const metadata = dataNft.content.metadata;
-
+            // console.log("currentBond data nft", index, currentBond, dataNft);
             return (
               <Card
                 _disabled={{ cursor: "not-allowed", opacity: "0.7" }}
@@ -831,7 +880,7 @@ export const LivelinessStakingSol: React.FC = () => {
                   <Box minW="250px" textAlign="center">
                     <Box minH="263px">
                       <NftMediaComponent
-                        imageUrls={[dataNft.content.links ? (dataNft.content.links["image"] as string) : "///todoAddDefaultImage"]}
+                        imageUrls={[dataNft.content.links && dataNft.content.links["image"] ? (dataNft.content.links["image"] as string) : DEFAULT_NFT_IMAGE]}
                         // nftMedia={[dataNft.content.links ? (dataNft.content.links["image"] as string) : "///todo"]}
                         imageHeight="220px"
                         imageWidth="220px"
@@ -881,9 +930,9 @@ export const LivelinessStakingSol: React.FC = () => {
                       pointerEvents="none"
                       borderRadius="inherit"
                       display="flex"
-                      alignItems="top"
+                      alignItems="center"
                       justifyContent="center">
-                      <Text fontSize="2xl" mt={2} fontWeight="bold" color="red.500">
+                      <Text fontSize="3xl" mt={2} fontWeight="bold" color="red.500">
                         Inactive
                       </Text>
                     </Box>

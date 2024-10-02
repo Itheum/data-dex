@@ -633,11 +633,10 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       }
       const latestBlockhash = await connection.getLatestBlockhash();
       transaction.recentBlockhash = latestBlockhash.blockhash;
-      transaction.feePayer = publicKey;
 
       const txSignature = await sendTransaction(transaction, connection, {
         skipPreflight: true,
-        preflightCommitment: "finalized",
+        // preflightCommitment: "finalized",
       });
 
       const strategy: TransactionConfirmationStrategy = {
