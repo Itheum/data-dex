@@ -18,10 +18,10 @@ enum RewardsState {
   Active = 1,
 }
 
-export const MAX_PERCENT = 100;
+export const MAX_PERCENT = 10000;
 export const SLOTS_IN_YEAR = 78840000; // solana slots in a year
 export const ITHEUM_TOKEN_ADDRESS = contractsForChain(IS_DEVNET ? SolEnvEnum.devnet : SolEnvEnum.mainnet).itheumToken;
-export const DIVISION_SAFETY_CONST = 1000000000;
+export const DIVISION_SAFETY_CONST = 10 ** 9;
 
 export async function fetchSolNfts(solAddress: string | undefined) {
   if (!solAddress) {
@@ -65,7 +65,7 @@ function calculateRewardsSinceLastAllocation(currentSlot: BN, rewardsConfig: any
   }
 
   const slotDiff = currentSlot.sub(rewardsConfig.lastRewardSlot);
-  console.log("slotDiff", rewardsConfig.rewardsPerSlot.toNumber() / 10 ** 9, slotDiff);
+  // console.log("slotDiff", rewardsConfig.rewardsPerSlot.toNumber() / 10 ** 9, slotDiff);
   return rewardsConfig.rewardsPerSlot.mul(slotDiff);
 }
 
@@ -115,8 +115,6 @@ export async function fetchRewardsConfig(programSol: any) {
   }
 }
 
-// compute the rewards functions
-
 export function computeCurrentLivelinessScore(lastUpdateTimestamp: number, lockPeriod: number, weightedLivelinessScore: number): number {
   const currentTimestamp = Math.round(Date.now() / 1000);
   const decay = (currentTimestamp - lastUpdateTimestamp) / lockPeriod;
@@ -130,9 +128,7 @@ export function computeAddressClaimableAmount(
   addressTotalBondAmount: BN,
   globalTotalBond: BN
 ) {
-  console.log("OLD RewardsConfig", rewardsConfig);
   const newRewardsConfig = generateAggregatedRewards(currentSlot, rewardsConfig, globalTotalBond);
-  console.log("newRewardsConfig", newRewardsConfig);
 
   const addressClaimableRewards = calculateAddressShareInRewards(
     newRewardsConfig.accumulatedRewards,
@@ -141,7 +137,6 @@ export function computeAddressClaimableAmount(
     addressRewardsPerShare,
     globalTotalBond
   );
-  // console.log("addressClaimableRewards !!! ", addressClaimableRewards.div(new BN(10 ** 9)).toNumber());
 
   return addressClaimableRewards.toNumber();
 }
@@ -151,25 +146,18 @@ function generateAggregatedRewards(currentSlot: BN, rewardsConfig: any, totalBon
   let _newRewardsConfig = {};
   const extraRewardsUnbounded = calculateRewardsSinceLastAllocation(currentSlot, rewardsConfig);
   const maxApr = rewardsConfig.maxApr;
-
   let extraRewards: BN;
 
   if (maxApr.gt(new BN(0))) {
-    console.log("MAX APR IS BIGGER ");
     const extraRewardsAprBondedPerSlot = getAmountAprBounded(rewardsConfig.maxApr, totalBondAmount);
-    console.log("extraRewardsAprBondedPerSlot", extraRewardsAprBondedPerSlot, extraRewardsAprBondedPerSlot.toNumber() / 10 ** 9);
     const slotDiff = currentSlot.sub(lastRewardSlot);
     const extraRewardsAprBonded = extraRewardsAprBondedPerSlot.mul(slotDiff);
-    console.log("extraRewardsAprBonded", extraRewardsUnbounded.toNumber() / 10 ** 9, extraRewardsAprBonded.toNumber() / 10 ** 9);
-
     extraRewards = BN.min(extraRewardsUnbounded, extraRewardsAprBonded);
   } else {
     extraRewards = extraRewardsUnbounded;
   }
-  console.log("extraRewards", extraRewards.toNumber() / 10 ** 9);
   if (extraRewards.gt(new BN(0)) && extraRewards.lte(rewardsConfig.rewardsReserve)) {
     const increment = extraRewards.mul(new BN(DIVISION_SAFETY_CONST)).div(totalBondAmount);
-    console.log("increment", increment);
     _newRewardsConfig = {
       ...rewardsConfig,
       rewardsPerShare: rewardsConfig.rewardsPerShare.add(increment),
@@ -194,21 +182,11 @@ function calculateAddressShareInRewards(
   if (totalBondAmount.isZero() || accumulatedRewards.isZero()) {
     return new BN(0);
   }
-
   // Calculate the difference between rewards per share and the user's rewards per share
   const diff: BN = rewardsPerShare.sub(addressRewardsPerShare);
-  // console.log("diff", diff.toNumber());
-
   // Calculate the address's rewards
   const addressRewards = addressBondAmount.mul(diff).div(new BN(DIVISION_SAFETY_CONST));
-  // console.log("addressRewards", addressRewards.toNumber());
-  // Apply liveliness score if necessary
-  // if (livelinessScore > 95) { ///TODO MAKE THIS IN FR
-  //   //|| bypassLivelinessScore) {
-  //   return addressRewards;
-  // } else {
-  //   return addressRewards.mul(new BN(livelinessScore * 100)).div(new BN(MAX_PERCENT));
-  // }  ///todo maybe remove this *100
+
   return addressRewards;
 }
 
@@ -227,7 +205,6 @@ export async function createBondTransaction(
     } = mintMetaJSON;
 
     const proofPathAsAccounts = mapProof(proof);
-    console.log("proofPathAsAccounts", proofPathAsAccounts);
     const programId = new PublicKey(BONDING_PROGRAM_ID);
     const program = new Program<CoreSolBondStakeSc>(IDL, programId, {
       connection,
@@ -296,7 +273,7 @@ export async function retrieveBondsAndNftMeIdVault(
   lastIndex: number,
   program?: Program<CoreSolBondStakeSc>,
   connection?: Connection
-): Promise<{ bonds: Bond[]; nftMeIdVault: Bond | undefined }> {
+): Promise<{ bonds: Bond[]; nftMeIdVault: Bond | undefined; weightedLivelinessScore: number }> {
   try {
     if (program === undefined) {
       const programId = new PublicKey(BONDING_PROGRAM_ID);
@@ -310,6 +287,10 @@ export async function retrieveBondsAndNftMeIdVault(
     }
     const bonds: Bond[] = [];
     let nftMeIdVault: Bond | undefined;
+    let totalBondAmount = new BN(0);
+    let totalBondWeight = new BN(0);
+    const currentTimestampt = Math.floor(Date.now() / 1000);
+
     for (let i = 1; i <= lastIndex; i++) {
       const bondPda = PublicKey.findProgramAddressSync([Buffer.from("bond"), userPublicKey.toBuffer(), Buffer.from([i])], program.programId)[0];
       const bond = await program.account.bond.fetch(bondPda);
@@ -317,13 +298,36 @@ export async function retrieveBondsAndNftMeIdVault(
       if (bond.isVault) {
         nftMeIdVault = bondUpgraded;
       }
+      if (bond.state === 1) {
+        const scorePerBond = Math.floor(computeBondScore(43200, currentTimestampt, bond.unbondTimestamp.toNumber())) / 100;
+        const bondWeight = bond.bondAmount.mul(new BN(scorePerBond));
+        totalBondWeight = totalBondWeight.add(bondWeight);
+        totalBondAmount = totalBondAmount.add(bond.bondAmount);
+      }
       bonds.push(bondUpgraded);
     }
+    const weightedLivelinessScore = totalBondWeight.mul(new BN(100)).div(totalBondAmount);
 
-    return { bonds: bonds, nftMeIdVault: nftMeIdVault };
+    return { bonds: bonds, nftMeIdVault: nftMeIdVault, weightedLivelinessScore: weightedLivelinessScore.toNumber() / 100 };
   } catch (error) {
     console.error("retrieveBondsError", error);
 
     throw new Error("Retrieve Bonds Error: Not able to fetch the bonds from the blockchain");
+  }
+}
+
+/// TESTING PURPOSES --- SHOULD BE DELETED ON PROD
+function computeBondScore(lockPeriod: number, currentTimestamp: number, unbondTimestamp: number): number {
+  if (currentTimestamp >= unbondTimestamp) {
+    return 0;
+  } else {
+    const difference = unbondTimestamp - currentTimestamp;
+
+    if (lockPeriod === 0) {
+      return 0;
+    } else {
+      const divResult = 10000 / lockPeriod;
+      return divResult * difference;
+    }
   }
 }

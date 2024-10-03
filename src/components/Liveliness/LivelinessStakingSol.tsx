@@ -95,6 +95,7 @@ export const LivelinessStakingSol: React.FC = () => {
   const [claimableAmount, setClaimableAmount] = useState<number>(0);
   const [withdrawBondConfirmationWorkflow, setWithdrawBondConfirmationWorkflow] = useState<number>();
   const toast = useToast();
+  const [currentLiveLinessScoreLIVE, setCurrentLiveLinessScoreLIVE] = useState<number>(0);
 
   useEffect(() => {
     if (bondConfigData && rewardsConfigData && addressBondsRewardsData && globalTotalBond) {
@@ -167,7 +168,6 @@ export const LivelinessStakingSol: React.FC = () => {
             setCombinedBondsStaked(data.addressTotalBondAmount);
             setCombinedLiveliness(data.weightedLivelinessScore.toNumber() / 100);
             setAddressClaimableAmount(data.claimableAmount.toNumber() / 10 ** 9);
-            console.log("addressBondsRewardsData CLAIMABLE", data.claimableAmount.toNumber());
             setNumberOfBonds(data.currentIndex);
           });
         }
@@ -179,9 +179,10 @@ export const LivelinessStakingSol: React.FC = () => {
   useEffect(() => {
     async function fetchBonds() {
       if (numberOfBonds && userPublicKey && programSol) {
-        retrieveBondsAndNftMeIdVault(userPublicKey, numberOfBonds, programSol).then(({ bonds, nftMeIdVault }) => {
+        retrieveBondsAndNftMeIdVault(userPublicKey, numberOfBonds, programSol).then(({ bonds, nftMeIdVault, weightedLivelinessScore }) => {
           setBonds(bonds);
           setNftMeIdBond(nftMeIdVault);
+          setCurrentLiveLinessScoreLIVE(weightedLivelinessScore);
         });
       }
     }
@@ -245,7 +246,7 @@ export const LivelinessStakingSol: React.FC = () => {
 
     if (globalTotalBond.toNumber() > 0) {
       ///todo bond Amount + value
-      console.log(value, amount);
+      // console.log(value, amount);
       if (value) value = value * 10 ** 9;
       else value = 0;
       const amountToCompute = amount ? amount.add(new BN(value)) : combinedBondsStaked.add(new BN(value));
@@ -268,7 +269,7 @@ export const LivelinessStakingSol: React.FC = () => {
           setRewardApr(Math.min(calculatedRewardApr, maxApr));
         }
       }
-      console.log("calculatedRewardApr", calculatedRewardApr);
+      // console.log("calculatedRewardApr", calculatedRewardApr);
       if (maxApr === 0 || calculatedRewardApr < maxApr) {
         !amount ? setEstCombinedAnnualRewards(rewardPerYear) : setEstAnnualRewards(rewardPerYear);
       } else {
@@ -632,7 +633,11 @@ export const LivelinessStakingSol: React.FC = () => {
               </Flex>
             ) : (
               <>
-                <Text fontSize="3xl">Combined Liveliness: {combinedLiveliness}%</Text>
+                <Text fontSize="3xl">Combined Liveliness: {combinedLiveliness}% </Text>
+                <Text>
+                  {" "}
+                  LIVE:{currentLiveLinessScoreLIVE} --- diff:{combinedLiveliness - currentLiveLinessScoreLIVE}
+                </Text>
                 <Progress hasStripe isAnimated value={combinedLiveliness} rounded="xs" colorScheme="teal" width={"100%"} />
                 <Text fontSize="xl">Combined Bonds Staked: {formatNumberToShort(combinedBondsStaked.toNumber() / 10 ** 9)} $ITHEUM</Text>
                 {/* ///todo - check this BigNUmbers.toNUmber() is not correct !!! */}
