@@ -67,7 +67,7 @@ export const LivelinessStakingSol: React.FC = () => {
   const [combinedBondsStaked, setCombinedBondsStaked] = useState<BN>(new BN(0));
   const [rewardApr, setRewardApr] = useState<number>(0);
   const [maxApr, setMaxApr] = useState<number>(0);
-  const [accumulatedRewards, setAccumulatedRewards] = useState<number>(0);
+  const [addressClaimableAmount, setAddressClaimableAmount] = useState<number>(0);
   const [globalTotalBond, setGlobalTotalBond] = useState<BN>(new BN(0));
   const [globalRewardsPerBlock, setGlobalRewardsPerBlock] = useState<number>(0);
 
@@ -114,6 +114,7 @@ export const LivelinessStakingSol: React.FC = () => {
   ///todo set a useEffect to update the claimable amount  newCombinedLiveliness at the start
   async function computeAndSetClaimableAmount() {
     const currentSLot = await connection.getSlot();
+
     const _claimableAmount = computeAddressClaimableAmount(
       new BN(currentSLot),
       rewardsConfigData,
@@ -122,7 +123,7 @@ export const LivelinessStakingSol: React.FC = () => {
       globalTotalBond
     );
     // console.log("claimableAmount OF THE USERRRRRR", _claimableAmount);
-    setClaimableAmount(_claimableAmount / 10 ** 9);
+    setClaimableAmount(_claimableAmount / 10 ** 9 + addressClaimableAmount);
     // setClaimableAmount(1); ///TODO remove this
   }
 
@@ -164,8 +165,9 @@ export const LivelinessStakingSol: React.FC = () => {
             /// addressRewardsPerShare , addressTotalBondAmount,  claimableAmount , weightedLivelinessScore, lastUpdateTimestamp
             setAddressBondsRewardsData(data);
             setCombinedBondsStaked(data.addressTotalBondAmount);
-            setCombinedLiveliness(Math.floor(data.weightedLivelinessScore.toNumber() / 100));
-            // setAccumulatedRewards(Math.floor(data.claimableAmount.div(BN10_2).toNumber() * 100) / 100);
+            setCombinedLiveliness(data.weightedLivelinessScore.toNumber() / 100);
+            setAddressClaimableAmount(data.claimableAmount.toNumber() / 10 ** 9);
+            console.log("addressBondsRewardsData CLAIMABLE", data.claimableAmount.toNumber() / 10 ** 9);
             setNumberOfBonds(data.currentIndex);
           });
         }
@@ -202,7 +204,7 @@ export const LivelinessStakingSol: React.FC = () => {
         setRewardsConfigData(data);
         // console.log("rewardsConfigData", data);
         // console.log("rewardsConfigData", data.accumulatedRewards.toNumber());
-        setAccumulatedRewards(data.accumulatedRewards.div(BN10_9).toNumber());
+        //setAccumulatedRewards(data.accumulatedRewards.div(BN10_9).toNumber());
         setGlobalRewardsPerBlock(data.rewardsPerSlot.toNumber());
 
         setMaxApr(new BN(data.maxApr).div(BN10_2).toNumber());
@@ -696,7 +698,7 @@ export const LivelinessStakingSol: React.FC = () => {
                         Reinvesting rewards will also renew bond
                       </Text>
                       <Text m={{ base: "auto", md: "initial" }} mt={{ base: "10", md: "auto" }} fontSize="lg">
-                        Est. Annual Rewards: {formatNumberToShort(estCombinedAnnualRewards / 10 ** 9)} $ITHEUM
+                        Est. Cummulative Annual Rewards: {formatNumberToShort(estCombinedAnnualRewards / 10 ** 9)} $ITHEUM
                       </Text>
                     </VStack>
                   </Flex>
