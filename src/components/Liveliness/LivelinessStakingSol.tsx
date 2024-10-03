@@ -167,7 +167,7 @@ export const LivelinessStakingSol: React.FC = () => {
             setCombinedBondsStaked(data.addressTotalBondAmount);
             setCombinedLiveliness(data.weightedLivelinessScore.toNumber() / 100);
             setAddressClaimableAmount(data.claimableAmount.toNumber() / 10 ** 9);
-            console.log("addressBondsRewardsData CLAIMABLE", data.claimableAmount.toNumber() / 10 ** 9);
+            console.log("addressBondsRewardsData CLAIMABLE", data.claimableAmount.toNumber());
             setNumberOfBonds(data.currentIndex);
           });
         }
@@ -250,17 +250,16 @@ export const LivelinessStakingSol: React.FC = () => {
       else value = 0;
       const amountToCompute = amount ? amount.add(new BN(value)) : combinedBondsStaked.add(new BN(value));
 
-      console.log("amount to compute ", amountToCompute.toNumber() / 10 ** 9);
-      const percentage: BN = amountToCompute.toNumber() / globalTotalBond.toNumber();
-      console.log("percentage", percentage);
+      // console.log("amount to compute ", amountToCompute.toNumber() / 10 ** 9);
+      const percentage: number = amountToCompute.toNumber() / globalTotalBond.toNumber();
+      // console.log("percentage", percentage); 6956 = > 69.56%
       // console.log("globalRewardsPerBlock", globalRewardsPerBlock);
       const localRewardsPerBlock: number = globalRewardsPerBlock * percentage; ///1000 / 10 ** 9
       // Solana: Approx. 0.4 seconds per block or slot
-      console.log("REWARDS PER BLOCK", localRewardsPerBlock);
+      // console.log("REWARDS PER BLOCK", localRewardsPerBlock);
       const rewardPerYear: number = localRewardsPerBlock * SLOTS_IN_YEAR;
-      console.log("REWARDS YEAR", rewardPerYear);
+      // console.log("REWARDS YEAR", rewardPerYear);
       const calculatedRewardApr = Math.floor((rewardPerYear / amountToCompute.toNumber()) * 10000) / 100; ///* 10000) / 100;
-
       //rewardPerYear.div(amountToCompute).mul(new BN(10000)).div(BN10_2).toNumber();
       if (!value) {
         if (maxApr === 0) {
@@ -277,6 +276,7 @@ export const LivelinessStakingSol: React.FC = () => {
       }
     }
   } ///TODO afis estAnnualRewards per total cumulative staked bonded
+  console.log("REWRADS MAXX ", claimableAmount, addressClaimableAmount);
 
   // function calculateRewardAprAndEstAnnualRewards(amount?: number, value?: number) {
   //   if (combinedBondsStaked.toNumber() === 0) {

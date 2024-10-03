@@ -65,7 +65,7 @@ function calculateRewardsSinceLastAllocation(currentSlot: BN, rewardsConfig: any
   }
 
   const slotDiff = currentSlot.sub(rewardsConfig.lastRewardSlot);
-
+  console.log("slotDiff", rewardsConfig.rewardsPerSlot.toNumber() / 10 ** 9, slotDiff);
   return rewardsConfig.rewardsPerSlot.mul(slotDiff);
 }
 
@@ -130,9 +130,9 @@ export function computeAddressClaimableAmount(
   addressTotalBondAmount: BN,
   globalTotalBond: BN
 ) {
-  // console.log("OLD RewardsConfig", rewardsConfig);
+  console.log("OLD RewardsConfig", rewardsConfig);
   const newRewardsConfig = generateAggregatedRewards(currentSlot, rewardsConfig, globalTotalBond);
-  // console.log("newRewardsConfig", newRewardsConfig);
+  console.log("newRewardsConfig", newRewardsConfig);
 
   const addressClaimableRewards = calculateAddressShareInRewards(
     newRewardsConfig.accumulatedRewards,
@@ -155,19 +155,21 @@ function generateAggregatedRewards(currentSlot: BN, rewardsConfig: any, totalBon
   let extraRewards: BN;
 
   if (maxApr.gt(new BN(0))) {
+    console.log("MAX APR IS BIGGER ");
     const extraRewardsAprBondedPerSlot = getAmountAprBounded(rewardsConfig.maxApr, totalBondAmount);
-
+    console.log("extraRewardsAprBondedPerSlot", extraRewardsAprBondedPerSlot, extraRewardsAprBondedPerSlot.toNumber() / 10 ** 9);
     const slotDiff = currentSlot.sub(lastRewardSlot);
     const extraRewardsAprBonded = extraRewardsAprBondedPerSlot.mul(slotDiff);
+    console.log("extraRewardsAprBonded", extraRewardsUnbounded.toNumber() / 10 ** 9, extraRewardsAprBonded.toNumber() / 10 ** 9);
 
     extraRewards = BN.min(extraRewardsUnbounded, extraRewardsAprBonded);
   } else {
     extraRewards = extraRewardsUnbounded;
   }
-  // console.log("extraRewards", extraRewards);
+  console.log("extraRewards", extraRewards.toNumber() / 10 ** 9);
   if (extraRewards.gt(new BN(0)) && extraRewards.lte(rewardsConfig.rewardsReserve)) {
     const increment = extraRewards.mul(new BN(DIVISION_SAFETY_CONST)).div(totalBondAmount);
-    // console.log("increment", increment);
+    console.log("increment", increment);
     _newRewardsConfig = {
       ...rewardsConfig,
       rewardsPerShare: rewardsConfig.rewardsPerShare.add(increment),
