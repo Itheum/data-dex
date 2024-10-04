@@ -1,4 +1,5 @@
 import React, { PropsWithChildren, useEffect, useState } from "react";
+import { Program } from "@coral-xyz/anchor";
 import { BondContract, DataNft, DataNftMarket, MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
@@ -6,6 +7,7 @@ import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
+import BigNumber from "bignumber.js";
 import { useSearchParams } from "react-router-dom";
 import { GET_BITZ_TOKEN, IS_DEVNET, SUPPORTED_MVX_COLLECTIONS, viewDataJSONCore } from "libs/config";
 import {
@@ -18,16 +20,12 @@ import {
 } from "libs/MultiversX";
 import { getAccountTokenFromApi, getItheumPriceFromApi } from "libs/MultiversX/api";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
+import { BONDING_PROGRAM_ID, SolEnvEnum } from "libs/Solana/config";
+import { CoreSolBondStakeSc, IDL } from "libs/Solana/CoreSolBondStakeSc";
+import { fetchBondingConfig, fetchSolNfts } from "libs/Solana/utils";
 import { computeRemainingCooldown, convertWeiToEsdt, decodeNativeAuthToken, tokenDecimals } from "libs/utils";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
-import { BONDING_PROGRAM_ID, SolEnvEnum } from "libs/Solana/config";
-import { fetchBondingConfig, fetchSolNfts } from "libs/Solana/utils";
-
 import { useNftsStore } from "./nfts";
-import { CoreSolBondStakeSc, IDL } from "libs/Solana/CoreSolBondStakeSc";
-import { Program } from "@coral-xyz/anchor";
-import { number } from "yup";
-import BigNumber from "bignumber.js";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { address } = useGetAccountInfo();
@@ -262,7 +260,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
     try {
       const itheumTokenMint = new PublicKey(
         contractsForChain(import.meta.env.VITE_ENV_NETWORK === "devnet" ? SolEnvEnum.devnet : SolEnvEnum.mainnet).itheumToken
-      ); // TODO add the mainnet contract address
+      ); ///TODO add the mainnet contract address
       const addressAta = getAssociatedTokenAddressSync(itheumTokenMint, publicKey!, false);
       const balance = await connection.getTokenAccountBalance(addressAta);
       return balance.value.uiAmount;

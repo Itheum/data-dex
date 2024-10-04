@@ -153,6 +153,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const [bondVaultNonce, setBondVaultNonce] = useState<number | undefined>(0);
   const [maxApy, setMaxApy] = useState<number>(80);
   const [needsMoreITHEUMToProceed, setNeedsMoreITHEUMToProceed] = useState<boolean>(false);
+  const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
   // S: React hook form + yup integration ---->
   // Declaring a validation schema for the form with the validation needed
   let preSchema = {
@@ -759,8 +760,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
         if (bondTransaction) {
           try {
-            await sendAndConfirmTransaction({ transaction: bondTransaction, customErrorMessage: "Failed to send the bonding transaction" });
-
+            const result = await sendAndConfirmTransaction({ transaction: bondTransaction, customErrorMessage: "Failed to send the bonding transaction" });
+            if (result) updateItheumBalance(itheumBalance - bondingAmount);
             setMakePrimaryNFMeIdSuccessful(true);
           } catch (error) {
             setErrDataNFTStreamGeneric(new Error(labels.ERR_SUCCESS_MINT_BUT_BONDING_TRANSACTION_FAILED));

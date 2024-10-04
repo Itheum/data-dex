@@ -97,9 +97,8 @@ export async function fetchRewardsConfig(programSol: any) {
   // rewardsPerShare, accumulatedRewards, lastRewardSlot,  rewardsPerSlot, rewardsReserve,  maxApr, rewardsState
   try {
     const _rewardsConfigPda = PublicKey.findProgramAddressSync([Buffer.from("rewards_config")], programSol.programId)[0];
-
     const res = await programSol?.account.rewardsConfig.fetch(_rewardsConfigPda);
-    // console.log("REWARDS CONFIG DARTAA", res);
+
     return {
       rewardsConfigPda: _rewardsConfigPda,
       accumulatedRewards: new BigNumber(res.accumulatedRewards).dividedBy(10 ** 9),
@@ -223,7 +222,6 @@ export async function createBondTransaction(
     });
 
     // const { nftMeIdVault } = await retrieveBondsAndNftMeIdVault(userPublicKey, bondId - 1, program);
-
     ///TODO ASK if this is correct ... should i let the primary nft that is active bond be the vault or the last one
     const isVault = true; ///nftMeIdVault ? false : true;
 
@@ -316,7 +314,7 @@ export async function retrieveBondsAndNftMeIdVault(
   }
 }
 
-/// TESTING PURPOSES --- SHOULD BE DELETED ON PROD
+///TODO TESTING PURPOSES --- SHOULD BE DELETED ON PROD
 function computeBondScore(lockPeriod: number, currentTimestamp: number, unbondTimestamp: number): number {
   if (currentTimestamp >= unbondTimestamp) {
     return 0;
