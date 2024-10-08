@@ -599,8 +599,8 @@ export type CoreSolBondStakeSc = {
           "type": "u64";
         },
         {
-          "name": "assetId";
-          "type": "publicKey";
+          "name": "nonce";
+          "type": "u64";
         },
         {
           "name": "isVault";
@@ -623,14 +623,6 @@ export type CoreSolBondStakeSc = {
           "type": {
             "array": ["u8", 32];
           };
-        },
-        {
-          "name": "nonce";
-          "type": "u64";
-        },
-        {
-          "name": "index";
-          "type": "u32";
         },
       ];
     },
@@ -1884,8 +1876,8 @@ export const IDL: CoreSolBondStakeSc = {
           "type": "u64",
         },
         {
-          "name": "assetId",
-          "type": "publicKey",
+          "name": "nonce",
+          "type": "u64",
         },
         {
           "name": "isVault",
@@ -1908,14 +1900,6 @@ export const IDL: CoreSolBondStakeSc = {
           "type": {
             "array": ["u8", 32],
           },
-        },
-        {
-          "name": "nonce",
-          "type": "u64",
-        },
-        {
-          "name": "index",
-          "type": "u32",
         },
       ],
     },

@@ -202,6 +202,14 @@ export async function createBondTransaction(
       index,
       proof: { proof, root },
     } = mintMetaJSON;
+    console.log("mintMetaJSON", mintMetaJSON);
+    console.log("Asset ID:", assetId);
+    console.log("Data Hash:", dataHash);
+    console.log("Creator Hash:", creatorHash);
+    console.log("Nonce:", nonce);
+    console.log("Index:", index);
+    console.log("Proof:", proof);
+    console.log("Root:", root);
 
     const proofPathAsAccounts = mapProof(proof);
     const programId = new PublicKey(BONDING_PROGRAM_ID);
@@ -240,7 +248,7 @@ export async function createBondTransaction(
 
     // Create the transaction using bond method from program
     const transaction = await program.methods
-      .bond(BOND_CONFIG_INDEX, bondId, bondConfigData.amount, new PublicKey(assetId), isVault, proofRoot, _dataHash, _creatorHash, new BN(nonce), index)
+      .bond(BOND_CONFIG_INDEX, bondId, bondConfigData.amount, new BN(nonce), isVault, proofRoot, _dataHash, _creatorHash)
       .accounts({
         addressBondsRewards: addressBondsRewardsPda,
         assetUsage: assetUsagePda,

@@ -49,20 +49,17 @@ import { formatNumberToShort, isValidNumericCharacter } from "libs/utils";
 import { useAccountStore } from "store";
 import { useNftsStore } from "store/nfts";
 import { LivelinessScore } from "./LivelinessScore";
-import { set } from "@coral-xyz/anchor/dist/cjs/utils/features";
 
 const BN10_9 = new BN(10 ** 9);
 const BN10_2 = new BN(10 ** 2);
 
 export const LivelinessStakingSol: React.FC = () => {
+  const navigate = useNavigate();
   const { connection } = useConnection();
   const { publicKey: userPublicKey, sendTransaction } = useWallet();
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
-  // const [topUpItheumValue, setTopUpItheumValue] = useState<number>(0);
-  // const [estAnnualRewards, setEstAnnualRewards] = useState<number>(0);
   const [estCombinedAnnualRewards, setEstCombinedAnnualRewards] = useState<number>(0);
   const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
-
   const [combinedLiveliness, setCombinedLiveliness] = useState<number>(0);
   const [combinedBondsStaked, setCombinedBondsStaked] = useState<BN>(new BN(0));
   const [rewardApr, setRewardApr] = useState<number>(0);
@@ -86,7 +83,7 @@ export const LivelinessStakingSol: React.FC = () => {
   const [nftMeId, setNftMeId] = useState<DasApiAsset>();
 
   const [numberOfBonds, setNumberOfBonds] = useState<number>();
-  const [claimRewardsConfirmationWorkflow, setClaimRewardsConfirmationWorkflow] = useState<boolean>(false); ///TODO dialogs
+  const [claimRewardsConfirmationWorkflow, setClaimRewardsConfirmationWorkflow] = useState<boolean>(false);
   const [reinvestRewardsConfirmationWorkflow, setReinvestRewardsConfirmationWorkflow] = useState<boolean>(false);
   const [nftMeIdBond, setNftMeIdBond] = useState<Bond>();
   const { solNfts } = useNftsStore();
@@ -319,7 +316,7 @@ export const LivelinessStakingSol: React.FC = () => {
     explorerLinkMessage?: string;
   }) {
     try {
-      if (userPublicKey === null) {
+      if (!userPublicKey) {
         throw new Error("Wallet not connected");
       }
       const latestBlockhash = await connection.getLatestBlockhash();
@@ -494,15 +491,23 @@ export const LivelinessStakingSol: React.FC = () => {
           authority: userPublicKey,
         })
         .transaction();
-      await sendAndConfirmTransaction({
+      const txSignature = await sendAndConfirmTransaction({
         transaction,
         customErrorMessage: "Initialization of the rewards account failed",
       });
+      if (!txSignature) {
+        toast({
+          title: "Initialization of the rewards account failed",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+        navigate("/datanfts/wallet");
+      }
     } catch (error) {
       console.error("Transaction failed:", error);
     }
   }
-
   const calculateNewPeriodAfterNewBond = (lockPeriod: number) => {
     const nowTSInSec = Math.round(Date.now() / 1000);
     const newExpiry = new Date((nowTSInSec + lockPeriod) * 1000);
@@ -714,7 +719,6 @@ export const LivelinessStakingSol: React.FC = () => {
                 </Text>
                 <Progress hasStripe isAnimated value={combinedLiveliness} rounded="base" colorScheme="teal" width={"100%"} />
                 <Text fontSize="xl">Combined Bonds Staked: {formatNumberToShort(combinedBondsStaked.toNumber() / 10 ** 9)} $ITHEUM</Text>
-                {/* ///todo - check this BigNUmbers.toNUmber() is not correct !!! */}
                 <Text fontSize="xl">Global Total Bonded: {formatNumberToShort(globalTotalBond.div(BN10_9).toNumber())} $ITHEUM</Text>
                 <Text fontSize="xl">Current Staking APR: {isNaN(rewardApr) ? 0 : rewardApr}%</Text>
                 {maxApr > 0 && <Text fontSize="xl">Max APR: {maxApr}%</Text>}
@@ -961,7 +965,6 @@ export const LivelinessStakingSol: React.FC = () => {
                     <Box>
                       <NftMediaComponent
                         imageUrls={[dataNft.content.links && dataNft.content.links["image"] ? (dataNft.content.links["image"] as string) : DEFAULT_NFT_IMAGE]}
-                        // nftMedia={[dataNft.content.links ? (dataNft.content.links["image"] as string) : "///todo"]}
                         imageHeight="160px"
                         imageWidth="160px"
                         borderRadius="10px"
@@ -1137,7 +1140,7 @@ export const LivelinessStakingSol: React.FC = () => {
             bodyContent={
               <>
                 <Text fontSize="sm" pb={3} opacity=".8">
-                  {/* {`Collection: ${nftMeId?.id}, Bond ID: ${bonds[withdrawBondConfirmationWorkflow!]?.bondId}`} */}
+                  {`Collection: ${withdrawBondConfirmationWorkflow?.bondId}, Bond Amount: ${(withdrawBondConfirmationWorkflow?.bondAmount ?? 0 * withdrawPenalty) / 100}`}
                 </Text>
                 <Text mb="5">There are a few items to consider before you proceed with the bond withdraw:</Text>
                 <UnorderedList mt="2" p="2">

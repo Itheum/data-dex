@@ -99,7 +99,6 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     if (!publicKey) {
-      console.error("Wallet not connected.");
       return;
     }
 

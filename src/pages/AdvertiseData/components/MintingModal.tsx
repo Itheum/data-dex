@@ -121,13 +121,11 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
             </HStack>
 
             <HStack>
-              {(!saveProgress.s4 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
-              <VStack>
-                <Text fontSize="lg">
-                  Minting your new {isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} on the blockchain{" "}
-                  {isAutoVault ? "& setting it as your primary NFMe ID Vault" : ""}
-                </Text>
-              </VStack>
+              <Box w={6}>{(!saveProgress.s4 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}</Box>
+              <Text fontSize="lg">
+                Minting your new {isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} on the blockchain{" "}
+                {isAutoVault ? "& setting it as your primary NFMe ID Vault" : ""}
+              </Text>
             </HStack>
 
             {!mintingSuccessful ? (

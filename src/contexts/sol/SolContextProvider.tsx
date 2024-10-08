@@ -5,14 +5,6 @@ import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { clusterApiUrl } from "@solana/web3.js";
 import "@solana/wallet-adapter-react-ui/styles.css";
-import { TipLinkWalletAdapter } from "@tiplink/wallet-adapter";
-import {
-  WalletModalProvider as TipLinkWalletModalProvider,
-  WalletDisconnectButton,
-  WalletMultiButton,
-  TipLinkWalletAutoConnectV2,
-} from "@tiplink/wallet-adapter-react-ui";
-import { useSearchParams } from "react-router-dom";
 import { SolAutoConnectProvider, useSolAutoConnect } from "./SolAutoConnectProvider";
 import { SolNetworkConfigurationProvider, useNetworkConfiguration } from "./SolNetworkConfigurationProvider";
 
@@ -21,8 +13,7 @@ const SolWalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => 
   const { networkConfiguration } = useNetworkConfiguration();
   const network = networkConfiguration as WalletAdapterNetwork;
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-  const [searchParams, setSearchParams] = useSearchParams();
-
+  //https://solana-devnet.g.alchemy.com/v2/LStEUr2EpeqQbQW4gWLRkr2fmPn6GUsS"https://devnet.helius-rpc.com/?api-key=6c3cfaec-f256-4c06-83de-9ccd9bcb3c3e", [network]);
   const wallets = useMemo(() => [], [network]);
 
   const onError = useCallback((error: WalletError) => {

@@ -16,7 +16,7 @@ export const SolNetworkConfigurationProvider: FC<{ children: ReactNode }> = ({ c
   const [networkConfiguration, setNetworkConfiguration] = useLocalStorage(
     "network",
     import.meta.env.VITE_ENV_NETWORK === "mainnet" ? "mainnet-beta" : import.meta.env.VITE_ENV_NETWORK
-  ); // we have the contracts on testnet on solana
+  );
   return (
     <NetworkConfigurationContext.Provider value={{ networkConfiguration: networkConfiguration ?? "devnet", setNetworkConfiguration }}>
       {children}

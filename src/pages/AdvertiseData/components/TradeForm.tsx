@@ -107,7 +107,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const showInlineErrorsBeforeAction = false;
   const enableBondingInputForm = false;
 
-  const { publicKey, sendTransaction } = useWallet();
+  const { publicKey, sendTransaction, signTransaction } = useWallet();
   const { connection } = useConnection();
 
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
@@ -406,7 +406,13 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   }, [itheumBalance, antiSpamTax, bondingAmount]);
 
   function shouldMintYourDataNftBeDisabled(): boolean | undefined {
-    return !isValid || !readTermsChecked || !readAntiSpamFeeChecked || !readLivelinessBonding || itheumBalance < antiSpamTax + bondingAmount;
+    return (
+      !isValid ||
+      !readTermsChecked ||
+      (!publicKey && !readAntiSpamFeeChecked) ||
+      !readLivelinessBonding ||
+      (!publicKey && itheumBalance < antiSpamTax + bondingAmount)
+    );
   }
 
   const closeProgressModal = () => {
@@ -494,28 +500,25 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
   // Step 1 of minting (user clicked on mint button on main form)
   const dataNFTSellSubmit = async () => {
-    if (publicKey) {
-      console.log("///TODO publicKey:", publicKey.toBase58());
-    } else {
-      if (!mxAddress) {
-        toast({
-          title: labels.ERR_MINT_FORM_NO_WALLET_CONN,
-          status: "error",
-          isClosable: true,
-          duration: 20000,
-        });
-        return;
-      }
+    if (!mxAddress && !publicKey) {
+      toast({
+        title: labels.ERR_MINT_FORM_NO_WALLET_CONN,
+        status: "error",
+        isClosable: true,
+        duration: 20000,
+      });
+      return;
+    }
 
-      if (userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit) {
-        toast({
-          title: `${labels.ERR_MINT_FORM_MINT_AGAIN_WAIT} ${new Date(userData.lastUserMintTime + userData.mintTimeLimit).toLocaleString()}`,
-          status: "error",
-          isClosable: true,
-          duration: 20000,
-        });
-        return;
-      }
+    // only if the user is connected with Mx wallet
+    if (mxAddress && userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit) {
+      toast({
+        title: `${labels.ERR_MINT_FORM_MINT_AGAIN_WAIT} ${new Date(userData.lastUserMintTime + userData.mintTimeLimit).toLocaleString()}`,
+        status: "error",
+        isClosable: true,
+        duration: 20000,
+      });
+      return;
     }
     const isValidInput = validateBaseInput();
 
@@ -633,19 +636,59 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         throw new Error("Wallet not connected");
       }
       const latestBlockhash = await connection.getLatestBlockhash();
+      // transaction.recentBlockhash = latestBlockhash.blockhash;
       transaction.recentBlockhash = latestBlockhash.blockhash;
+      transaction.feePayer = publicKey;
+      console.log("Transaction to send:", transaction);
+      let txSignature = "";
 
-      const txSignature = await sendTransaction(transaction, connection, {
-        skipPreflight: true,
-        // preflightCommitment: "finalized",
-      });
+      // console.log("Transaction sizeEEEE:", transaction.serialize().length);
+      try {
+        const simulation = await connection.simulateTransaction(transaction, undefined, [publicKey]);
+        console.log(simulation);
+      } catch (e) {
+        console.log("ALL GOOD IN SIMULATION FAILED");
+        console.log(e);
+      }
+
+      // try to send the transaction 3 times
+      // let signedTransaction: Transaction;
+      try {
+        // if (signTransaction) {
+        //   console.log("simulation");
+        //   signedTransaction = await signTransaction(transaction);
+        // }
+
+        const latestBlockhash = await connection.getLatestBlockhash();
+        // transaction.recentBlockhash = latestBlockhash.blockhash;
+        transaction.recentBlockhash = latestBlockhash.blockhash;
+        transaction.feePayer = publicKey;
+        txSignature = await sendTransaction(transaction, connection, {
+          skipPreflight: true,
+          // preflightCommitment: "finalized",
+        });
+        console.log("Sent transaction from try", txSignature);
+      } catch (error) {
+        console.log("Error sending transaction", error);
+        // console.log("Transaction sizeEEEE2:", transaction.serialize().length);
+        // await sleep(3000);
+
+        // txSignature = await sendTransaction(transaction, connection, {
+        //   skipPreflight: true,
+        //   // preflightCommitment: "finalized",
+        // });
+        // if (i === 2) {
+        //   throw error;
+        // }
+      }
 
       const strategy: TransactionConfirmationStrategy = {
         signature: txSignature,
         blockhash: latestBlockhash.blockhash,
         lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
       };
-
+      ///TODO ADD THE PROMISE TOAST HERE
+      console.log("going to confirm transaction", "signature", txSignature);
       const result = await connection.confirmTransaction(strategy, "finalized" as Commitment);
       const toastStatus = result.value.err ? "info" : "success";
 
@@ -756,20 +799,26 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
           await sendAndConfirmTransaction({ transaction: transactionInitializeAddress, customErrorMessage: "Bonding Program Initialize Failed" });
         }
-        const bondTransaction = await createBondTransaction(mintMeta, publicKey, connection);
 
-        if (bondTransaction) {
-          try {
-            const result = await sendAndConfirmTransaction({ transaction: bondTransaction, customErrorMessage: "Failed to send the bonding transaction" });
-            if (result) updateItheumBalance(itheumBalance - bondingAmount);
-            setMakePrimaryNFMeIdSuccessful(true);
-          } catch (error) {
-            setErrDataNFTStreamGeneric(new Error(labels.ERR_SUCCESS_MINT_BUT_BONDING_TRANSACTION_FAILED));
-            console.error("createBondTransaction failed to sign and send bond transaction", error);
+        for (let i = 1; i <= 3; ++i) {
+          console.log("RPC CONNECTION", connection, connection.rpcEndpoint);
+          const bondTransaction = await createBondTransaction(mintMeta, publicKey, connection);
+          console.log("bondTransaction", i, bondTransaction);
+          if (bondTransaction) {
+            try {
+              const result = await sendAndConfirmTransaction({ transaction: bondTransaction, customErrorMessage: "Failed to send the bonding transaction" });
+              if (result) updateItheumBalance(itheumBalance - bondingAmount);
+              setMakePrimaryNFMeIdSuccessful(true);
+              break;
+            } catch (error) {
+              setErrDataNFTStreamGeneric(new Error(labels.ERR_SUCCESS_MINT_BUT_BONDING_TRANSACTION_FAILED));
+              console.error("createBondTransaction failed to sign and send bond transaction", error);
+            }
+          } else {
+            setErrDataNFTStreamGeneric(new Error(labels.ERR_SUCCESS_MINT_BUT_BOND_NOT_CREATED));
+            console.error("createBondTransaction failed to create bond transaction", error);
           }
-        } else {
-          setErrDataNFTStreamGeneric(new Error(labels.ERR_SUCCESS_MINT_BUT_BOND_NOT_CREATED));
-          console.error("createBondTransaction failed to create bond transaction", error);
+          await sleep(10);
         }
       }
     } catch (e) {
@@ -1564,44 +1613,45 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               )}
             </Box>
 
-            <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="30px !important">
-              Anti-Spam Fee
-            </Text>
-
-            <PopoverTooltip title="What is the Anti-Spam Fee">
+            {!publicKey && (
               <>
-                <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="3 !important">
-                  An {"anti-spam fee"} is necessary to prevent excessive concurrent mints from overwhelming the Data DEX. The fees are collected and
-                  redistributed back to Data Creators as Liveliness staking rewards or burned
+                {" "}
+                <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="30px !important">
+                  Anti-Spam Fee
                 </Text>
+                <PopoverTooltip title="What is the Anti-Spam Fee">
+                  <>
+                    <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="3 !important">
+                      An {"anti-spam fee"} is necessary to prevent excessive concurrent mints from overwhelming the Data DEX. The fees are collected and
+                      redistributed back to Data Creators as Liveliness staking rewards or burned
+                    </Text>
+                  </>
+                </PopoverTooltip>
+                <Box mt="3 !important">
+                  <Tag variant="solid" bgColor="#00C7971A" borderRadius="sm">
+                    <Text px={2} py={2} color="teal.200" fontWeight="500">
+                      Anti-Spam Fee is currently {antiSpamTax < 0 ? "?" : antiSpamTax} ITHEUM tokens{" "}
+                    </Text>
+                  </Tag>
+                </Box>
+                {itheumBalance < antiSpamTax && (
+                  <Text color="red.400" fontSize="sm" mt="1 !important">
+                    {labels.ERR_MINT_FORM_NOT_ENOUGH_TAX}
+                  </Text>
+                )}
+                <Box minH={{ base: "5rem", md: "3.5rem" }}>
+                  <Checkbox size="md" mt="3 !important" isChecked={readAntiSpamFeeChecked} onChange={(e) => setReadAntiSpamFeeChecked(e.target.checked)}>
+                    I accept the deduction of the Anti-Spam Minting Fee from my wallet
+                  </Checkbox>
+
+                  {!readAntiSpamFeeChecked && showInlineErrorsBeforeAction && (
+                    <Text color="red.400" fontSize="sm" mt="1 !important">
+                      You need to agree to Anti-Spam Minting deduction to proceed with your mint.
+                    </Text>
+                  )}
+                </Box>{" "}
               </>
-            </PopoverTooltip>
-
-            <Box mt="3 !important">
-              <Tag variant="solid" bgColor="#00C7971A" borderRadius="sm">
-                <Text px={2} py={2} color="teal.200" fontWeight="500">
-                  Anti-Spam Fee is currently {antiSpamTax < 0 ? "?" : antiSpamTax} ITHEUM tokens{" "}
-                </Text>
-              </Tag>
-            </Box>
-
-            {itheumBalance < antiSpamTax && (
-              <Text color="red.400" fontSize="sm" mt="1 !important">
-                {labels.ERR_MINT_FORM_NOT_ENOUGH_TAX}
-              </Text>
             )}
-
-            <Box minH={{ base: "5rem", md: "3.5rem" }}>
-              <Checkbox size="md" mt="3 !important" isChecked={readAntiSpamFeeChecked} onChange={(e) => setReadAntiSpamFeeChecked(e.target.checked)}>
-                I accept the deduction of the Anti-Spam Minting Fee from my wallet
-              </Checkbox>
-
-              {!readAntiSpamFeeChecked && showInlineErrorsBeforeAction && (
-                <Text color="red.400" fontSize="sm" mt="1 !important">
-                  You need to agree to Anti-Spam Minting deduction to proceed with your mint.
-                </Text>
-              )}
-            </Box>
 
             <Flex>
               <ChainSupportedInput feature={MENU.SELL}>
