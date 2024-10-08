@@ -120,6 +120,7 @@ export function computeCurrentLivelinessScore(lastUpdateTimestamp: number, lockP
   const livelinessScore = weightedLivelinessScore * (1 - decay);
   return livelinessScore; // returns 9456 for 95.46%
 }
+
 export function computeAddressClaimableAmount(
   currentSlot: BN,
   rewardsConfig: any,
@@ -128,7 +129,6 @@ export function computeAddressClaimableAmount(
   globalTotalBond: BN
 ) {
   const newRewardsConfig = generateAggregatedRewards(currentSlot, rewardsConfig, globalTotalBond);
-
   const addressClaimableRewards = calculateAddressShareInRewards(
     newRewardsConfig.accumulatedRewards,
     newRewardsConfig.rewardsPerShare,

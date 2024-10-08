@@ -411,7 +411,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       !readTermsChecked ||
       (!publicKey && !readAntiSpamFeeChecked) ||
       !readLivelinessBonding ||
-      (!publicKey && itheumBalance < antiSpamTax + bondingAmount)
+      (!publicKey ? itheumBalance < antiSpamTax + bondingAmount : itheumBalance < bondingAmount)
     );
   }
 
