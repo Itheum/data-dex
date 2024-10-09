@@ -1598,7 +1598,11 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               )}
             </Box>
 
-            {!publicKey && (
+            {publicKey ? (
+              <Text fontWeight="500" color="teal.200" lineHeight="30.4px" fontSize="16px" mt="0px !important">
+                Note: A 2% royalty tax will be applied to your Data NFT. This tax will be equally split between the Itheum treasury and you.
+              </Text>
+            ) : (
               <>
                 {" "}
                 <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="30px !important">
