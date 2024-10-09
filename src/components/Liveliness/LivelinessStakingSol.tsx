@@ -952,7 +952,7 @@ export const LivelinessStakingSol: React.FC = () => {
                         w={"100%"}
                         colorScheme="teal"
                         px={6}
-                        isDisabled={!userPublicKey || hasPendingTransaction}
+                        isDisabled={currentBond.state == 0 || !userPublicKey || hasPendingTransaction}
                         onClick={() => {
                           renewBondSol(currentBond?.bondId ?? 0);
                         }}>
@@ -969,7 +969,7 @@ export const LivelinessStakingSol: React.FC = () => {
                             variant="outline"
                             textColor="indianred"
                             fontWeight="400"
-                            isDisabled={currentBond.state === 0 || hasPendingTransaction}
+                            isDisabled={currentBond.state == 0 || !userPublicKey || hasPendingTransaction}
                             onClick={() => {
                               setWithdrawBondConfirmationWorkflow({
                                 bondId: currentBond.bondId,
