@@ -70,10 +70,11 @@ import { getApi } from "libs/MultiversX/api";
 import { UserDataType } from "libs/MultiversX/types";
 import { BONDING_PROGRAM_ID } from "libs/Solana/config";
 import { CoreSolBondStakeSc, IDL } from "libs/Solana/CoreSolBondStakeSc";
-import { createBondTransaction, fetchBondingConfig, fetchRewardsConfig } from "libs/Solana/utils";
+import { createBondTransaction, fetchBondingConfig, fetchRewardsConfig, fetchSolNfts } from "libs/Solana/utils";
 import { getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "libs/utils";
 import { useAccountStore, useMintStore } from "store";
 import { MintingModal } from "./MintingModal";
+import { useNftsStore } from "store/nfts";
 
 type TradeDataFormType = {
   dataStreamUrlForm: string;
@@ -107,7 +108,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const showInlineErrorsBeforeAction = false;
   const enableBondingInputForm = false;
 
-  const { publicKey, sendTransaction, signTransaction } = useWallet();
+  const { publicKey, sendTransaction } = useWallet();
   const { connection } = useConnection();
 
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
@@ -154,6 +155,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const [maxApy, setMaxApy] = useState<number>(80);
   const [needsMoreITHEUMToProceed, setNeedsMoreITHEUMToProceed] = useState<boolean>(false);
   const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
+  const updateSolNfts = useNftsStore((state) => state.updateSolNfts);
   // S: React hook form + yup integration ---->
   // Declaring a validation schema for the form with the validation needed
   let preSchema = {
@@ -358,7 +360,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     async function fetchBondingRelatedData() {
       if (mxAddress) {
         bond.viewLockPeriodsWithBonds().then((periodsT) => {
-          console.log("periodsT MVX ", periodsT);
           setPeriods(periodsT);
         });
 
@@ -636,87 +637,72 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         throw new Error("Wallet not connected");
       }
       const latestBlockhash = await connection.getLatestBlockhash();
-      // transaction.recentBlockhash = latestBlockhash.blockhash;
       transaction.recentBlockhash = latestBlockhash.blockhash;
       transaction.feePayer = publicKey;
       console.log("Transaction to send:", transaction);
-      let txSignature = "";
 
-      // console.log("Transaction sizeEEEE:", transaction.serialize().length);
-      try {
-        const simulation = await connection.simulateTransaction(transaction, undefined, [publicKey]);
-        console.log(simulation);
-      } catch (e) {
-        console.log("ALL GOOD IN SIMULATION FAILED");
-        console.log(e);
-      }
-
-      // try to send the transaction 3 times
-      // let signedTransaction: Transaction;
-      try {
-        // if (signTransaction) {
-        //   console.log("simulation");
-        //   signedTransaction = await signTransaction(transaction);
-        // }
-
-        const latestBlockhash = await connection.getLatestBlockhash();
-        // transaction.recentBlockhash = latestBlockhash.blockhash;
-        transaction.recentBlockhash = latestBlockhash.blockhash;
-        transaction.feePayer = publicKey;
-        txSignature = await sendTransaction(transaction, connection, {
-          skipPreflight: true,
-          // preflightCommitment: "finalized",
-        });
-        console.log("Sent transaction from try", txSignature);
-      } catch (error) {
-        console.log("Error sending transaction", error);
-        // console.log("Transaction sizeEEEE2:", transaction.serialize().length);
-        // await sleep(3000);
-
-        // txSignature = await sendTransaction(transaction, connection, {
-        //   skipPreflight: true,
-        //   // preflightCommitment: "finalized",
-        // });
-        // if (i === 2) {
-        //   throw error;
-        // }
-      }
+      const txSignature = await sendTransaction(transaction, connection, {
+        skipPreflight: true,
+        preflightCommitment: "finalized",
+      });
 
       const strategy: TransactionConfirmationStrategy = {
         signature: txSignature,
         blockhash: latestBlockhash.blockhash,
         lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
       };
-      ///TODO ADD THE PROMISE TOAST HERE
-      console.log("going to confirm transaction", "signature", txSignature);
-      const result = await connection.confirmTransaction(strategy, "finalized" as Commitment);
-      const toastStatus = result.value.err ? "info" : "success";
 
+      const confirmationPromise = connection.confirmTransaction(strategy, "finalized" as Commitment);
       const cluster = import.meta.env.VITE_ENV_NETWORK === "mainnet" ? "mainnet-beta" : import.meta.env.VITE_ENV_NETWORK;
 
-      // Show success toast with link to Explorer SOLANA
-      toast({
-        title: explorerLinkMessage,
-        description: (
-          <a href={`https://explorer.solana.com/tx/${txSignature}?cluster=${cluster}`} target="_blank" rel="noreferrer" style={{ textDecoration: "underline" }}>
-            {txSignature.slice(0, 11)}...{txSignature.slice(-11)} <ExternalLinkIcon margin={3} />
-          </a>
-        ),
-        status: toastStatus,
-        duration: 15000,
-        isClosable: true,
-      });
-
+      toast.promise(
+        confirmationPromise.then((response) => {
+          if (response.value.err) {
+            console.error("Transaction failed:", response.value);
+            throw new Error(customErrorMessage);
+          }
+        }),
+        {
+          success: {
+            title: "Transaction Confirmed",
+            description: (
+              <a
+                href={`https://explorer.solana.com/tx/${txSignature}?cluster=${cluster}`}
+                target="_blank"
+                rel="noreferrer"
+                style={{ textDecoration: "underline" }}>
+                View on Solana explorer <ExternalLinkIcon margin={3} />
+              </a>
+            ),
+            duration: 12000,
+            isClosable: true,
+          },
+          error: {
+            title: customErrorMessage,
+            description: (
+              <a
+                href={`https://explorer.solana.com/tx/${txSignature}?cluster=${cluster}`}
+                target="_blank"
+                rel="noreferrer"
+                style={{ textDecoration: "underline" }}>
+                View on Solana explorer <ExternalLinkIcon margin={3} />
+              </a>
+            ),
+            duration: 12000,
+            isClosable: true,
+          },
+          loading: { title: "Processing Transaction", description: "Please wait..." },
+        }
+      );
+      const result = await confirmationPromise;
       if (result.value.err) {
-        throw new Error(customErrorMessage);
+        return false;
       }
-      console.log("Transaction confirmed:", result, txSignature);
       return txSignature;
     } catch (error) {
-      // Show error toast
       toast({
         title: "Transaction Failed",
-        description: customErrorMessage, //|| (error as Error).message,
+        description: customErrorMessage + " : " + (error as Error).message,
         status: "error",
         duration: 9000,
         isClosable: true,
@@ -776,11 +762,11 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         // setNftIdMEPrimaryVault();
         setMintingSuccessful(true);
         setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s4: 1 }));
+
         const programId = new PublicKey(BONDING_PROGRAM_ID);
-
         const addressBondsRewardsPda = PublicKey.findProgramAddressSync([Buffer.from("address_bonds_rewards"), publicKey?.toBuffer()], programId)[0];
-
         const accountInfo = await connection.getAccountInfo(addressBondsRewardsPda);
+
         const isExist = accountInfo !== null;
         if (!isExist) {
           const program = new Program<CoreSolBondStakeSc>(IDL, programId, {
@@ -797,28 +783,27 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             })
             .transaction();
 
-          await sendAndConfirmTransaction({ transaction: transactionInitializeAddress, customErrorMessage: "Bonding Program Initialize Failed" });
+          await sendAndConfirmTransaction({ transaction: transactionInitializeAddress, customErrorMessage: "Bonding Program address initialization failed" });
         }
 
-        for (let i = 1; i <= 3; ++i) {
-          console.log("RPC CONNECTION", connection, connection.rpcEndpoint);
-          const bondTransaction = await createBondTransaction(mintMeta, publicKey, connection);
-          console.log("bondTransaction", i, bondTransaction);
-          if (bondTransaction) {
-            try {
-              const result = await sendAndConfirmTransaction({ transaction: bondTransaction, customErrorMessage: "Failed to send the bonding transaction" });
-              if (result) updateItheumBalance(itheumBalance - bondingAmount);
+        const bondTransaction = await createBondTransaction(mintMeta, publicKey, connection);
+        if (bondTransaction) {
+          try {
+            const result = await sendAndConfirmTransaction({ transaction: bondTransaction, customErrorMessage: "Failed to send the bonding transaction" });
+            if (result) {
+              updateItheumBalance(itheumBalance - bondingAmount);
               setMakePrimaryNFMeIdSuccessful(true);
-              break;
-            } catch (error) {
-              setErrDataNFTStreamGeneric(new Error(labels.ERR_SUCCESS_MINT_BUT_BONDING_TRANSACTION_FAILED));
-              console.error("createBondTransaction failed to sign and send bond transaction", error);
+              fetchSolNfts(publicKey?.toBase58()).then((nfts) => {
+                updateSolNfts(nfts);
+              });
             }
-          } else {
-            setErrDataNFTStreamGeneric(new Error(labels.ERR_SUCCESS_MINT_BUT_BOND_NOT_CREATED));
-            console.error("createBondTransaction failed to create bond transaction", error);
+          } catch (error) {
+            setErrDataNFTStreamGeneric(new Error(labels.ERR_SUCCESS_MINT_BUT_BONDING_TRANSACTION_FAILED));
+            console.error("createBondTransaction failed to sign and send bond transaction", error);
           }
-          await sleep(10);
+        } else {
+          setErrDataNFTStreamGeneric(new Error(labels.ERR_SUCCESS_MINT_BUT_BOND_NOT_CREATED));
+          console.error("createBondTransaction failed to create bond transaction", error);
         }
       }
     } catch (e) {

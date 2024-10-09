@@ -74,6 +74,7 @@ function getAmountAprBounded(maxApr: BN, amount: BN): BN {
 }
 
 // fetch Data from the blockchain
+
 export async function fetchBondingConfig(programSol: any) {
   /// bondAmount, bondState, lockPeriod, withdrawPenalty, merkleTree
   try {
@@ -199,17 +200,9 @@ export async function createBondTransaction(
     const {
       assetId,
       leafSchema: { dataHash, creatorHash, nonce },
-      index,
+      //index,
       proof: { proof, root },
     } = mintMetaJSON;
-    console.log("mintMetaJSON", mintMetaJSON);
-    console.log("Asset ID:", assetId);
-    console.log("Data Hash:", dataHash);
-    console.log("Creator Hash:", creatorHash);
-    console.log("Nonce:", nonce);
-    console.log("Index:", index);
-    console.log("Proof:", proof);
-    console.log("Root:", root);
 
     const proofPathAsAccounts = mapProof(proof);
     const programId = new PublicKey(BONDING_PROGRAM_ID);

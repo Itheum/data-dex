@@ -123,7 +123,7 @@ export const LivelinessStakingSol: React.FC = () => {
   useEffect(() => {
     if (!hasPendingTransaction) {
       // setAllInfoLoading(true);
-      computeAndSetClaimableAmount();
+      if (rewardsConfigData && addressBondsRewardsData && globalTotalBond) computeAndSetClaimableAmount(); ///TODO check
       fetchBonds();
       fetchAddressRewardsData();
     }
@@ -357,7 +357,7 @@ export const LivelinessStakingSol: React.FC = () => {
         }
       );
       const result = await confirmationPromise;
-      const toastStatus = result.value.err ? "info" : "success";
+      // const toastStatus = result.value.err ? "info" : "success";
       setHasPendingTransaction(false);
 
       // Show success toast with link to Explorer SOLANA
