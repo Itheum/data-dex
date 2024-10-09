@@ -24,6 +24,7 @@ import { labels } from "libs/language";
 import { getApiDataDex, getApiDataMarshal } from "libs/utils";
 import { useMintStore } from "store";
 import { TradeForm } from "./TradeForm";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 type TradeFormProps = {
   isOpen: boolean;
@@ -45,13 +46,14 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   const navigate = useNavigate();
   const userData = useMintStore((state) => state.userData);
   const lockPeriod = useMintStore((state) => state.lockPeriodForBond);
+  const { publicKey } = useWallet();
 
   useEffect(() => {
     (async () => {
       const minRoyaltiesT = userData?.minRoyalties ?? 0;
-      const maxRoyaltiesT = userData?.maxRoyalties ?? 0;
-      const maxSupplyT = userData?.maxSupply ?? 0;
-      const antiSpamTaxT = userData?.antiSpamTaxValue ?? 0;
+      const maxRoyaltiesT = userData?.maxRoyalties ?? 8000;
+      const maxSupplyT = userData?.maxSupply ?? 10000;
+      const antiSpamTaxT = userData?.antiSpamTaxValue ?? 25 * 10 ** 18;
 
       onChangeDataNFTMarshalService(getApiDataMarshal(chainID));
       onChangeDataNFTImageGenService();
@@ -301,7 +303,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
           width="100%"
           backgroundColor="blackAlpha.800"
           rounded="lg"
-          visibility={userData === null || userData === undefined ? "visible" : "hidden" || lockPeriod === undefined}
+          visibility={(userData === null || userData === undefined) && !publicKey ? "visible" : "hidden" || lockPeriod === undefined}
           borderTop="solid .1rem"
           borderColor="teal.200">
           <Text fontSize="24px" fontWeight="500" lineHeight="38px" textAlign="center" textColor="teal.200" px="2">
