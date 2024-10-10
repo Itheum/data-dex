@@ -68,13 +68,14 @@ import { IS_DEVNET, MENU, PRINT_UI_DEBUG_PANELS } from "libs/config";
 import { labels } from "libs/language";
 import { getApi } from "libs/MultiversX/api";
 import { UserDataType } from "libs/MultiversX/types";
-import { BONDING_PROGRAM_ID } from "libs/Solana/config";
+import { BONDING_PROGRAM_ID, SOLANA_EXPLORER_URL } from "libs/Solana/config";
 import { CoreSolBondStakeSc, IDL } from "libs/Solana/CoreSolBondStakeSc";
 import { createBondTransaction, fetchBondingConfig, fetchRewardsConfig, fetchSolNfts } from "libs/Solana/utils";
 import { getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "libs/utils";
 import { useAccountStore, useMintStore } from "store";
 import { MintingModal } from "./MintingModal";
 import { useNftsStore } from "store/nfts";
+import { useNetworkConfiguration } from "contexts/sol/SolNetworkConfigurationProvider";
 
 type TradeDataFormType = {
   dataStreamUrlForm: string;
@@ -110,6 +111,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
   const { publicKey, sendTransaction } = useWallet();
   const { connection } = useConnection();
+  const { networkConfiguration } = useNetworkConfiguration();
 
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
   const { colorMode } = useColorMode();
@@ -653,7 +655,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       };
 
       const confirmationPromise = connection.confirmTransaction(strategy, "finalized" as Commitment);
-      const cluster = import.meta.env.VITE_ENV_NETWORK === "mainnet" ? "mainnet-beta" : import.meta.env.VITE_ENV_NETWORK;
 
       toast.promise(
         confirmationPromise.then((response) => {
@@ -667,7 +668,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             title: "Transaction Confirmed",
             description: (
               <a
-                href={`https://explorer.solana.com/tx/${txSignature}?cluster=${cluster}`}
+                href={`${SOLANA_EXPLORER_URL}/tx${txSignature}?cluster=${networkConfiguration}`}
                 target="_blank"
                 rel="noreferrer"
                 style={{ textDecoration: "underline" }}>
@@ -681,7 +682,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             title: customErrorMessage,
             description: (
               <a
-                href={`https://explorer.solana.com/tx/${txSignature}?cluster=${cluster}`}
+                href={`${SOLANA_EXPLORER_URL}/tx/${txSignature}?cluster=${networkConfiguration}`}
                 target="_blank"
                 rel="noreferrer"
                 style={{ textDecoration: "underline" }}>

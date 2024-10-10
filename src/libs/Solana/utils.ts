@@ -19,8 +19,10 @@ enum RewardsState {
 }
 
 export const MAX_PERCENT = 10000;
-export const SLOTS_IN_YEAR = 78840000; // solana slots in a year
-export const ITHEUM_TOKEN_ADDRESS = contractsForChain(IS_DEVNET ? SolEnvEnum.devnet : SolEnvEnum.mainnet).itheumToken;
+export const SLOTS_IN_YEAR = 78840000; // solana slots in a year; Approx. 0.4 seconds per  slot
+
+export const ITHEUM_TOKEN_ADDRESS = import.meta.env.VITE_ENV_ITHEUM_TOKEN_ADDRESS;
+//contractsForChain(IS_DEVNET ? SolEnvEnum.devnet : SolEnvEnum.mainnet).itheumToken;
 export const DIVISION_SAFETY_CONST = 10 ** 9;
 
 export async function fetchSolNfts(solAddress: string | undefined) {

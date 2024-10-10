@@ -23,6 +23,7 @@ import {
   UnorderedList,
   ListItem,
   useToast,
+  Link,
 } from "@chakra-ui/react";
 import { Program, BN } from "@coral-xyz/anchor";
 import { DasApiAsset } from "@metaplex-foundation/digital-asset-standard-api";
@@ -35,7 +36,7 @@ import NftMediaComponent from "components/NftMediaComponent";
 import { NoDataHere } from "components/Sections/NoDataHere";
 import { ConfirmationDialog } from "components/UtilComps/ConfirmationDialog";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
-import { BOND_CONFIG_INDEX, BONDING_PROGRAM_ID } from "libs/Solana/config";
+import { BOND_CONFIG_INDEX, BONDING_PROGRAM_ID, SOLANA_EXPLORER_URL } from "libs/Solana/config";
 import { CoreSolBondStakeSc, IDL } from "libs/Solana/CoreSolBondStakeSc";
 import { Bond } from "libs/Solana/types";
 import {
@@ -49,6 +50,7 @@ import { formatNumberToShort, isValidNumericCharacter } from "libs/utils";
 import { useAccountStore } from "store";
 import { useNftsStore } from "store/nfts";
 import { LivelinessScore } from "./LivelinessScore";
+import { useNetworkConfiguration } from "contexts/sol/SolNetworkConfigurationProvider";
 
 const BN10_9 = new BN(10 ** 9);
 const BN10_2 = new BN(10 ** 2);
@@ -92,6 +94,7 @@ export const LivelinessStakingSol: React.FC = () => {
   const toast = useToast();
   const [currentLiveLinessScoreLIVE, setCurrentLiveLinessScoreLIVE] = useState<number>(0);
   const [hasPendingTransaction, setHasPendingTransaction] = useState<boolean>(false);
+  const { networkConfiguration } = useNetworkConfiguration();
 
   useEffect(() => {
     const programId = new PublicKey(BONDING_PROGRAM_ID);
@@ -122,10 +125,9 @@ export const LivelinessStakingSol: React.FC = () => {
   // when a tx is happening we need to update the data
   useEffect(() => {
     if (!hasPendingTransaction) {
-      // setAllInfoLoading(true);
-      if (rewardsConfigData && addressBondsRewardsData && globalTotalBond) computeAndSetClaimableAmount();
       fetchBonds();
       fetchAddressRewardsData();
+      fetchVaultConfigData();
     }
   }, [hasPendingTransaction]);
 
@@ -202,14 +204,18 @@ export const LivelinessStakingSol: React.FC = () => {
 
   // rewardsPerShare, accumulatedRewards, lastRewardSlot,  rewardsPerSlot, rewardsReserve, rewardsPerShare, maxApr, rewardsState
   useEffect(() => {
-    if (programSol && userPublicKey && rewardsConfigPda && !hasPendingTransaction) {
-      programSol?.account.rewardsConfig.fetch(rewardsConfigPda).then((data: any) => {
+    fetchRewardsConfigData();
+  }, [rewardsConfigPda, programSol]);
+
+  async function fetchRewardsConfigData() {
+    if (programSol && userPublicKey && rewardsConfigPda) {
+      programSol.account.rewardsConfig.fetch(rewardsConfigPda).then((data: any) => {
         setRewardsConfigData(data);
         setGlobalRewardsPerBlock(data.rewardsPerSlot.toNumber());
-        setMaxApr(new BN(data.maxApr).div(BN10_2).toNumber());
+        setMaxApr(data.maxApr.toNumber() / 100);
       });
     }
-  }, [rewardsConfigPda, programSol, hasPendingTransaction]);
+  }
 
   // bondAmount, bondState, lockPeriod, withdrawPenalty, merkleTree
   useEffect(() => {
@@ -223,17 +229,19 @@ export const LivelinessStakingSol: React.FC = () => {
 
   /// totalBondAmoun, mintOfToken, totalPenalizedAmount, vault
   useEffect(() => {
-    if (programSol && userPublicKey && vaultConfigPda) {
-      programSol?.account.vaultConfig.fetch(vaultConfigPda).then((data: any) => {
-        setGlobalTotalBond(data.totalBondAmount);
-        ///TODO should I take the mint of TOkken from here? ?
-      });
-    }
+    fetchVaultConfigData();
   }, [vaultConfigPda, programSol]);
 
+  async function fetchVaultConfigData() {
+    if (programSol && vaultConfigPda) {
+      programSol.account.vaultConfig.fetch(vaultConfigPda).then((data: any) => {
+        setGlobalTotalBond(data.totalBondAmount);
+      });
+    }
+  }
   useEffect(() => {
-    if (!hasPendingTransaction) calculateRewardAprAndEstAnnualRewards();
-  }, [globalTotalBond, combinedBondsStaked, maxApr, hasPendingTransaction]);
+    calculateRewardAprAndEstAnnualRewards();
+  }, [globalTotalBond, combinedBondsStaked, maxApr]);
 
   function calculateRewardAprAndEstAnnualRewards(value?: number, amount?: BN) {
     if (combinedBondsStaked.toNumber() === 0) {
@@ -247,7 +255,6 @@ export const LivelinessStakingSol: React.FC = () => {
       const amountToCompute = amount ? amount.add(new BN(value)) : combinedBondsStaked;
       const percentage: number = amountToCompute.toNumber() / globalTotalBond.toNumber();
       const localRewardsPerBlock: number = globalRewardsPerBlock * percentage;
-      // Solana: Approx. 0.4 seconds per  slot
       const rewardPerYear: number = localRewardsPerBlock * SLOTS_IN_YEAR;
       const calculatedRewardApr = Math.floor((rewardPerYear / amountToCompute.toNumber()) * 10000) / 100;
       if (!value) {
@@ -311,8 +318,6 @@ export const LivelinessStakingSol: React.FC = () => {
         blockhash: latestBlockhash.blockhash,
         lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
       };
-      const cluster = import.meta.env.VITE_ENV_NETWORK === "mainnet" ? "mainnet-beta" : import.meta.env.VITE_ENV_NETWORK;
-
       const confirmationPromise = connection.confirmTransaction(strategy, "finalized" as Commitment);
       ///todo look more into this ... I think If I want to also show the action user should do ... wait for the user to sign ... etc
       toast.promise(
@@ -327,7 +332,7 @@ export const LivelinessStakingSol: React.FC = () => {
             title: "Transaction Confirmed",
             description: (
               <a
-                href={`https://explorer.solana.com/tx/${txSignature}?cluster=${cluster}`}
+                href={`${SOLANA_EXPLORER_URL}/tx/${txSignature}?cluster=${networkConfiguration}`}
                 target="_blank"
                 rel="noreferrer"
                 style={{ textDecoration: "underline" }}>
@@ -341,7 +346,7 @@ export const LivelinessStakingSol: React.FC = () => {
             title: customErrorMessage,
             description: (
               <a
-                href={`https://explorer.solana.com/tx/${txSignature}?cluster=${cluster}`}
+                href={`${SOLANA_EXPLORER_URL}/tx/${txSignature}?cluster=${networkConfiguration}`}
                 target="_blank"
                 rel="noreferrer"
                 style={{ textDecoration: "underline" }}>
@@ -666,10 +671,10 @@ export const LivelinessStakingSol: React.FC = () => {
             ) : (
               <>
                 <Text fontSize="3xl">Combined Liveliness: {combinedLiveliness}% </Text>
-                <Text>
-                  {" "}
+                {/* <Text>
+                  {"TESTING ONLY"}
                   LIVE:{currentLiveLinessScoreLIVE} --- diff:{combinedLiveliness - currentLiveLinessScoreLIVE}
-                </Text>
+                </Text> */}
                 <Progress hasStripe isAnimated value={combinedLiveliness} rounded="base" colorScheme="teal" width={"100%"} />
                 <Text fontSize="xl">Combined Bonds Staked: {formatNumberToShort(combinedBondsStaked.toNumber() / 10 ** 9)} $ITHEUM</Text>
                 <Text fontSize="xl">Global Total Bonded: {formatNumberToShort(globalTotalBond.div(BN10_9).toNumber())} $ITHEUM</Text>
@@ -901,6 +906,7 @@ export const LivelinessStakingSol: React.FC = () => {
             const dataNft = solNfts?.find((dataNft) => currentBond.assetId.toString() === dataNft.id);
             if (!dataNft) return null;
             const metadata = dataNft.content.metadata;
+
             return (
               <Card
                 _disabled={{ cursor: "not-allowed", opacity: "0.7" }}
@@ -994,9 +1000,12 @@ export const LivelinessStakingSol: React.FC = () => {
                   <Flex p={0} ml={{ md: "3" }} flexDirection="column" alignItems="start" w="full">
                     <Flex flexDirection="column" w="100%">
                       <Text fontFamily="Clash-Medium">{metadata.name}</Text>
-                      <Text fontSize="lg" pb={3}>
-                        {`Nft Id: ${dataNft.id}`}
-                      </Text>
+                      <Link isExternal href={`${SOLANA_EXPLORER_URL}address/${dataNft.id}?cluster=${networkConfiguration}`}>
+                        <Text fontSize="lg" pb={3}>
+                          {`Nft Id: ${dataNft.id.substring(0, 6)}...${dataNft.id.substring(dataNft.id.length - 6)}`}
+                          <ExternalLinkIcon marginLeft={3} marginBottom={1} />
+                        </Text>
+                      </Link>
                       <Text fontSize="lg" pb={3}>
                         {`Bond Id: ${currentBond.bondId}`}
                       </Text>

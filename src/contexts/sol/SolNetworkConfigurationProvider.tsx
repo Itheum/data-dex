@@ -13,12 +13,12 @@ export function useNetworkConfiguration(): NetworkConfigurationState {
 }
 
 export const SolNetworkConfigurationProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [networkConfiguration, setNetworkConfiguration] = useLocalStorage(
-    "network",
-    import.meta.env.VITE_ENV_NETWORK === "mainnet" ? "mainnet-beta" : import.meta.env.VITE_ENV_NETWORK
-  );
+  const currentNetworkConfig = import.meta.env.VITE_ENV_NETWORK === "mainnet" ? "mainnet-beta" : import.meta.env.VITE_ENV_NETWORK;
+
+  const [networkConfiguration, setNetworkConfiguration] = useLocalStorage("network", currentNetworkConfig);
+  console.log("networkConfiguration", networkConfiguration, currentNetworkConfig);
   return (
-    <NetworkConfigurationContext.Provider value={{ networkConfiguration: networkConfiguration ?? "devnet", setNetworkConfiguration }}>
+    <NetworkConfigurationContext.Provider value={{ networkConfiguration: networkConfiguration ?? currentNetworkConfig, setNetworkConfiguration }}>
       {children}
     </NetworkConfigurationContext.Provider>
   );
