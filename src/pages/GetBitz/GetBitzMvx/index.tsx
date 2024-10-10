@@ -7,16 +7,16 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
+import aladinRugg from "assets/img/getbitz/aladin.png";
+import FingerPoint from "assets/img/getbitz/finger-point.gif";
+import ImgGameCanvas from "assets/img/getbitz/getbitz-game-canvas.png";
+import ImgGetDataNFT from "assets/img/getbitz/getbitz-get-datanft-v2.gif";
 import { BlobDataType, ExtendedViewDataReturnType } from "libs/types";
 import { cn, computeRemainingCooldown, decodeNativeAuthToken, sleep } from "libs/utils";
 import { BurningImage } from "../common/BurningImage";
 import "../common/GetBitz.css";
 
 // Image Layers
-import aladinRugg from "assets/img/getbitz/aladin.png";
-import FingerPoint from "assets/img/getbitz/finger-point.gif";
-import ImgGameCanvas from "assets/img/getbitz/getbitz-game-canvas.png";
-import ImgGetDataNFT from "assets/img/getbitz/getbitz-get-datanft-v2.gif";
 import ImgLoadingGame from "assets/img/getbitz/getbitz-loading.gif";
 import ImgLogin from "assets/img/getbitz/getbitz-login.gif";
 import ImgPlayGame from "assets/img/getbitz/getbitz-play.gif";
@@ -57,7 +57,6 @@ import { useAccountStore } from "store/account";
 import { Toast } from "@chakra-ui/react";
 import { GET_BITZ_TOKEN, MARKETPLACE_DETAILS_PAGE } from "libs/config";
 import { LuMousePointerClick } from "react-icons/lu";
-import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
 import Countdown from "react-countdown";
 import { useNftsStore } from "store/nfts";
 
@@ -103,20 +102,13 @@ export const GetBitzMvx = (props: any) => {
   const [gameDataNFT, setGameDataNFT] = useState<DataNft>();
   const [checkingIfHasGameDataNFT, setCheckingIfHasGameDataNFT] = useState<boolean>(true);
   const [hasGameDataNFT, setHasGameDataNFT] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [showMessage, setShowMessage] = useState<boolean>(true);
 
   // store based state
-  const bitzBalance = useAccountStore((state: any) => state.bitzBalance);
   const cooldown = useAccountStore((state: any) => state.cooldown);
-  // const collectedBitzSum = useAccountStore((state: any) => state.collectedBitzSum);
-  // const bonusTries = useAccountStore((state: any) => state.bonusTries);
-  // const updateCollectedBitzSum = useAccountStore((state) => state.updateCollectedBitzSum);
   const updateBitzBalance = useAccountStore((state) => state.updateBitzBalance);
   const updateCooldown = useAccountStore((state) => state.updateCooldown);
-  const updateBonusBitzSum = useAccountStore((state) => state.updateBonusBitzSum);
   const updateBonusTries = useAccountStore((state) => state.updateBonusTries);
-  // const updateBonusTries = useAccountStore((state) => state.updateBonusTries);
 
   // a single game-play related (so we have to reset these if the user wants to "replay")
   const [isFetchingDataMarshal, setIsFetchingDataMarshal] = useState<boolean>(false);
@@ -128,24 +120,11 @@ export const GetBitzMvx = (props: any) => {
   const [burnProgress, setBurnProgress] = useState(0);
   const [randomMeme, setRandomMeme] = useState<any>(Meme1);
   const tweetText = `url=https://explorer.itheum.io/getbitz?v=3&text=${viewDataRes?.data.gamePlayResult.bitsWon > 0 ? "I just played the Get <BiTz> XP Game on %23itheum and won " + viewDataRes?.data.gamePlayResult.bitsWon + " <BiTz> points 🙌!%0A%0APlay now and get your own <BiTz>! %23GetBiTz" : "Oh no, I got rugged getting <BiTz> points this time. Maybe you will have better luck?%0A%0ATry here to %23GetBiTz %23itheum %0A"}`;
-  ///TODO add ?r=${address}
   const [usingReferralCode, setUsingReferralCode] = useState<string>("");
-  // const tweetTextReferral = `url=https://explorer.itheum.io/getbitz?r=${address}&text=Join the %23itheum <BiTz> XP Game and be part of the %23web3 data ownership revolution.%0A%0AJoin via my referral link and get a bonus chance to win <BiTz> XP 🙌. Click below to %23GetBiTz!`;
   const { mvxNfts } = useNftsStore();
 
   // Game canvas related
   const [loadBlankGameCanvas, setLoadBlankGameCanvas] = useState<boolean>(false);
-
-  // LeaderBoard related
-  // const [leaderBoardAllTime, setLeaderBoardAllTime] = useState<LeaderBoardItemType[]>([]);
-  // const [leaderBoardMonthly, setLeaderBoardMonthly] = useState<LeaderBoardItemType[]>([]);
-  // const [leaderBoardMonthString, setLeaderBoardMonthString] = useState<string>("");
-  // const [leaderBoardIsLoading, setLeaderBoardIsLoading] = useState<boolean>(false);
-  // const [myRankOnAllTimeLeaderBoard, setMyRankOnAllTimeLeaderBoard] = useState<string>("-2");
-
-  // Debug / Tests
-  // const [bypassDebug, setBypassDebug] = useState<boolean>(false);
-  const [inDateStringDebugMode, setInDateStringDebugMode] = useState<boolean>(false);
 
   const showErrorToast = (title: string) => {
     Toast({
@@ -190,9 +169,6 @@ export const GetBitzMvx = (props: any) => {
     if (_referralCode && _referralCode.trim().length > 5) {
       setUsingReferralCode(_referralCode.trim().toLowerCase());
     }
-
-    // Load the LeaderBoards regardless on if the user has does not have the data nft in to entice them
-    // fetchAndLoadLeaderBoards();
   }, [chainID]);
 
   useEffect(() => {
@@ -206,34 +182,10 @@ export const GetBitzMvx = (props: any) => {
     }
   }, [burnProgress]);
 
-  // useEffect(() => {
-  //   // load my rank if i'm not in the visible leader board (e.g. I'm not in the top 20, so whats my rank?)
-  //   if (address && leaderBoardAllTime.length > 0) {
-  //     let playerRank = -1;
-
-  //     for (let i = 0; i < leaderBoardAllTime.length; i++) {
-  //       if (leaderBoardAllTime[i].playerAddr === address) {
-  //         playerRank = i + 1;
-  //         break;
-  //       }
-  //     }
-
-  //     if (playerRank > -1) {
-  //       setMyRankOnAllTimeLeaderBoard(playerRank.toString());
-  //     } else {
-  //       fetchAndLoadMyRankOnLeaderBoard();
-  //     }
-  //   }
-  // }, [address, leaderBoardAllTime]);
-
   // first, we get the Data NFT details needed for this game (but not if the current user has it)
   async function fetchGameDataNfts() {
-    setIsLoading(true);
-
     const _gameDataNFT = await DataNft.createFromApi(GET_BITZ_TOKEN);
     setGameDataNFT(_gameDataNFT);
-
-    setIsLoading(false);
   }
   // secondly, we get the user's Data NFTs and flag if the user has the required Data NFT for the game in their wallet
   async function fetchMyNfts() {
@@ -295,12 +247,6 @@ export const GetBitzMvx = (props: any) => {
     const viewDataPayload: ExtendedViewDataReturnType | undefined = await viewData(viewDataArgs, gameDataNFT);
 
     if (viewDataPayload) {
-      // let animation;
-      // if (viewDataPayload.data.gamePlayResult.bitsWon > 0) {
-      //   // if the user won something, then we should reload the LeaderBoards
-      //   fetchAndLoadLeaderBoards();
-      // }
-
       setGameDataFetched(true);
       setIsFetchingDataMarshal(false);
       setViewDataRes(viewDataPayload);
@@ -322,10 +268,8 @@ export const GetBitzMvx = (props: any) => {
       sumBonusBitz = sumBonusBitz < 0 ? 0 : sumBonusBitz;
       if (viewDataPayload.data.gamePlayResult.bitsScoreAfterPlay > -1) {
         updateBitzBalance(sumScoreBitzAfter + sumBonusBitz - sumGivenBitz); // won some bis, minus given bits and show
-        // updateCollectedBitzSum(sumScoreBitzAfter);
       } else {
         updateBitzBalance(sumScoreBitzBefore + sumBonusBitz - sumGivenBitz); // did not win bits, minus given bits from current and show
-        // updateCollectedBitzSum(sumScoreBitzBefore);
       }
 
       // how many bonus tries does the user have
@@ -485,7 +429,6 @@ export const GetBitzMvx = (props: any) => {
     if (_loadBlankGameCanvas && !_gameDataFetched) {
       return (
         <div className="relative overflow-hidden">
-          {/* {!modalMode && _isMemeBurnHappening && <Torch />} */}
           <img
             className={cn("rounded-[3rem] w-full", _isMemeBurnHappening && !modalMode ? "cursor-none" : "", modalMode ? "rounded" : "")}
             src={ImgGameCanvas}
@@ -543,8 +486,6 @@ export const GetBitzMvx = (props: any) => {
                 </div>
               )}
             </div>
-
-            {/* {!modalMode && spritLayerPointsCloud()} */}
           </div>
         </div>
       );
@@ -668,48 +609,13 @@ export const GetBitzMvx = (props: any) => {
               </>
             )}
           </div>
-
-          {/* {!modalMode && spritLayerPointsCloud()} */}
         </div>
       );
     }
   }
 
-  function spritLayerPointsCloud() {
-    return (
-      <div className="flex flex-col justify-center items-center w-[200px] h-[100px] absolute top-[2%] left-[2%] rounded-[3rem] bg-slate-50 text-gray-950 p-[2rem] border border-primary/50">
-        <p className="text-sm">Your {`<BiTz>`} Points</p>
-        <p className="text-[1.5rem] font-bold mt-[2px]">{bitzBalance === -2 ? `...` : <>{bitzBalance === -1 ? "0" : `${bitzBalance}`}</>}</p>
-      </div>
-    );
-  }
-
-  // async function fetchAndLoadMyRankOnLeaderBoard() {
-  //   const callConfig = {
-  //     headers: {
-  //       "fwd-tokenid": createNftId(GET_BITZ_TOKEN.tokenIdentifier, GET_BITZ_TOKEN.nonce),
-  //     },
-  //   };
-
-  //   try {
-  //     console.log("AXIOS CALL -----> xpGamePrivate/playerRankOnLeaderBoard");
-  //     const { data } = await axios.get<any>(`${getApiWeb2Apps(chainID)}/datadexapi/xpGamePrivate/playerRankOnLeaderBoard?playerAddr=${address}`, callConfig);
-
-  //     setMyRankOnAllTimeLeaderBoard(data.playerRank || "N/A");
-  //   } catch (err) {
-  //     const message = "Getting my rank on the all time leaderboard failed:" + (err as AxiosError).message;
-  //     console.error(message);
-  //   }
-  // }
-
   return (
     <>
-      {usingReferralCode !== "" && (
-        <div className="p-1 text-lg font-bold border border-[#35d9fa] rounded-[1rem] mb-[1rem] text-center">
-          You are playing with referral code {usingReferralCode}
-        </div>
-      )}
-
       <div className="relative w-full">
         <div className="absolute -z-1 w-full">
           <img
@@ -731,7 +637,6 @@ export async function viewDataJSONCore(viewDataArgs: any, requiredDataNFT: DataN
   try {
     let res: any;
     res = await requiredDataNFT.viewDataViaMVXNativeAuth(viewDataArgs);
-    // res = await __viewDataViaMVXNativeAuth(viewDataArgs); // FYI - DON NOT DELETE, UNTIL WE ARE READY TO MOVE TO STG!!!
     let blobDataType = BlobDataType.TEXT;
 
     if (!res.error) {

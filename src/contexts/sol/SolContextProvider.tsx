@@ -12,7 +12,7 @@ const SolWalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => 
   const { autoConnect } = useSolAutoConnect();
   const { networkConfiguration } = useNetworkConfiguration();
   const network = networkConfiguration as WalletAdapterNetwork;
-  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+  const endpoint = useMemo(() => import.meta.env.VITE_ENV_SOLANA_NETWORK_RPC, [network]);
   //https://solana-devnet.g.alchemy.com/v2/LStEUr2EpeqQbQW4gWLRkr2fmPn6GUsS"https://devnet.helius-rpc.com/?api-key=6c3cfaec-f256-4c06-83de-9ccd9bcb3c3e", [network]);
   const wallets = useMemo(() => [], [network]);
 

@@ -123,7 +123,7 @@ export const LivelinessStakingSol: React.FC = () => {
   useEffect(() => {
     if (!hasPendingTransaction) {
       // setAllInfoLoading(true);
-      if (rewardsConfigData && addressBondsRewardsData && globalTotalBond) computeAndSetClaimableAmount(); ///TODO check
+      if (rewardsConfigData && addressBondsRewardsData && globalTotalBond) computeAndSetClaimableAmount();
       fetchBonds();
       fetchAddressRewardsData();
     }
@@ -131,7 +131,6 @@ export const LivelinessStakingSol: React.FC = () => {
 
   useEffect(() => {
     if (bondConfigData && rewardsConfigData && addressBondsRewardsData && globalTotalBond) {
-      ///TODO ASK Why im not showing the real combined liveliness
       const newCombinedLiveliness =
         Math.floor(
           computeCurrentLivelinessScore(
@@ -174,7 +173,6 @@ export const LivelinessStakingSol: React.FC = () => {
   }
 
   useEffect(() => {
-    ///TODO handle the case when a loop happens bcs of hasPendingTransaction when user has no account
     async function fetchAccountInfo() {
       if (programSol && userPublicKey && addressBondsRewardsPda) {
         const accountInfo = await connection.getAccountInfo(addressBondsRewardsPda);
@@ -195,10 +193,10 @@ export const LivelinessStakingSol: React.FC = () => {
 
   useEffect(() => {
     if (nftMeIdBond && solNfts && userPublicKey) {
-      calculateRewardAprAndEstAnnualRewards(0, nftMeIdBond.bondAmount);
       const nftMeId = solNfts.find((nft) => nft.id == nftMeIdBond.assetId.toString());
+      if (nftMeId === undefined) console.error("NftMeID has not been found");
       setNftMeId(nftMeId);
-      setAllInfoLoading(false); ///TODO what if nftMeId is not found
+      setAllInfoLoading(false);
     }
   }, [nftMeIdBond]); ///TODO do I still need this one ?
 
@@ -213,7 +211,7 @@ export const LivelinessStakingSol: React.FC = () => {
     }
   }, [rewardsConfigPda, programSol, hasPendingTransaction]);
 
-  /// bondAmount, bondState, lockPeriod, withdrawPenalty, merkleTree
+  // bondAmount, bondState, lockPeriod, withdrawPenalty, merkleTree
   useEffect(() => {
     if (programSol && userPublicKey && bondConfigPda) {
       programSol?.account.bondConfig.fetch(bondConfigPda).then((data: any) => {
@@ -228,7 +226,7 @@ export const LivelinessStakingSol: React.FC = () => {
     if (programSol && userPublicKey && vaultConfigPda) {
       programSol?.account.vaultConfig.fetch(vaultConfigPda).then((data: any) => {
         setGlobalTotalBond(data.totalBondAmount);
-        /// ask TODO should I take the mint of TOkken from here? ?
+        ///TODO should I take the mint of TOkken from here? ?
       });
     }
   }, [vaultConfigPda, programSol]);
@@ -251,7 +249,7 @@ export const LivelinessStakingSol: React.FC = () => {
       const localRewardsPerBlock: number = globalRewardsPerBlock * percentage;
       // Solana: Approx. 0.4 seconds per  slot
       const rewardPerYear: number = localRewardsPerBlock * SLOTS_IN_YEAR;
-      const calculatedRewardApr = Math.floor((rewardPerYear / amountToCompute.toNumber()) * 10000) / 100; ///* 10000) / 100;
+      const calculatedRewardApr = Math.floor((rewardPerYear / amountToCompute.toNumber()) * 10000) / 100;
       if (!value) {
         if (maxApr === 0) {
           setRewardApr(calculatedRewardApr);
@@ -316,7 +314,7 @@ export const LivelinessStakingSol: React.FC = () => {
       const cluster = import.meta.env.VITE_ENV_NETWORK === "mainnet" ? "mainnet-beta" : import.meta.env.VITE_ENV_NETWORK;
 
       const confirmationPromise = connection.confirmTransaction(strategy, "finalized" as Commitment);
-      ///todo look more into this ...
+      ///todo look more into this ... I think If I want to also show the action user should do ... wait for the user to sign ... etc
       toast.promise(
         confirmationPromise.then((response) => {
           if (response.value.err) {
@@ -357,27 +355,12 @@ export const LivelinessStakingSol: React.FC = () => {
         }
       );
       const result = await confirmationPromise;
-      // const toastStatus = result.value.err ? "info" : "success";
       setHasPendingTransaction(false);
-
-      // Show success toast with link to Explorer SOLANA
-      // toast({
-      //   title: explorerLinkMessage,
-      //   description: (
-      //     <a href={`https://explorer.solana.com/tx/${txSignature}?cluster=${cluster}`} target="_blank" rel="noreferrer" style={{ textDecoration: "underline" }}>
-      //       {txSignature.slice(0, 11)}...{txSignature.slice(-11)} <ExternalLinkIcon margin={3} />
-      //     </a>
-      //   ),
-      //   status: toastStatus,
-      //   duration: 12000,
-      //   isClosable: true,
-      // });
 
       if (result.value.err) {
         return false;
       }
 
-      // console.log("Transaction confirmed:", result, txSignature);
       return txSignature;
     } catch (error) {
       // Show error toast
@@ -410,12 +393,10 @@ export const LivelinessStakingSol: React.FC = () => {
         })
         .transaction();
 
-      const txSignature = await sendAndConfirmTransaction({
+      await sendAndConfirmTransaction({
         transaction,
         customErrorMessage: "Failed to renew bond",
       });
-
-      console.log("Bond renewal transaction sent:", txSignature);
     } catch (error) {
       console.error("Failed to renew bond:", error);
     }
@@ -452,7 +433,6 @@ export const LivelinessStakingSol: React.FC = () => {
         transaction,
         customErrorMessage: "Failed to top-up bond",
       });
-      console.log("result", result);
       if (result) updateItheumBalance(itheumBalance - amount);
     } catch (error) {
       console.error("Transaction to top-up bondfailed:", error);
@@ -576,8 +556,6 @@ export const LivelinessStakingSol: React.FC = () => {
         transaction,
         customErrorMessage: "Failed to withdraw the rewards",
       });
-      console.log("bondAmountToReceive", bondAmountToReceive);
-      console.log("result", result);
       if (result) updateItheumBalance(itheumBalance + bondAmountToReceive);
     } catch (error) {
       console.error("Transaction withdraw failed:", error);
@@ -611,8 +589,6 @@ export const LivelinessStakingSol: React.FC = () => {
                   onChange={(value) => {
                     setTopUpItheumValue(Number(value));
                     const estRewards = calculateRewardAprAndEstAnnualRewards(Number(value), bond?.bondAmount);
-                    console.log("estRewards", estRewards);
-
                     setCurrentBondEstAnnualRewards(estRewards);
                   }}
                   keepWithinRange={true}>
@@ -673,7 +649,7 @@ export const LivelinessStakingSol: React.FC = () => {
       </VStack>
     );
   };
-  ///TODO CHECK case if user withdraw the nftmeIdBond (last one) and then reinvest the rewards
+  ///TODO CHECK case if user withdraw the nftmeIdBond (last one) and then reinvest the rewards --- shoudl solve this when removing anny NftMeIdVault
   return (
     <Flex flexDirection={"column"} width="100%">
       <Flex flexDirection={{ base: "column", md: "row" }} width="100%" justifyContent="space-between" pt={{ base: "0", md: "5" }}>
@@ -925,7 +901,6 @@ export const LivelinessStakingSol: React.FC = () => {
             const dataNft = solNfts?.find((dataNft) => currentBond.assetId.toString() === dataNft.id);
             if (!dataNft) return null;
             const metadata = dataNft.content.metadata;
-            // console.log("currentBond data nft", index, currentBond, dataNft);
             return (
               <Card
                 _disabled={{ cursor: "not-allowed", opacity: "0.7" }}

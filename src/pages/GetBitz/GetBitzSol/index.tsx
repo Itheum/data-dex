@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from "react";
+import { DasApiAsset } from "@metaplex-foundation/digital-asset-standard-api";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-// import { confetti } from "@tsparticles/confetti";
-// import { Container } from "@tsparticles/engine";
-// import { fireworks } from "@tsparticles/fireworks";
 import bs58 from "bs58";
 import { motion } from "framer-motion";
-// import { ArrowBigDownDash, Loader, MousePointerClick } from "lucide-react";
 import Countdown from "react-countdown";
 
 // Image Layers
+import { LuMousePointerClick } from "react-icons/lu";
 import aladinRugg from "assets/img/getbitz/aladin.png";
 import FingerPoint from "assets/img/getbitz/finger-point.gif";
 import ImgGameCanvas from "assets/img/getbitz/getbitz-game-canvas.png";
+import ImgGetDataNFT from "assets/img/getbitz/getbitz-get-datanft-v2.gif";
 import ImgLoadingGame from "assets/img/getbitz/getbitz-loading.gif";
 import ImgLogin from "assets/img/getbitz/getbitz-login.gif";
 import ImgPlayGame from "assets/img/getbitz/getbitz-play.gif";
@@ -45,19 +44,15 @@ import Meme7 from "assets/img/getbitz/memes/7.jpg";
 import Meme8 from "assets/img/getbitz/memes/8.jpg";
 import Meme9 from "assets/img/getbitz/memes/9.jpg";
 
-import { cn, computeRemainingCooldown, sleep } from "libs/utils";
-import { LuMousePointerClick } from "react-icons/lu";
-import { useAccountStore } from "store";
+import resultLoading from "assets/img/getbitz/pixel-loading.gif";
 import { IS_DEVNET } from "libs/config";
 import { itheumSolPreaccess, itheumSolViewData } from "libs/Solana/SolViewData";
 import { BlobDataType } from "libs/types";
-
-import resultLoading from "assets/img/getbitz/pixel-loading.gif";
+import { cn, computeRemainingCooldown, sleep } from "libs/utils";
+import { useAccountStore } from "store";
 
 import { useNftsStore } from "store/nfts";
-import ImgGetDataNFT from "assets/img/getbitz/getbitz-get-datanft-v2.gif";
 import { BurningImage } from "../common/BurningImage";
-import { DasApiAsset } from "@metaplex-foundation/digital-asset-standard-api";
 
 const MEME_IMGS = [
   Meme1,
@@ -95,13 +90,10 @@ const GetBitzSol = (props: any) => {
   const [checkingIfHasGameDataNFT, setCheckingIfHasGameDataNFT] = useState<boolean>(true);
   const [hasGameDataNFT, setHasGameDataNFT] = useState<boolean>(false);
   const [showMessage, setShowMessage] = useState<boolean>(true);
-
   const { setVisible } = useWalletModal();
+
   // store based state
-  const bitzBalance = useAccountStore((state: any) => state.bitzBalance);
   const cooldown = useAccountStore((state: any) => state.cooldown);
-  const collectedBitzSum = useAccountStore((state: any) => state.collectedBitzSum);
-  const bonusTries = useAccountStore((state: any) => state.bonusTries);
   const updateCollectedBitzSum = useAccountStore((state) => state.updateCollectedBitzSum);
   const updateBitzBalance = useAccountStore((state) => state.updateBitzBalance);
   const updateCooldown = useAccountStore((state) => state.updateCooldown);
@@ -115,6 +107,7 @@ const GetBitzSol = (props: any) => {
   const updateSolPreaccessNonce = useAccountStore((state: any) => state.updateSolPreaccessNonce);
   const updateSolPreaccessTimestamp = useAccountStore((state: any) => state.updateSolPreaccessTimestamp);
   const updateSolSignedPreaccess = useAccountStore((state: any) => state.updateSolSignedPreaccess);
+
   // a single game-play related (so we have to reset these if the user wants to "replay")
   const [isFetchingDataMarshal, setIsFetchingDataMarshal] = useState<boolean>(false);
   const [isMemeBurnHappening, setIsMemeBurnHappening] = useState<boolean>(false);
@@ -125,14 +118,10 @@ const GetBitzSol = (props: any) => {
   const [burnProgress, setBurnProgress] = useState(0);
   const [randomMeme, setRandomMeme] = useState<any>(Meme1);
   const tweetText = `url=https://explorer.itheum.io/getbitz?v=3&text=${viewDataRes?.data.gamePlayResult.bitsWon > 0 ? "I just played the Get <BiTz> XP Game on %23itheum and won " + viewDataRes?.data.gamePlayResult.bitsWon + " <BiTz> points 🙌!%0A%0APlay now and get your own <BiTz>! %23GetBiTz %23DRiP %23Solana" : "Oh no, I got rugged getting <BiTz> points this time. Maybe you will have better luck?%0A%0ATry here to %23GetBiTz %23itheum %0A"}`;
-  ///TODO add ?r=${address}
-  const [usingReferralCode, setUsingReferralCode] = useState<string>("");
-  // const tweetTextReferral = `url=https://explorer.itheum.io/getbitz?r=${address}&text=Join the %23itheum <BiTz> XP Game and be part of the %23web3 data ownership revolution.%0A%0AJoin via my referral link and get a bonus chance to win <BiTz> XP 🙌. Click below to %23GetBiTz!`;
+
   // Game canvas related
   const [loadBlankGameCanvas, setLoadBlankGameCanvas] = useState<boolean>(false);
 
-  // const [bypassDebug, setBypassDebug] = useState<boolean>(false);
-  const [inDateStringDebugMode, setInDateStringDebugMode] = useState<boolean>(false);
   const { solNfts } = useNftsStore();
   const [solNftsBitz, setSolNftsBitz] = useState<DasApiAsset[]>([]);
   const [populatedBitzStore, setPopulatedBitzStore] = useState<boolean>(false);
@@ -154,6 +143,7 @@ const GetBitzSol = (props: any) => {
     }, 3000);
     return () => clearTimeout(timeout);
   }, []);
+
   async function viewData(viewDataArgs: any, requiredDataNFT: any) {
     try {
       let usedPreAccessNonce = solPreaccessNonce;
@@ -210,7 +200,6 @@ const GetBitzSol = (props: any) => {
         updateBitzBalance(-2);
         updateCooldown(-2);
         updateGivenBitzSum(-2);
-        // updateCollectedBitzSum(-2);
         setPopulatedBitzStore(true);
 
         const viewDataArgs = {
@@ -240,10 +229,6 @@ const GetBitzSol = (props: any) => {
                 getBitzGameResult.data.gamePlayResult.configCanPlayEveryMSecs
               )
             );
-
-            // updateCollectedBitzSum(getBitzGameResult.data.gamePlayResult.bitsScoreBeforePlay); // collected bits by playing
-
-            // updateBonusTries(getBitzGameResult.data.gamePlayResult.bonusTriesBeforeThisPlay || 0); // bonus tries awarded to user (currently only via referral code rewards)
           }
         })();
       } else {
@@ -251,9 +236,6 @@ const GetBitzSol = (props: any) => {
         updateGivenBitzSum(-1);
         updateCooldown(-1);
         updateCollectedBitzSum(-1);
-        // if (!address) {
-        //   setPopulatedBitzStore(false);
-        // }
       }
     } else {
       if (!publicKey) {
@@ -266,17 +248,6 @@ const GetBitzSol = (props: any) => {
   useEffect(() => {
     checkIfHasGameDataNft();
   }, [address, solNftsBitz]);
-
-  useEffect(() => {
-    // is the player using a referral code?
-    const searchParams = new URLSearchParams(window.location.search);
-    const _referralCode = searchParams.get("r");
-    if (_referralCode && _referralCode.trim().length > 5) {
-      setUsingReferralCode(_referralCode.trim().toLowerCase());
-    }
-    // Load the LeaderBoards regardless on if the user has does not have the data nft in to entice them
-    // fetchAndLoadLeaderBoards();
-  }, [solNftsBitz]);
 
   useEffect(() => {
     setBurnFireScale(`scale(${burnProgress}) translate(-13px, -15px)`);
@@ -314,39 +285,9 @@ const GetBitzSol = (props: any) => {
       headers: {},
       fwdHeaderKeys: [],
     };
-    if (usingReferralCode !== "") {
-      viewDataArgs.headers["dmf-referral-code"] = usingReferralCode;
-      viewDataArgs.fwdHeaderKeys.push("dmf-referral-code");
-    }
+
     const viewDataPayload = await viewData(viewDataArgs, solNftsBitz[0]);
     if (viewDataPayload) {
-      // let animation;
-      // if (viewDataPayload.data.gamePlayResult.bitsWon > 0) {
-      //   if (viewDataPayload.data.gamePlayResult.userWonMaxBits === 1) {
-      //     animation = await fireworks({
-      //       background: "transparent",
-      //       sounds: true,
-      //     });
-      //   } else {
-      //     animation = await confetti({
-      //       spread: 360,
-      //       ticks: 100,
-      //       gravity: 0,
-      //       decay: 0.94,
-      //       startVelocity: 30,
-      //       particleCount: 200,
-      //       scalar: 2,
-      //       shapes: ["emoji"],
-      //       shapeOptions: {
-      //         emoji: {
-      //           value: ["🤲🏼", "💎", "🤲🏼", "💎", "🎊", "🐸", "🐸", "🐸", "🐸", "🐹", "🐹"],
-      //         },
-      //       },
-      //     });
-      //   }
-      // if the user won something, then we should reload the LeaderBoards
-      // fetchAndLoadLeaderBoards();
-      //}
       setGameDataFetched(true);
       setIsFetchingDataMarshal(false);
       setViewDataRes(viewDataPayload);
@@ -497,7 +438,6 @@ const GetBitzSol = (props: any) => {
     if (_loadBlankGameCanvas && !_gameDataFetched) {
       return (
         <div className="relative overflow-hidden">
-          {/* {!modalMode && _isMemeBurnHappening && <Torch />} */}
           <img
             className={cn("rounded-[3rem] w-full", _isMemeBurnHappening && !modalMode ? "cursor-none" : "", modalMode ? "rounded" : "")}
             src={ImgGameCanvas}
@@ -550,7 +490,6 @@ const GetBitzSol = (props: any) => {
               </div>
             )}
           </div>
-          {/* {!modalMode && spritLayerPointsCloud()} */}
         </div>
       );
     }
@@ -668,43 +607,13 @@ const GetBitzSol = (props: any) => {
               </>
             )}
           </div>
-          {/* {!modalMode && spritLayerPointsCloud()} */}
         </div>
       );
     }
   }
-  // function spritLayerPointsCloud() {
-  //   return (
-  //     <div className="flex flex-col justify-center items-center w-[200px] h-[100px] absolute top-[2%] left-[2%] rounded-[3rem] bg-slate-50 text-gray-950 p-[2rem] border border-primary/50">
-  //       <p className="text-sm">Your {`<BiTz>`} Points</p>
-  //       <p className="text-[1.5rem] font-bold mt-[2px]">{bitzBalance === -2 ? `...` : <>{bitzBalance === -1 ? "0" : `${bitzBalance}`}</>}</p>
-  //     </div>
-  //   );
-  // }
 
-  // async function fetchAndLoadMyRankOnLeaderBoard() {
-  //   const callConfig = {
-  //     headers: {
-  //       "fwd-tokenid": SUPPORTED_SOL_COLLECTIONS[0],
-  //     },
-  //   };
-  //   try {
-  //     console.log("GET CALL -----> xpGamePrivate/playerRankOnLeaderBoard");
-  //     const res = await fetch(`${getApiWeb2Apps()}/datadexapi/xpGamePrivate/playerRankOnLeaderBoard?playerAddr=${address}`, callConfig);
-  //     const data = await res.json();
-  //     setMyRankOnAllTimeLeaderBoard(data.playerRank || "N/A");
-  //   } catch (err: any) {
-  //     const message = "Getting my rank on the all time leaderboard failed:" + err.message;
-  //     console.error(message);
-  //   }
-  // }
   return (
     <div>
-      {usingReferralCode !== "" && (
-        <div className="p-1 text-lg font-bold border border-[#35d9fa] rounded-[1rem] mb-[1rem] text-center">
-          You are playing with referral code {usingReferralCode}
-        </div>
-      )}
       <div className="relative w-full">
         <div className="absolute -z-1 w-full">
           <img
