@@ -76,6 +76,9 @@ import { useAccountStore, useMintStore } from "store";
 import { MintingModal } from "./MintingModal";
 import { useNftsStore } from "store/nfts";
 import { useNetworkConfiguration } from "contexts/sol/SolNetworkConfigurationProvider";
+import { itheumSolPreaccess } from "libs/Solana/SolViewData";
+import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
+import { sign } from "crypto";
 
 type TradeDataFormType = {
   dataStreamUrlForm: string;
@@ -109,7 +112,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const showInlineErrorsBeforeAction = false;
   const enableBondingInputForm = false;
 
-  const { publicKey, sendTransaction } = useWallet();
+  const { publicKey, sendTransaction, signMessage } = useWallet();
   const { connection } = useConnection();
   const { networkConfiguration } = useNetworkConfiguration();
 
@@ -731,6 +734,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         optionalSDKMintCallFields["imgGenSet"] = "set9_series_nfmeid_gen1";
       }
       if (!publicKey) return;
+      const { signatureNonce, solSignature } = await getAccessNonceAndSign();
+
       const {
         imageUrl: _imageUrl,
         metadataUrl: _metadataUrl,
@@ -811,6 +816,17 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       console.error(e);
       setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_TX_GEN_COMMAND_FAILED));
     }
+  };
+
+  const getAccessNonceAndSign = async () => {
+    const preAccessNonce = await itheumSolPreaccess();
+    const message = new TextEncoder().encode(preAccessNonce);
+    if (!signMessage) throw new Error("Missing singMessage function");
+    const signature = await signMessage(message);
+    if (!preAccessNonce || !signature || !publicKey) throw new Error("Missing data for viewData");
+    const encodedSignature = bs58.encode(signature);
+
+    return { signatureNonce: preAccessNonce, solSignature: encodedSignature };
   };
 
   const mintDataNftMx = async () => {
