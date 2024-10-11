@@ -1,10 +1,15 @@
 import React from "react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { IoConstructOutline } from "react-icons/io5";
-import { notSupportedOnChain } from "libs/config";
+import { IS_DEVNET, notSupportedOnChain } from "libs/config";
+import { SolEnvEnum } from "libs/Solana/config";
 
+///TODO maybe use this in the future for the disabled tabs in the UI (wallet , menu)
 export default function ChainSupportedInput({ feature, children }: { feature: any; children: any }) {
-  const { chainID } = useGetNetworkConfig();
+  const { chainID: mxChainID } = useGetNetworkConfig();
+  const { connected } = useWallet();
+  const chainID = connected ? (IS_DEVNET ? SolEnvEnum.devnet : SolEnvEnum.mainnet) : mxChainID;
 
   if (notSupportedOnChain(feature, chainID)) {
     if (children.length && children.length > 1) {

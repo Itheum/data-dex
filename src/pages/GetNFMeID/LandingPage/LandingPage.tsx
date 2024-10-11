@@ -7,11 +7,13 @@ import liteNfMeIDVaultHero from "assets/img/landing/nfme/lite-hero-nfme-landing-
 import mvxIcon from "assets/img/mx-logo.png";
 import solIcon from "assets/img/sol-logo.png";
 import { gtagGo } from "libs/utils";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 export const LandingPage = ({ onShowConnectWalletModal }: { onShowConnectWalletModal?: any }) => {
   const { colorMode } = useColorMode();
   const { address: mxAddress } = useGetAccountInfo();
   const navigate = useNavigate();
+  const { connected } = useWallet();
 
   return (
     <Box mb="10">
@@ -118,22 +120,26 @@ export const LandingPage = ({ onShowConnectWalletModal }: { onShowConnectWalletM
             <Box h="100px">
               <Image m="auto" mt="10px" boxSize="73px" height="auto" src={solIcon} alt="Solana " borderRadius="lg" />
             </Box>
-            <Text fontWeight="bold">Coming Very Soon to Solana</Text>
+            <Text fontWeight="bold">Live Now on Solana!</Text>
             <Spacer />
             <Button
               as={Link}
               m="auto"
               colorScheme="teal"
-              variant="outline"
+              variant="solid"
               px={7}
               py={6}
               rounded="lg"
               onClick={() => {
                 gtagGo("nfm", "mint", "sol");
+                if (connected) {
+                  navigate("/mintdata?launchTemplate=nfmeidvault");
+                } else {
+                  onShowConnectWalletModal("solana", "/mintdata?launchTemplate=nfmeidvault");
+                }
               }}
-              href="https://docs.google.com/forms/d/e/1FAIpQLScpguzOBjyQBj2iDzaI2E0wN9SIAQGoS92FPDM9qkk8B-rzFA/viewform"
               isExternal>
-              Claim NFMe ID NFT Airdrop on Solana
+              Mint Your NFMe ID Vault on Solana{" "}
             </Button>
           </Flex>
         </Flex>

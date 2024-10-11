@@ -1,9 +1,9 @@
+import { error } from "console";
 import React, { useEffect, useState } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Alert,
   AlertDescription,
-  AlertIcon,
   AlertTitle,
   Box,
   Button,
@@ -46,12 +46,15 @@ import {
   useSteps,
   useToast,
 } from "@chakra-ui/react";
+import { Program } from "@coral-xyz/anchor";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { BondContract, dataNftTokenIdentifier, SftMinter, LivelinessStake } from "@itheum/sdk-mx-data-nft/out";
+import { BondContract, dataNftTokenIdentifier, SftMinter, LivelinessStake, CNftSolMinter } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { Commitment, PublicKey, Transaction, TransactionConfirmationStrategy } from "@solana/web3.js";
 import axios from "axios";
 import BigNumber from "bignumber.js";
 import { Controller, useForm } from "react-hook-form";
@@ -65,9 +68,17 @@ import { IS_DEVNET, MENU, PRINT_UI_DEBUG_PANELS } from "libs/config";
 import { labels } from "libs/language";
 import { getApi } from "libs/MultiversX/api";
 import { UserDataType } from "libs/MultiversX/types";
+import { BONDING_PROGRAM_ID, SOLANA_EXPLORER_URL } from "libs/Solana/config";
+import { CoreSolBondStakeSc, IDL } from "libs/Solana/CoreSolBondStakeSc";
+import { createBondTransaction, fetchBondingConfig, fetchRewardsConfig, fetchSolNfts } from "libs/Solana/utils";
 import { getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "libs/utils";
 import { useAccountStore, useMintStore } from "store";
 import { MintingModal } from "./MintingModal";
+import { useNftsStore } from "store/nfts";
+import { useNetworkConfiguration } from "contexts/sol/SolNetworkConfigurationProvider";
+import { itheumSolPreaccess } from "libs/Solana/SolViewData";
+import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
+import { sign } from "crypto";
 
 type TradeDataFormType = {
   dataStreamUrlForm: string;
@@ -98,9 +109,13 @@ type TradeFormProps = {
 export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const { checkUrlReturns200, maxSupply, minRoyalties, maxRoyalties, antiSpamTax, dataNFTMarshalServiceStatus, userData, dataToPrefill, closeTradeFormModal } =
     props;
-
   const showInlineErrorsBeforeAction = false;
   const enableBondingInputForm = false;
+
+  const { publicKey, sendTransaction, signMessage } = useWallet();
+  const { connection } = useConnection();
+  const { networkConfiguration } = useNetworkConfiguration();
+
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
   const { colorMode } = useColorMode();
   const toast = useToast();
@@ -124,10 +139,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const [mintSessionId, setMintSessionId] = useState<any>(null);
   const [makePrimaryNFMeIdSessionId, setMakePrimaryNFMeIdSessionId] = useState<any>(null);
-  const [periods, setPeriods] = useState<any>([
-    { amount: "10000000000000000000", lockPeriod: 900 },
-    { amount: "10000000000000000000", lockPeriod: 2 },
-  ]);
+  const [periods, setPeriods] = useState<any>({ amount: "10000000000000000000", lockPeriod: 9000 });
   const [previousDataNFTStreamUrl, setPreviousDataNFTStreamUrl] = useState<string>("");
   const [wasPreviousCheck200StreamSuccess, setWasPreviousCheck200StreamSuccess] = useState<boolean>(false);
   const { isOpen: isMintFeeInfoVisible, onClose, onOpen } = useDisclosure({ defaultIsOpen: false });
@@ -145,9 +157,10 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const [nftImgAndMetadataLoadedOnIPFS, setNftImgAndMetadataLoadedOnIPFS] = useState<boolean>(false);
   const [mintTx, setMintTx] = useState<any>(undefined);
   const [bondVaultNonce, setBondVaultNonce] = useState<number | undefined>(0);
-  const [maxApy, setMaxApy] = useState<number>(0);
+  const [maxApy, setMaxApy] = useState<number>(80);
   const [needsMoreITHEUMToProceed, setNeedsMoreITHEUMToProceed] = useState<boolean>(false);
-
+  const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
+  const updateSolNfts = useNftsStore((state) => state.updateSolNfts);
   // S: React hook form + yup integration ---->
   // Declaring a validation schema for the form with the validation needed
   let preSchema = {
@@ -263,9 +276,9 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   };
 
   preSchema = { ...preSchema, ...bondingPreSchema };
+  const amountOfTime = timeUntil(lockPeriod[0].lockPeriod);
 
   const validationSchema = Yup.object().shape(preSchema);
-  const amountOfTime = timeUntil(lockPeriod[0].lockPeriod);
   // Destructure the methods needed from React Hook Form useForm component
   const {
     control,
@@ -286,16 +299,20 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       royaltiesForm: 0,
       bondingAmount:
         lockPeriod.length > 0
-          ? BigNumber(lockPeriod[0]?.amount)
-              .dividedBy(10 ** 18)
-              .toNumber()
+          ? publicKey
+            ? BigNumber(lockPeriod[0]?.amount).toNumber()
+            : BigNumber(lockPeriod[0]?.amount)
+                .dividedBy(10 ** 18)
+                .toNumber()
           : -1,
+
       bondingPeriod: lockPeriod.length > 0 ? amountOfTime.count : -1,
     }, // declaring default values for inputs not necessary to declare
     mode: "onChange", // mode stay for when the validation should be applied
     resolver: yupResolver(validationSchema), // telling to React Hook Form that we want to use yupResolver as the validation schema
   });
 
+  // console.log("validationSchema:", "errors:", errors, "isValid:", isValid);
   const dataNFTStreamUrl: string = isNFMeIDMint ? generatePrefilledNFMeIDDataStreamURL() : getValues("dataStreamUrlForm");
   const dataNFTPreviewUrl: string = getValues("dataPreviewUrlForm");
   const dataNFTTokenName: string = getValues("tokenNameForm");
@@ -362,6 +379,27 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   }, [mxAddress]);
 
   useEffect(() => {
+    async function fetchBondingRelatedDataFromSolana() {
+      if (publicKey) {
+        const programId = new PublicKey(BONDING_PROGRAM_ID);
+        const program = new Program<CoreSolBondStakeSc>(IDL, programId, {
+          connection,
+        });
+        fetchBondingConfig(program).then((periodsT: any) => {
+          ///TODO this can be changed with lockedPediod
+          const lockPeriod = periodsT.lockPeriod;
+          const amount = periodsT.bondAmount;
+          setPeriods({ lockPeriod, amount });
+        });
+        fetchRewardsConfig(program).then((rewardsT: any) => {
+          setMaxApy(rewardsT.maxApr);
+        });
+      }
+    }
+    fetchBondingRelatedDataFromSolana();
+  }, [publicKey]);
+
+  useEffect(() => {
     if (itheumBalance && antiSpamTax && bondingAmount) {
       // check if "defaults" are passed (i.e. we have the final values to calculate)
       if (itheumBalance >= 0 && antiSpamTax >= 0 && antiSpamTax >= 0) {
@@ -374,7 +412,13 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   }, [itheumBalance, antiSpamTax, bondingAmount]);
 
   function shouldMintYourDataNftBeDisabled(): boolean | undefined {
-    return !isValid || !readTermsChecked || !readAntiSpamFeeChecked || !readLivelinessBonding || itheumBalance < antiSpamTax + bondingAmount;
+    return (
+      !isValid ||
+      !readTermsChecked ||
+      (!publicKey && !readAntiSpamFeeChecked) ||
+      !readLivelinessBonding ||
+      (!publicKey ? itheumBalance < antiSpamTax + bondingAmount : itheumBalance < bondingAmount)
+    );
   }
 
   const closeProgressModal = () => {
@@ -434,15 +478,12 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   // once we save the img and json to IPFS, we have to ping to make sure it's there in order to verify the ipfs service worked
   // ... or else we mint a NFT that may have broken img and json. We can try upto 3 times to confirm, and if not - show an error to user
   async function confirmIfNftImgAndMetadataIsAvailableOnIPFS(imageUrlOnIPFS: string, metadataUrlOnIPFS: string) {
-    console.log("confirmIfNftImgAndMetadataIsAvailableOnIPFS");
-    console.log("imageUrlOnIPFS : ", imageUrlOnIPFS);
-    console.log("metadataUrlOnIPFS : ", metadataUrlOnIPFS);
+    // console.log("confirmIfNftImgAndMetadataIsAvailableOnIPFS");
+    // console.log("imageUrlOnIPFS : ", imageUrlOnIPFS);
+    // console.log("metadataUrlOnIPFS : ", metadataUrlOnIPFS);
 
     const imgCIDOnIPFS = imageUrlOnIPFS.split("ipfs/")[1];
     const metadataCIDOnIPFS = metadataUrlOnIPFS.split("ipfs/")[1];
-
-    console.log("imgCIDOnIPFS : ", imgCIDOnIPFS);
-    console.log("metadataCIDOnIPFS : ", metadataCIDOnIPFS);
 
     const imgOnIPFSCheckResult = await checkUrlReturns200(`https://gateway.pinata.cloud/ipfs/${imgCIDOnIPFS}`);
     const metadataOnIPFSCheckResult = await checkUrlReturns200(`https://gateway.pinata.cloud/ipfs/${metadataCIDOnIPFS}`, true);
@@ -465,7 +506,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
   // Step 1 of minting (user clicked on mint button on main form)
   const dataNFTSellSubmit = async () => {
-    if (!mxAddress) {
+    if (!mxAddress && !publicKey) {
       toast({
         title: labels.ERR_MINT_FORM_NO_WALLET_CONN,
         status: "error",
@@ -475,7 +516,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       return;
     }
 
-    if (userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit) {
+    // only if the user is connected with Mx wallet
+    if (mxAddress && userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit) {
       toast({
         title: `${labels.ERR_MINT_FORM_MINT_AGAIN_WAIT} ${new Date(userData.lastUserMintTime + userData.mintTimeLimit).toLocaleString()}`,
         status: "error",
@@ -484,7 +526,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       });
       return;
     }
-
     const isValidInput = validateBaseInput();
 
     if (isValidInput) {
@@ -505,86 +546,10 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const prepareMint = async () => {
     await sleep(3);
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s2: 1 }));
-
-    try {
-      const sftMinter = new SftMinter(IS_DEVNET ? "devnet" : "mainnet");
-
-      const optionalSDKMintCallFields: Record<string, any> = {
-        nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
-        extraAssets: [],
-      };
-
-      if (extraAssets && extraAssets.trim() !== "" && extraAssets.trim().toUpperCase() !== "NA") {
-        optionalSDKMintCallFields["extraAssets"] = [extraAssets.trim()];
-      }
-
-      // if it's nfme id vault, get the custom image layers
-      if (isNFMeIDMint) {
-        optionalSDKMintCallFields["imgGenBg"] = "bg5_series_nfmeid_gen1";
-        optionalSDKMintCallFields["imgGenSet"] = "set9_series_nfmeid_gen1";
-      }
-
-      const {
-        imageUrl: _imageUrl,
-        metadataUrl: _metadataUrl,
-        tx: dataNFTMintTX,
-      } = await sftMinter.mint(
-        new Address(mxAddress),
-        dataNFTTokenName,
-        dataNFTMarshalService,
-        dataNFTStreamUrl,
-        dataNFTPreviewUrl,
-        Math.ceil(dataNFTRoyalties * 100),
-        Number(dataNFTCopies),
-        datasetTitle,
-        datasetDescription,
-        BigNumber(periods[0].amount).toNumber() + new BigNumber(antiSpamTax).multipliedBy(10 ** 18).toNumber(),
-        Number(periods[0].lockPeriod),
-        donatePercentage * 100,
-        optionalSDKMintCallFields
-      );
-
-      // The actual data nft mint TX we will execute once we confirm the IPFS metadata has loaded
-      setMintTx(dataNFTMintTX);
-
-      // let's attempt to checks 3 times if the IPFS data is loaded and available on the gateway
-      let assetsLoadedOnIPFSwasSuccess = false;
-      let dataNFTTraitsFetched = null;
-
-      for (let tries = 0; tries < 3 && !assetsLoadedOnIPFSwasSuccess; tries++) {
-        console.log("tries", tries);
-        try {
-          await sleep(3);
-          const { result, dataNFTTraitsFromRes } = await confirmIfNftImgAndMetadataIsAvailableOnIPFS(_imageUrl, _metadataUrl);
-
-          assetsLoadedOnIPFSwasSuccess = result;
-          dataNFTTraitsFetched = dataNFTTraitsFromRes;
-          if (assetsLoadedOnIPFSwasSuccess) {
-            break;
-          } else {
-            await sleep(10); // wait 10 seconds extra if it's a fail in case IPFS is slow
-          }
-        } catch (err) {
-          setErrDataNFTStreamGeneric(new Error(labels.ERR_IPFS_ASSET_SAVE_FAILED));
-        }
-      }
-
-      if (assetsLoadedOnIPFSwasSuccess) {
-        setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s3: 1 }));
-        await sleep(5);
-
-        const imgCIDOnIPFS = _imageUrl.split("ipfs/")[1];
-        setDataNFTImg(`https://gateway.pinata.cloud/ipfs/${imgCIDOnIPFS}`);
-        setDataNFTTraits(dataNFTTraitsFetched);
-        setImageUrl(_imageUrl);
-        setMetadataUrl(_metadataUrl);
-        setNftImgAndMetadataLoadedOnIPFS(true);
-      } else {
-        setErrDataNFTStreamGeneric(new Error(labels.ERR_IPFS_ASSET_SAVE_FAILED));
-      }
-    } catch (e) {
-      console.error(e);
-      setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_TX_GEN_COMMAND_FAILED));
+    if (publicKey) {
+      await mintDataNftSol();
+    } else {
+      await mintDataNftMx();
     }
   };
 
@@ -661,6 +626,298 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     await sleep(3);
 
     setMintingSuccessful(true);
+  };
+
+  async function sendAndConfirmTransaction({
+    transaction,
+    customErrorMessage = "Transaction failed",
+    explorerLinkMessage = "View transaction on Solana Explorer",
+  }: {
+    transaction: Transaction;
+    customErrorMessage?: string;
+    explorerLinkMessage?: string;
+  }) {
+    try {
+      if (publicKey === null) {
+        throw new Error("Wallet not connected");
+      }
+      const latestBlockhash = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = latestBlockhash.blockhash;
+      transaction.feePayer = publicKey;
+      console.log("Transaction to send:", transaction);
+
+      const txSignature = await sendTransaction(transaction, connection, {
+        skipPreflight: true,
+        preflightCommitment: "finalized",
+      });
+
+      const strategy: TransactionConfirmationStrategy = {
+        signature: txSignature,
+        blockhash: latestBlockhash.blockhash,
+        lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
+      };
+
+      const confirmationPromise = connection.confirmTransaction(strategy, "finalized" as Commitment);
+
+      toast.promise(
+        confirmationPromise.then((response) => {
+          if (response.value.err) {
+            console.error("Transaction failed:", response.value);
+            throw new Error(customErrorMessage);
+          }
+        }),
+        {
+          success: {
+            title: "Transaction Confirmed",
+            description: (
+              <a
+                href={`${SOLANA_EXPLORER_URL}/tx${txSignature}?cluster=${networkConfiguration}`}
+                target="_blank"
+                rel="noreferrer"
+                style={{ textDecoration: "underline" }}>
+                View on Solana explorer <ExternalLinkIcon margin={3} />
+              </a>
+            ),
+            duration: 12000,
+            isClosable: true,
+          },
+          error: {
+            title: customErrorMessage,
+            description: (
+              <a
+                href={`${SOLANA_EXPLORER_URL}/tx/${txSignature}?cluster=${networkConfiguration}`}
+                target="_blank"
+                rel="noreferrer"
+                style={{ textDecoration: "underline" }}>
+                View on Solana explorer <ExternalLinkIcon margin={3} />
+              </a>
+            ),
+            duration: 12000,
+            isClosable: true,
+          },
+          loading: { title: "Processing Transaction", description: "Please wait..." },
+        }
+      );
+      const result = await confirmationPromise;
+      if (result.value.err) {
+        return false;
+      }
+      return txSignature;
+    } catch (error) {
+      toast({
+        title: "Transaction Failed",
+        description: customErrorMessage + " : " + (error as Error).message,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+
+      throw error;
+    }
+  }
+
+  const mintDataNftSol = async () => {
+    try {
+      const cNftSolMinter = new CNftSolMinter(IS_DEVNET ? "devnet" : "mainnet");
+      const optionalSDKMintCallFields: Record<string, any> = {
+        nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
+        extraAssets: [],
+      };
+
+      if (extraAssets && extraAssets.trim() !== "" && extraAssets.trim().toUpperCase() !== "NA") {
+        optionalSDKMintCallFields["extraAssets"] = [extraAssets.trim()];
+      }
+
+      // if it's nfme id vault, get the custom image layers
+      if (isNFMeIDMint) {
+        optionalSDKMintCallFields["imgGenBg"] = "bg5_series_nfmeid_gen1";
+        optionalSDKMintCallFields["imgGenSet"] = "set9_series_nfmeid_gen1";
+      }
+      if (!publicKey) return;
+      const { signatureNonce, solSignature } = await getAccessNonceAndSign();
+      if (signatureNonce && solSignature) {
+        optionalSDKMintCallFields["signatureNonce"] = signatureNonce;
+        optionalSDKMintCallFields["solSignature"] = solSignature;
+      }
+      const {
+        imageUrl: _imageUrl,
+        metadataUrl: _metadataUrl,
+        mintMeta: mintMeta,
+      } = await cNftSolMinter.mint(
+        publicKey?.toBase58(), // Solana User Wallet Address
+        dataNFTTokenName,
+        dataNFTMarshalService,
+        dataNFTStreamUrl,
+        dataNFTPreviewUrl,
+        datasetTitle,
+        datasetDescription,
+        optionalSDKMintCallFields
+      );
+
+      // The actual data nft mint TX we will execute once we confirm the IPFS metadata has loaded
+      // setMintTx(dataNFTMintTX);
+
+      if (!_imageUrl || _imageUrl.trim() === "" || !_metadataUrl || _metadataUrl.trim() === "") {
+        setErrDataNFTStreamGeneric(new Error(labels.ERR_IPFS_ASSET_SAVE_FAILED));
+      } else if (!mintMeta || mintMeta?.error || Object.keys(mintMeta).length === 0) {
+        setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_TX_GEN_COMMAND_FAILED));
+      } else {
+        // let's attempt to checks 3 times if the IPFS data is loaded and available on the gateway
+        await checkIfNftImgAndMetadataIsAvailableOnIPFS(_imageUrl, _metadataUrl);
+
+        // in solana, the mint was a success already
+
+        // if we have to auto-vault -- i.e most likely user first nfme id, then we can auto vault it with this TX
+        // setNftIdMEPrimaryVault();
+        setMintingSuccessful(true);
+        setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s4: 1 }));
+
+        const programId = new PublicKey(BONDING_PROGRAM_ID);
+        const addressBondsRewardsPda = PublicKey.findProgramAddressSync([Buffer.from("address_bonds_rewards"), publicKey?.toBuffer()], programId)[0];
+        const accountInfo = await connection.getAccountInfo(addressBondsRewardsPda);
+
+        const isExist = accountInfo !== null;
+        if (!isExist) {
+          const program = new Program<CoreSolBondStakeSc>(IDL, programId, {
+            connection,
+          });
+          const rewardsConfigPda = PublicKey.findProgramAddressSync([Buffer.from("rewards_config")], programId)[0];
+
+          const transactionInitializeAddress = await program.methods
+            .initializeAddress()
+            .accounts({
+              addressBondsRewards: addressBondsRewardsPda,
+              rewardsConfig: rewardsConfigPda,
+              authority: publicKey,
+            })
+            .transaction();
+
+          await sendAndConfirmTransaction({ transaction: transactionInitializeAddress, customErrorMessage: "Bonding Program address initialization failed" });
+        }
+
+        const bondTransaction = await createBondTransaction(mintMeta, publicKey, connection);
+        if (bondTransaction) {
+          try {
+            const result = await sendAndConfirmTransaction({ transaction: bondTransaction, customErrorMessage: "Failed to send the bonding transaction" });
+            if (result) {
+              updateItheumBalance(itheumBalance - bondingAmount);
+              setMakePrimaryNFMeIdSuccessful(true);
+              fetchSolNfts(publicKey?.toBase58()).then((nfts) => {
+                updateSolNfts(nfts);
+              });
+            }
+          } catch (error) {
+            setErrDataNFTStreamGeneric(new Error(labels.ERR_SUCCESS_MINT_BUT_BONDING_TRANSACTION_FAILED));
+            console.error("createBondTransaction failed to sign and send bond transaction", error);
+          }
+        } else {
+          setErrDataNFTStreamGeneric(new Error(labels.ERR_SUCCESS_MINT_BUT_BOND_NOT_CREATED));
+          console.error("createBondTransaction failed to create bond transaction", error);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_TX_GEN_COMMAND_FAILED));
+    }
+  };
+
+  const getAccessNonceAndSign = async () => {
+    const preAccessNonce = await itheumSolPreaccess();
+    const message = new TextEncoder().encode(preAccessNonce);
+    if (!signMessage) throw new Error("Missing singMessage function");
+    const signature = await signMessage(message);
+    if (!preAccessNonce || !signature || !publicKey) throw new Error("Missing data for viewData");
+    const encodedSignature = bs58.encode(signature);
+
+    return { signatureNonce: preAccessNonce, solSignature: encodedSignature };
+  };
+
+  const mintDataNftMx = async () => {
+    try {
+      const sftMinter = new SftMinter(IS_DEVNET ? "devnet" : "mainnet");
+
+      const optionalSDKMintCallFields: Record<string, any> = {
+        nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
+        extraAssets: [],
+      };
+
+      if (extraAssets && extraAssets.trim() !== "" && extraAssets.trim().toUpperCase() !== "NA") {
+        optionalSDKMintCallFields["extraAssets"] = [extraAssets.trim()];
+      }
+
+      // if it's nfme id vault, get the custom image layers
+      if (isNFMeIDMint) {
+        optionalSDKMintCallFields["imgGenBg"] = "bg5_series_nfmeid_gen1";
+        optionalSDKMintCallFields["imgGenSet"] = "set9_series_nfmeid_gen1";
+      }
+
+      const {
+        imageUrl: _imageUrl,
+        metadataUrl: _metadataUrl,
+        tx: dataNFTMintTX,
+      } = await sftMinter.mint(
+        new Address(mxAddress),
+        dataNFTTokenName,
+        dataNFTMarshalService,
+        dataNFTStreamUrl,
+        dataNFTPreviewUrl,
+        Math.ceil(dataNFTRoyalties * 100),
+        Number(dataNFTCopies),
+        datasetTitle,
+        datasetDescription,
+        BigNumber(periods[0].amount).toNumber() + new BigNumber(antiSpamTax).multipliedBy(10 ** 18).toNumber(),
+        Number(periods[0].lockPeriod),
+        donatePercentage * 100,
+        optionalSDKMintCallFields
+      );
+
+      // The actual data nft mint TX we will execute once we confirm the IPFS metadata has loaded
+      setMintTx(dataNFTMintTX);
+
+      // let's attempt to checks 3 times if the IPFS data is loaded and available on the gateway
+      await checkIfNftImgAndMetadataIsAvailableOnIPFS(_imageUrl, _metadataUrl);
+    } catch (e) {
+      console.error(e);
+      setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_TX_GEN_COMMAND_FAILED));
+    }
+  };
+
+  // checks 3 times if the IPFS data is loaded and available on the gateway
+  const checkIfNftImgAndMetadataIsAvailableOnIPFS = async (imageUrl: string, metadataUrl: string) => {
+    let assetsLoadedOnIPFSwasSuccess = false;
+    let dataNFTTraitsFetched = null;
+
+    for (let tries = 0; tries < 3 && !assetsLoadedOnIPFSwasSuccess; tries++) {
+      console.log("tries", tries);
+      try {
+        await sleep(3);
+        const { result, dataNFTTraitsFromRes } = await confirmIfNftImgAndMetadataIsAvailableOnIPFS(imageUrl, metadataUrl);
+
+        assetsLoadedOnIPFSwasSuccess = result;
+        dataNFTTraitsFetched = dataNFTTraitsFromRes;
+        if (assetsLoadedOnIPFSwasSuccess) {
+          break;
+        } else {
+          await sleep(10); // wait 10 seconds extra if it's a fail in case IPFS is slow
+        }
+      } catch (err) {
+        setErrDataNFTStreamGeneric(new Error(labels.ERR_IPFS_ASSET_SAVE_FAILED));
+      }
+    }
+
+    if (assetsLoadedOnIPFSwasSuccess) {
+      setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s3: 1 }));
+      await sleep(5);
+
+      const imgCIDOnIPFS = imageUrl.split("ipfs/")[1];
+      setDataNFTImg(`https://gateway.pinata.cloud/ipfs/${imgCIDOnIPFS}`);
+      setDataNFTTraits(dataNFTTraitsFetched);
+      setImageUrl(imageUrl);
+      setMetadataUrl(metadataUrl);
+      setNftImgAndMetadataLoadedOnIPFS(true);
+    } else {
+      setErrDataNFTStreamGeneric(new Error(labels.ERR_IPFS_ASSET_SAVE_FAILED));
+    }
   };
 
   // track minting TX
@@ -1361,44 +1618,49 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               )}
             </Box>
 
-            <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="30px !important">
-              Anti-Spam Fee
-            </Text>
-
-            <PopoverTooltip title="What is the Anti-Spam Fee">
-              <>
-                <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="3 !important">
-                  An {"anti-spam fee"} is necessary to prevent excessive concurrent mints from overwhelming the Data DEX. The fees are collected and
-                  redistributed back to Data Creators as Liveliness staking rewards or burned
-                </Text>
-              </>
-            </PopoverTooltip>
-
-            <Box mt="3 !important">
-              <Tag variant="solid" bgColor="#00C7971A" borderRadius="sm">
-                <Text px={2} py={2} color="teal.200" fontWeight="500">
-                  Anti-Spam Fee is currently {antiSpamTax < 0 ? "?" : antiSpamTax} ITHEUM tokens{" "}
-                </Text>
-              </Tag>
-            </Box>
-
-            {itheumBalance < antiSpamTax && (
-              <Text color="red.400" fontSize="sm" mt="1 !important">
-                {labels.ERR_MINT_FORM_NOT_ENOUGH_TAX}
+            {publicKey ? (
+              <Text fontWeight="500" color="teal.200" lineHeight="30.4px" fontSize="16px" mt="0px !important">
+                Note: A 2% royalty tax will be applied to your Data NFT. This tax will be equally split between the Itheum treasury and you.
               </Text>
-            )}
-
-            <Box minH={{ base: "5rem", md: "3.5rem" }}>
-              <Checkbox size="md" mt="3 !important" isChecked={readAntiSpamFeeChecked} onChange={(e) => setReadAntiSpamFeeChecked(e.target.checked)}>
-                I accept the deduction of the Anti-Spam Minting Fee from my wallet
-              </Checkbox>
-
-              {!readAntiSpamFeeChecked && showInlineErrorsBeforeAction && (
-                <Text color="red.400" fontSize="sm" mt="1 !important">
-                  You need to agree to Anti-Spam Minting deduction to proceed with your mint.
+            ) : (
+              <>
+                {" "}
+                <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="30px !important">
+                  Anti-Spam Fee
                 </Text>
-              )}
-            </Box>
+                <PopoverTooltip title="What is the Anti-Spam Fee">
+                  <>
+                    <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="3 !important">
+                      An {"anti-spam fee"} is necessary to prevent excessive concurrent mints from overwhelming the Data DEX. The fees are collected and
+                      redistributed back to Data Creators as Liveliness staking rewards or burned
+                    </Text>
+                  </>
+                </PopoverTooltip>
+                <Box mt="3 !important">
+                  <Tag variant="solid" bgColor="#00C7971A" borderRadius="sm">
+                    <Text px={2} py={2} color="teal.200" fontWeight="500">
+                      Anti-Spam Fee is currently {antiSpamTax < 0 ? "?" : antiSpamTax} ITHEUM tokens{" "}
+                    </Text>
+                  </Tag>
+                </Box>
+                {itheumBalance < antiSpamTax && (
+                  <Text color="red.400" fontSize="sm" mt="1 !important">
+                    {labels.ERR_MINT_FORM_NOT_ENOUGH_TAX}
+                  </Text>
+                )}
+                <Box minH={{ base: "5rem", md: "3.5rem" }}>
+                  <Checkbox size="md" mt="3 !important" isChecked={readAntiSpamFeeChecked} onChange={(e) => setReadAntiSpamFeeChecked(e.target.checked)}>
+                    I accept the deduction of the Anti-Spam Minting Fee from my wallet
+                  </Checkbox>
+
+                  {!readAntiSpamFeeChecked && showInlineErrorsBeforeAction && (
+                    <Text color="red.400" fontSize="sm" mt="1 !important">
+                      You need to agree to Anti-Spam Minting deduction to proceed with your mint.
+                    </Text>
+                  )}
+                </Box>{" "}
+              </>
+            )}
 
             <Flex>
               <ChainSupportedInput feature={MENU.SELL}>

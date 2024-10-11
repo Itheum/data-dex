@@ -9,10 +9,12 @@ import liteLivelinessRewards from "assets/img/landing/nfme/lite-liveliness-rewar
 import liteMintWithBond from "assets/img/landing/nfme/lite-mint-nfmeid-with-bond.png";
 import liteTopUp from "assets/img/landing/nfme/lite-nfmeid-topup.png";
 import { gtagGo } from "libs/utils";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 export const LivelinessStaking = ({ onShowConnectWalletModal }: { onShowConnectWalletModal?: any }) => {
   const { colorMode } = useColorMode();
   const { address: mxAddress } = useGetAccountInfo();
+  const { connected: connectedSolWallet } = useWallet();
   const navigate = useNavigate();
 
   return (
@@ -105,7 +107,7 @@ export const LivelinessStaking = ({ onShowConnectWalletModal }: { onShowConnectW
             onClick={() => {
               gtagGo("nfm", "try", "stake");
 
-              if (mxAddress) {
+              if (mxAddress || connectedSolWallet) {
                 navigate("/liveliness");
               } else {
                 onShowConnectWalletModal("mvx", "/liveliness");

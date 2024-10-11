@@ -78,7 +78,7 @@ const NftMediaComponent: React.FC<NftMediaComponentProps> = (props) => {
 
   return (
     <Container justifyContent="center" mt="0" h={imageHeight ? String(transformSizeInNumber(imageHeight) + 25) + "px" : "290px"} position="relative">
-      <Box style={{ marginTop: marginTop }} alignItems={"center"} justifyContent={"center"}>
+      <Box style={{ marginTop: marginTop }} rounded={"3xl"} alignItems={"center"} justifyContent={"center"}>
         <Flex justifyContent={{ base: "center" }} alignItems={"center"} flexDirection="column">
           <Flex justifyContent="center">
             <Card3DAnimation onClick={() => goToNextImage(true)}>
@@ -200,7 +200,7 @@ const NftMediaComponent: React.FC<NftMediaComponentProps> = (props) => {
             width: "236px",
             marginInlineStart: "1.2rem",
             marginInlineEnd: "1rem",
-            borderRadius: "32px",
+            borderRadius: "16px",
             cursor: "pointer",
             opacity: 0,
           }}

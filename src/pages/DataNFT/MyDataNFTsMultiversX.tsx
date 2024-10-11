@@ -24,23 +24,30 @@ import {
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+// import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { BsClockHistory } from "react-icons/bs";
 import { FaBrush, FaCoins } from "react-icons/fa";
 import { MdFavoriteBorder, MdLockOutline, MdOutlineShoppingBag } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { NoDataHere } from "components/Sections/NoDataHere";
+import WalletDataNftSol from "components/SolanaNfts/WalletDataNftSol";
 import InteractionTxTable from "components/Tables/InteractionTxTable";
 import useThrottle from "components/UtilComps/UseThrottle";
 import WalletDataNFTMX from "components/WalletDataNFTMX/WalletDataNFTMX";
 import { contractsForChain } from "libs/config";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
+// import { fetchSolNfts } from "libs/Solana/utils";
+// import { getApiDataDex } from "libs/utils";
 import { useMarketStore } from "store";
+
 import { BondingCards } from "./components/BondingCards";
 import { CompensationCards } from "./components/CompensationCards";
 import { FavoriteCards } from "./components/FavoriteCards";
 import { LivelinessStaking } from "./components/LivelinessStaking";
 import DataNFTDetails from "./DataNFTDetails";
+import { useNftsStore } from "store/nfts";
+import { LivelinessStakingSol } from "components/Liveliness/LivelinessStakingSol";
 
 export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { colorMode } = useColorMode();
@@ -50,12 +57,19 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const navigate = useNavigate();
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
-  const [dataNfts, setDataNfts] = useState<Array<DataNft>>([]);
-  const purchasedDataNfts: DataNft[] = dataNfts.filter((item) => item.creator != address);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
-  const { hasPendingTransactions } = useGetPendingTransactions();
+  // const { hasPendingTransactions } = useGetPendingTransactions();
   const [nftForDrawer, setNftForDrawer] = useState<DataNft | undefined>();
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
+
+  /// Solana NFTs
+  // const SHOW_NFTS_STEP = 10;
+  // const [numberOfSolNftsShown, setNumberOfSolNftsShown] = useState<number>(SHOW_NFTS_STEP);
+  const { mvxNfts, solNfts } = useNftsStore();
+  const purchasedDataNfts: DataNft[] = mvxNfts.filter((item) => item.creator != address);
+
+  const { publicKey, connected } = useWallet();
+  const solAddress = publicKey?.toBase58();
 
   useEffect(() => {
     window.scrollTo({
@@ -64,16 +78,18 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     });
   }, []);
 
-  useEffect(() => {
-    if (hasPendingTransactions) return;
-    (async () => {
-      const _dataNfts = await getOnChainNFTs();
-      const _alteredDataNfts = _dataNfts.map((nft) => new DataNft({ ...nft, balance: nft.balance ? nft.balance : 1 }));
-      setDataNfts(_alteredDataNfts);
-    })();
+  ///TODO Better check what is with that altered Data NFTs
+  // useEffect(() => {
+  //   if (hasPendingTransactions || !address) return;
+  //   (async () => {
+  //     const _dataNfts = await getOnChainNFTs();
+  //     const _alteredDataNfts = _dataNfts.map((nft) => new DataNft({ ...nft, balance: nft.balance ? nft.balance : 1 }));
+  //     console.log("DATANFTS", mvxNfts, "ALTERED", _alteredDataNfts);
+  //     //setDataNfts(_alteredDataNfts);
+  //   })();
 
-    setOneNFTImgLoaded(false);
-  }, [hasPendingTransactions]);
+  //   setOneNFTImgLoaded(false);
+  // }, [hasPendingTransactions]);
 
   const onChangeTab = useThrottle((newTabState: number) => {
     navigate(
@@ -86,23 +102,23 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       tabName: "Your Data NFT(s)",
       icon: FaBrush,
       isDisabled: false,
-      pieces: dataNfts.length,
+      pieces: mvxNfts.length + solNfts.length, ///TODO not best sollution but works, think of something else
     },
     {
       tabName: "Purchased",
       icon: MdOutlineShoppingBag,
-      isDisabled: false,
+      isDisabled: solAddress ? true : false,
       pieces: purchasedDataNfts.length,
     },
     {
       tabName: "Favorite",
       icon: MdFavoriteBorder,
-      isDisabled: false,
+      isDisabled: solAddress ? true : false,
     },
     {
       tabName: "Activity",
       icon: BsClockHistory,
-      isDisabled: false,
+      isDisabled: solAddress ? true : false,
     },
     {
       tabName: "Liveliness",
@@ -112,7 +128,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     {
       tabName: "Compensation",
       icon: FaCoins,
-      isDisabled: false,
+      isDisabled: solAddress ? true : false,
     },
   ];
 
@@ -126,7 +142,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   };
 
   function openNftDetailsDrawer(index: number) {
-    setNftForDrawer(dataNfts[index]);
+    setNftForDrawer(mvxNfts[index]);
     onOpenDataNftDetails();
   }
 
@@ -177,27 +193,30 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
           </TabList>
           <TabPanels>
             {/* Your Data NFTs */}
+
             <TabPanel mt={2} width={"full"}>
-              {tabState === 1 && dataNfts.length > 0 ? (
+              {tabState === 1 && (mvxNfts.length > 0 || solNfts.length > 0) ? (
                 <SimpleGrid
                   columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
                   spacingY={4}
                   mx={{ base: 0, "2xl": "24 !important" }}
                   mt="5 !important"
                   justifyItems={"center"}>
-                  {dataNfts.map((item, index) => (
-                    <WalletDataNFTMX
-                      key={index}
-                      id={index}
-                      hasLoaded={oneNFTImgLoaded}
-                      setHasLoaded={setOneNFTImgLoaded}
-                      maxPayment={maxPaymentFeeMap[itheumToken]}
-                      sellerFee={marketRequirements ? marketRequirements.sellerTaxPercentage : 0}
-                      openNftDetailsDrawer={openNftDetailsDrawer}
-                      isProfile={false}
-                      {...item}
-                    />
-                  ))}
+                  {mvxNfts.length > 0
+                    ? mvxNfts.map((item, index) => (
+                        <WalletDataNFTMX
+                          key={index}
+                          id={index}
+                          hasLoaded={oneNFTImgLoaded}
+                          setHasLoaded={setOneNFTImgLoaded}
+                          maxPayment={maxPaymentFeeMap[itheumToken]}
+                          sellerFee={marketRequirements ? marketRequirements.sellerTaxPercentage : 0}
+                          openNftDetailsDrawer={openNftDetailsDrawer}
+                          isProfile={false}
+                          {...item}
+                        />
+                      ))
+                    : solNfts.map((item, index) => <WalletDataNftSol key={index} index={index} solDataNft={item} />)}
                 </SimpleGrid>
               ) : (
                 <Flex onClick={getOnChainNFTs}>
@@ -256,8 +275,17 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
             <TabPanel mt={2} width={"full"}>
               {tabState === 5 ? (
                 <Flex flexDirection={{ base: "column" }} alignItems="start">
-                  <LivelinessStaking />
-                  <BondingCards />
+                  {connected ? (
+                    <>
+                      <LivelinessStakingSol />
+                      {/* <BondingCardsSol /> */}
+                    </>
+                  ) : (
+                    <>
+                      <LivelinessStaking />
+                      <BondingCards />
+                    </>
+                  )}
                 </Flex>
               ) : (
                 <Flex onClick={getOnChainNFTs}>

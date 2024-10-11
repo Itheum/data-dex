@@ -45,6 +45,17 @@ const contracts = {
       dataNftMarketContractAddress: "erd1qqqqqqqqqqqqqpgqay2r64l9nhhvmaqw4qanywfd0954w2m3c77qm7drxc",
     },
   },
+  solana: {
+    testnet: {
+      itheumTokenContractAddress: "iTHdo2NJbcxy5rKKMwNaffUxZA2zK6DPJirgLgwRkA1",
+    },
+    devnet: {
+      itheumTokenContractAddress: "iTH89rapYE2GG4B77UjoEqnY7bRAPQrUs6LRAXQEHUo",
+    },
+    mainnet: {
+      itheumTokenContractAddress: "iTHdo2NJbcxy5rKKMwNaffUxZA2zK6DPJirgLgwRkA1", ///TODO change whit the correct one
+    },
+  },
 };
 
 // Matic Polygon Contracts
@@ -78,6 +89,11 @@ export const claimsContractAddress_Mx_Mainnet = contracts.mx["mainnet"].claimsCo
 export const faucetContractAddress_Mx_Mainnet = contracts.mx["mainnet"].faucetContractAddress;
 export const dataNftMintContractAddress_Mx_Mainnet = contracts.mx["mainnet"].dataNftMintContractAddress;
 export const dataNftMarketContractAddress_Mx_Mainnet = contracts.mx["mainnet"].dataNftMarketContractAddress;
+
+// Solana Contracts
+export const itheumTokenContractAddress_Solana_Testnet = contracts.solana["testnet"].itheumTokenContractAddress;
+export const itheumTokenContractAddress_Solana_Devnet = contracts.solana["devnet"].itheumTokenContractAddress;
+export const itheumTokenContractAddress_Solana_Mainnet = contracts.solana["mainnet"].itheumTokenContractAddress;
 
 // OTHER CHAIN CONTRACTS
 export const tokenContractAddress_testnetHarmony = "0xcbEAF3BDe82155F56486Fb5a1072cb8baAf547cc";
