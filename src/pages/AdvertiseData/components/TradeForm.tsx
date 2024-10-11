@@ -735,7 +735,10 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       }
       if (!publicKey) return;
       const { signatureNonce, solSignature } = await getAccessNonceAndSign();
-
+      if (signatureNonce && solSignature) {
+        optionalSDKMintCallFields["signatureNonce"] = signatureNonce;
+        optionalSDKMintCallFields["solSignature"] = solSignature;
+      }
       const {
         imageUrl: _imageUrl,
         metadataUrl: _metadataUrl,

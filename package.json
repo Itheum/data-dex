@@ -9,7 +9,7 @@
     "@emotion/react": "11.11.4",
     "@emotion/styled": "11.11.5",
     "@hookform/resolvers": "3.6.0",
-    "@itheum/sdk-mx-data-nft": "3.7.0-alpha.5",
+    "@itheum/sdk-mx-data-nft": "3.7.0-alpha.7",
     "@itheum/sdk-mx-enterprise": "0.3.0",
     "@metaplex-foundation/digital-asset-standard-api": "1.0.4",
     "@multiversx/sdk-core": "13.2.1",
