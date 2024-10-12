@@ -1430,7 +1430,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               <Heading size="lg" fontSize="22px" mt={3} mb={5} lineHeight="tall">
                 <Highlight
                   query={[`${bondingAmount.toLocaleString()} $ITHEUM`, `${bondingPeriod.toString()} ${amountOfTimeUnit}`, `${maxApy}% Max APR`]}
-                  styles={{ px: "2", py: "1", rounded: "full", bg: "teal.200" }}>
+                  styles={{ px: "2", py: "0", rounded: "full", bg: "teal.200" }}>
                   {`To mint your ${isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} , you need to bond ${bondingAmount.toLocaleString()} $ITHEUM for ${bondingPeriod.toString()} ${amountOfTimeUnit}. Bonds earn an estimated ${maxApy}% Max APR as staking rewards.`}
                 </Highlight>
               </Heading>

@@ -169,6 +169,7 @@ export const LivelinessStakingSol: React.FC = () => {
       setCombinedLiveliness(data.weightedLivelinessScore.toNumber() / 100);
       setAddressClaimableAmount(data.claimableAmount.toNumber() / 10 ** 9);
       setNumberOfBonds(data.currentIndex);
+      if (data.currentIndex === 0) setAllInfoLoading(false);
     } catch (error) {
       console.error("Failed to fetch address rewards data:", error);
     }
@@ -899,7 +900,7 @@ export const LivelinessStakingSol: React.FC = () => {
           <Flex w="100%" h="20rem" justifyContent="center" alignItems="center">
             <Spinner size="md" color="teal.200" />
           </Flex>
-        ) : bonds?.length === 0 ? (
+        ) : numberOfBonds === 0 ? (
           <NoDataHere imgFromTop="2" />
         ) : (
           bonds?.map((currentBond, index) => {
