@@ -922,7 +922,7 @@ export const LivelinessStakingSol: React.FC = () => {
                   <Box minW="250px" textAlign="center">
                     <Box>
                       <NftMediaComponent
-                        ///TODO extra asset nftMedia={dataNft.content.files as []}
+                        ///TODO? extra asset nftMedia={dataNft.content.files as []}
                         imageUrls={[dataNft.content.links && dataNft.content.links["image"] ? (dataNft.content.links["image"] as string) : DEFAULT_NFT_IMAGE]}
                         imageHeight="160px"
                         imageWidth="160px"

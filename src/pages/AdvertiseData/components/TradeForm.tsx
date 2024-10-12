@@ -78,7 +78,6 @@ import { useNftsStore } from "store/nfts";
 import { useNetworkConfiguration } from "contexts/sol/SolNetworkConfigurationProvider";
 import { itheumSolPreaccess } from "libs/Solana/SolViewData";
 import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
-import { sign } from "crypto";
 
 type TradeDataFormType = {
   dataStreamUrlForm: string;
@@ -535,7 +534,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       setIsMintingModalOpen(true);
 
       // we simulate the "encrypting" step for UX, as this was prev done manually and now its all part of the .mint() SDK
-      await sleep(2);
+      await sleep(1);
       setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s1: 1 }));
 
       prepareMint();
@@ -544,7 +543,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
   // Step 2 of minting (call the SDK mint - encrypt stream, get the gen image and save new image and traits to IPFS)
   const prepareMint = async () => {
-    await sleep(3);
+    await sleep(1);
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s2: 1 }));
     if (publicKey) {
       await mintDataNftSol();
@@ -623,7 +622,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       setMakePrimaryNFMeIdSessionId(sessionId);
     }
 
-    await sleep(3);
+    await sleep(1);
 
     setMintingSuccessful(true);
   };
@@ -644,7 +643,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       const latestBlockhash = await connection.getLatestBlockhash();
       transaction.recentBlockhash = latestBlockhash.blockhash;
       transaction.feePayer = publicKey;
-      console.log("Transaction to send:", transaction);
 
       const txSignature = await sendTransaction(transaction, connection, {
         skipPreflight: true,
@@ -890,7 +888,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     for (let tries = 0; tries < 3 && !assetsLoadedOnIPFSwasSuccess; tries++) {
       console.log("tries", tries);
       try {
-        await sleep(3);
+        await sleep(tries);
         const { result, dataNFTTraitsFromRes } = await confirmIfNftImgAndMetadataIsAvailableOnIPFS(imageUrl, metadataUrl);
 
         assetsLoadedOnIPFSwasSuccess = result;
@@ -898,7 +896,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         if (assetsLoadedOnIPFSwasSuccess) {
           break;
         } else {
-          await sleep(10); // wait 10 seconds extra if it's a fail in case IPFS is slow
+          await sleep(tries * 5); // wait 10 seconds extra if it's a fail in case IPFS is slow
         }
       } catch (err) {
         setErrDataNFTStreamGeneric(new Error(labels.ERR_IPFS_ASSET_SAVE_FAILED));
@@ -907,7 +905,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
     if (assetsLoadedOnIPFSwasSuccess) {
       setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s3: 1 }));
-      await sleep(5);
+      await sleep(1);
 
       const imgCIDOnIPFS = imageUrl.split("ipfs/")[1];
       setDataNFTImg(`https://gateway.pinata.cloud/ipfs/${imgCIDOnIPFS}`);
@@ -1499,7 +1497,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             </Flex>
 
             <Box>
-              {itheumBalance < antiSpamTax + bondingAmount && (
+              {(!publicKey ? itheumBalance < antiSpamTax + bondingAmount : itheumBalance < bondingAmount) && (
                 <Text color="red.400" fontSize="md" mt="1 !important" mb="2">
                   {labels.ERR_MINT_FORM_NOT_ENOUGH_BOND}
                 </Text>
