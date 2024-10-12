@@ -201,7 +201,7 @@ export const LivelinessStakingSol: React.FC = () => {
       setNftMeId(nftMeId);
       setAllInfoLoading(false);
     }
-  }, [nftMeIdBond]); ///TODO do I still need this one ?
+  }, [nftMeIdBond]);
 
   // rewardsPerShare, accumulatedRewards, lastRewardSlot,  rewardsPerSlot, rewardsReserve, rewardsPerShare, maxApr, rewardsState
   useEffect(() => {
@@ -284,8 +284,8 @@ export const LivelinessStakingSol: React.FC = () => {
       retrieveBondsAndNftMeIdVault(userPublicKey, numberOfBonds, programSol).then(({ bonds, nftMeIdVault, weightedLivelinessScore }) => {
         if (nftMeIdVault === undefined) {
           setAllInfoLoading(false);
-          navigate("/datanfts/wallet");
         }
+
         setBonds(bonds);
         setNftMeIdBond(nftMeIdVault);
         setCurrentLiveLinessScoreLIVE(weightedLivelinessScore);
@@ -655,7 +655,6 @@ export const LivelinessStakingSol: React.FC = () => {
       </VStack>
     );
   };
-  ///TODO CHECK case if user withdraw the nftmeIdBond (last one) and then reinvest the rewards --- shoudl solve this when removing anny NftMeIdVault
   return (
     <Flex flexDirection={"column"} width="100%">
       <Flex flexDirection={{ base: "column", md: "row" }} width="100%" justifyContent="space-between" pt={{ base: "0", md: "5" }}>
@@ -724,13 +723,9 @@ export const LivelinessStakingSol: React.FC = () => {
                           colorScheme="teal"
                           px={6}
                           width="180px"
-                          isDisabled={!userPublicKey || nftMeIdBond === undefined || claimableAmount < 1 || combinedLiveliness === 0 || hasPendingTransaction}
+                          isDisabled={!userPublicKey || nftMeId === undefined || claimableAmount < 1 || combinedLiveliness === 0 || hasPendingTransaction}
                           onClick={() => {
-                            if (combinedLiveliness >= 95) {
-                              handleReinvestRewardsClick();
-                            } else {
-                              setReinvestRewardsConfirmationWorkflow(true);
-                            }
+                            setReinvestRewardsConfirmationWorkflow(true);
                           }}>
                           Reinvest Rewards
                         </Button>
@@ -1078,13 +1073,24 @@ export const LivelinessStakingSol: React.FC = () => {
           }}
           bodyContent={
             <>
-              <Text mb="5">To reinvest Max Accumulated Rewards, your Combined Liveliness must be over 95%. Yours is currently {combinedLiveliness}%</Text>
-              <Text mt="5">To boost Combined Liveliness, renew the bond on each Data NFT before reinvesting.</Text>
-              <Text mt="5">Cancel to renew bonds first, or proceed if {`you're`} okay with lower rewards.</Text>
+              <Text fontWeight={"bold"} fontSize={"xl"} color={"teal.200"}>
+                Info: The reinvested amount will be added to the latest active bond and will renew the bond.
+              </Text>{" "}
+              <Text mt={1} fontSize=".75rem">{`New expiry will be ${calculateNewPeriodAfterNewBond(bondConfigData?.lockPeriod.toNumber())}`}</Text>
+              {combinedLiveliness <= 95 && (
+                <>
+                  <Text mb="3" fontWeight={"bold"} fontSize={"lg"} mt="7">
+                    Get Max Rewards if Combined Liveliness {`>`} 95%
+                  </Text>
+                  <Text mb="5">To reinvest Max Accumulated Rewards, your Combined Liveliness must be over 95%. Yours is currently {combinedLiveliness}%</Text>
+                  <Text mt="5">To boost Combined Liveliness, renew the bond on each Data NFT before reinvesting.</Text>
+                  <Text mt="5">Cancel to renew bonds first, or proceed if {`you're`} okay with lower rewards.</Text>
+                </>
+              )}
             </>
           }
           dialogData={{
-            title: "Get Max Rewards if Combined Liveliness > 95%",
+            title: "Reinvest Rewards",
             proceedBtnTxt: "Proceed with Reinvest Rewards",
             cancelBtnText: "Cancel and Close",
           }}

@@ -291,12 +291,12 @@ export async function retrieveBondsAndNftMeIdVault(
     let totalBondAmount = new BN(0);
     let totalBondWeight = new BN(0);
     const currentTimestampt = Math.floor(Date.now() / 1000);
-
+    ///TODO THIS CAN BE improved by using a single fetch, only for the modified bond. not all of them if i just top up one
     for (let i = 1; i <= lastIndex; i++) {
       const bondPda = PublicKey.findProgramAddressSync([Buffer.from("bond"), userPublicKey.toBuffer(), Buffer.from([i])], program.programId)[0];
       const bond = await program.account.bond.fetch(bondPda);
       const bondUpgraded = { ...bond, bondId: i, unbondTimestamp: bond.unbondTimestamp.toNumber(), bondTimestamp: bond.bondTimestamp.toNumber() };
-      if (bond.isVault) {
+      if (bond.isVault && bond.state === 1) {
         nftMeIdVault = bondUpgraded;
       }
       if (bond.state === 1) {
