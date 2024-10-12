@@ -685,7 +685,7 @@ export const LivelinessStakingSol: React.FC = () => {
                   $ITHEUM
                 </Text>
                 <Text fontSize="xl">Potential Rewards If Combined Liveliness &gt;95%: {formatNumberToShort(claimableAmount)} $ITHEUM</Text>
-                <HStack mt={5} justifyContent="center" alignItems="flex-start" width="100%">
+                <HStack mt={5} justifyContent={{ base: "center", md: "start" }} alignItems="flex-start" width="100%">
                   <Flex flexDirection={{ base: "column", md: "row" }}>
                     <VStack mb={{ base: 5, md: 0 }}>
                       <Tooltip
@@ -906,7 +906,6 @@ export const LivelinessStakingSol: React.FC = () => {
             const dataNft = solNfts?.find((dataNft) => currentBond.assetId.toString() === dataNft.id);
             if (!dataNft) return null;
             const metadata = dataNft.content.metadata;
-
             return (
               <Card
                 _disabled={{ cursor: "not-allowed", opacity: "0.7" }}
@@ -918,17 +917,18 @@ export const LivelinessStakingSol: React.FC = () => {
                 p={5}
                 w="100%"
                 aria-disabled={currentBond.state === 0}>
-                <Flex flexDirection={{ base: "column", md: "row" }}>
+                <Flex gap={5} flexDirection={{ base: "column", md: "row" }}>
                   <Box minW="250px" textAlign="center">
                     <Box>
                       <NftMediaComponent
+                        ///TODO extra asset nftMedia={dataNft.content.files as []}
                         imageUrls={[dataNft.content.links && dataNft.content.links["image"] ? (dataNft.content.links["image"] as string) : DEFAULT_NFT_IMAGE]}
                         imageHeight="160px"
                         imageWidth="160px"
                         borderRadius="10px"
                       />
                     </Box>
-                    <Flex gap={4} pt={3} flexDirection={"column"} alignItems="start" w="100%">
+                    <Flex pt={3} flexDirection={"column"} alignItems="center" w="100%">
                       <Button
                         w={"100%"}
                         colorScheme="teal"
@@ -939,10 +939,10 @@ export const LivelinessStakingSol: React.FC = () => {
                         }}>
                         Renew Bond
                       </Button>
-                      <Text fontSize=".75rem">{`New expiry will be ${calculateNewPeriodAfterNewBond(bondConfigData?.lockPeriod.toNumber())}`}</Text>
+                      <Text mt={1} fontSize=".75rem">{`New expiry will be ${calculateNewPeriodAfterNewBond(bondConfigData?.lockPeriod.toNumber())}`}</Text>
                     </Flex>
                     <Flex gap={4} pt={3} flexDirection={"column"} w="100%" alignItems="center">
-                      <Flex flexDirection={{ base: "column" }} gap={4} pt={3} alignItems="center" w="100%">
+                      <Flex flexDirection={{ base: "column" }} gap={2} pt={3} alignItems="center" w="100%">
                         {!checkIfBondIsExpired(currentBond?.unbondTimestamp) ? (
                           <Button
                             w="100%"

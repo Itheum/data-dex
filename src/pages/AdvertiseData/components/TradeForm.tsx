@@ -1266,41 +1266,42 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                   </Text>
                   <FormErrorMessage>{errors?.numberOfCopiesForm?.message}</FormErrorMessage>
                 </FormControl>
+                {!publicKey && (
+                  <FormControl isInvalid={!!errors.royaltiesForm} minH={"8.5rem"}>
+                    <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
+                      Royalties
+                    </Text>
 
-                <FormControl isInvalid={!!errors.royaltiesForm} minH={"8.5rem"}>
-                  <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
-                    Royalties
-                  </Text>
-
-                  <Controller
-                    control={control}
-                    render={({ field: { onChange } }) => (
-                      <NumberInput
-                        mt="3 !important"
-                        size="md"
-                        id="royaltiesForm"
-                        maxW={24}
-                        step={1}
-                        defaultValue={dataNFTRoyalties}
-                        isDisabled={isNFMeIDMint}
-                        min={minRoyalties > 0 ? minRoyalties : 0}
-                        max={maxRoyalties > 0 ? maxRoyalties : 0}
-                        isValidCharacter={isValidNumericCharacter}
-                        onChange={(event) => onChange(event)}>
-                        <NumberInputField />
-                        <NumberInputStepper>
-                          <NumberIncrementStepper />
-                          <NumberDecrementStepper />
-                        </NumberInputStepper>
-                      </NumberInput>
-                    )}
-                    name="royaltiesForm"
-                  />
-                  <Text color="gray.400" fontSize="sm" mt={"1"}>
-                    Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
-                  </Text>
-                  <FormErrorMessage>{errors?.royaltiesForm?.message}</FormErrorMessage>
-                </FormControl>
+                    <Controller
+                      control={control}
+                      render={({ field: { onChange } }) => (
+                        <NumberInput
+                          mt="3 !important"
+                          size="md"
+                          id="royaltiesForm"
+                          maxW={24}
+                          step={1}
+                          defaultValue={dataNFTRoyalties}
+                          isDisabled={isNFMeIDMint}
+                          min={minRoyalties > 0 ? minRoyalties : 0}
+                          max={maxRoyalties > 0 ? maxRoyalties : 0}
+                          isValidCharacter={isValidNumericCharacter}
+                          onChange={(event) => onChange(event)}>
+                          <NumberInputField />
+                          <NumberInputStepper>
+                            <NumberIncrementStepper />
+                            <NumberDecrementStepper />
+                          </NumberInputStepper>
+                        </NumberInput>
+                      )}
+                      name="royaltiesForm"
+                    />
+                    <Text color="gray.400" fontSize="sm" mt={"1"}>
+                      Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
+                    </Text>
+                    <FormErrorMessage>{errors?.royaltiesForm?.message}</FormErrorMessage>
+                  </FormControl>
+                )}
               </Box>
             </Flex>
 
@@ -1341,69 +1342,70 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               />
               <FormErrorMessage>{errors?.extraAssets?.message}</FormErrorMessage>
             </FormControl>
-
-            <FormControl isInvalid={!!errors.donatePercentage} minH={"8.5rem"}>
-              <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt={{ base: "1", md: "4" }}>
-                Donate Percentage
-              </Text>
-
-              <PopoverTooltip title="What is a Donate Percentage?">
-                <>
-                  When you mint, you can optionally choose to donate a percentage of the total supply to the community treasury, which will then be used for
-                  community airdrops to engaged community members who actively use the Itheum BiTz XP system. This is a great way to get an &quot;engaged
-                  fanbase&quot; for your new collection and drive awareness. Learn more{" "}
-                  <Link
-                    href="https://docs.itheum.io/product-docs/product/data-dex/minting-a-data-nft/creator-donations-for-community-airdrops"
-                    isExternal
-                    rel="noreferrer"
-                    color="teal.200">
-                    here
-                  </Link>
-                </>
-              </PopoverTooltip>
-
-              <Box p="5">
-                <Controller
-                  control={control}
-                  render={({ field: { onChange, value } }) => (
-                    <Slider
-                      id="slider"
-                      defaultValue={userData && userData?.maxDonationPecentage / 100 / 2}
-                      isDisabled={isNFMeIDMint}
-                      min={0}
-                      max={userData && userData?.maxDonationPecentage / 100}
-                      colorScheme="teal"
-                      onChange={(v) => onChange(v)}
-                      onMouseEnter={() => setShowTooltip(true)}
-                      onMouseLeave={() => setShowTooltip(false)}>
-                      <SliderMark value={(userData && userData?.maxDonationPecentage / 100) ?? 0} mt="1" ml="-2.5" fontSize="sm">
-                        {(userData && userData?.maxDonationPecentage / 100) ?? 0}%
-                      </SliderMark>
-                      <SliderTrack>
-                        <SliderFilledTrack />
-                      </SliderTrack>
-                      <Tooltip hasArrow bg="teal.500" color="white" placement="top" isOpen={showTooltip} label={`${value}%`}>
-                        <SliderThumb />
-                      </Tooltip>
-                    </Slider>
-                  )}
-                  name="donatePercentage"
-                />
-                <Text color="gray.400" fontSize="sm" mt={"1"}>
-                  Min: 0%, Max: {userData && userData?.maxDonationPecentage / 100}%
+            {!publicKey && (
+              <FormControl isInvalid={!!errors.donatePercentage} minH={"8.5rem"}>
+                <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt={{ base: "1", md: "4" }}>
+                  Donate Percentage
                 </Text>
-              </Box>
 
-              <Text color="teal.200" fontSize="xl" mt={"1"}>
-                Quantity that goes to the community treasury: {Math.floor(dataNFTCopies * (donatePercentage / 100))} Data NFTs
-              </Text>
-              {Math.floor(dataNFTCopies * (donatePercentage / 100)) === 0 && (
-                <Text color="darkorange" fontSize="sm" mt={"1"}>
-                  As the number of copies is low, no Data NFTs will be sent for donations
+                <PopoverTooltip title="What is a Donate Percentage?">
+                  <>
+                    When you mint, you can optionally choose to donate a percentage of the total supply to the community treasury, which will then be used for
+                    community airdrops to engaged community members who actively use the Itheum BiTz XP system. This is a great way to get an &quot;engaged
+                    fanbase&quot; for your new collection and drive awareness. Learn more{" "}
+                    <Link
+                      href="https://docs.itheum.io/product-docs/product/data-dex/minting-a-data-nft/creator-donations-for-community-airdrops"
+                      isExternal
+                      rel="noreferrer"
+                      color="teal.200">
+                      here
+                    </Link>
+                  </>
+                </PopoverTooltip>
+
+                <Box p="5">
+                  <Controller
+                    control={control}
+                    render={({ field: { onChange, value } }) => (
+                      <Slider
+                        id="slider"
+                        defaultValue={userData && userData?.maxDonationPecentage / 100 / 2}
+                        isDisabled={isNFMeIDMint}
+                        min={0}
+                        max={userData && userData?.maxDonationPecentage / 100}
+                        colorScheme="teal"
+                        onChange={(v) => onChange(v)}
+                        onMouseEnter={() => setShowTooltip(true)}
+                        onMouseLeave={() => setShowTooltip(false)}>
+                        <SliderMark value={(userData && userData?.maxDonationPecentage / 100) ?? 0} mt="1" ml="-2.5" fontSize="sm">
+                          {(userData && userData?.maxDonationPecentage / 100) ?? 0}%
+                        </SliderMark>
+                        <SliderTrack>
+                          <SliderFilledTrack />
+                        </SliderTrack>
+                        <Tooltip hasArrow bg="teal.500" color="white" placement="top" isOpen={showTooltip} label={`${value}%`}>
+                          <SliderThumb />
+                        </Tooltip>
+                      </Slider>
+                    )}
+                    name="donatePercentage"
+                  />
+                  <Text color="gray.400" fontSize="sm" mt={"1"}>
+                    Min: 0%, Max: {userData && userData?.maxDonationPecentage / 100}%
+                  </Text>
+                </Box>
+
+                <Text color="teal.200" fontSize="xl" mt={"1"}>
+                  Quantity that goes to the community treasury: {Math.floor(dataNFTCopies * (donatePercentage / 100))} Data NFTs
                 </Text>
-              )}
-              <FormErrorMessage>{errors?.donatePercentage?.message}</FormErrorMessage>
-            </FormControl>
+                {Math.floor(dataNFTCopies * (donatePercentage / 100)) === 0 && (
+                  <Text color="darkorange" fontSize="sm" mt={"1"}>
+                    As the number of copies is low, no Data NFTs will be sent for donations
+                  </Text>
+                )}
+                <FormErrorMessage>{errors?.donatePercentage?.message}</FormErrorMessage>
+              </FormControl>
+            )}
 
             <Flex justifyContent="flex-end" gap={3} pt={5} mt={5}>
               <Button size="lg" onClick={() => setActiveStep(activeStep - 1)}>
@@ -1685,7 +1687,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               makePrimaryNFMeIdSuccessful={makePrimaryNFMeIdSuccessful}
               onChainMint={handleOnChainMint}
               isNFMeIDMint={isNFMeIDMint}
-              isAutoVault={(dataToPrefill?.shouldAutoVault ?? false) && !bondVaultNonce}
+              isAutoVault={publicKey ? true : (dataToPrefill?.shouldAutoVault ?? false) && !bondVaultNonce}
               nftImgAndMetadataLoadedOnIPFS={nftImgAndMetadataLoadedOnIPFS}
             />
           </>
