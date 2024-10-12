@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { UserDataType } from "libs/MultiversX/types";
 
 type State = {
-  userData: UserDataType | undefined; ///TODO ADD SOL CONFIG, BOndingConfig
+  userData: UserDataType | undefined;
   lockPeriodForBond: Array<{ lockPeriod: number; amount: BigNumber.Value }>;
 };
 

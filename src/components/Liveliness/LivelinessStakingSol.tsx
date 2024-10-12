@@ -320,7 +320,6 @@ export const LivelinessStakingSol: React.FC = () => {
         lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
       };
       const confirmationPromise = connection.confirmTransaction(strategy, "finalized" as Commitment);
-      ///todo look more into this ... I think If I want to also show the action user should do ... wait for the user to sign ... etc
       toast.promise(
         confirmationPromise.then((response) => {
           if (response.value.err) {
@@ -743,153 +742,12 @@ export const LivelinessStakingSol: React.FC = () => {
             )}
           </VStack>
         </Box>
-        {/* <Box flex="1" px={{ base: 0, md: 12 }} mt={{ base: "30px", md: 0 }}>
-          <>
-            <Heading fontSize="1.5rem" fontFamily="Clash-Medium" color="teal.200" mb="20px" textAlign={{ base: "center", md: "left" }}>
-              Your NFMe ID Vault
-            </Heading>
-            <VStack border=".1rem solid" borderColor="#00C79740" borderRadius="3xl" p={6} alignItems={"start"} minW={{ md: "30rem" }} minH={{ md: "25rem" }}>
-              {allInfoLoading ? (
-                <Flex w="100%" h="20rem" justifyContent="center" alignItems="center">
-                  <Spinner size="md" color="teal.200" />
-                </Flex>
-              ) : (
-                <>
-                  {nftMeId ? (
-                    <>
-                      <Flex flexDirection={{ base: "column", md: "row" }} width="100%">
-                        <Box minW={{ md: "100px" }} mr={{ md: "5" }}>
-                          <Image
-                            w="100px"
-                            h="100px"
-                            m="auto"
-                            borderRadius={"md"}
-                            src={(nftMeId.content.links["image"] as string) ?? DEFAULT_NFT_IMAGE}
-                            onError={({ currentTarget }) => {
-                              currentTarget.src = DEFAULT_NFT_IMAGE;
-                            }}
-                          />
-                        </Box>
-                        <LivelinessContainer bond={nftMeIdBond!} />
-                      </Flex>
-                      <Box h="1px" w="100%" borderStyle="solid" borderWidth="1px" borderColor="#00C79740" />
-                      <HStack my={2} justifyContent="center" alignItems="flex-start" w="100%">
-                        <VStack alignItems={"start"} w={"100%"}>
-                          <Text fontSize="xl" alignItems={"flex-start"} fontFamily="Inter" color="teal.200" fontWeight="bold">
-                            Top-Up Liveliness for Boosted Rewards
-                          </Text>
-                          <Text fontSize="lg">Available Balance: {formatNumberToShort(itheumBalance)} $ITHEUM</Text>
-                          <Flex flexDirection={{ base: "column", md: "row" }} alignItems={{ base: "normal", md: "baseline" }} minH="68px">
-                            <Box>
-                              <HStack my={2}>
-                                <Text fontSize="lg" color={"grey"}>
-                                  Top-Up Liveliness
-                                </Text>
-                                <NumberInput
-                                  ml="3px"
-                                  size="sm"
-                                  maxW="24"
-                                  step={1}
-                                  defaultValue={1020}
-                                  min={0}
-                                  max={itheumBalance}
-                                  isValidCharacter={isValidNumericCharacter}
-                                  value={topUpItheumValue}
-                                  onChange={(value) => {
-                                    setTopUpItheumValue(Number(value));
-                                    calculateRewardAprAndEstAnnualRewards(Number(value), nftMeIdBond?.bondAmount);
-                                  }}
-                                  keepWithinRange={true}>
-                                  <NumberInputField />
-                                  <NumberInputStepper>
-                                    <NumberIncrementStepper />
-                                    <NumberDecrementStepper />
-                                  </NumberInputStepper>
-                                </NumberInput>
-                                <Button
-                                  colorScheme="teal"
-                                  size="sm"
-                                  variant="outline"
-                                  px={4}
-                                  isDisabled={!userPublicKey}
-                                  onClick={() => {
-                                    setTopUpItheumValue(Math.floor(itheumBalance));
-                                    calculateRewardAprAndEstAnnualRewards(itheumBalance, nftMeIdBond?.bondAmount);
-                                  }}>
-                                  MAX
-                                </Button>
-                              </HStack>
-                            </Box>
-                            <Box textAlign={{ base: "right", md: "initial" }} ml="10px">
-                              <Button
-                                colorScheme="teal"
-                                px={6}
-                                size="sm"
-                                isDisabled={!userPublicKey || topUpItheumValue < 1}
-                                onClick={() => {
-                                  topUpBondSol(nftMeIdBond?.bondId ?? 0);
-                                }}>
-                                Top-Up Now
-                              </Button>
-                              <Text mt={2} fontSize="sm" color="grey">
-                                Top-up will also renew bond
-                              </Text>
-                            </Box>
-                          </Flex>
-                          <Text m={{ base: "auto", md: "initial" }} mt={{ base: "10", md: "auto" }} fontSize="lg">
-                            Est. Bond Annual Rewards: {formatNumberToShort(estAnnualRewards / 10 ** 9)} $ITHEUM
-                          </Text>
-                        </VStack>
-                      </HStack>
-                    </>
-                  ) : (
-                    <Box w="90%" mt="10">
-                      <Text fontWeight="bold">
-                        You do not seem to have an Active NFMe ID Vault yet. If you did, you can top-up bonus $ITHEUM tokens and earn extra staking rewards. You
-                        have a few options:
-                      </Text>
-
-                      <Text fontSize="md" my="5">
-                        1. Do you have other Data NFTs with an active Liveliness Bond? If so, you can set one of them as your NFMe ID Vault by clicking on the{" "}
-                        {"'Set as Primary NFMe ID'"} option below.
-                      </Text>
-
-                      <Text fontSize="md" my="5">
-                        2. Mint your very own new NFMe ID Vault!
-                      </Text>
-                      <Button
-                        colorScheme="teal"
-                        borderRadius="12px"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => navigate("/mintdata?launchTemplate=nfmeidvault")}>
-                        <Text px={2}>Mint NFMe ID Vault</Text>
-                      </Button>
-                    </Box>
-                  )}
-                </>
-              )}
-            </VStack>
-          </>
-        </Box>{" "} */}
       </Flex>
 
       <Flex width="100%" flexWrap="wrap" gap={7} px={{ base: 0, md: 12 }} mt={10}>
         <Heading fontSize="1.5rem" fontFamily="Clash-Medium" color="teal.200" textAlign={{ base: "center", md: "left" }}>
           Your Data NFT Liveliness Bonds
         </Heading>
-
-        {/* {errDataNFTStreamGeneric && (
-          <Alert status="error">
-            <Stack>
-              <AlertTitle fontSize="md">
-                <AlertIcon mb={2} />
-                Error
-              </AlertTitle>
-              {errDataNFTStreamGeneric.message && <AlertDescription fontSize="md">{errDataNFTStreamGeneric.message}</AlertDescription>}
-            </Stack>
-          </Alert>
-        )} */}
 
         {allInfoLoading ? (
           <Flex w="100%" h="20rem" justifyContent="center" alignItems="center">
@@ -975,23 +833,6 @@ export const LivelinessStakingSol: React.FC = () => {
                         </Text>
                       </Flex>
                     </Flex>{" "}
-                    {/* <Box>
-                      {nftMeIdBond?.assetId.toString() !== dataNft.id.toString() ? (
-                        // <Button
-                        //   colorScheme="teal"
-                        //   isDisabled={!userPublicKey}
-                        //   onClick={() => {
-                        //     SetPrimaryNFMeId(dataNft.id.toString());
-                        //   }}>
-                        //   Set as Primary NFMe ID
-                        // </Button>
-                        <></>
-                      ) : (
-                        <Text fontSize="md" w="200px" m="auto">
-                          ✅ Currently set as your Primary NFMe ID
-                        </Text>
-                      )}
-                    </Box> */}
                   </Box>
                   <Flex p={0} ml={{ md: "3" }} flexDirection="column" alignItems="start" w="full">
                     <Flex flexDirection="column" w="100%">

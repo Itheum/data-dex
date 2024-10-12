@@ -74,7 +74,6 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   useEffect(() => {
     (async () => {
       if (!publicKey && bondingContract) {
-        ///TODOD && address ? should I fetch here the bonding amount from solana also ??
         const bondingAmount = await bondingContract.viewLockPeriodsWithBonds();
         updateLockPeriodForBond(bondingAmount);
       }
@@ -139,7 +138,6 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
       const nativeAuthTokenData = decodeNativeAuthToken(tokenLogin.nativeAuthToken);
       if (nativeAuthTokenData.extraInfo.timestamp) {
         const currentTime = new Date().getTime();
-        // console.log(currentTime, (nativeAuthTokenData.extraInfo.timestamp + nativeAuthTokenData.ttl) * 1000);
         if (currentTime > (nativeAuthTokenData.extraInfo.timestamp + nativeAuthTokenData.ttl) * 1000) {
           return;
         }

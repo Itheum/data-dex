@@ -311,7 +311,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     resolver: yupResolver(validationSchema), // telling to React Hook Form that we want to use yupResolver as the validation schema
   });
 
-  // console.log("validationSchema:", "errors:", errors, "isValid:", isValid);
   const dataNFTStreamUrl: string = isNFMeIDMint ? generatePrefilledNFMeIDDataStreamURL() : getValues("dataStreamUrlForm");
   const dataNFTPreviewUrl: string = getValues("dataPreviewUrlForm");
   const dataNFTTokenName: string = getValues("tokenNameForm");
@@ -384,12 +383,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         const program = new Program<CoreSolBondStakeSc>(IDL, programId, {
           connection,
         });
-        fetchBondingConfig(program).then((periodsT: any) => {
-          ///TODO this can be changed with lockedPediod
-          const lockPeriod = periodsT.lockPeriod;
-          const amount = periodsT.bondAmount;
-          setPeriods({ lockPeriod, amount });
-        });
+
         fetchRewardsConfig(program).then((rewardsT: any) => {
           setMaxApy(rewardsT.maxApr);
         });
@@ -477,10 +471,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   // once we save the img and json to IPFS, we have to ping to make sure it's there in order to verify the ipfs service worked
   // ... or else we mint a NFT that may have broken img and json. We can try upto 3 times to confirm, and if not - show an error to user
   async function confirmIfNftImgAndMetadataIsAvailableOnIPFS(imageUrlOnIPFS: string, metadataUrlOnIPFS: string) {
-    // console.log("confirmIfNftImgAndMetadataIsAvailableOnIPFS");
-    // console.log("imageUrlOnIPFS : ", imageUrlOnIPFS);
-    // console.log("metadataUrlOnIPFS : ", metadataUrlOnIPFS);
-
     const imgCIDOnIPFS = imageUrlOnIPFS.split("ipfs/")[1];
     const metadataCIDOnIPFS = metadataUrlOnIPFS.split("ipfs/")[1];
 
@@ -886,7 +876,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     let dataNFTTraitsFetched = null;
 
     for (let tries = 0; tries < 3 && !assetsLoadedOnIPFSwasSuccess; tries++) {
-      console.log("tries", tries);
+      console.log("Try to fetch the metadata IPFS", tries);
       try {
         await sleep(tries);
         const { result, dataNFTTraitsFromRes } = await confirmIfNftImgAndMetadataIsAvailableOnIPFS(imageUrl, metadataUrl);

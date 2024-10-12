@@ -13,6 +13,7 @@ export const SOLANA_EXPLORER_URL = "https://explorer.solana.com/";
 
 export enum BondStateEnum {}
 
-export const BONDING_PROGRAM_ID = import.meta.env.VITE_ENV_BONDING_PROGRAM_ID; //IS_DEVNET ? "4zAKaiW68x31n7mRbYQBUgTC9BWL3q4uATjuBc5txYSN" : "///todo ADD MAINNET ID";
+export const BONDING_PROGRAM_ID = import.meta.env.VITE_ENV_BONDING_PROGRAM_ID;
+//IS_DEVNET ? "4zAKaiW68x31n7mRbYQBUgTC9BWL3q4uATjuBc5txYSN" : "ADD MAINNET ID";
 
 export const BOND_CONFIG_INDEX = 1;

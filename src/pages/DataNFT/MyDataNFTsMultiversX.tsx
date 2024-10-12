@@ -24,7 +24,6 @@ import {
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
-// import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { BsClockHistory } from "react-icons/bs";
 import { FaBrush, FaCoins } from "react-icons/fa";
@@ -37,10 +36,7 @@ import useThrottle from "components/UtilComps/UseThrottle";
 import WalletDataNFTMX from "components/WalletDataNFTMX/WalletDataNFTMX";
 import { contractsForChain } from "libs/config";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
-// import { fetchSolNfts } from "libs/Solana/utils";
-// import { getApiDataDex } from "libs/utils";
 import { useMarketStore } from "store";
-
 import { BondingCards } from "./components/BondingCards";
 import { CompensationCards } from "./components/CompensationCards";
 import { FavoriteCards } from "./components/FavoriteCards";
@@ -58,13 +54,9 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
-  // const { hasPendingTransactions } = useGetPendingTransactions();
   const [nftForDrawer, setNftForDrawer] = useState<DataNft | undefined>();
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
 
-  /// Solana NFTs
-  // const SHOW_NFTS_STEP = 10;
-  // const [numberOfSolNftsShown, setNumberOfSolNftsShown] = useState<number>(SHOW_NFTS_STEP);
   const { mvxNfts, solNfts } = useNftsStore();
   const purchasedDataNfts: DataNft[] = mvxNfts.filter((item) => item.creator != address);
 
@@ -78,19 +70,6 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     });
   }, []);
 
-  ///TODO Better check what is with that altered Data NFTs
-  // useEffect(() => {
-  //   if (hasPendingTransactions || !address) return;
-  //   (async () => {
-  //     const _dataNfts = await getOnChainNFTs();
-  //     const _alteredDataNfts = _dataNfts.map((nft) => new DataNft({ ...nft, balance: nft.balance ? nft.balance : 1 }));
-  //     console.log("DATANFTS", mvxNfts, "ALTERED", _alteredDataNfts);
-  //     //setDataNfts(_alteredDataNfts);
-  //   })();
-
-  //   setOneNFTImgLoaded(false);
-  // }, [hasPendingTransactions]);
-
   const onChangeTab = useThrottle((newTabState: number) => {
     navigate(
       `/datanfts/wallet${newTabState === 2 ? "/purchased" : newTabState === 4 ? "/activity" : newTabState === 3 ? "/favorite" : newTabState === 5 ? "/liveliness" : newTabState === 6 ? "/compensation" : ""}`
@@ -102,7 +81,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       tabName: "Your Data NFT(s)",
       icon: FaBrush,
       isDisabled: false,
-      pieces: mvxNfts.length + solNfts.length, ///TODO not best sollution but works, think of something else
+      pieces: mvxNfts.length || solNfts.length,
     },
     {
       tabName: "Purchased",
