@@ -1294,7 +1294,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               </Box>
             </Flex>
 
-            <FormControl isInvalid={!!errors.extraAssets} minH={{ base: "7rem", md: "6.25rem" }}>
+            <FormControl mt={7} isInvalid={!!errors.extraAssets} minH={{ base: "7rem", md: "6.25rem" }}>
               <FormLabel fontWeight="bold" fontSize="md">
                 Extra Media Asset URL{" "}
               </FormLabel>

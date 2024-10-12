@@ -22,7 +22,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { BsClockHistory } from "react-icons/bs";
@@ -54,13 +54,15 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const itheumToken = contractsForChain(chainID).itheumToken;
   const { address } = useGetAccountInfo();
   const navigate = useNavigate();
+  const { hasPendingTransactions } = useGetPendingTransactions();
+
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [nftForDrawer, setNftForDrawer] = useState<DataNft | undefined>();
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
 
-  const { mvxNfts, solNfts } = useNftsStore();
+  const { mvxNfts, solNfts, updateMvxNfts } = useNftsStore();
   const purchasedDataNfts: DataNft[] = mvxNfts.filter((item) => item.creator != address);
 
   const { publicKey, connected } = useWallet();
@@ -73,12 +75,13 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     });
   }, []);
 
+  ///TODO: Could we remove this useEffect ?
   useEffect(() => {
     if (hasPendingTransactions) return;
     (async () => {
       const _dataNfts = await getOnChainNFTs();
       const _alteredDataNfts = _dataNfts.map((nft) => new DataNft({ ...nft, balance: nft.balance ? nft.balance : 1 }));
-      setDataNfts(_alteredDataNfts);
+      updateMvxNfts(_alteredDataNfts);
     })();
 
     setOneNFTImgLoaded(false);
