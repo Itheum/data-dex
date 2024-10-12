@@ -36,7 +36,10 @@ import useThrottle from "components/UtilComps/UseThrottle";
 import WalletDataNFTMX from "components/WalletDataNFTMX/WalletDataNFTMX";
 import { contractsForChain } from "libs/config";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
+// import { fetchSolNfts } from "libs/Solana/utils";
+// import { getApiDataDex } from "libs/utils";
 import { useMarketStore } from "store";
+
 import { BondingCards } from "./components/BondingCards";
 import { CompensationCards } from "./components/CompensationCards";
 import { FavoriteCards } from "./components/FavoriteCards";
@@ -69,6 +72,17 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       behavior: "smooth",
     });
   }, []);
+
+  useEffect(() => {
+    if (hasPendingTransactions) return;
+    (async () => {
+      const _dataNfts = await getOnChainNFTs();
+      const _alteredDataNfts = _dataNfts.map((nft) => new DataNft({ ...nft, balance: nft.balance ? nft.balance : 1 }));
+      setDataNfts(_alteredDataNfts);
+    })();
+
+    setOneNFTImgLoaded(false);
+  }, [hasPendingTransactions]);
 
   const onChangeTab = useThrottle((newTabState: number) => {
     navigate(

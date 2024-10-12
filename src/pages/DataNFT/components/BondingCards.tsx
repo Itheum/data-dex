@@ -95,7 +95,7 @@ export const BondingCards: React.FC = () => {
       setAllInfoLoading(true);
 
       // get all the users data NFTs (so we know which ones they withdrew)
-      const allMyDataNFTs = mvxNfts;  
+      const allMyDataNFTs = mvxNfts;
       const allMyDataNFTsWithBalance = allMyDataNFTs.map((nft) => new DataNft({ ...nft, balance: nft.balance ? nft.balance : 1 }));
 
       const itemsForCompensation: Array<CompensationNftsType> = [];

@@ -311,6 +311,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     resolver: yupResolver(validationSchema), // telling to React Hook Form that we want to use yupResolver as the validation schema
   });
 
+  // console.log("validationSchema:", "errors:", errors, "isValid:", isValid);
   const dataNFTStreamUrl: string = isNFMeIDMint ? generatePrefilledNFMeIDDataStreamURL() : getValues("dataStreamUrlForm");
   const dataNFTPreviewUrl: string = getValues("dataPreviewUrlForm");
   const dataNFTTokenName: string = getValues("tokenNameForm");
