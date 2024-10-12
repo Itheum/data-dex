@@ -22,7 +22,7 @@ import { getAccountTokenFromApi, getItheumPriceFromApi } from "libs/MultiversX/a
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { BONDING_PROGRAM_ID, SolEnvEnum } from "libs/Solana/config";
 import { CoreSolBondStakeSc, IDL } from "libs/Solana/CoreSolBondStakeSc";
-import { fetchBondingConfig, fetchSolNfts } from "libs/Solana/utils";
+import { fetchBondingConfig, fetchSolNfts, ITHEUM_TOKEN_ADDRESS } from "libs/Solana/utils";
 import { computeRemainingCooldown, convertWeiToEsdt, decodeNativeAuthToken, tokenDecimals } from "libs/utils";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
 import { useNftsStore } from "./nfts";
@@ -74,7 +74,6 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   useEffect(() => {
     (async () => {
       if (!publicKey && bondingContract) {
-        ///TODOD && address ? should I fetch here the bonding amount from solana also ??
         const bondingAmount = await bondingContract.viewLockPeriodsWithBonds();
         updateLockPeriodForBond(bondingAmount);
       }
@@ -105,8 +104,9 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
     updateIsLoadingSol(true);
 
     (async () => {
-      const itheumTokens = (await getItheumBalanceOnSolana()) || -1;
-      updateItheumBalance(itheumTokens);
+      const itheumTokens = await getItheumBalanceOnSolana();
+      if (itheumTokens != undefined) updateItheumBalance(itheumTokens);
+      else updateItheumBalance(-1);
     })();
 
     fetchSolNfts(publicKey?.toBase58()).then((nfts) => {
@@ -138,7 +138,6 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
       const nativeAuthTokenData = decodeNativeAuthToken(tokenLogin.nativeAuthToken);
       if (nativeAuthTokenData.extraInfo.timestamp) {
         const currentTime = new Date().getTime();
-        // console.log(currentTime, (nativeAuthTokenData.extraInfo.timestamp + nativeAuthTokenData.ttl) * 1000);
         if (currentTime > (nativeAuthTokenData.extraInfo.timestamp + nativeAuthTokenData.ttl) * 1000) {
           return;
         }
@@ -257,14 +256,12 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
   const getItheumBalanceOnSolana = async () => {
     try {
-      const itheumTokenMint = new PublicKey(
-        contractsForChain(import.meta.env.VITE_ENV_NETWORK === "devnet" ? SolEnvEnum.devnet : SolEnvEnum.mainnet).itheumToken
-      ); ///TODO add the mainnet contract address
+      const itheumTokenMint = new PublicKey(ITHEUM_TOKEN_ADDRESS);
       const addressAta = getAssociatedTokenAddressSync(itheumTokenMint, publicKey!, false);
       const balance = await connection.getTokenAccountBalance(addressAta);
       return balance.value.uiAmount;
     } catch (error) {
-      console.error("Error fetching Itheum balance on Solana " + import.meta.env.VITE_ENV_NETWORK + " blockchain:", error);
+      console.error("Error fetching Itheum" + ITHEUM_TOKEN_ADDRESS + "  balance on Solana " + import.meta.env.VITE_ENV_NETWORK + " blockchain:", error);
       throw error;
     }
   };

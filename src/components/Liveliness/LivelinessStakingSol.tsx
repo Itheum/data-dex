@@ -169,6 +169,7 @@ export const LivelinessStakingSol: React.FC = () => {
       setCombinedLiveliness(data.weightedLivelinessScore.toNumber() / 100);
       setAddressClaimableAmount(data.claimableAmount.toNumber() / 10 ** 9);
       setNumberOfBonds(data.currentIndex);
+      if (data.currentIndex === 0) setAllInfoLoading(false);
     } catch (error) {
       console.error("Failed to fetch address rewards data:", error);
     }
@@ -200,7 +201,7 @@ export const LivelinessStakingSol: React.FC = () => {
       setNftMeId(nftMeId);
       setAllInfoLoading(false);
     }
-  }, [nftMeIdBond]); ///TODO do I still need this one ?
+  }, [nftMeIdBond]);
 
   // rewardsPerShare, accumulatedRewards, lastRewardSlot,  rewardsPerSlot, rewardsReserve, rewardsPerShare, maxApr, rewardsState
   useEffect(() => {
@@ -283,8 +284,8 @@ export const LivelinessStakingSol: React.FC = () => {
       retrieveBondsAndNftMeIdVault(userPublicKey, numberOfBonds, programSol).then(({ bonds, nftMeIdVault, weightedLivelinessScore }) => {
         if (nftMeIdVault === undefined) {
           setAllInfoLoading(false);
-          navigate("/datanfts/wallet");
         }
+
         setBonds(bonds);
         setNftMeIdBond(nftMeIdVault);
         setCurrentLiveLinessScoreLIVE(weightedLivelinessScore);
@@ -319,7 +320,6 @@ export const LivelinessStakingSol: React.FC = () => {
         lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
       };
       const confirmationPromise = connection.confirmTransaction(strategy, "finalized" as Commitment);
-      ///todo look more into this ... I think If I want to also show the action user should do ... wait for the user to sign ... etc
       toast.promise(
         confirmationPromise.then((response) => {
           if (response.value.err) {
@@ -654,7 +654,6 @@ export const LivelinessStakingSol: React.FC = () => {
       </VStack>
     );
   };
-  ///TODO CHECK case if user withdraw the nftmeIdBond (last one) and then reinvest the rewards --- shoudl solve this when removing anny NftMeIdVault
   return (
     <Flex flexDirection={"column"} width="100%">
       <Flex flexDirection={{ base: "column", md: "row" }} width="100%" justifyContent="space-between" pt={{ base: "0", md: "5" }}>
@@ -685,7 +684,7 @@ export const LivelinessStakingSol: React.FC = () => {
                   $ITHEUM
                 </Text>
                 <Text fontSize="xl">Potential Rewards If Combined Liveliness &gt;95%: {formatNumberToShort(claimableAmount)} $ITHEUM</Text>
-                <HStack mt={5} justifyContent="center" alignItems="flex-start" width="100%">
+                <HStack mt={5} justifyContent={{ base: "center", md: "start" }} alignItems="flex-start" width="100%">
                   <Flex flexDirection={{ base: "column", md: "row" }}>
                     <VStack mb={{ base: 5, md: 0 }}>
                       <Tooltip
@@ -723,13 +722,9 @@ export const LivelinessStakingSol: React.FC = () => {
                           colorScheme="teal"
                           px={6}
                           width="180px"
-                          isDisabled={!userPublicKey || nftMeIdBond === undefined || claimableAmount < 1 || combinedLiveliness === 0 || hasPendingTransaction}
+                          isDisabled={!userPublicKey || nftMeId === undefined || claimableAmount < 1 || combinedLiveliness === 0 || hasPendingTransaction}
                           onClick={() => {
-                            if (combinedLiveliness >= 95) {
-                              handleReinvestRewardsClick();
-                            } else {
-                              setReinvestRewardsConfirmationWorkflow(true);
-                            }
+                            setReinvestRewardsConfirmationWorkflow(true);
                           }}>
                           Reinvest Rewards
                         </Button>
@@ -747,135 +742,6 @@ export const LivelinessStakingSol: React.FC = () => {
             )}
           </VStack>
         </Box>
-        {/* <Box flex="1" px={{ base: 0, md: 12 }} mt={{ base: "30px", md: 0 }}>
-          <>
-            <Heading fontSize="1.5rem" fontFamily="Clash-Medium" color="teal.200" mb="20px" textAlign={{ base: "center", md: "left" }}>
-              Your NFMe ID Vault
-            </Heading>
-            <VStack border=".1rem solid" borderColor="#00C79740" borderRadius="3xl" p={6} alignItems={"start"} minW={{ md: "30rem" }} minH={{ md: "25rem" }}>
-              {allInfoLoading ? (
-                <Flex w="100%" h="20rem" justifyContent="center" alignItems="center">
-                  <Spinner size="md" color="teal.200" />
-                </Flex>
-              ) : (
-                <>
-                  {nftMeId ? (
-                    <>
-                      <Flex flexDirection={{ base: "column", md: "row" }} width="100%">
-                        <Box minW={{ md: "100px" }} mr={{ md: "5" }}>
-                          <Image
-                            w="100px"
-                            h="100px"
-                            m="auto"
-                            borderRadius={"md"}
-                            src={(nftMeId.content.links["image"] as string) ?? DEFAULT_NFT_IMAGE}
-                            onError={({ currentTarget }) => {
-                              currentTarget.src = DEFAULT_NFT_IMAGE;
-                            }}
-                          />
-                        </Box>
-                        <LivelinessContainer bond={nftMeIdBond!} />
-                      </Flex>
-                      <Box h="1px" w="100%" borderStyle="solid" borderWidth="1px" borderColor="#00C79740" />
-                      <HStack my={2} justifyContent="center" alignItems="flex-start" w="100%">
-                        <VStack alignItems={"start"} w={"100%"}>
-                          <Text fontSize="xl" alignItems={"flex-start"} fontFamily="Inter" color="teal.200" fontWeight="bold">
-                            Top-Up Liveliness for Boosted Rewards
-                          </Text>
-                          <Text fontSize="lg">Available Balance: {formatNumberToShort(itheumBalance)} $ITHEUM</Text>
-                          <Flex flexDirection={{ base: "column", md: "row" }} alignItems={{ base: "normal", md: "baseline" }} minH="68px">
-                            <Box>
-                              <HStack my={2}>
-                                <Text fontSize="lg" color={"grey"}>
-                                  Top-Up Liveliness
-                                </Text>
-                                <NumberInput
-                                  ml="3px"
-                                  size="sm"
-                                  maxW="24"
-                                  step={1}
-                                  defaultValue={1020}
-                                  min={0}
-                                  max={itheumBalance}
-                                  isValidCharacter={isValidNumericCharacter}
-                                  value={topUpItheumValue}
-                                  onChange={(value) => {
-                                    setTopUpItheumValue(Number(value));
-                                    calculateRewardAprAndEstAnnualRewards(Number(value), nftMeIdBond?.bondAmount);
-                                  }}
-                                  keepWithinRange={true}>
-                                  <NumberInputField />
-                                  <NumberInputStepper>
-                                    <NumberIncrementStepper />
-                                    <NumberDecrementStepper />
-                                  </NumberInputStepper>
-                                </NumberInput>
-                                <Button
-                                  colorScheme="teal"
-                                  size="sm"
-                                  variant="outline"
-                                  px={4}
-                                  isDisabled={!userPublicKey}
-                                  onClick={() => {
-                                    setTopUpItheumValue(Math.floor(itheumBalance));
-                                    calculateRewardAprAndEstAnnualRewards(itheumBalance, nftMeIdBond?.bondAmount);
-                                  }}>
-                                  MAX
-                                </Button>
-                              </HStack>
-                            </Box>
-                            <Box textAlign={{ base: "right", md: "initial" }} ml="10px">
-                              <Button
-                                colorScheme="teal"
-                                px={6}
-                                size="sm"
-                                isDisabled={!userPublicKey || topUpItheumValue < 1}
-                                onClick={() => {
-                                  topUpBondSol(nftMeIdBond?.bondId ?? 0);
-                                }}>
-                                Top-Up Now
-                              </Button>
-                              <Text mt={2} fontSize="sm" color="grey">
-                                Top-up will also renew bond
-                              </Text>
-                            </Box>
-                          </Flex>
-                          <Text m={{ base: "auto", md: "initial" }} mt={{ base: "10", md: "auto" }} fontSize="lg">
-                            Est. Bond Annual Rewards: {formatNumberToShort(estAnnualRewards / 10 ** 9)} $ITHEUM
-                          </Text>
-                        </VStack>
-                      </HStack>
-                    </>
-                  ) : (
-                    <Box w="90%" mt="10">
-                      <Text fontWeight="bold">
-                        You do not seem to have an Active NFMe ID Vault yet. If you did, you can top-up bonus $ITHEUM tokens and earn extra staking rewards. You
-                        have a few options:
-                      </Text>
-
-                      <Text fontSize="md" my="5">
-                        1. Do you have other Data NFTs with an active Liveliness Bond? If so, you can set one of them as your NFMe ID Vault by clicking on the{" "}
-                        {"'Set as Primary NFMe ID'"} option below.
-                      </Text>
-
-                      <Text fontSize="md" my="5">
-                        2. Mint your very own new NFMe ID Vault!
-                      </Text>
-                      <Button
-                        colorScheme="teal"
-                        borderRadius="12px"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => navigate("/mintdata?launchTemplate=nfmeidvault")}>
-                        <Text px={2}>Mint NFMe ID Vault</Text>
-                      </Button>
-                    </Box>
-                  )}
-                </>
-              )}
-            </VStack>
-          </>
-        </Box>{" "} */}
       </Flex>
 
       <Flex width="100%" flexWrap="wrap" gap={7} px={{ base: 0, md: 12 }} mt={10}>
@@ -883,30 +749,17 @@ export const LivelinessStakingSol: React.FC = () => {
           Your Data NFT Liveliness Bonds
         </Heading>
 
-        {/* {errDataNFTStreamGeneric && (
-          <Alert status="error">
-            <Stack>
-              <AlertTitle fontSize="md">
-                <AlertIcon mb={2} />
-                Error
-              </AlertTitle>
-              {errDataNFTStreamGeneric.message && <AlertDescription fontSize="md">{errDataNFTStreamGeneric.message}</AlertDescription>}
-            </Stack>
-          </Alert>
-        )} */}
-
         {allInfoLoading ? (
           <Flex w="100%" h="20rem" justifyContent="center" alignItems="center">
             <Spinner size="md" color="teal.200" />
           </Flex>
-        ) : bonds?.length === 0 ? (
+        ) : numberOfBonds === 0 ? (
           <NoDataHere imgFromTop="2" />
         ) : (
           bonds?.map((currentBond, index) => {
             const dataNft = solNfts?.find((dataNft) => currentBond.assetId.toString() === dataNft.id);
             if (!dataNft) return null;
             const metadata = dataNft.content.metadata;
-
             return (
               <Card
                 _disabled={{ cursor: "not-allowed", opacity: "0.7" }}
@@ -918,17 +771,18 @@ export const LivelinessStakingSol: React.FC = () => {
                 p={5}
                 w="100%"
                 aria-disabled={currentBond.state === 0}>
-                <Flex flexDirection={{ base: "column", md: "row" }}>
+                <Flex gap={5} flexDirection={{ base: "column", md: "row" }}>
                   <Box minW="250px" textAlign="center">
                     <Box>
                       <NftMediaComponent
+                        ///TODO? extra asset nftMedia={dataNft.content.files as []}
                         imageUrls={[dataNft.content.links && dataNft.content.links["image"] ? (dataNft.content.links["image"] as string) : DEFAULT_NFT_IMAGE]}
                         imageHeight="160px"
                         imageWidth="160px"
                         borderRadius="10px"
                       />
                     </Box>
-                    <Flex gap={4} pt={3} flexDirection={"column"} alignItems="start" w="100%">
+                    <Flex pt={3} flexDirection={"column"} alignItems="center" w="100%">
                       <Button
                         w={"100%"}
                         colorScheme="teal"
@@ -939,10 +793,10 @@ export const LivelinessStakingSol: React.FC = () => {
                         }}>
                         Renew Bond
                       </Button>
-                      <Text fontSize=".75rem">{`New expiry will be ${calculateNewPeriodAfterNewBond(bondConfigData?.lockPeriod.toNumber())}`}</Text>
+                      <Text mt={1} fontSize=".75rem">{`New expiry will be ${calculateNewPeriodAfterNewBond(bondConfigData?.lockPeriod.toNumber())}`}</Text>
                     </Flex>
                     <Flex gap={4} pt={3} flexDirection={"column"} w="100%" alignItems="center">
-                      <Flex flexDirection={{ base: "column" }} gap={4} pt={3} alignItems="center" w="100%">
+                      <Flex flexDirection={{ base: "column" }} gap={2} pt={3} alignItems="center" w="100%">
                         {!checkIfBondIsExpired(currentBond?.unbondTimestamp) ? (
                           <Button
                             w="100%"
@@ -954,7 +808,7 @@ export const LivelinessStakingSol: React.FC = () => {
                             onClick={() => {
                               setWithdrawBondConfirmationWorkflow({
                                 bondId: currentBond.bondId,
-                                bondAmount: ((currentBond.bondAmount.toNumber() / 10 ** 9) * withdrawPenalty) / 100,
+                                bondAmount: currentBond.bondAmount.toNumber() / 10 ** 9,
                               });
                             }}>
                             Withdraw Bond
@@ -979,23 +833,6 @@ export const LivelinessStakingSol: React.FC = () => {
                         </Text>
                       </Flex>
                     </Flex>{" "}
-                    {/* <Box>
-                      {nftMeIdBond?.assetId.toString() !== dataNft.id.toString() ? (
-                        // <Button
-                        //   colorScheme="teal"
-                        //   isDisabled={!userPublicKey}
-                        //   onClick={() => {
-                        //     SetPrimaryNFMeId(dataNft.id.toString());
-                        //   }}>
-                        //   Set as Primary NFMe ID
-                        // </Button>
-                        <></>
-                      ) : (
-                        <Text fontSize="md" w="200px" m="auto">
-                          ✅ Currently set as your Primary NFMe ID
-                        </Text>
-                      )}
-                    </Box> */}
                   </Box>
                   <Flex p={0} ml={{ md: "3" }} flexDirection="column" alignItems="start" w="full">
                     <Flex flexDirection="column" w="100%">
@@ -1077,13 +914,24 @@ export const LivelinessStakingSol: React.FC = () => {
           }}
           bodyContent={
             <>
-              <Text mb="5">To reinvest Max Accumulated Rewards, your Combined Liveliness must be over 95%. Yours is currently {combinedLiveliness}%</Text>
-              <Text mt="5">To boost Combined Liveliness, renew the bond on each Data NFT before reinvesting.</Text>
-              <Text mt="5">Cancel to renew bonds first, or proceed if {`you're`} okay with lower rewards.</Text>
+              <Text fontWeight={"bold"} fontSize={"xl"} color={"teal.200"}>
+                Info: The reinvested amount will be added to the latest active bond and will renew the bond.
+              </Text>{" "}
+              <Text mt={1} fontSize=".75rem">{`New expiry will be ${calculateNewPeriodAfterNewBond(bondConfigData?.lockPeriod.toNumber())}`}</Text>
+              {combinedLiveliness <= 95 && (
+                <>
+                  <Text mb="3" fontWeight={"bold"} fontSize={"lg"} mt="7">
+                    Get Max Rewards if Combined Liveliness {`>`} 95%
+                  </Text>
+                  <Text mb="5">To reinvest Max Accumulated Rewards, your Combined Liveliness must be over 95%. Yours is currently {combinedLiveliness}%</Text>
+                  <Text mt="5">To boost Combined Liveliness, renew the bond on each Data NFT before reinvesting.</Text>
+                  <Text mt="5">Cancel to renew bonds first, or proceed if {`you're`} okay with lower rewards.</Text>
+                </>
+              )}
             </>
           }
           dialogData={{
-            title: "Get Max Rewards if Combined Liveliness > 95%",
+            title: "Reinvest Rewards",
             proceedBtnTxt: "Proceed with Reinvest Rewards",
             cancelBtnText: "Cancel and Close",
           }}
@@ -1095,21 +943,35 @@ export const LivelinessStakingSol: React.FC = () => {
               setWithdrawBondConfirmationWorkflow(undefined);
             }}
             onProceed={() => {
-              handleWithdrawBondClick(withdrawBondConfirmationWorkflow!.bondId!, (withdrawBondConfirmationWorkflow!.bondAmount * withdrawPenalty) / 100);
+              handleWithdrawBondClick(
+                withdrawBondConfirmationWorkflow!.bondId!,
+                withdrawBondConfirmationWorkflow!.bondAmount - (withdrawBondConfirmationWorkflow!.bondAmount * withdrawPenalty) / 100
+              );
               setWithdrawBondConfirmationWorkflow(undefined);
             }}
             bodyContent={
               <>
                 <Text fontSize="sm" pb={3} opacity=".8">
-                  {`Collection: ${withdrawBondConfirmationWorkflow?.bondId}, Bond Amount: ${withdrawBondConfirmationWorkflow?.bondAmount}`}
+                  {`Collection: ${withdrawBondConfirmationWorkflow?.bondId},   Bond Amount: ${withdrawBondConfirmationWorkflow?.bondAmount}`}
+                </Text>
+                <Text color={"red"} fontWeight="bold" fontSize="lg" pb={3} opacity="1">
+                  {`Bond Amount to receive: ${(
+                    (withdrawBondConfirmationWorkflow?.bondAmount ?? 0) -
+                    ((withdrawBondConfirmationWorkflow?.bondAmount ?? 0) * withdrawPenalty) / 100
+                  ).toFixed(2)}`}
                 </Text>
                 <Text mb="5">There are a few items to consider before you proceed with the bond withdraw:</Text>
                 <UnorderedList mt="2" p="2">
-                  <ListItem>Withdrawing before bond expiry incurs a penalty; no penalty after expiry, and you get the full amount back.</ListItem>
+                  <ListItem>
+                    Withdrawing before bond expiry incurs a penalty of{" "}
+                    <Text as="span" fontSize="md" color="red">
+                      {withdrawPenalty}%
+                    </Text>
+                    ; no penalty after expiry, and you get the full amount back.
+                  </ListItem>
                   <ListItem>Penalties are non-refundable.</ListItem>
                   <ListItem>After withdrawal, your Liveliness score drops to zero, visible to buyers if your Data NFT is listed.</ListItem>
                   <ListItem>Once withdrawn, you {`can't `}re-bond to regain the Liveliness score or earn staking rewards.</ListItem>
-                  <ListItem>If the bond was linked to your Primary NFMe ID Vault, {`you'll`} need to set up a new one as your primary.</ListItem>
                 </UnorderedList>
 
                 <Text mt="5">With the above in mind, are your SURE you want to proceed and Withdraw Bond?</Text>

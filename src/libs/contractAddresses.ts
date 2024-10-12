@@ -53,7 +53,7 @@ const contracts = {
       itheumTokenContractAddress: "iTH89rapYE2GG4B77UjoEqnY7bRAPQrUs6LRAXQEHUo",
     },
     mainnet: {
-      itheumTokenContractAddress: "iTHdo2NJbcxy5rKKMwNaffUxZA2zK6DPJirgLgwRkA1", ///TODO change whit the correct one
+      itheumTokenContractAddress: "iTHdo2NJbcxy5rKKMwNaffUxZA2zK6DPJirgLgwRkA1", // change whit the correct address on SOLANA  MAINNET
     },
   },
 };

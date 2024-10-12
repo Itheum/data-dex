@@ -22,9 +22,8 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
-// import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { BsClockHistory } from "react-icons/bs";
 import { FaBrush, FaCoins } from "react-icons/fa";
@@ -55,17 +54,15 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const itheumToken = contractsForChain(chainID).itheumToken;
   const { address } = useGetAccountInfo();
   const navigate = useNavigate();
+  const { hasPendingTransactions } = useGetPendingTransactions();
+
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
-  // const { hasPendingTransactions } = useGetPendingTransactions();
   const [nftForDrawer, setNftForDrawer] = useState<DataNft | undefined>();
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
 
-  /// Solana NFTs
-  // const SHOW_NFTS_STEP = 10;
-  // const [numberOfSolNftsShown, setNumberOfSolNftsShown] = useState<number>(SHOW_NFTS_STEP);
-  const { mvxNfts, solNfts } = useNftsStore();
+  const { mvxNfts, solNfts, updateMvxNfts } = useNftsStore();
   const purchasedDataNfts: DataNft[] = mvxNfts.filter((item) => item.creator != address);
 
   const { publicKey, connected } = useWallet();
@@ -78,18 +75,17 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     });
   }, []);
 
-  ///TODO Better check what is with that altered Data NFTs
-  // useEffect(() => {
-  //   if (hasPendingTransactions || !address) return;
-  //   (async () => {
-  //     const _dataNfts = await getOnChainNFTs();
-  //     const _alteredDataNfts = _dataNfts.map((nft) => new DataNft({ ...nft, balance: nft.balance ? nft.balance : 1 }));
-  //     console.log("DATANFTS", mvxNfts, "ALTERED", _alteredDataNfts);
-  //     //setDataNfts(_alteredDataNfts);
-  //   })();
+  ///TODO: Could we remove this useEffect ?
+  useEffect(() => {
+    if (hasPendingTransactions) return;
+    (async () => {
+      const _dataNfts = await getOnChainNFTs();
+      const _alteredDataNfts = _dataNfts.map((nft) => new DataNft({ ...nft, balance: nft.balance ? nft.balance : 1 }));
+      updateMvxNfts(_alteredDataNfts);
+    })();
 
-  //   setOneNFTImgLoaded(false);
-  // }, [hasPendingTransactions]);
+    setOneNFTImgLoaded(false);
+  }, [hasPendingTransactions]);
 
   const onChangeTab = useThrottle((newTabState: number) => {
     navigate(
@@ -102,7 +98,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       tabName: "Your Data NFT(s)",
       icon: FaBrush,
       isDisabled: false,
-      pieces: mvxNfts.length + solNfts.length, ///TODO not best sollution but works, think of something else
+      pieces: mvxNfts.length || solNfts.length,
     },
     {
       tabName: "Purchased",

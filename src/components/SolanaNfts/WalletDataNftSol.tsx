@@ -4,6 +4,8 @@ import { Box, Skeleton } from "@chakra-ui/react";
 import { DasApiAsset } from "@metaplex-foundation/digital-asset-standard-api";
 import NftMediaComponent from "components/NftMediaComponent";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
+import { SOLANA_EXPLORER_URL } from "libs/Solana/config";
+import { useNetworkConfiguration } from "contexts/sol/SolNetworkConfigurationProvider";
 
 interface WalletDataNftSolProps {
   index: number;
@@ -11,6 +13,7 @@ interface WalletDataNftSolProps {
 }
 
 const WalletDataNftSol: React.FC<WalletDataNftSolProps> = ({ index, solDataNft }) => {
+  const { networkConfiguration } = useNetworkConfiguration();
   return (
     <Skeleton fitContent={true} isLoaded={true} borderRadius="16px" display="flex" alignItems="center" justifyContent="center">
       <Box
@@ -30,7 +33,9 @@ const WalletDataNftSol: React.FC<WalletDataNftSolProps> = ({ index, solDataNft }
           imageWidth="236px"
           autoSlideInterval={Math.floor(Math.random() * 6000 + 6000)} // random number between 6 and 12 seconds
           onLoad={() => {}}
-          openNftDetailsDrawer={() => {}}
+          openNftDetailsDrawer={() => {
+            window.open(`${SOLANA_EXPLORER_URL}address/${solDataNft.id}?cluster=${networkConfiguration}`, "_blank");
+          }}
           marginTop="1.5rem"
           borderRadius="16px"
         />

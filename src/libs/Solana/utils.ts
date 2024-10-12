@@ -105,7 +105,7 @@ export async function fetchRewardsConfig(programSol: any) {
     return {
       rewardsConfigPda: _rewardsConfigPda,
       accumulatedRewards: new BigNumber(res.accumulatedRewards).dividedBy(10 ** 9),
-      globalRewardsPerBlock: new BigNumber(res.rewardsPerSlot).dividedBy(10 ** 9), ///todo ask if this is the same as rewardsPerBlock
+      globalRewardsPerBlock: new BigNumber(res.rewardsPerSlot).dividedBy(10 ** 9),
       rewardsState: res.rewardsState,
       rewardsPerShare: new BigNumber(res.rewardsPerShare).dividedBy(10 ** 9),
       lastRewardSlot: res.lastRewardSlot.toNumber(),
@@ -224,9 +224,7 @@ export async function createBondTransaction(
       return _bondId;
     });
 
-    // const { nftMeIdVault } = await retrieveBondsAndNftMeIdVault(userPublicKey, bondId - 1, program);
-    ///TODO ASK if this is correct ... should i let the primary nft that is active bond be the vault or the last one
-    const isVault = true; ///nftMeIdVault ? false : true;
+    const isVault = true;
 
     const bondPda = PublicKey.findProgramAddressSync([Buffer.from("bond"), userPublicKey.toBuffer(), Buffer.from([bondId])], program.programId)[0];
     const assetUsagePda = PublicKey.findProgramAddressSync([new PublicKey(assetId).toBuffer()], program.programId)[0];
@@ -288,28 +286,30 @@ export async function retrieveBondsAndNftMeIdVault(
     }
     const bonds: Bond[] = [];
     let nftMeIdVault: Bond | undefined;
-    let totalBondAmount = new BN(0);
-    let totalBondWeight = new BN(0);
-    const currentTimestampt = Math.floor(Date.now() / 1000);
+    // let totalBondAmount = new BN(0);
+    // let totalBondWeight = new BN(0);
+    // const currentTimestampt = Math.floor(Date.now() / 1000);
 
+    ///TODO THIS CAN BE improved by using a single fetch, only for the modified bond. not all of them if i just top up one
     for (let i = 1; i <= lastIndex; i++) {
       const bondPda = PublicKey.findProgramAddressSync([Buffer.from("bond"), userPublicKey.toBuffer(), Buffer.from([i])], program.programId)[0];
       const bond = await program.account.bond.fetch(bondPda);
       const bondUpgraded = { ...bond, bondId: i, unbondTimestamp: bond.unbondTimestamp.toNumber(), bondTimestamp: bond.bondTimestamp.toNumber() };
-      if (bond.isVault) {
+      if (bond.isVault && bond.state === 1) {
         nftMeIdVault = bondUpgraded;
       }
-      if (bond.state === 1) {
-        const scorePerBond = Math.floor(computeBondScore(43200, currentTimestampt, bond.unbondTimestamp.toNumber())) / 100;
-        const bondWeight = bond.bondAmount.mul(new BN(scorePerBond));
-        totalBondWeight = totalBondWeight.add(bondWeight);
-        totalBondAmount = totalBondAmount.add(bond.bondAmount);
-      }
+      // calculate the correct live Bond score
+      // if (bond.state === 1) {
+      //   const scorePerBond = Math.floor(computeBondScore(43200, currentTimestampt, bond.unbondTimestamp.toNumber())) / 100;
+      //   const bondWeight = bond.bondAmount.mul(new BN(scorePerBond));
+      //   totalBondWeight = totalBondWeight.add(bondWeight);
+      //   totalBondAmount = totalBondAmount.add(bond.bondAmount);
+      // }
       bonds.push(bondUpgraded);
     }
-    const weightedLivelinessScore = totalBondWeight.mul(new BN(100)).div(totalBondAmount);
+    // const weightedLivelinessScore = totalBondWeight.mul(new BN(100)).div(totalBondAmount);
 
-    return { bonds: bonds, nftMeIdVault: nftMeIdVault, weightedLivelinessScore: weightedLivelinessScore.toNumber() / 100 };
+    return { bonds: bonds, nftMeIdVault: nftMeIdVault, weightedLivelinessScore: 0 };
   } catch (error) {
     console.error("retrieveBondsError", error);
 
@@ -317,18 +317,18 @@ export async function retrieveBondsAndNftMeIdVault(
   }
 }
 
-///TODO TESTING PURPOSES --- SHOULD BE DELETED ON PROD
-function computeBondScore(lockPeriod: number, currentTimestamp: number, unbondTimestamp: number): number {
-  if (currentTimestamp >= unbondTimestamp) {
-    return 0;
-  } else {
-    const difference = unbondTimestamp - currentTimestamp;
+// TESTING PURPOSES --- SHOULD BE DELETED ON PROD
+// function computeBondScore(lockPeriod: number, currentTimestamp: number, unbondTimestamp: number): number {
+//   if (currentTimestamp >= unbondTimestamp) {
+//     return 0;
+//   } else {
+//     const difference = unbondTimestamp - currentTimestamp;
 
-    if (lockPeriod === 0) {
-      return 0;
-    } else {
-      const divResult = 10000 / lockPeriod;
-      return divResult * difference;
-    }
-  }
-}
+//     if (lockPeriod === 0) {
+//       return 0;
+//     } else {
+//       const divResult = 10000 / lockPeriod;
+//       return divResult * difference;
+//     }
+//   }
+// }

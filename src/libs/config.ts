@@ -244,7 +244,7 @@ export const CHAIN_TX_VIEWER = {
   43113: "https://testnet.snowtrace.io/tx/",
   "1": "https://explorer.multiversx.com",
   "D": "https://devnet-explorer.multiversx.com",
-  "SD": "///TODO",
+  "SD": "///TODO solana explorer",
 };
 
 export const CHAIN_TX_LIST = {

@@ -63,30 +63,29 @@ export const TradeData: React.FC = () => {
           Mint your Data Streams or Data Assets as Data NFTs and list and trade them in the peer-to-peer Data NFT Marketplace.
         </Heading>
         <Wrap shouldWrapChildren={true} spacing={5} display={"flex"} flexDir={"row"} justifyContent={{ base: "center", md: "start" }} overflow={"unset"}>
-          {!connected && (
-            <Box maxW="xs" overflow="hidden" mt={5} border=".01rem solid transparent" borderColor="#00C79740" borderRadius="0.75rem">
-              <Image src="https://itheum-static.s3.ap-southeast-2.amazonaws.com/data-stream.png" alt="" rounded="lg" />
+          <Box maxW="xs" overflow="hidden" mt={5} border=".01rem solid transparent" borderColor="#00C79740" borderRadius="0.75rem">
+            <Image src="https://itheum-static.s3.ap-southeast-2.amazonaws.com/data-stream.png" alt="" rounded="lg" />
 
-              <Box p="6">
-                <Box display="flex" alignItems="baseline">
-                  <Box mt="1" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
-                    Any Data Stream as a Data NFT-FT
-                  </Box>
+            <Box p="6">
+              <Box display="flex" alignItems="baseline">
+                <Box mt="1" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
+                  Any Data Stream as a Data NFT-FT
                 </Box>
-                <Button
-                  mt="3"
-                  colorScheme="teal"
-                  variant="outline"
-                  borderRadius="xl"
-                  onClick={() => {
-                    setIsDrawerOpen(!isDrawerOpen);
-                    setPrefilledData(null);
-                  }}>
-                  <Text color={colorMode === "dark" ? "white" : "black"}>Mint Data NFT</Text>
-                </Button>
               </Box>
+              <Button
+                mt="3"
+                colorScheme="teal"
+                variant="outline"
+                borderRadius="xl"
+                onClick={() => {
+                  setIsDrawerOpen(!isDrawerOpen);
+                  setPrefilledData(null);
+                }}>
+                <Text color={colorMode === "dark" ? "white" : "black"}>Mint Data NFT</Text>
+              </Button>
             </Box>
-          )}
+          </Box>
+
           <ProgramCard
             key={nfMeIDVaultConfig.program}
             item={nfMeIDVaultConfig}

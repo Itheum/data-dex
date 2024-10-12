@@ -31,6 +31,7 @@ import {
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { useNavigate } from "react-router-dom";
 import NftMediaComponent from "components/NftMediaComponent";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 type MintingModalProps = {
   isOpen: boolean;
@@ -78,7 +79,7 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
   const { hasPendingTransactions } = useGetPendingTransactions();
   // some local state for better UX, i.e. to not sure the mint button once clicked (using only hasPendingTransactions has some delay and button flickers)
   const [localMintJustClicked, setLocalMintJustClicked] = useState(false);
-
+  const { connected: isSolWalletConnected } = useWallet();
   useEffect(() => {
     setLocalMintJustClicked(false);
   }, []);
@@ -204,7 +205,7 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
                   <Box textAlign="center" mt="2">
                     <Alert status="success">
                       <Text fontSize="lg" colorScheme="teal">
-                        Success! {isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} Minted and set as your NFMe ID Vault.
+                        Success! {isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} Minted and {isSolWalletConnected ? "bonded" : "set as your NFMe ID Vault"}.
                       </Text>
                     </Alert>
                     <HStack mt="4">

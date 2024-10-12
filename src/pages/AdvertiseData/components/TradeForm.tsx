@@ -78,7 +78,6 @@ import { useNftsStore } from "store/nfts";
 import { useNetworkConfiguration } from "contexts/sol/SolNetworkConfigurationProvider";
 import { itheumSolPreaccess } from "libs/Solana/SolViewData";
 import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
-import { sign } from "crypto";
 
 type TradeDataFormType = {
   dataStreamUrlForm: string;
@@ -385,12 +384,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         const program = new Program<CoreSolBondStakeSc>(IDL, programId, {
           connection,
         });
-        fetchBondingConfig(program).then((periodsT: any) => {
-          ///TODO this can be changed with lockedPediod
-          const lockPeriod = periodsT.lockPeriod;
-          const amount = periodsT.bondAmount;
-          setPeriods({ lockPeriod, amount });
-        });
+
         fetchRewardsConfig(program).then((rewardsT: any) => {
           setMaxApy(rewardsT.maxApr);
         });
@@ -478,10 +472,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   // once we save the img and json to IPFS, we have to ping to make sure it's there in order to verify the ipfs service worked
   // ... or else we mint a NFT that may have broken img and json. We can try upto 3 times to confirm, and if not - show an error to user
   async function confirmIfNftImgAndMetadataIsAvailableOnIPFS(imageUrlOnIPFS: string, metadataUrlOnIPFS: string) {
-    // console.log("confirmIfNftImgAndMetadataIsAvailableOnIPFS");
-    // console.log("imageUrlOnIPFS : ", imageUrlOnIPFS);
-    // console.log("metadataUrlOnIPFS : ", metadataUrlOnIPFS);
-
     const imgCIDOnIPFS = imageUrlOnIPFS.split("ipfs/")[1];
     const metadataCIDOnIPFS = metadataUrlOnIPFS.split("ipfs/")[1];
 
@@ -535,7 +525,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       setIsMintingModalOpen(true);
 
       // we simulate the "encrypting" step for UX, as this was prev done manually and now its all part of the .mint() SDK
-      await sleep(2);
+      await sleep(1);
       setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s1: 1 }));
 
       prepareMint();
@@ -544,7 +534,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
   // Step 2 of minting (call the SDK mint - encrypt stream, get the gen image and save new image and traits to IPFS)
   const prepareMint = async () => {
-    await sleep(3);
+    await sleep(1);
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s2: 1 }));
     if (publicKey) {
       await mintDataNftSol();
@@ -623,7 +613,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       setMakePrimaryNFMeIdSessionId(sessionId);
     }
 
-    await sleep(3);
+    await sleep(1);
 
     setMintingSuccessful(true);
   };
@@ -644,7 +634,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       const latestBlockhash = await connection.getLatestBlockhash();
       transaction.recentBlockhash = latestBlockhash.blockhash;
       transaction.feePayer = publicKey;
-      console.log("Transaction to send:", transaction);
 
       const txSignature = await sendTransaction(transaction, connection, {
         skipPreflight: true,
@@ -888,9 +877,9 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     let dataNFTTraitsFetched = null;
 
     for (let tries = 0; tries < 3 && !assetsLoadedOnIPFSwasSuccess; tries++) {
-      console.log("tries", tries);
+      console.log("Try to fetch the metadata IPFS", tries);
       try {
-        await sleep(3);
+        await sleep(tries);
         const { result, dataNFTTraitsFromRes } = await confirmIfNftImgAndMetadataIsAvailableOnIPFS(imageUrl, metadataUrl);
 
         assetsLoadedOnIPFSwasSuccess = result;
@@ -898,7 +887,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         if (assetsLoadedOnIPFSwasSuccess) {
           break;
         } else {
-          await sleep(10); // wait 10 seconds extra if it's a fail in case IPFS is slow
+          await sleep(tries * 5); // wait 10 seconds extra if it's a fail in case IPFS is slow
         }
       } catch (err) {
         setErrDataNFTStreamGeneric(new Error(labels.ERR_IPFS_ASSET_SAVE_FAILED));
@@ -907,7 +896,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
     if (assetsLoadedOnIPFSwasSuccess) {
       setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s3: 1 }));
-      await sleep(5);
+      await sleep(1);
 
       const imgCIDOnIPFS = imageUrl.split("ipfs/")[1];
       setDataNFTImg(`https://gateway.pinata.cloud/ipfs/${imgCIDOnIPFS}`);
@@ -1266,45 +1255,46 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                   </Text>
                   <FormErrorMessage>{errors?.numberOfCopiesForm?.message}</FormErrorMessage>
                 </FormControl>
+                {!publicKey && (
+                  <FormControl isInvalid={!!errors.royaltiesForm} minH={"8.5rem"}>
+                    <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
+                      Royalties
+                    </Text>
 
-                <FormControl isInvalid={!!errors.royaltiesForm} minH={"8.5rem"}>
-                  <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
-                    Royalties
-                  </Text>
-
-                  <Controller
-                    control={control}
-                    render={({ field: { onChange } }) => (
-                      <NumberInput
-                        mt="3 !important"
-                        size="md"
-                        id="royaltiesForm"
-                        maxW={24}
-                        step={1}
-                        defaultValue={dataNFTRoyalties}
-                        isDisabled={isNFMeIDMint}
-                        min={minRoyalties > 0 ? minRoyalties : 0}
-                        max={maxRoyalties > 0 ? maxRoyalties : 0}
-                        isValidCharacter={isValidNumericCharacter}
-                        onChange={(event) => onChange(event)}>
-                        <NumberInputField />
-                        <NumberInputStepper>
-                          <NumberIncrementStepper />
-                          <NumberDecrementStepper />
-                        </NumberInputStepper>
-                      </NumberInput>
-                    )}
-                    name="royaltiesForm"
-                  />
-                  <Text color="gray.400" fontSize="sm" mt={"1"}>
-                    Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
-                  </Text>
-                  <FormErrorMessage>{errors?.royaltiesForm?.message}</FormErrorMessage>
-                </FormControl>
+                    <Controller
+                      control={control}
+                      render={({ field: { onChange } }) => (
+                        <NumberInput
+                          mt="3 !important"
+                          size="md"
+                          id="royaltiesForm"
+                          maxW={24}
+                          step={1}
+                          defaultValue={dataNFTRoyalties}
+                          isDisabled={isNFMeIDMint}
+                          min={minRoyalties > 0 ? minRoyalties : 0}
+                          max={maxRoyalties > 0 ? maxRoyalties : 0}
+                          isValidCharacter={isValidNumericCharacter}
+                          onChange={(event) => onChange(event)}>
+                          <NumberInputField />
+                          <NumberInputStepper>
+                            <NumberIncrementStepper />
+                            <NumberDecrementStepper />
+                          </NumberInputStepper>
+                        </NumberInput>
+                      )}
+                      name="royaltiesForm"
+                    />
+                    <Text color="gray.400" fontSize="sm" mt={"1"}>
+                      Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
+                    </Text>
+                    <FormErrorMessage>{errors?.royaltiesForm?.message}</FormErrorMessage>
+                  </FormControl>
+                )}
               </Box>
             </Flex>
 
-            <FormControl isInvalid={!!errors.extraAssets} minH={{ base: "7rem", md: "6.25rem" }}>
+            <FormControl mt={7} isInvalid={!!errors.extraAssets} minH={{ base: "7rem", md: "6.25rem" }}>
               <FormLabel fontWeight="bold" fontSize="md">
                 Extra Media Asset URL{" "}
               </FormLabel>
@@ -1341,69 +1331,70 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               />
               <FormErrorMessage>{errors?.extraAssets?.message}</FormErrorMessage>
             </FormControl>
-
-            <FormControl isInvalid={!!errors.donatePercentage} minH={"8.5rem"}>
-              <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt={{ base: "1", md: "4" }}>
-                Donate Percentage
-              </Text>
-
-              <PopoverTooltip title="What is a Donate Percentage?">
-                <>
-                  When you mint, you can optionally choose to donate a percentage of the total supply to the community treasury, which will then be used for
-                  community airdrops to engaged community members who actively use the Itheum BiTz XP system. This is a great way to get an &quot;engaged
-                  fanbase&quot; for your new collection and drive awareness. Learn more{" "}
-                  <Link
-                    href="https://docs.itheum.io/product-docs/product/data-dex/minting-a-data-nft/creator-donations-for-community-airdrops"
-                    isExternal
-                    rel="noreferrer"
-                    color="teal.200">
-                    here
-                  </Link>
-                </>
-              </PopoverTooltip>
-
-              <Box p="5">
-                <Controller
-                  control={control}
-                  render={({ field: { onChange, value } }) => (
-                    <Slider
-                      id="slider"
-                      defaultValue={userData && userData?.maxDonationPecentage / 100 / 2}
-                      isDisabled={isNFMeIDMint}
-                      min={0}
-                      max={userData && userData?.maxDonationPecentage / 100}
-                      colorScheme="teal"
-                      onChange={(v) => onChange(v)}
-                      onMouseEnter={() => setShowTooltip(true)}
-                      onMouseLeave={() => setShowTooltip(false)}>
-                      <SliderMark value={(userData && userData?.maxDonationPecentage / 100) ?? 0} mt="1" ml="-2.5" fontSize="sm">
-                        {(userData && userData?.maxDonationPecentage / 100) ?? 0}%
-                      </SliderMark>
-                      <SliderTrack>
-                        <SliderFilledTrack />
-                      </SliderTrack>
-                      <Tooltip hasArrow bg="teal.500" color="white" placement="top" isOpen={showTooltip} label={`${value}%`}>
-                        <SliderThumb />
-                      </Tooltip>
-                    </Slider>
-                  )}
-                  name="donatePercentage"
-                />
-                <Text color="gray.400" fontSize="sm" mt={"1"}>
-                  Min: 0%, Max: {userData && userData?.maxDonationPecentage / 100}%
+            {!publicKey && (
+              <FormControl isInvalid={!!errors.donatePercentage} minH={"8.5rem"}>
+                <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt={{ base: "1", md: "4" }}>
+                  Donate Percentage
                 </Text>
-              </Box>
 
-              <Text color="teal.200" fontSize="xl" mt={"1"}>
-                Quantity that goes to the community treasury: {Math.floor(dataNFTCopies * (donatePercentage / 100))} Data NFTs
-              </Text>
-              {Math.floor(dataNFTCopies * (donatePercentage / 100)) === 0 && (
-                <Text color="darkorange" fontSize="sm" mt={"1"}>
-                  As the number of copies is low, no Data NFTs will be sent for donations
+                <PopoverTooltip title="What is a Donate Percentage?">
+                  <>
+                    When you mint, you can optionally choose to donate a percentage of the total supply to the community treasury, which will then be used for
+                    community airdrops to engaged community members who actively use the Itheum BiTz XP system. This is a great way to get an &quot;engaged
+                    fanbase&quot; for your new collection and drive awareness. Learn more{" "}
+                    <Link
+                      href="https://docs.itheum.io/product-docs/product/data-dex/minting-a-data-nft/creator-donations-for-community-airdrops"
+                      isExternal
+                      rel="noreferrer"
+                      color="teal.200">
+                      here
+                    </Link>
+                  </>
+                </PopoverTooltip>
+
+                <Box p="5">
+                  <Controller
+                    control={control}
+                    render={({ field: { onChange, value } }) => (
+                      <Slider
+                        id="slider"
+                        defaultValue={userData && userData?.maxDonationPecentage / 100 / 2}
+                        isDisabled={isNFMeIDMint}
+                        min={0}
+                        max={userData && userData?.maxDonationPecentage / 100}
+                        colorScheme="teal"
+                        onChange={(v) => onChange(v)}
+                        onMouseEnter={() => setShowTooltip(true)}
+                        onMouseLeave={() => setShowTooltip(false)}>
+                        <SliderMark value={(userData && userData?.maxDonationPecentage / 100) ?? 0} mt="1" ml="-2.5" fontSize="sm">
+                          {(userData && userData?.maxDonationPecentage / 100) ?? 0}%
+                        </SliderMark>
+                        <SliderTrack>
+                          <SliderFilledTrack />
+                        </SliderTrack>
+                        <Tooltip hasArrow bg="teal.500" color="white" placement="top" isOpen={showTooltip} label={`${value}%`}>
+                          <SliderThumb />
+                        </Tooltip>
+                      </Slider>
+                    )}
+                    name="donatePercentage"
+                  />
+                  <Text color="gray.400" fontSize="sm" mt={"1"}>
+                    Min: 0%, Max: {userData && userData?.maxDonationPecentage / 100}%
+                  </Text>
+                </Box>
+
+                <Text color="teal.200" fontSize="xl" mt={"1"}>
+                  Quantity that goes to the community treasury: {Math.floor(dataNFTCopies * (donatePercentage / 100))} Data NFTs
                 </Text>
-              )}
-              <FormErrorMessage>{errors?.donatePercentage?.message}</FormErrorMessage>
-            </FormControl>
+                {Math.floor(dataNFTCopies * (donatePercentage / 100)) === 0 && (
+                  <Text color="darkorange" fontSize="sm" mt={"1"}>
+                    As the number of copies is low, no Data NFTs will be sent for donations
+                  </Text>
+                )}
+                <FormErrorMessage>{errors?.donatePercentage?.message}</FormErrorMessage>
+              </FormControl>
+            )}
 
             <Flex justifyContent="flex-end" gap={3} pt={5} mt={5}>
               <Button size="lg" onClick={() => setActiveStep(activeStep - 1)}>
@@ -1428,7 +1419,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               <Heading size="lg" fontSize="22px" mt={3} mb={5} lineHeight="tall">
                 <Highlight
                   query={[`${bondingAmount.toLocaleString()} $ITHEUM`, `${bondingPeriod.toString()} ${amountOfTimeUnit}`, `${maxApy}% Max APR`]}
-                  styles={{ px: "2", py: "1", rounded: "full", bg: "teal.200" }}>
+                  styles={{ px: "2", py: "0", rounded: "full", bg: "teal.200" }}>
                   {`To mint your ${isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} , you need to bond ${bondingAmount.toLocaleString()} $ITHEUM for ${bondingPeriod.toString()} ${amountOfTimeUnit}. Bonds earn an estimated ${maxApy}% Max APR as staking rewards.`}
                 </Highlight>
               </Heading>
@@ -1497,7 +1488,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             </Flex>
 
             <Box>
-              {itheumBalance < antiSpamTax + bondingAmount && (
+              {(!publicKey ? itheumBalance < antiSpamTax + bondingAmount : itheumBalance < bondingAmount) && (
                 <Text color="red.400" fontSize="md" mt="1 !important" mb="2">
                   {labels.ERR_MINT_FORM_NOT_ENOUGH_BOND}
                 </Text>
@@ -1685,7 +1676,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               makePrimaryNFMeIdSuccessful={makePrimaryNFMeIdSuccessful}
               onChainMint={handleOnChainMint}
               isNFMeIDMint={isNFMeIDMint}
-              isAutoVault={(dataToPrefill?.shouldAutoVault ?? false) && !bondVaultNonce}
+              isAutoVault={publicKey ? true : (dataToPrefill?.shouldAutoVault ?? false) && !bondVaultNonce}
               nftImgAndMetadataLoadedOnIPFS={nftImgAndMetadataLoadedOnIPFS}
             />
           </>
