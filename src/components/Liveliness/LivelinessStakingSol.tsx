@@ -954,7 +954,7 @@ export const LivelinessStakingSol: React.FC = () => {
                             onClick={() => {
                               setWithdrawBondConfirmationWorkflow({
                                 bondId: currentBond.bondId,
-                                bondAmount: ((currentBond.bondAmount.toNumber() / 10 ** 9) * withdrawPenalty) / 100,
+                                bondAmount: currentBond.bondAmount.toNumber() / 10 ** 9,
                               });
                             }}>
                             Withdraw Bond
@@ -1095,21 +1095,35 @@ export const LivelinessStakingSol: React.FC = () => {
               setWithdrawBondConfirmationWorkflow(undefined);
             }}
             onProceed={() => {
-              handleWithdrawBondClick(withdrawBondConfirmationWorkflow!.bondId!, (withdrawBondConfirmationWorkflow!.bondAmount * withdrawPenalty) / 100);
+              handleWithdrawBondClick(
+                withdrawBondConfirmationWorkflow!.bondId!,
+                withdrawBondConfirmationWorkflow!.bondAmount - (withdrawBondConfirmationWorkflow!.bondAmount * withdrawPenalty) / 100
+              );
               setWithdrawBondConfirmationWorkflow(undefined);
             }}
             bodyContent={
               <>
                 <Text fontSize="sm" pb={3} opacity=".8">
-                  {`Collection: ${withdrawBondConfirmationWorkflow?.bondId}, Bond Amount: ${withdrawBondConfirmationWorkflow?.bondAmount}`}
+                  {`Collection: ${withdrawBondConfirmationWorkflow?.bondId},   Bond Amount: ${withdrawBondConfirmationWorkflow?.bondAmount}`}
+                </Text>
+                <Text color={"red"} fontWeight="bold" fontSize="lg" pb={3} opacity="1">
+                  {`Bond Amount to receive: ${(
+                    (withdrawBondConfirmationWorkflow?.bondAmount ?? 0) -
+                    ((withdrawBondConfirmationWorkflow?.bondAmount ?? 0) * withdrawPenalty) / 100
+                  ).toFixed(2)}`}
                 </Text>
                 <Text mb="5">There are a few items to consider before you proceed with the bond withdraw:</Text>
                 <UnorderedList mt="2" p="2">
-                  <ListItem>Withdrawing before bond expiry incurs a penalty; no penalty after expiry, and you get the full amount back.</ListItem>
+                  <ListItem>
+                    Withdrawing before bond expiry incurs a penalty of{" "}
+                    <Text as="span" fontSize="md" color="red">
+                      {withdrawPenalty}%
+                    </Text>
+                    ; no penalty after expiry, and you get the full amount back.
+                  </ListItem>
                   <ListItem>Penalties are non-refundable.</ListItem>
                   <ListItem>After withdrawal, your Liveliness score drops to zero, visible to buyers if your Data NFT is listed.</ListItem>
                   <ListItem>Once withdrawn, you {`can't `}re-bond to regain the Liveliness score or earn staking rewards.</ListItem>
-                  <ListItem>If the bond was linked to your Primary NFMe ID Vault, {`you'll`} need to set up a new one as your primary.</ListItem>
                 </UnorderedList>
 
                 <Text mt="5">With the above in mind, are your SURE you want to proceed and Withdraw Bond?</Text>
