@@ -129,6 +129,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   ];
 
   const getOnChainNFTs = async () => {
+    if (!address) return [];
     const dataNftsT: DataNft[] = await getNftsOfACollectionForAnAddress(
       address,
       contractsForChain(chainID).dataNftTokens.map((v) => v.id),
@@ -274,7 +275,6 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                   {connected ? (
                     <>
                       <LivelinessStakingSol />
-                      {/* <BondingCardsSol /> */}
                     </>
                   ) : (
                     <>
