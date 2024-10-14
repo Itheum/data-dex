@@ -39,7 +39,7 @@ import BigNumber from "bignumber.js";
 import moment from "moment";
 import { FaStore } from "react-icons/fa";
 import { MdOutlineInfo } from "react-icons/md";
-import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams, Link as ReactRouterLink } from "react-router-dom";
 import { Favourite } from "components/Favourite/Favourite";
 import { LivelinessScore } from "components/Liveliness/LivelinessScore";
 import NftMediaComponent from "components/NftMediaComponent";
@@ -128,6 +128,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [volume, setVolume] = useState<number>();
   const [livelinessScore, setLivelinessScore] = useState<number>(-1);
+
+  const isMobile = window.innerWidth <= 480;
 
   useEffect(() => {
     if (tokenId && offerId && location.pathname === "/datanfts/marketplace/market") {
@@ -340,16 +342,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         : "Not Listed";
   }
 
-  const handleButtonClick = (offerArg: number, identifier: string) => {
-    return `/datanfts/marketplace/${identifier}/offer-${offerArg}`;
-  };
-
   const isCreatorListing = () => {
     return nftData.creator === offer?.owner;
   };
 
-  const handleGettingLivelinessScore = (livelinessScore: number) => {
-    setLivelinessScore(livelinessScore);
+  const handleGettingLivelinessScore = (livelinessScoreVal: number) => {
+    setLivelinessScore(livelinessScoreVal);
   };
 
   const parsedCreationTime = moment(nftData.creationTime);
@@ -377,13 +375,14 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
           <Flex direction={"column"} alignItems={"flex-start"}>
             {tokenIdParam && (
               <Box display={{ md: "Flex" }} justifyContent="space-between" w="100%">
-                <Heading size="xl" fontFamily="Clash-Medium" marginBottom={4} marginTop={10}>
+                <Heading size="xl" fontFamily="Clash-Medium" marginBottom={4} marginTop={{ base: 2, md: 5 }} textAlign={{ base: "center", md: "center" }}>
                   Data NFT Details
                 </Heading>
 
                 <HStack>
                   <Button
-                    marginTop={{ md: "25px" }}
+                    margin={{ base: "auto !important", md: "initial" }}
+                    marginTop={{ base: "0", md: "25px" }}
                     colorScheme="teal"
                     _disabled={{ opacity: 1 }}
                     fontSize={{ base: "sm", md: "md" }}
@@ -406,12 +405,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   w="full"
                   alignItems={{ base: "initial", md: "initial" }}
                   justifyContent={{ xl: "space-between" }}>
-                  <Box margin="auto" mb={6}>
+                  <Box margin="auto" mb={{ base: "50px", md: "25px" }}>
                     <NftMediaComponent nftMedia={nftData?.media} autoSlide marginTop="1rem" borderRadius="md" />
                   </Box>
 
-                  <Flex mr={tokenIdParam ? "75px" : "30px"}>
-                    <Flex flexDirection="column" ml={5} h="250px" justifyContent="space-evenly">
+                  <Flex mr={{ base: `${tokenIdParam ? "0" : "0"}`, md: `${tokenIdParam ? "75px" : "30px"}` }}>
+                    <Flex flexDirection="column" ml={{ base: 0, md: 5 }} h={{ base: "auto", md: "250px" }} justifyContent="space-evenly">
                       <Box display="flex" gap={3} color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "md", md: "lg", xl: "xl" }}>
                         <Link href={`${chainExplorer}/nfts/${nftData.tokenIdentifier}`} isExternal>
                           {nftData.tokenIdentifier}
@@ -469,7 +468,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       {offer && address && address != offer.owner && (
                         <Box h={14}>
                           <HStack gap={5}>
-                            <Text fontSize="xl">How many to {isCreatorListing() ? "mint" : "buy"} </Text>
+                            <Text fontSize="lg">How many to {isCreatorListing() ? "mint" : "buy"} </Text>
 
                             <NumberInput
                               size="md"
@@ -509,7 +508,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         </Box>
                       )}
 
-                      <Flex flexDirection="row" gap={3} justifyContent={{ lg: "start" }} w="full">
+                      <Flex direction={{ base: "column", md: "row" }} gap={3} justifyContent={{ lg: "start" }} w="full">
                         <Tooltip colorScheme="teal" hasArrow placement="top" label="Data Market is Paused" isDisabled={!isMarketPaused}>
                           <Button
                             size={{ base: "sm", md: "md", xl: "lg" }}
@@ -622,7 +621,10 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         )}
                       </Flex>
                     </Flex>
-                    <LivelinessScore tokenIdentifier={tokenId ?? ""} onGettingLivelinessScore={handleGettingLivelinessScore} />
+
+                    <Box mt={{ base: "5", md: "2" }} mb={{ base: "5", md: "0" }}>
+                      <LivelinessScore tokenIdentifier={tokenId ?? ""} onGettingLivelinessScore={handleGettingLivelinessScore} />
+                    </Box>
                   </Flex>
                 </Flex>
 
@@ -675,22 +677,22 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         Description
                       </Heading>
                       <Flex flexDirection="column" h="18.6rem" justifyContent="space-between">
-                        <Text fontSize={"16px"} px="28px" py="14px" h="inherit" overflow={"auto"} scrollBehavior="auto" mb={2}>
+                        <Text fontSize={{ base: "12px", md: "16px" }} px="28px" py="14px" h="inherit" overflow={"auto"} scrollBehavior="auto" mb={2}>
                           {transformDescription(nftData.description)}
                         </Text>
-                        <Flex flexDirection="row" gap={3}>
+                        <Flex flexDirection={{ base: "column", md: "row" }} gap={3}>
                           <Box
                             borderRadius="md"
-                            px="3"
+                            px="1.5"
                             py="1.5"
+                            ml={{ base: "10px", md: "28px" }}
+                            mr={{ base: "10px", md: "0" }}
                             bgColor="#E2AEEA30"
-                            w="14rem"
-                            ml="28px"
                             textAlign="center"
                             display="flex"
                             alignItems="center"
                             justifyContent="center">
-                            <Text fontSize={"sm"} fontWeight="semibold" color="#E2AEEA" textTransform="uppercase">
+                            <Text fontSize="sm" fontWeight="semibold" color="#E2AEEA" textTransform="uppercase">
                               Fully Transferable License
                             </Text>
                           </Box>
@@ -699,42 +701,55 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                               borderRadius="md"
                               px="1.5"
                               py="1.5"
+                              ml={{ base: "10px", md: "0" }}
+                              mr={{ base: "10px", md: "0" }}
                               bgColor="#0ab8ff30"
                               textAlign="center"
                               display="flex"
                               alignItems="center"
                               justifyContent="center">
-                              <Text fontSize={"sm"} fontWeight="semibold" color="#0ab8ff" textTransform="uppercase">
+                              <Text fontSize="sm" fontWeight="semibold" color="#0ab8ff" textTransform="uppercase">
                                 You Own this
                               </Text>
                             </Box>
                           )}
                           {addressCreatedNft && (
                             <Box
-                              mr="28px"
                               borderRadius="md"
                               px="1.5"
                               py="1.5"
+                              ml={{ base: "10px", md: "0" }}
+                              mr={{ base: "10px", md: "0" }}
                               bgColor="#00C79730"
                               textAlign="center"
                               display="flex"
                               alignItems="center"
                               justifyContent="center">
-                              <Text fontSize={"sm"} fontWeight="semibold" color="#00C797" textTransform="uppercase">
+                              <Text fontSize="sm" fontWeight="semibold" color="#00C797" textTransform="uppercase">
                                 You Created this
                               </Text>
                             </Box>
                           )}
                           {nftData.isDataNFTPH && (
-                            <Badge borderRadius="md" px="3" py="1" bgColor="#E2AEEA30">
-                              <Text fontSize={"sm"} fontWeight="semibold" color={colorMode === "dark" ? "#E2AEEA" : "#af82b5"}>
+                            <Box
+                              borderRadius="md"
+                              px="1.5"
+                              py="1.5"
+                              ml={{ base: "10px", md: "0" }}
+                              mr={{ base: "10px", md: "0" }}
+                              bgColor="#00C79730"
+                              textAlign="center"
+                              display="flex"
+                              alignItems="center"
+                              justifyContent="center">
+                              <Text fontSize="sm" fontWeight="semibold" textTransform="uppercase" color={colorMode === "dark" ? "#E2AEEA" : "#af82b5"}>
                                 Data NFT-PH (Plug-In Hybrid)
                               </Text>
-                            </Badge>
+                            </Box>
                           )}
                         </Flex>
                         <Flex direction={{ base: "column", md: "row" }} gap={2} px="28px" mt="3" justifyContent="space-between">
-                          <Box color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light" display="flex">
+                          <Box color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "md", md: "lg" }} fontWeight="light" display="flex">
                             Creator:&nbsp;
                             <Flex
                               onClick={() => {
@@ -743,12 +758,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                 }
                                 navigate(`/profile/${nftData.creator}`);
                               }}>
-                              <ShortAddress address={nftData.creator} fontSize="lg" tooltipLabel="Profile" />
+                              <ShortAddress address={nftData.creator} fontSize={isMobile ? "md" : "lg"} tooltipLabel="Profile" />
                               <MdOutlineInfo style={{ marginLeft: "5px", color: "#00c797", marginTop: "4px" }} fontSize="lg" />
                             </Flex>
                           </Box>
                           {offer && offer.owner && (
-                            <Box color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light" display="flex">
+                            <Box color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "md", md: "lg" }} fontWeight="light" display="flex">
                               Owner:&nbsp;
                               <Flex
                                 onClick={() => {
@@ -757,7 +772,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                   }
                                   navigate(`/profile/${offer.owner}`);
                                 }}>
-                                <ShortAddress address={offer.owner} fontSize="lg" tooltipLabel="Profile" />
+                                <ShortAddress address={offer.owner} fontSize={isMobile ? "md" : "lg"} tooltipLabel="Profile" />
                                 <MdOutlineInfo style={{ marginLeft: "5px", color: "#00c797", marginTop: "4px" }} fontSize="lg" />
                               </Flex>
                             </Box>
@@ -766,7 +781,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             {parsedCreationTime.isValid() && (
                               <Text
                                 color={colorMode === "dark" ? "white" : "black"}
-                                fontSize="lg"
+                                fontSize={{ base: "md", md: "lg" }}
                                 fontWeight="light">{`Creation time: ${parsedCreationTime.format(uxConfig.dateStr)}`}</Text>
                             )}
                           </Box>
@@ -808,7 +823,9 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             )}
                           </>
                           {}
-                          <Text color={"teal.200"}>{nftData.tokenIdentifier}</Text>
+                          <Text fontSize={{ base: "md", md: "lg" }} color={"teal.200"}>
+                            {nftData.tokenIdentifier}
+                          </Text>
                         </Heading>
                         <Box flex="1" overflowY="scroll" h="18.6rem" px="28px" py="14px">
                           {totalOffers.length === 0 ||
@@ -842,17 +859,25 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                       </GridItem>
                                       <GridItem colSpan={1}>
                                         {tokenId && pathname?.includes(tokenId) ? (
-                                          <a href={handleButtonClick(to.index, nftData.tokenIdentifier)} rel="noopener noreferrer">
+                                          <Link
+                                            as={ReactRouterLink}
+                                            to={`/datanfts/marketplace/${nftData.tokenIdentifier}/offer-${to.index}`}
+                                            reloadDocument
+                                            style={{ textDecoration: "none" }}>
                                             <Button w="full" colorScheme="teal" variant="outline" size="sm">
                                               {window.innerWidth > 500 ? "View Offer" : "View"}
                                             </Button>
-                                          </a>
+                                          </Link>
                                         ) : (
-                                          <a target="_blank" href={handleButtonClick(to.index, nftData.tokenIdentifier)} rel="noopener noreferrer">
+                                          <Link
+                                            as={ReactRouterLink}
+                                            to={`/datanfts/marketplace/${nftData.tokenIdentifier}/offer-${to.index}`}
+                                            reloadDocument
+                                            style={{ textDecoration: "none" }}>
                                             <Button w="full" colorScheme="teal" variant="outline" size="sm">
                                               {window.innerWidth > 500 ? "View Offer" : "View"}
                                             </Button>
-                                          </a>
+                                          </Link>
                                         )}
                                       </GridItem>
                                     </Fragment>
@@ -868,7 +893,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
             </Box>
           </Flex>
 
-          <VStack alignItems={"flex-start"}>
+          <VStack alignItems="flex-start">
             <Heading size="lg" fontFamily="Clash-Medium" mt="30px" marginBottom={2}>
               Data NFT Activity
             </Heading>
