@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Alert, AlertTitle, Heading, AlertDescription, SimpleGrid, Flex, Text, Spacer, Button, CloseButton, Link, useDisclosure } from "@chakra-ui/react";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks";
+import { Link as ReactRouterLink } from "react-router-dom";
 import featuredTwoWeeks from "assets/img/banners/datadex-featured-2weeks.png";
 import featuredAirdropGuide from "assets/img/banners/datadex-featured-spreadsheet.png";
 
@@ -47,7 +48,7 @@ export const FeaturedDataNFTListings: React.FC = () => {
                       </>
                       <Spacer display={{ base: "none", lg: "block" }} />
                       <Flex flexDirection={{ base: "column", md: "row" }} alignItems="center">
-                        <Link href="https://datadex.itheum.io/datanfts/marketplace/DATANFTFT-e936d4-b9">
+                        <Link as={ReactRouterLink} to={"/datanfts/marketplace/DATANFTFT-e936d4-b9"} style={{ textDecoration: "none" }}>
                           <Button size={{ base: "sm", md: "md" }} mt="20px" colorScheme="teal" borderRadius="8px">
                             <Text>View Data NFT Collection</Text>
                           </Button>
@@ -84,7 +85,7 @@ export const FeaturedDataNFTListings: React.FC = () => {
                       </>
                       <Spacer display={{ base: "none", lg: "block" }} />
                       <Flex flexDirection={{ base: "column", md: "row" }} alignItems="center">
-                        <Link href="https://datadex.itheum.io/datanfts/marketplace/DATANFTFT-e936d4-ae">
+                        <Link as={ReactRouterLink} to={"/datanfts/marketplace/DATANFTFT-e936d4-ae"} style={{ textDecoration: "none" }}>
                           <Button size={{ base: "sm", md: "md" }} mt="20px" colorScheme="teal" borderRadius="8px">
                             <Text>View Data NFT Collection</Text>
                           </Button>
