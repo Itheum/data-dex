@@ -783,7 +783,6 @@ export const LivelinessStakingSol: React.FC = () => {
                         imageHeight="160px"
                         imageWidth="160px"
                         borderRadius="10px"
-                        openNftDetailsDrawer={() => {}}
                       />
                     </Box>
                     <Flex pt={3} flexDirection={"column"} alignItems="center" w="100%">
