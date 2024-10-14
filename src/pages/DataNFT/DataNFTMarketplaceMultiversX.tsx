@@ -47,7 +47,6 @@ import { NoDataHere } from "components/Sections/NoDataHere";
 import ConditionalRender from "components/UtilComps/ApiWrapper";
 import UpperCardComponent from "components/UtilComps/UpperCardComponent";
 import useThrottle from "components/UtilComps/UseThrottle";
-
 import { getOfersAsCollectionFromBackendApi, getOffersCountFromBackendApi, getOffersFromBackendApi } from "libs/MultiversX";
 import { getApi, getNetworkProvider, getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
@@ -57,6 +56,7 @@ import { convertWeiToEsdt, createNftId, hexZero, getBondsForOffers, sleep, token
 import { DataNFTCollectionObject } from "libs/utils/types/marketplace";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
+import { FeaturedDataNFTListings } from "./components/FeaturedDataNFTListings";
 import { DataNftCollectionCard } from "./DataNftCollection";
 
 interface PropsType {
@@ -64,22 +64,19 @@ interface PropsType {
 }
 
 export const Marketplace: FC<PropsType> = ({ tabState }) => {
+  const toast = useToast();
   const { colorMode } = useColorMode();
   const navigate = useNavigate();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { pageNumber } = useParams();
   const pageIndex = pageNumber ? Number(pageNumber) : 0;
-
   const { chainID } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions, pendingTransactions } = useGetPendingTransactions();
-
   const mintContract = new DataNftMintContract(chainID);
   const marketContract = new DataNftMarketContract(chainID);
-
   const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
   const extendedOffers = useMarketStore((state) => state.offers);
-
   const updateOffers = useMarketStore((state) => state.updateOffers);
   const loadingOffers = useMarketStore((state) => state.loadingOffers);
   const updateLoadingOffers = useMarketStore((state) => state.updateLoadingOffers);
@@ -93,10 +90,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [nftMetadatasLoading, setNftMetadatasLoading] = useState<boolean>(false);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
-
   const isApiUp = useMarketStore((state) => state.isApiUp);
   const isMarketplaceApiUp = useMarketStore((state) => state.isMarketplaceApiUp);
-
   const [offerForDrawer, setOfferForDrawer] = useState<Offer | undefined>();
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
   const { isOpen: isOpenDataNftCollectionModal, onOpen: onOpenDataNftCollectionModal, onClose: onCloseDataNftCollectionModal } = useDisclosure();
@@ -107,30 +102,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [groupedCollections, setGroupedCollections] = useState<DataNFTCollectionObject[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const hasWebWalletTx = sessionStorage.getItem("web-wallet-tx");
-
-  const setPageIndex = (newPageIndex: number) => {
-    navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
-  };
-
-  const onGotoPage = useThrottle((newPageIndex: number) => {
-    if (0 <= newPageIndex && newPageIndex < pageCount) {
-      setPageIndex(newPageIndex);
-    }
-  });
-
-  const groupDataNfts = () => {
-    (async () => {
-      if (!chainID) return;
-
-      // start loading offers
-      updateLoadingOffers(true);
-
-      const _groupedCollections: DataNFTCollectionObject[] = await getOfersAsCollectionFromBackendApi(chainID);
-      setGroupedCollections(_groupedCollections);
-
-      updateLoadingOffers(false);
-    })();
-  };
+  const { isOpen: isMintFeeInfoVisible, onClose, onOpen } = useDisclosure({ defaultIsOpen: false });
 
   useEffect(() => {
     (async () => {
@@ -214,58 +186,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     })();
   }, [pageIndex, tabState, hasPendingTransactions, hasWebWalletTx]);
 
-  async function openNftDetailsModal(index: number) {
-    if (collectionForDrawer) {
-      setOfferForDrawer(collectionForDrawer.dataNfts[index].minOffer);
-    } else if (showGroupedDataNfts && tabState === 1) {
-      if (groupedCollections[index].type === "NonFungibleESDT") {
-        setCollectionForDrawer(groupedCollections[index]);
-        onOpenDataNftCollectionModal();
-        return;
-      } else {
-        setOfferForDrawer(groupedCollections[index].dataNfts[0].minOffer);
-      }
-    } else {
-      setOfferForDrawer(extendedOffers[index]);
-    }
-    onOpenDataNftDetails();
-  }
-
-  function closeDetailsView() {
-    onCloseDataNftDetails();
-    let didAlterParams = false;
-    if (searchParams.has("tokenId")) {
-      searchParams.delete("tokenId");
-      didAlterParams = true;
-    }
-    if (searchParams.has("offerId")) {
-      searchParams.delete("offerId");
-      didAlterParams = true;
-    }
-    if (didAlterParams) {
-      setSearchParams(searchParams);
-    }
-    setOfferForDrawer(undefined);
-  }
-
-  function closeCollectionView() {
-    onCloseDataNftCollectionModal();
-    let didAlterParams = false;
-    if (searchParams.has("tokenId")) {
-      searchParams.delete("tokenId");
-      didAlterParams = true;
-    }
-    if (searchParams.has("offerId")) {
-      searchParams.delete("offerId");
-      didAlterParams = true;
-    }
-    if (didAlterParams) {
-      setSearchParams(searchParams);
-    }
-    setCollectionForDrawer(undefined);
-  }
-
-  const toast = useToast();
   useEffect(() => {
     if (!pendingTransactions) return;
 
@@ -332,6 +252,81 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     }
   }, []);
 
+  const setPageIndex = (newPageIndex: number) => {
+    navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
+  };
+
+  const onGotoPage = useThrottle((newPageIndex: number) => {
+    if (0 <= newPageIndex && newPageIndex < pageCount) {
+      setPageIndex(newPageIndex);
+    }
+  });
+
+  const groupDataNfts = () => {
+    (async () => {
+      if (!chainID) return;
+
+      // start loading offers
+      updateLoadingOffers(true);
+
+      const _groupedCollections: DataNFTCollectionObject[] = await getOfersAsCollectionFromBackendApi(chainID);
+      setGroupedCollections(_groupedCollections);
+
+      updateLoadingOffers(false);
+    })();
+  };
+
+  async function openNftDetailsModal(index: number) {
+    if (collectionForDrawer) {
+      setOfferForDrawer(collectionForDrawer.dataNfts[index].minOffer);
+    } else if (showGroupedDataNfts && tabState === 1) {
+      if (groupedCollections[index].type === "NonFungibleESDT") {
+        setCollectionForDrawer(groupedCollections[index]);
+        onOpenDataNftCollectionModal();
+        return;
+      } else {
+        setOfferForDrawer(groupedCollections[index].dataNfts[0].minOffer);
+      }
+    } else {
+      setOfferForDrawer(extendedOffers[index]);
+    }
+    onOpenDataNftDetails();
+  }
+
+  function closeDetailsView() {
+    onCloseDataNftDetails();
+    let didAlterParams = false;
+    if (searchParams.has("tokenId")) {
+      searchParams.delete("tokenId");
+      didAlterParams = true;
+    }
+    if (searchParams.has("offerId")) {
+      searchParams.delete("offerId");
+      didAlterParams = true;
+    }
+    if (didAlterParams) {
+      setSearchParams(searchParams);
+    }
+    setOfferForDrawer(undefined);
+  }
+
+  function closeCollectionView() {
+    onCloseDataNftCollectionModal();
+    let didAlterParams = false;
+    if (searchParams.has("tokenId")) {
+      searchParams.delete("tokenId");
+      didAlterParams = true;
+    }
+    if (searchParams.has("offerId")) {
+      searchParams.delete("offerId");
+      didAlterParams = true;
+    }
+    if (didAlterParams) {
+      setSearchParams(searchParams);
+    }
+    setCollectionForDrawer(undefined);
+  }
+
   return (
     <>
       <Stack>
@@ -341,6 +336,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
           Explore and discover new Data NFTs direct from Data Creators and peer-to-peer data traders.
         </Heading>
+
+        <FeaturedDataNFTListings />
 
         <Box position="relative">
           <Tabs pt={10} index={tabState - 1}>
