@@ -8,6 +8,8 @@ export const FeaturedDataNFTListings: React.FC = () => {
   const { isOpen: isFeaturedListingsOpen, onClose, onOpen } = useDisclosure({ defaultIsOpen: true });
   const { tokenLogin } = useGetLoginInfo();
 
+  const isMobile = window.innerWidth <= 480;
+
   function openExplorerAppWithAuthToken(appLink: string) {
     if (tokenLogin && tokenLogin?.nativeAuthToken) {
       window.open(`${appLink}/?accessToken=${tokenLogin?.nativeAuthToken}`)?.focus();
@@ -60,7 +62,7 @@ export const FeaturedDataNFTListings: React.FC = () => {
                           borderRadius="8px"
                           ml={{ base: "0", md: "5" }}
                           onClick={() => openExplorerAppWithAuthToken("https://explorer.itheum.io/spreadsheetnfts")}>
-                          <Text color="#0F0F0F">Open App: Download Spreadsheet</Text>
+                          <Text color="#0F0F0F">Open App: Download {isMobile ? "File" : "Spreadsheet"}</Text>
                         </Button>
                       </Flex>
                     </Flex>
