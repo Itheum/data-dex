@@ -286,9 +286,9 @@ export async function retrieveBondsAndNftMeIdVault(
     }
     const bonds: Bond[] = [];
     let nftMeIdVault: Bond | undefined;
-    // let totalBondAmount = new BN(0);
-    // let totalBondWeight = new BN(0);
-    // const currentTimestampt = Math.floor(Date.now() / 1000);
+    let totalBondAmount = new BN(0);
+    let totalBondWeight = new BN(0);
+    const currentTimestampt = Math.floor(Date.now() / 1000);
 
     ///TODO THIS CAN BE improved by using a single fetch, only for the modified bond. not all of them if i just top up one
     for (let i = 1; i <= lastIndex; i++) {
@@ -299,17 +299,23 @@ export async function retrieveBondsAndNftMeIdVault(
         nftMeIdVault = bondUpgraded;
       }
       // calculate the correct live Bond score
-      // if (bond.state === 1) {
-      //   const scorePerBond = Math.floor(computeBondScore(43200, currentTimestampt, bond.unbondTimestamp.toNumber())) / 100;
-      //   const bondWeight = bond.bondAmount.mul(new BN(scorePerBond));
-      //   totalBondWeight = totalBondWeight.add(bondWeight);
-      //   totalBondAmount = totalBondAmount.add(bond.bondAmount);
-      // }
+      if (bond.state === 1) {
+        //lvb1
+        const scorePerBond = Math.floor(computeBondScore(43200, currentTimestampt, bond.unbondTimestamp.toNumber())) / 100;
+        //b1 * lvb1
+        const bondWeight = bond.bondAmount.mul(new BN(scorePerBond));
+        // b1 * lvb1 + b2 * lvb2 + b3 * lvb3 + ... + bn * lvbn
+        totalBondWeight = totalBondWeight.add(bondWeight);
+
+        //b1 + b2 + b3 + ... + bn
+        totalBondAmount = totalBondAmount.add(bond.bondAmount);
+      }
       bonds.push(bondUpgraded);
     }
-    // const weightedLivelinessScore = totalBondWeight.mul(new BN(100)).div(totalBondAmount);
+    // result
+    const weightedLivelinessScore = totalBondWeight.mul(new BN(100)).div(totalBondAmount);
 
-    return { bonds: bonds, nftMeIdVault: nftMeIdVault, weightedLivelinessScore: 0 };
+    return { bonds: bonds, nftMeIdVault: nftMeIdVault, weightedLivelinessScore: weightedLivelinessScore.toNumber() / 100 };
   } catch (error) {
     console.error("retrieveBondsError", error);
 
@@ -317,18 +323,18 @@ export async function retrieveBondsAndNftMeIdVault(
   }
 }
 
-// TESTING PURPOSES --- SHOULD BE DELETED ON PROD
-// function computeBondScore(lockPeriod: number, currentTimestamp: number, unbondTimestamp: number): number {
-//   if (currentTimestamp >= unbondTimestamp) {
-//     return 0;
-//   } else {
-//     const difference = unbondTimestamp - currentTimestamp;
+// TESTING PURPOSES
+function computeBondScore(lockPeriod: number, currentTimestamp: number, unbondTimestamp: number): number {
+  if (currentTimestamp >= unbondTimestamp) {
+    return 0;
+  } else {
+    const difference = unbondTimestamp - currentTimestamp;
 
-//     if (lockPeriod === 0) {
-//       return 0;
-//     } else {
-//       const divResult = 10000 / lockPeriod;
-//       return divResult * difference;
-//     }
-//   }
-// }
+    if (lockPeriod === 0) {
+      return 0;
+    } else {
+      const divResult = 10000 / lockPeriod;
+      return divResult * difference;
+    }
+  }
+}

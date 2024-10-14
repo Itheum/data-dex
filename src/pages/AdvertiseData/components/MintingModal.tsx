@@ -50,6 +50,8 @@ type MintingModalProps = {
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   closeProgressModal: () => void;
   onChainMint: () => void;
+  bondingTxHasFailed?: boolean;
+  sendSolanaBondingTx?: () => void;
 };
 
 export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
@@ -70,6 +72,8 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
     setIsOpen,
     closeProgressModal,
     onChainMint,
+    bondingTxHasFailed,
+    sendSolanaBondingTx,
   } = props;
   const { colorMode } = useColorMode();
   const navigate = useNavigate();
@@ -201,7 +205,7 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
 
             {isAutoVault ? (
               <>
-                {mintingSuccessful && makePrimaryNFMeIdSuccessful && (
+                {mintingSuccessful && makePrimaryNFMeIdSuccessful ? (
                   <Box textAlign="center" mt="2">
                     <Alert status="success">
                       <Text fontSize="lg" colorScheme="teal">
@@ -229,6 +233,23 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
                       </Button>
                     </HStack>
                   </Box>
+                ) : (
+                  mintingSuccessful &&
+                  bondingTxHasFailed && (
+                    <Box textAlign="center" mt={4}>
+                      <Text fontSize="lg" colorScheme="teal" color="teal.200" mb={2}>
+                        Note: You can only complete the bonding step here.
+                      </Text>
+                      <Button
+                        colorScheme="teal"
+                        variant="solid"
+                        onClick={() => {
+                          sendSolanaBondingTx ? sendSolanaBondingTx() : console.error("Retry is not possible.");
+                        }}>
+                        Retry Bonding
+                      </Button>
+                    </Box>
+                  )
                 )}
               </>
             ) : (

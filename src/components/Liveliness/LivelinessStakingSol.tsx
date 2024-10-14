@@ -51,6 +51,7 @@ import { useAccountStore } from "store";
 import { useNftsStore } from "store/nfts";
 import { LivelinessScore } from "./LivelinessScore";
 import { useNetworkConfiguration } from "contexts/sol/SolNetworkConfigurationProvider";
+import { IS_DEVNET } from "libs/config";
 
 const BN10_9 = new BN(10 ** 9);
 const BN10_2 = new BN(10 ** 2);
@@ -196,9 +197,9 @@ export const LivelinessStakingSol: React.FC = () => {
 
   useEffect(() => {
     if (nftMeIdBond && solNfts && userPublicKey) {
-      const nftMeId = solNfts.find((nft) => nft.id == nftMeIdBond.assetId.toString());
-      if (nftMeId === undefined) console.error("NftMeID has not been found");
-      setNftMeId(nftMeId);
+      const _nftMeId = solNfts.find((nft) => nft.id == nftMeIdBond.assetId.toString());
+      if (_nftMeId === undefined) console.error("NftMeID has not been found");
+      setNftMeId(_nftMeId);
       setAllInfoLoading(false);
     }
   }, [nftMeIdBond]);
@@ -670,10 +671,11 @@ export const LivelinessStakingSol: React.FC = () => {
             ) : (
               <>
                 <Text fontSize="3xl">Combined Liveliness: {combinedLiveliness}% </Text>
-                {/* <Text>
-                  {"TESTING ONLY"}
-                  LIVE:{currentLiveLinessScoreLIVE} --- diff:{combinedLiveliness - currentLiveLinessScoreLIVE}
-                </Text> */}
+                {IS_DEVNET && (
+                  <Text>
+                    LIVE:{currentLiveLinessScoreLIVE ?? 0} --- diff:{(combinedLiveliness - currentLiveLinessScoreLIVE).toFixed(2)}
+                  </Text>
+                )}
                 <Progress hasStripe isAnimated value={combinedLiveliness} rounded="base" colorScheme="teal" width={"100%"} />
                 <Text fontSize="xl">Combined Bonds Staked: {formatNumberToShort(combinedBondsStaked.toNumber() / 10 ** 9)} $ITHEUM</Text>
                 <Text fontSize="xl">Global Total Bonded: {formatNumberToShort(globalTotalBond.div(BN10_9).toNumber())} $ITHEUM</Text>

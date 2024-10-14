@@ -114,7 +114,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const { publicKey, sendTransaction, signMessage } = useWallet();
   const { connection } = useConnection();
   const { networkConfiguration } = useNetworkConfiguration();
-
+  const [solanaBondTransaction, setSolanaBondTransaction] = useState<Transaction | undefined>(undefined);
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
   const { colorMode } = useColorMode();
   const toast = useToast();
@@ -160,6 +160,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const [needsMoreITHEUMToProceed, setNeedsMoreITHEUMToProceed] = useState<boolean>(false);
   const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
   const updateSolNfts = useNftsStore((state) => state.updateSolNfts);
+  const [bondingTxHasFailed, setBondingTxHasFailed] = useState<boolean>(false);
   // S: React hook form + yup integration ---->
   // Declaring a validation schema for the form with the validation needed
   let preSchema = {
@@ -404,6 +405,10 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       }
     }
   }, [itheumBalance, antiSpamTax, bondingAmount]);
+
+  useEffect(() => {
+    if (solanaBondTransaction) sendSolanaBondingTx();
+  }, [solanaBondTransaction]);
 
   function shouldMintYourDataNftBeDisabled(): boolean | undefined {
     return (
@@ -785,28 +790,36 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         }
 
         const bondTransaction = await createBondTransaction(mintMeta, publicKey, connection);
-        if (bondTransaction) {
-          try {
-            const result = await sendAndConfirmTransaction({ transaction: bondTransaction, customErrorMessage: "Failed to send the bonding transaction" });
-            if (result) {
-              updateItheumBalance(itheumBalance - bondingAmount);
-              setMakePrimaryNFMeIdSuccessful(true);
-              fetchSolNfts(publicKey?.toBase58()).then((nfts) => {
-                updateSolNfts(nfts);
-              });
-            }
-          } catch (error) {
-            setErrDataNFTStreamGeneric(new Error(labels.ERR_SUCCESS_MINT_BUT_BONDING_TRANSACTION_FAILED));
-            console.error("createBondTransaction failed to sign and send bond transaction", error);
-          }
-        } else {
-          setErrDataNFTStreamGeneric(new Error(labels.ERR_SUCCESS_MINT_BUT_BOND_NOT_CREATED));
-          console.error("createBondTransaction failed to create bond transaction", error);
-        }
+        setSolanaBondTransaction(bondTransaction);
       }
     } catch (e) {
       console.error(e);
       setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_TX_GEN_COMMAND_FAILED));
+    }
+  };
+
+  const sendSolanaBondingTx = async () => {
+    if (solanaBondTransaction) {
+      try {
+        setBondingTxHasFailed(false);
+
+        const result = await sendAndConfirmTransaction({ transaction: solanaBondTransaction, customErrorMessage: "Failed to send the bonding transaction" });
+        if (result) {
+          updateItheumBalance(itheumBalance - bondingAmount);
+          setMakePrimaryNFMeIdSuccessful(true);
+          fetchSolNfts(publicKey?.toBase58()).then((nfts) => {
+            updateSolNfts(nfts);
+          });
+          setErrDataNFTStreamGeneric(null);
+        }
+      } catch (error) {
+        setBondingTxHasFailed(true);
+        setErrDataNFTStreamGeneric(new Error(labels.ERR_SUCCESS_MINT_BUT_BONDING_TRANSACTION_FAILED));
+        console.error("createBondTransaction failed to sign and send bond transaction", error);
+      }
+    } else {
+      setErrDataNFTStreamGeneric(new Error(labels.ERR_SUCCESS_MINT_BUT_BOND_NOT_CREATED));
+      console.error("createBondTransaction failed to create bond transaction", error);
     }
   };
 
@@ -1678,6 +1691,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               isNFMeIDMint={isNFMeIDMint}
               isAutoVault={publicKey ? true : (dataToPrefill?.shouldAutoVault ?? false) && !bondVaultNonce}
               nftImgAndMetadataLoadedOnIPFS={nftImgAndMetadataLoadedOnIPFS}
+              bondingTxHasFailed={bondingTxHasFailed}
+              sendSolanaBondingTx={sendSolanaBondingTx}
             />
           </>
         )}
