@@ -98,7 +98,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       tabName: "Your Data NFT(s)",
       icon: FaBrush,
       isDisabled: false,
-      pieces: mvxNfts.length || solNfts.length,
+      pieces: mvxNfts?.length || solNfts?.length,
     },
     {
       tabName: "Purchased",
@@ -192,7 +192,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
             {/* Your Data NFTs */}
 
             <TabPanel mt={2} width={"full"}>
-              {tabState === 1 && (mvxNfts.length > 0 || solNfts.length > 0) ? (
+              {tabState === 1 && (mvxNfts?.length > 0 || solNfts?.length > 0) ? (
                 <SimpleGrid
                   columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
                   spacingY={4}

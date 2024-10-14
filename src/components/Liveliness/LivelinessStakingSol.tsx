@@ -762,7 +762,6 @@ export const LivelinessStakingSol: React.FC = () => {
             const dataNft = solNfts?.find((dataNft) => currentBond.assetId.toString() === dataNft.id);
             if (!dataNft) return null;
             const metadata = dataNft.content.metadata;
-            if (currentBond.bondId === 13) console.log("currentBond", currentBond, "data nft ", dataNft);
             return (
               <Card
                 _disabled={{ cursor: "not-allowed", opacity: "0.7" }}
