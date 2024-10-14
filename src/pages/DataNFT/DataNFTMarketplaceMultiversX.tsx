@@ -23,10 +23,6 @@ import {
   Tabs,
   Text,
   Tooltip,
-  Alert,
-  AlertTitle,
-  AlertDescription,
-  Button,
   useColorMode,
   useDisclosure,
   useToast,
@@ -60,6 +56,7 @@ import { convertWeiToEsdt, createNftId, hexZero, getBondsForOffers, sleep, token
 import { DataNFTCollectionObject } from "libs/utils/types/marketplace";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
+import { FeaturedDataNFTListings } from "./components/FeaturedDataNFTListings";
 import { DataNftCollectionCard } from "./DataNftCollection";
 
 interface PropsType {
@@ -105,6 +102,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [groupedCollections, setGroupedCollections] = useState<DataNFTCollectionObject[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const hasWebWalletTx = sessionStorage.getItem("web-wallet-tx");
+  const { isOpen: isMintFeeInfoVisible, onClose, onOpen } = useDisclosure({ defaultIsOpen: false });
 
   useEffect(() => {
     (async () => {
@@ -339,66 +337,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           Explore and discover new Data NFTs direct from Data Creators and peer-to-peer data traders.
         </Heading>
 
-        <Box mx={{ base: 10, lg: 24 }}>
-          <Alert status="info" mt={3} rounded="lg">
-            <Box display="flex" flexDirection="column" w="full">
-              <AlertTitle>
-                <Heading fontSize="20px">Featured Data NFT Launches</Heading>
-              </AlertTitle>
-              <AlertDescription fontSize="md">
-                <SimpleGrid columns={{ sm: 1, lg: 2 }} spacingY={4} gap={8} mx={{ base: 0, "2xl": "12 !important" }} mt="5 !important" justifyItems={"center"}>
-                  <Box
-                    bgImage={"https://media.elrond.com/nfts/asset/QmX5sZTyvBpRnmffjyQi5VPw81gPfXMFJPdwenVpYqKsHf"}
-                    bgColor="#fff"
-                    bgSize="cover"
-                    borderRadius="12px"
-                    borderColor="rgba(0, 199, 151, 0.25)"
-                    borderWidth="5px"
-                    p="2">
-                    <Text fontSize="16px" fontWeight="bold">
-                      Airdrop Guide
-                    </Text>
-                    <Text>
-                      ~ TWO WEEK EP is a celebration and representation of my journey as a recording artist and musician. This EP, a collection of 3 songs, was
-                      composed and recorded by myself over the course of two weeks in the Summer of 2024. The first song of the EP, Otherside, is the first song
-                      I ever wrote back in the Summer of 2021. All vocals and instrumentation performed by Stephen Snodgrass. ~
-                    </Text>
-                    <Flex flexDirection={{ base: "column", md: "row" }}>
-                      <Button mt={"20px"} colorScheme={"teal"} borderRadius="8px">
-                        <Text fontFamily="Inter" lineHeight="1.6" fontWeight="medium" fontSize="14px" color="#0F0F0F">
-                          View Data NFT Collection
-                        </Text>
-                      </Button>
-                      <Button mt={"20px"} colorScheme={"teal"} borderRadius="8px" ml="5">
-                        <Text fontFamily="Inter" lineHeight="1.6" fontWeight="medium" fontSize="14px" color="#0F0F0F">
-                          App: Download Excel Spreadsheet
-                        </Text>
-                      </Button>
-                    </Flex>
-                  </Box>
-
-                  <Box
-                    bgImage={"https://assetspublic-itheum-ecosystem.s3.eu-central-1.amazonaws.com/app_nftunes/images/featured_hero/stephen-snodgrass.jpg"}
-                    bgSize="cover"
-                    borderRadius="12px"
-                    borderColor="rgba(0, 199, 151, 0.25)"
-                    borderWidth="5px"
-                    p="2">
-                    <Text fontSize="16px" fontWeight="bold">
-                      2 Weeks EP
-                    </Text>
-                    <Text>
-                      This Excel-based guide contains all the essential information needed to participate in various incentivized campaigns, across many
-                      different chains. It is designed to provide users with up-to-date details on active opportunities, and will be regularly updated with the
-                      latest available information to ensure accuracy and relevance.
-                    </Text>
-                  </Box>
-                </SimpleGrid>
-              </AlertDescription>
-            </Box>
-            <CloseButton alignSelf="flex-start" position="relative" right={-1} top={-1} />
-          </Alert>
-        </Box>
+        <FeaturedDataNFTListings />
 
         <Box position="relative">
           <Tabs pt={10} index={tabState - 1}>
