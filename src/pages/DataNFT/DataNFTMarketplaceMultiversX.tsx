@@ -23,6 +23,10 @@ import {
   Tabs,
   Text,
   Tooltip,
+  Alert,
+  AlertTitle,
+  AlertDescription,
+  Button,
   useColorMode,
   useDisclosure,
   useToast,
@@ -47,7 +51,6 @@ import { NoDataHere } from "components/Sections/NoDataHere";
 import ConditionalRender from "components/UtilComps/ApiWrapper";
 import UpperCardComponent from "components/UtilComps/UpperCardComponent";
 import useThrottle from "components/UtilComps/UseThrottle";
-
 import { getOfersAsCollectionFromBackendApi, getOffersCountFromBackendApi, getOffersFromBackendApi } from "libs/MultiversX";
 import { getApi, getNetworkProvider, getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
@@ -64,22 +67,19 @@ interface PropsType {
 }
 
 export const Marketplace: FC<PropsType> = ({ tabState }) => {
+  const toast = useToast();
   const { colorMode } = useColorMode();
   const navigate = useNavigate();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { pageNumber } = useParams();
   const pageIndex = pageNumber ? Number(pageNumber) : 0;
-
   const { chainID } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions, pendingTransactions } = useGetPendingTransactions();
-
   const mintContract = new DataNftMintContract(chainID);
   const marketContract = new DataNftMarketContract(chainID);
-
   const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
   const extendedOffers = useMarketStore((state) => state.offers);
-
   const updateOffers = useMarketStore((state) => state.updateOffers);
   const loadingOffers = useMarketStore((state) => state.loadingOffers);
   const updateLoadingOffers = useMarketStore((state) => state.updateLoadingOffers);
@@ -93,10 +93,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [nftMetadatasLoading, setNftMetadatasLoading] = useState<boolean>(false);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
-
   const isApiUp = useMarketStore((state) => state.isApiUp);
   const isMarketplaceApiUp = useMarketStore((state) => state.isMarketplaceApiUp);
-
   const [offerForDrawer, setOfferForDrawer] = useState<Offer | undefined>();
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
   const { isOpen: isOpenDataNftCollectionModal, onOpen: onOpenDataNftCollectionModal, onClose: onCloseDataNftCollectionModal } = useDisclosure();
@@ -107,30 +105,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [groupedCollections, setGroupedCollections] = useState<DataNFTCollectionObject[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const hasWebWalletTx = sessionStorage.getItem("web-wallet-tx");
-
-  const setPageIndex = (newPageIndex: number) => {
-    navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
-  };
-
-  const onGotoPage = useThrottle((newPageIndex: number) => {
-    if (0 <= newPageIndex && newPageIndex < pageCount) {
-      setPageIndex(newPageIndex);
-    }
-  });
-
-  const groupDataNfts = () => {
-    (async () => {
-      if (!chainID) return;
-
-      // start loading offers
-      updateLoadingOffers(true);
-
-      const _groupedCollections: DataNFTCollectionObject[] = await getOfersAsCollectionFromBackendApi(chainID);
-      setGroupedCollections(_groupedCollections);
-
-      updateLoadingOffers(false);
-    })();
-  };
 
   useEffect(() => {
     (async () => {
@@ -214,58 +188,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     })();
   }, [pageIndex, tabState, hasPendingTransactions, hasWebWalletTx]);
 
-  async function openNftDetailsModal(index: number) {
-    if (collectionForDrawer) {
-      setOfferForDrawer(collectionForDrawer.dataNfts[index].minOffer);
-    } else if (showGroupedDataNfts && tabState === 1) {
-      if (groupedCollections[index].type === "NonFungibleESDT") {
-        setCollectionForDrawer(groupedCollections[index]);
-        onOpenDataNftCollectionModal();
-        return;
-      } else {
-        setOfferForDrawer(groupedCollections[index].dataNfts[0].minOffer);
-      }
-    } else {
-      setOfferForDrawer(extendedOffers[index]);
-    }
-    onOpenDataNftDetails();
-  }
-
-  function closeDetailsView() {
-    onCloseDataNftDetails();
-    let didAlterParams = false;
-    if (searchParams.has("tokenId")) {
-      searchParams.delete("tokenId");
-      didAlterParams = true;
-    }
-    if (searchParams.has("offerId")) {
-      searchParams.delete("offerId");
-      didAlterParams = true;
-    }
-    if (didAlterParams) {
-      setSearchParams(searchParams);
-    }
-    setOfferForDrawer(undefined);
-  }
-
-  function closeCollectionView() {
-    onCloseDataNftCollectionModal();
-    let didAlterParams = false;
-    if (searchParams.has("tokenId")) {
-      searchParams.delete("tokenId");
-      didAlterParams = true;
-    }
-    if (searchParams.has("offerId")) {
-      searchParams.delete("offerId");
-      didAlterParams = true;
-    }
-    if (didAlterParams) {
-      setSearchParams(searchParams);
-    }
-    setCollectionForDrawer(undefined);
-  }
-
-  const toast = useToast();
   useEffect(() => {
     if (!pendingTransactions) return;
 
@@ -332,6 +254,81 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     }
   }, []);
 
+  const setPageIndex = (newPageIndex: number) => {
+    navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
+  };
+
+  const onGotoPage = useThrottle((newPageIndex: number) => {
+    if (0 <= newPageIndex && newPageIndex < pageCount) {
+      setPageIndex(newPageIndex);
+    }
+  });
+
+  const groupDataNfts = () => {
+    (async () => {
+      if (!chainID) return;
+
+      // start loading offers
+      updateLoadingOffers(true);
+
+      const _groupedCollections: DataNFTCollectionObject[] = await getOfersAsCollectionFromBackendApi(chainID);
+      setGroupedCollections(_groupedCollections);
+
+      updateLoadingOffers(false);
+    })();
+  };
+
+  async function openNftDetailsModal(index: number) {
+    if (collectionForDrawer) {
+      setOfferForDrawer(collectionForDrawer.dataNfts[index].minOffer);
+    } else if (showGroupedDataNfts && tabState === 1) {
+      if (groupedCollections[index].type === "NonFungibleESDT") {
+        setCollectionForDrawer(groupedCollections[index]);
+        onOpenDataNftCollectionModal();
+        return;
+      } else {
+        setOfferForDrawer(groupedCollections[index].dataNfts[0].minOffer);
+      }
+    } else {
+      setOfferForDrawer(extendedOffers[index]);
+    }
+    onOpenDataNftDetails();
+  }
+
+  function closeDetailsView() {
+    onCloseDataNftDetails();
+    let didAlterParams = false;
+    if (searchParams.has("tokenId")) {
+      searchParams.delete("tokenId");
+      didAlterParams = true;
+    }
+    if (searchParams.has("offerId")) {
+      searchParams.delete("offerId");
+      didAlterParams = true;
+    }
+    if (didAlterParams) {
+      setSearchParams(searchParams);
+    }
+    setOfferForDrawer(undefined);
+  }
+
+  function closeCollectionView() {
+    onCloseDataNftCollectionModal();
+    let didAlterParams = false;
+    if (searchParams.has("tokenId")) {
+      searchParams.delete("tokenId");
+      didAlterParams = true;
+    }
+    if (searchParams.has("offerId")) {
+      searchParams.delete("offerId");
+      didAlterParams = true;
+    }
+    if (didAlterParams) {
+      setSearchParams(searchParams);
+    }
+    setCollectionForDrawer(undefined);
+  }
+
   return (
     <>
       <Stack>
@@ -341,6 +338,67 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
           Explore and discover new Data NFTs direct from Data Creators and peer-to-peer data traders.
         </Heading>
+
+        <Box mx={{ base: 10, lg: 24 }}>
+          <Alert status="info" mt={3} rounded="lg">
+            <Box display="flex" flexDirection="column" w="full">
+              <AlertTitle>
+                <Heading fontSize="20px">Featured Data NFT Launches</Heading>
+              </AlertTitle>
+              <AlertDescription fontSize="md">
+                <SimpleGrid columns={{ sm: 1, lg: 2 }} spacingY={4} gap={8} mx={{ base: 0, "2xl": "12 !important" }} mt="5 !important" justifyItems={"center"}>
+                  <Box
+                    bgImage={"https://media.elrond.com/nfts/asset/QmX5sZTyvBpRnmffjyQi5VPw81gPfXMFJPdwenVpYqKsHf"}
+                    bgColor="#fff"
+                    bgSize="cover"
+                    borderRadius="12px"
+                    borderColor="rgba(0, 199, 151, 0.25)"
+                    borderWidth="5px"
+                    p="2">
+                    <Text fontSize="16px" fontWeight="bold">
+                      Airdrop Guide
+                    </Text>
+                    <Text>
+                      ~ TWO WEEK EP is a celebration and representation of my journey as a recording artist and musician. This EP, a collection of 3 songs, was
+                      composed and recorded by myself over the course of two weeks in the Summer of 2024. The first song of the EP, Otherside, is the first song
+                      I ever wrote back in the Summer of 2021. All vocals and instrumentation performed by Stephen Snodgrass. ~
+                    </Text>
+                    <Flex flexDirection={{ base: "column", md: "row" }}>
+                      <Button mt={"20px"} colorScheme={"teal"} borderRadius="8px">
+                        <Text fontFamily="Inter" lineHeight="1.6" fontWeight="medium" fontSize="14px" color="#0F0F0F">
+                          View Data NFT Collection
+                        </Text>
+                      </Button>
+                      <Button mt={"20px"} colorScheme={"teal"} borderRadius="8px" ml="5">
+                        <Text fontFamily="Inter" lineHeight="1.6" fontWeight="medium" fontSize="14px" color="#0F0F0F">
+                          App: Download Excel Spreadsheet
+                        </Text>
+                      </Button>
+                    </Flex>
+                  </Box>
+
+                  <Box
+                    bgImage={"https://assetspublic-itheum-ecosystem.s3.eu-central-1.amazonaws.com/app_nftunes/images/featured_hero/stephen-snodgrass.jpg"}
+                    bgSize="cover"
+                    borderRadius="12px"
+                    borderColor="rgba(0, 199, 151, 0.25)"
+                    borderWidth="5px"
+                    p="2">
+                    <Text fontSize="16px" fontWeight="bold">
+                      2 Weeks EP
+                    </Text>
+                    <Text>
+                      This Excel-based guide contains all the essential information needed to participate in various incentivized campaigns, across many
+                      different chains. It is designed to provide users with up-to-date details on active opportunities, and will be regularly updated with the
+                      latest available information to ensure accuracy and relevance.
+                    </Text>
+                  </Box>
+                </SimpleGrid>
+              </AlertDescription>
+            </Box>
+            <CloseButton alignSelf="flex-start" position="relative" right={-1} top={-1} />
+          </Alert>
+        </Box>
 
         <Box position="relative">
           <Tabs pt={10} index={tabState - 1}>
