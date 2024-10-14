@@ -67,7 +67,7 @@ export default function ExploreAppButton({
               }
             }}>
             <Text py={3} color="black" fontSize={fontSize ? fontSize : ""}>
-              Explore
+              Open App
             </Text>
           </Button>
         </Tooltip>
