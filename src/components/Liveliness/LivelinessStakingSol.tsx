@@ -7,7 +7,6 @@ import {
   Flex,
   Heading,
   HStack,
-  Image,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
@@ -57,7 +56,6 @@ const BN10_9 = new BN(10 ** 9);
 const BN10_2 = new BN(10 ** 2);
 
 export const LivelinessStakingSol: React.FC = () => {
-  const navigate = useNavigate();
   const { connection } = useConnection();
   const { publicKey: userPublicKey, sendTransaction } = useWallet();
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
@@ -182,7 +180,7 @@ export const LivelinessStakingSol: React.FC = () => {
         const accountInfo = await connection.getAccountInfo(addressBondsRewardsPda);
         const isExist = accountInfo !== null;
         if (!isExist) {
-          await initializeAddress();
+          setAllInfoLoading(false);
         } else {
           fetchAddressRewardsData();
         }
@@ -442,31 +440,6 @@ export const LivelinessStakingSol: React.FC = () => {
       if (result) updateItheumBalance(itheumBalance - amount);
     } catch (error) {
       console.error("Transaction to top-up bondfailed:", error);
-    }
-  }
-
-  async function initializeAddress() {
-    try {
-      if (!programSol || !userPublicKey) return;
-
-      const transaction = await programSol.methods
-        .initializeAddress()
-        .accounts({
-          addressBondsRewards: addressBondsRewardsPda,
-          rewardsConfig: rewardsConfigPda,
-          authority: userPublicKey,
-        })
-        .transaction();
-      const txSignature = await sendAndConfirmTransaction({
-        transaction,
-        customErrorMessage: "Initialization of the rewards account failed",
-      });
-      if (txSignature) {
-        fetchAddressRewardsData();
-      }
-    } catch (error) {
-      console.error("Failed to create the initialization address tx:", error);
-      navigate("/datanfts/wallet");
     }
   }
 
@@ -755,7 +728,7 @@ export const LivelinessStakingSol: React.FC = () => {
           <Flex w="100%" h="20rem" justifyContent="center" alignItems="center">
             <Spinner size="md" color="teal.200" />
           </Flex>
-        ) : numberOfBonds === 0 ? (
+        ) : !numberOfBonds ? (
           <NoDataHere imgFromTop="2" />
         ) : (
           bonds?.map((currentBond, index) => {
