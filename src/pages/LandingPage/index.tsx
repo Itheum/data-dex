@@ -7,6 +7,7 @@ import NFMeIdCTA from "components/NFMeIdCTA";
 import ExplainerArticles from "components/Sections/ExplainerArticles";
 import RecentArticles from "components/Sections/RecentArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
+import { FeaturedDataNFTListings } from "pages/DataNFT/components/FeaturedDataNFTListings";
 import VolumesDataNfts from "pages/Home/components/VolumesDataNfts";
 
 const LandingPage = () => {
@@ -59,6 +60,10 @@ const LandingPage = () => {
 
           <Box m="auto" pt="10" pb="10" w={"100%"} bgGradient={colorMode === "light" ? "bgWhite" : "linear(to-b, bgDark, #00C79730, bgDark)"}>
             <NFMeIdCTA />
+          </Box>
+
+          <Box pt={{ base: "18", "2xl": "10" }} pb="10" mx={{ base: "10px", md: "10px" }} mt="10">
+            <FeaturedDataNFTListings />
           </Box>
 
           <Box pt={{ base: "18", "2xl": "10" }} pb="10" mx={{ base: "10px", md: "10px" }} mt="10">
