@@ -38,8 +38,9 @@ export const DataNftCollectionCard: FC<DataNftCollectionCardComponentProps> = ({
   const { chainID } = useGetNetworkConfig();
   const { loginMethod } = useGetLoginInfo();
   const { colorMode } = useColorMode();
-
   const isNFMeIDVaultDataNFT = isNFMeIDVaultClassDataNFT(title);
+
+  const isMobile = window.innerWidth <= 480;
 
   return (
     <Skeleton
@@ -151,7 +152,7 @@ export const DataNftCollectionCard: FC<DataNftCollectionCardComponentProps> = ({
           {imageUrl.includes(".mp4") ? (
             <Box width={230} height={230} as="div" borderRadius={"32px"} overflow={"hidden"} mb={"-2rem"} mt={"-2.6rem"}>
               <Box as="div" width={"420px"} height={"full"} borderRadius={"32px"} ml={"-94px"}>
-                <video src={imageUrl} autoPlay loop muted></video>
+                <video src={imageUrl} autoPlay={isMobile ? false : true} loop muted></video>
               </Box>
             </Box>
           ) : (

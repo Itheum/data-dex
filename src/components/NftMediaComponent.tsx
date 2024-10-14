@@ -108,7 +108,7 @@ const NftMediaComponent: React.FC<NftMediaComponentProps> = (props) => {
                         <video
                           width={transformSizeInNumber(imageWidth) * 2 + "px"}
                           height={transformSizeInNumber(imageHeight) * 2 + "px"}
-                          autoPlay
+                          autoPlay={isMobile ? false : true}
                           loop
                           muted
                           playsInline>
