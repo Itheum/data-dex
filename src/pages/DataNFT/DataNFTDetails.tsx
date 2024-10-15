@@ -45,6 +45,7 @@ import { LivelinessScore } from "components/Liveliness/LivelinessScore";
 import NftMediaComponent from "components/NftMediaComponent";
 import PreviewDataButton from "components/PreviewDataButton";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
+import ProcureDataNFTSuccessCTAModel from "components/ProcureDataNFTSuccessCTAModel";
 import { NoDataHere } from "components/Sections/NoDataHere";
 import TokenTxTable from "components/Tables/TokenTxTable";
 import ConditionalRender from "components/UtilComps/ApiWrapper";
@@ -65,6 +66,7 @@ import {
   tokenDecimals,
   transformDescription,
   isNFMeIDVaultClassDataNFT,
+  sleep,
 } from "libs/utils";
 import { useMarketStore } from "store";
 
@@ -74,7 +76,7 @@ type DataNFTDetailsProps = {
   showConnectWallet?: boolean;
   tokenIdProp?: string;
   offerIdProp?: number;
-  closeDetailsView?: () => void;
+  closeDetailsView?: (meta?: any) => void;
 };
 
 interface DataNftVolume {
@@ -111,7 +113,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [amount, setAmount] = useState<number>(1);
   const [amountError, setAmountError] = useState<string>("");
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
-  const [sessionId, setSessionId] = useState<any>();
+  const [sessionId, setSessionId] = useState<any>(); // note that this is the purchase tx session ID thats only set if the offer purchase sold out the full listing
   const [addressHasNft, setAddressHasNft] = useState<boolean>(false);
   const [addressCreatedNft, setAddressCreatedNft] = useState<boolean>(false);
   const marketplaceDrawer = "/datanfts/marketplace/market";
@@ -128,6 +130,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [volume, setVolume] = useState<number>();
   const [livelinessScore, setLivelinessScore] = useState<number>(-1);
+  const [purchaseWasSuccess, setPurchaseWasSuccess] = useState<boolean>(false);
+  const { isOpen: isProcureSuccessCTAModalOpen, onOpen: onProcureSuccessCTAModalOpen, onClose: onProcureSuccessCTAModalClose } = useDisclosure();
 
   const isMobile = window.innerWidth <= 480;
 
@@ -152,6 +156,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       // if sessionId exists, it means the offer is going to be sold out by user
       (async () => {
         const _offer = await marketContract.viewOffer(Number(offerId));
+
         if (_offer === null || _offer === undefined) {
           if (!toast.isActive("ER-24")) {
             toast({
@@ -168,6 +173,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
             });
           }
         }
+
         setOffer(_offer);
       })();
     }
@@ -194,10 +200,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     transactionId: sessionId,
     onSuccess: () => {
       if (props.closeDetailsView) {
-        props.closeDetailsView();
+        props.closeDetailsView({
+          purchaseWasSuccess: 1,
+        });
       } else {
-        // it means current URL is NFT detail page; go to wallet after the offer is sold out
-        navigate("/datanfts/wallet");
+        // it means current URL is NFT detail page; go to wallet after the offer is sold out (note we don't do anything with purchaseWasSuccess yet)
+        navigate("/datanfts/wallet?purchaseWasSuccess=1");
       }
     },
   });
@@ -352,6 +360,23 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
   const parsedCreationTime = moment(nftData.creationTime);
   const isNFMeIDVaultDataNFT = isNFMeIDVaultClassDataNFT(nftData.tokenName);
+
+  useEffect(() => {
+    if (!hasPendingTransactions && purchaseWasSuccess && !isProcureSuccessCTAModalOpen) {
+      (async () => {
+        setPurchaseWasSuccess(false); // reset in case of repeat purchase
+
+        await sleep(2);
+        onProcureSuccessCTAModalOpen();
+      })();
+    }
+  }, [purchaseWasSuccess, hasPendingTransactions, isProcureSuccessCTAModalOpen]);
+
+  const handleSetPurchaseWasSuccess = () => {
+    if (!purchaseWasSuccess && !isProcureSuccessCTAModalOpen) {
+      setPurchaseWasSuccess(true);
+    }
+  };
 
   return (
     <Box mx={tokenIdParam ? { base: "5 !important", xl: "28 !important" } : 0}>
@@ -524,7 +549,9 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             }
                             isDisabled={hasPendingTransactions || !!amountError || isMarketPaused}
                             hidden={!isMxLoggedIn || pathname === walletDrawer || !offer || address === offer.owner}
-                            onClick={onProcureModalOpen}>
+                            onClick={() => {
+                              onProcureModalOpen();
+                            }}>
                             <Text px={tokenId ? 0 : 3} fontSize={{ base: "xs", md: "sm", xl: "md" }}>
                               {isCreatorListing() && !isNFMeIDVaultDataNFT ? "Mint Data NFT" : "Buy Data NFT"}
                             </Text>
@@ -913,8 +940,18 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               amount={amount}
               setSessionId={setSessionId}
               showCustomMintMsg={isCreatorListing()}
+              notifyPurchaseWasSuccess={handleSetPurchaseWasSuccess}
             />
           )}
+
+          <ProcureDataNFTSuccessCTAModel
+            isOpen={isProcureSuccessCTAModalOpen}
+            onClose={() => {
+              setPurchaseWasSuccess(false); // reset in case of repeat purchase
+              onProcureSuccessCTAModalClose();
+            }}
+            nftData={nftData}
+          />
         </Box>
       ) : (
         <Flex direction={"column"} justifyContent={"center"} alignItems={"center"} minHeight={"500px"}>
