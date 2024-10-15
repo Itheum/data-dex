@@ -357,7 +357,7 @@ export const LivelinessStakingSol: React.FC = () => {
             duration: 12000,
             isClosable: true,
           },
-          loading: { title: "Processing Transaction", description: "Please wait..." },
+          loading: { title: "Processing Transaction", description: "Please wait...", colorScheme: "teal" },
         }
       );
       const result = await confirmationPromise;

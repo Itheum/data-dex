@@ -29,10 +29,6 @@ export const TradeData: React.FC = () => {
 
   useEffect(() => {
     async function launchAutoTemplate() {
-      if (!chainID || !mxAddress) {
-        return;
-      }
-
       // lockPeriod is a dependency in TradeForm, so we need to make sure it loads before open the form
       if (!lockPeriod || lockPeriod?.length === 0) {
         return;
@@ -43,7 +39,7 @@ export const TradeData: React.FC = () => {
 
       if (launchTemplate) {
         if (launchTemplate === "nfmeidvault") {
-          await sleep(1);
+          await sleep(0.5);
           setIsDrawerOpen(true);
           setPrefilledData(nfMeIDVaultConfig);
         }
@@ -51,7 +47,7 @@ export const TradeData: React.FC = () => {
     }
 
     launchAutoTemplate();
-  }, [chainID, mxAddress, lockPeriod]);
+  }, [mxAddress, lockPeriod, connected]);
 
   return (
     <Box>

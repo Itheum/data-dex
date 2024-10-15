@@ -45,6 +45,7 @@ import {
   useDisclosure,
   useSteps,
   useToast,
+  AlertIcon,
 } from "@chakra-ui/react";
 import { Program } from "@coral-xyz/anchor";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -312,7 +313,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     resolver: yupResolver(validationSchema), // telling to React Hook Form that we want to use yupResolver as the validation schema
   });
 
-  // console.log("validationSchema:", "errors:", errors, "isValid:", isValid);
   const dataNFTStreamUrl: string = isNFMeIDMint ? generatePrefilledNFMeIDDataStreamURL() : getValues("dataStreamUrlForm");
   const dataNFTPreviewUrl: string = getValues("dataPreviewUrlForm");
   const dataNFTTokenName: string = getValues("tokenNameForm");
@@ -334,7 +334,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     }
 
     // append the imgswapsalt to make the image unique to the user
-    const imgSwapSalt = `&imgswapsalt=${mxAddress.substring(0, 6)}-${mxAddress.slice(-6)}_timestamp_${Date.now()}`;
+    const userAddress = publicKey ? publicKey?.toBase58() : mxAddress;
+    const imgSwapSalt = `&imgswapsalt=${userAddress.substring(0, 6)}-${userAddress.slice(-6)}_timestamp_${Date.now()}`;
     nfmeIdVaultDataStreamURL = nfmeIdVaultDataStreamURL + imgSwapSalt;
 
     return nfmeIdVaultDataStreamURL;
@@ -689,7 +690,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             duration: 12000,
             isClosable: true,
           },
-          loading: { title: "Processing Transaction", description: "Please wait..." },
+          loading: { title: "Processing Transaction", description: "Please wait...", colorScheme: "teal" },
         }
       );
       const result = await confirmationPromise;
@@ -979,29 +980,30 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             </Flex>
           </Box>
         )}
-
-        {isMintFeeInfoVisible ? (
-          <Alert status="info" mt={3} rounded="lg">
-            <Box display="flex" flexDirection="column" w="full">
-              <AlertTitle mb={2}>How much $ITHEUM and $EGLD is needed for the mint?</AlertTitle>
-              <AlertDescription fontSize="md">1. An anti-spam fee of {antiSpamTax < 0 ? "?" : antiSpamTax} $ITHEUM</AlertDescription>
-              <AlertDescription fontSize="md">
-                2. Bond an amount of $ITHEUM tokens ({bondingAmount} $ITHEUM) for a period of time ({bondingPeriod} {amountOfTimeUnit}). This bond can be
-                unlocked by you and earns Staking rewards when active.
-              </AlertDescription>
-              <AlertDescription fontSize="md">3. ~0.02 EGLD to cover the gas fees for the transaction.</AlertDescription>
-              <AlertDescription fontSize="lg" display={{ base: "block", md: "flex" }} gap={1} mt={2} fontWeight="bold">
-                Resulting in a total of <Text color="teal.200">{antiSpamTax + bondingAmount} $ITHEUM</Text> tokens and <Text color="teal.200">~0.02</Text> EGLD
-              </AlertDescription>
-            </Box>
-            <CloseButton alignSelf="flex-start" position="relative" right={-1} top={-1} onClick={onClose} />
-          </Alert>
-        ) : (
-          <Button onClick={onOpen} mt={3} size={{ base: "sm", md: "md" }} variant="outline">
-            How much $ITHEUM and $EGLD is needed for the mint?
-          </Button>
-        )}
-
+        {!publicKey ? (
+          isMintFeeInfoVisible ? (
+            <Alert status="info" mt={3} rounded="lg">
+              <Box display="flex" flexDirection="column" w="full">
+                <AlertTitle mb={2}>How much $ITHEUM and $EGLD is needed for the mint?</AlertTitle>
+                <AlertDescription fontSize="md">1. An anti-spam fee of {antiSpamTax < 0 ? "?" : antiSpamTax} $ITHEUM</AlertDescription>
+                <AlertDescription fontSize="md">
+                  2. Bond an amount of $ITHEUM tokens ({bondingAmount} $ITHEUM) for a period of time ({bondingPeriod} {amountOfTimeUnit}). This bond can be
+                  unlocked by you and earns Staking rewards when active.
+                </AlertDescription>
+                <AlertDescription fontSize="md">3. ~0.02 EGLD to cover the gas fees for the transaction.</AlertDescription>
+                <AlertDescription fontSize="lg" display={{ base: "block", md: "flex" }} gap={1} mt={2} fontWeight="bold">
+                  Resulting in a total of <Text color="teal.200">{antiSpamTax + bondingAmount} $ITHEUM</Text> tokens and <Text color="teal.200">~0.02</Text>{" "}
+                  EGLD
+                </AlertDescription>
+              </Box>
+              <CloseButton alignSelf="flex-start" position="relative" right={-1} top={-1} onClick={onClose} />
+            </Alert>
+          ) : (
+            <Button onClick={onOpen} mt={3} size={{ base: "sm", md: "md" }} variant="outline">
+              How much $ITHEUM and $EGLD is needed for the mint?
+            </Button>
+          )
+        ) : null}
         {PRINT_UI_DEBUG_PANELS && (
           <Box>
             <Alert status="warning" mt={3} p={2} fontSize=".8rem" rounded="lg" as="div" style={{ "display": "block" }}>
@@ -1623,9 +1625,11 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             </Box>
 
             {publicKey ? (
-              <Text fontWeight="500" color="teal.200" lineHeight="30.4px" fontSize="16px" mt="0px !important">
-                Note: A 2% royalty tax will be applied to your Data NFT. This tax will be equally split between the Itheum treasury and you.
-              </Text>
+              <Alert status="warning">
+                <AlertIcon />
+                All Data NFTs, including NFMeIDs minted, will include a fixed 2% royalty. <br /> These royalties are split equally 50% / 50% with you and the
+                Itheum Protocol.
+              </Alert>
             ) : (
               <>
                 {" "}

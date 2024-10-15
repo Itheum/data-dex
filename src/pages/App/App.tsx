@@ -6,7 +6,7 @@ import { RouteType } from "@multiversx/sdk-dapp/types";
 import { logout } from "@multiversx/sdk-dapp/utils";
 import { AuthenticatedRoutesWrapper } from "@multiversx/sdk-dapp/wrappers";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import AppFooter from "components/Sections/AppFooter";
 import AppHeader from "components/Sections/AppHeader";
 import AppSettings from "components/UtilComps/AppSettings";
@@ -61,6 +61,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   const { isLoggedIn: isMxLoggedIn, loginMethod: mxLoginMethod } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();
   const [menuItem, setMenuItem] = useState(MENU.LANDING);
+  const navigate = useNavigate();
   const [rfKeys] = useState({
     tools: 0,
     sellData: 0,
@@ -130,7 +131,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
 
   const resetCommonStoreValuesBitzContext = () => {
     updateBitzBalance(-2);
-    updateItheumBalance(-2);
+    updateItheumBalance(-1);
     updateCooldown(-2);
   };
 
@@ -142,6 +143,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
     if (isSolLoggedIn) {
       onShowConnectWalletModal("no-auth");
       disconnectSolWallet();
+      navigate("/");
     } else {
       // resetAppContexts();
 

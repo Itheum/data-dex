@@ -8,6 +8,7 @@ import { IS_DEVNET, getTopVolumes } from "libs/MultiversX";
 import { NftMedia } from "libs/types";
 import { convertToLocalString } from "libs/utils";
 import { useMarketStore } from "store";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 interface VolumesDataNftsProps {
   // Define the props for your component here
@@ -47,7 +48,7 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
   const { tokenLogin } = useGetLoginInfo();
   const [topVolumesDataNfts, setTopVolumesDataNfts] = useState<VolumeDataNftsType[]>(latestOffersSkeleton);
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
-
+  const { connected: isSolWalletConnected } = useWallet();
   useEffect(() => {
     (async () => {
       DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
@@ -76,7 +77,9 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
     })();
   }, []);
 
-  return (
+  return isSolWalletConnected ? (
+    <> </>
+  ) : (
     <>
       <Heading as="h4" fontFamily="Clash-Medium" fontWeight="semibold" size="lg" mb="5" textAlign={["center", "initial"]}>
         Most Traded Data NFTs

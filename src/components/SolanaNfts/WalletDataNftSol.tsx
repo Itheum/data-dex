@@ -1,7 +1,7 @@
 import React from "react";
 
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
-  Badge,
   Box,
   Flex,
   Link,
@@ -16,15 +16,13 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { DasApiAsset } from "@metaplex-foundation/digital-asset-standard-api";
+import { MdOutlineInfo } from "react-icons/md";
 import NftMediaComponent from "components/NftMediaComponent";
+import ShortAddress from "components/UtilComps/ShortAddress";
+import { useNetworkConfiguration } from "contexts/sol/SolNetworkConfigurationProvider";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { SOLANA_EXPLORER_URL } from "libs/Solana/config";
-import { useNetworkConfiguration } from "contexts/sol/SolNetworkConfigurationProvider";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { transformDescription } from "libs/utils";
-import ShortAddress from "components/UtilComps/ShortAddress";
-import { MdOutlineInfo } from "react-icons/md";
-import { useWallet } from "@solana/wallet-adapter-react";
 
 interface WalletDataNftSolProps {
   index: number;
@@ -33,13 +31,8 @@ interface WalletDataNftSolProps {
 
 const WalletDataNftSol: React.FC<WalletDataNftSolProps> = ({ index, solDataNft }) => {
   const { networkConfiguration } = useNetworkConfiguration();
-  console.log(solDataNft);
-  const { publicKey } = useWallet();
-  const isCreator = solDataNft.creators && solDataNft.creators.some((creator) => creator.address === publicKey?.toBase58());
-  const longText =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
-  +"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
-  +"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
+  // const { publicKey } = useWallet();
+  // const isCreator = solDataNft.creators && solDataNft.creators.some((creator) => creator.address === publicKey?.toBase58());
   return (
     <Skeleton fitContent={true} isLoaded={true} borderRadius="16px" display="flex" alignItems="center" justifyContent="center">
       <Box
@@ -73,7 +66,7 @@ const WalletDataNftSol: React.FC<WalletDataNftSolProps> = ({ index, solDataNft }
             onClick={() => window.open(`${SOLANA_EXPLORER_URL}address/${solDataNft.id}?cluster=${networkConfiguration}`, "_blank")}
             fontSize="md"
             color="#929497">
-            <ShortAddress address={solDataNft.id} fontSize="lg" tooltipLabel="Profile" /> <ExternalLinkIcon ml={1} mt={-2} />
+            <ShortAddress address={solDataNft.id} fontSize="lg" tooltipLabel="Check Data Nft on explorer" /> <ExternalLinkIcon ml={1} mt={-2} />
           </Link>{" "}
           <Box>
             <Popover trigger="hover" placement="auto">
@@ -92,7 +85,7 @@ const WalletDataNftSol: React.FC<WalletDataNftSolProps> = ({ index, solDataNft }
                 <PopoverCloseButton />
                 <PopoverBody>
                   <Text fontSize="md" mt="1" color="#929497">
-                    {solDataNft.content.metadata.description && transformDescription(solDataNft.content.metadata.description)}
+                    {solDataNft.content.metadata.description ? transformDescription(solDataNft.content.metadata.description) : "No description available"}
                   </Text>
                 </PopoverBody>
               </PopoverContent>
@@ -114,7 +107,7 @@ const WalletDataNftSol: React.FC<WalletDataNftSolProps> = ({ index, solDataNft }
                     key={index}
                     isExternal
                     href={`${SOLANA_EXPLORER_URL}address/${creator.address}?cluster=${networkConfiguration}`}>
-                    <ShortAddress address={creator.address} fontSize="lg" tooltipLabel="Profile" />{" "}
+                    <ShortAddress address={creator.address} fontSize="lg" tooltipLabel="Check on explorer" />{" "}
                     <MdOutlineInfo style={{ marginLeft: "5px", color: "#00c797" }} fontSize="lg" />
                   </Link>
                 ))}

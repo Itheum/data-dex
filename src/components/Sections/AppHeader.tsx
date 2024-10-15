@@ -42,6 +42,7 @@ import {
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { BsDot } from "react-icons/bs";
 import { FaStore, FaUserCheck, FaLaptop, FaUserAstronaut, FaTachometerAlt } from "react-icons/fa";
 import { LuFlaskRound } from "react-icons/lu";
@@ -56,95 +57,12 @@ import Countdown from "components/CountDown";
 import InteractionsHistory from "components/Tables/InteractionHistory";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU, EXPLORER_APP_FOR_TOKEN } from "libs/config";
-import { formatNumberRoundFloor } from "libs/utils";
-import { useAccountStore } from "store";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { PlayBitzModal } from "pages/GetBitz/PlayBitzModal";
 import { useNetworkConfiguration } from "contexts/sol/SolNetworkConfigurationProvider";
+import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU, EXPLORER_APP_FOR_TOKEN } from "libs/config";
 import { SolEnvEnum } from "libs/Solana/config";
-
-const exploreRouterMenu = [
-  {
-    sectionId: "MainSections",
-    sectionLabel: "Main Sections",
-    sectionItems: [
-      {
-        menuEnum: MENU.PROFILE,
-        path: "/profile",
-        label: "Profile",
-        shortLbl: "Profile",
-        Icon: MdPerson,
-        needToBeLoggedIn: true,
-        isHidden: true,
-      },
-      {
-        menuEnum: MENU.HOME,
-        path: "/dashboard",
-        label: "Dashboard",
-        shortLbl: "Dash",
-        Icon: MdSpaceDashboard,
-        needToBeLoggedIn: true,
-        isHidden: false,
-      },
-      {
-        menuEnum: MENU.SELL,
-        path: "/mintdata",
-        label: "Mint Data",
-        shortLbl: "Mint",
-        Icon: RiExchangeFill,
-        needToBeLoggedIn: true,
-        isHidden: false,
-      },
-      {
-        menuEnum: MENU.NFTMINE,
-        path: "/datanfts/wallet",
-        label: "Data NFT Wallet",
-        shortLbl: "Wallet",
-        Icon: MdAccountBalanceWallet,
-        needToBeLoggedIn: true,
-        isHidden: false,
-      },
-      {
-        menuEnum: MENU.NFTALL,
-        path: "/datanfts/marketplace",
-        label: "Data NFT Marketplace",
-        shortLbl: "Market",
-        Icon: FaStore,
-        needToBeLoggedIn: false,
-        isHidden: false,
-      },
-      {
-        menuEnum: MENU.GETVERIFIED,
-        path: "/getVerified",
-        label: "Become a Verified Data Creator",
-        shortLbl: "Get Verified",
-        Icon: FaUserCheck,
-        needToBeLoggedIn: false,
-        needToBeLoggedOut: true,
-        isHidden: true,
-      },
-      {
-        menuEnum: MENU.NFMEID,
-        path: "/NFMeID",
-        label: "Get a NFMe ID",
-        shortLbl: "NFMe",
-        Icon: FaUserAstronaut,
-        needToBeLoggedIn: false,
-        isHidden: false,
-      },
-      {
-        menuEnum: MENU.LIVELINESS,
-        path: "/datanfts/wallet/liveliness",
-        label: "Liveliness Staking",
-        shortLbl: "Liveliness",
-        Icon: FaTachometerAlt,
-        needToBeLoggedIn: true,
-        isHidden: false,
-      },
-    ],
-  },
-];
+import { formatNumberRoundFloor } from "libs/utils";
+import { PlayBitzModal } from "pages/GetBitz/PlayBitzModal";
+import { useAccountStore } from "store";
 
 const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { onShowConnectWalletModal?: any; setMenuItem: any; handleLogout: any }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -169,7 +87,6 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
   const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet" }); //, md: "Connect MultiversX Wallet" });
   const navigate = useNavigate();
   const [showPlayBitzModal, setShowPlayBitzModal] = useState(false);
-
   const exploreRouterMenu = [
     {
       sectionId: "MainSections",
@@ -191,7 +108,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
           shortLbl: "Dash",
           Icon: MdSpaceDashboard,
           needToBeLoggedIn: true,
-          isHidden: false,
+          isHidden: publicKey ? true : false,
         },
         {
           menuEnum: MENU.SELL,
@@ -218,7 +135,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
           shortLbl: "Market",
           Icon: FaStore,
           needToBeLoggedIn: false,
-          isHidden: false,
+          isHidden: publicKey ? true : false,
         },
         {
           menuEnum: MENU.GETVERIFIED,
@@ -441,8 +358,8 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                         </MenuGroup>
 
                         <MenuGroup>
-                          {isMxLoggedIn && (
-                            <ChainSupportedComponent feature={MENU.CLAIMS}>
+                          <ChainSupportedComponent feature={MENU.CLAIMS}>
+                            <>
                               <MenuItem
                                 closeOnSelect={false}
                                 isDisabled={hasPendingTransactions}
@@ -461,17 +378,16 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                                   View Data NFT Interactions History
                                 </Text>
                               </MenuItem>
-                            </ChainSupportedComponent>
-                          )}
-
-                          <MenuItem
-                            onClick={handleGuardrails}
-                            fontSize="lg"
-                            fontWeight="500"
-                            isDisabled={hasPendingTransactions}
-                            backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                            CanaryNet Dashboard
-                          </MenuItem>
+                              <MenuItem
+                                onClick={handleGuardrails}
+                                fontSize="lg"
+                                fontWeight="500"
+                                isDisabled={hasPendingTransactions}
+                                backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                                CanaryNet Dashboard
+                              </MenuItem>{" "}
+                            </>
+                          </ChainSupportedComponent>
 
                           <MenuItem
                             onClick={handleLogout}
