@@ -105,11 +105,11 @@ export const LivelinessStaking: React.FC = () => {
       const rewardPerYear = localRewardsPerBlock * blockPerYear;
       const calculatedRewardApr = Math.floor((rewardPerYear / combinedBondsStaked) * 10000) / 100;
 
-      console.log("=======================");
-      console.log("globalTotalBond :", globalTotalBond);
-      console.log("calculatedRewardApr :", calculatedRewardApr);
-      console.log("maxApr :", maxApr);
-      console.log("=======================");
+      // console.log("=======================");
+      // console.log("globalTotalBond :", globalTotalBond);
+      // console.log("calculatedRewardApr :", calculatedRewardApr);
+      // console.log("maxApr :", maxApr);
+      // console.log("=======================");
 
       if (maxApr === 0) {
         setRewardApr(calculatedRewardApr);

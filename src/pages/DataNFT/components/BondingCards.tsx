@@ -106,13 +106,13 @@ export const BondingCards: React.FC = () => {
 
       let bondedDataNfts: DataNft[] = [];
 
-      console.log("S: myBonds ---->");
-      console.log(myBonds);
+      // console.log("S: myBonds ---->");
+      // console.log(myBonds);
 
       // make a list of nonces that are in bonds so we can filter out allMyDataNFTsWithBalance
       const bondsNonceList = myBonds.map((i: any) => i.nonce);
-      console.log(bondsNonceList);
-      console.log("E: myBonds ---->");
+      // console.log(bondsNonceList);
+      // console.log("E: myBonds ---->");
 
       // a list of Data NFTs the user never put a bond on OR they withdrew the bond and "exited"
       const myCreatedDataNFTsThatHaveNoBonds = allMyDataNFTsWithBalance
@@ -140,13 +140,13 @@ export const BondingCards: React.FC = () => {
       setContractBonds(myBonds.reverse());
       setAllCompensation(compensation.reverse());
 
-      console.log("S: bondedDataNfts ---->");
-      console.log(bondedDataNfts);
-      console.log("E: bondedDataNfts ---->");
+      // console.log("S: bondedDataNfts ---->");
+      // console.log(bondedDataNfts);
+      // console.log("E: bondedDataNfts ---->");
 
-      console.log("S: myCreatedDataNFTsThatHaveNoBonds ---->");
-      console.log(myCreatedDataNFTsThatHaveNoBonds);
-      console.log("E: myCreatedDataNFTsThatHaveNoBonds ---->");
+      // console.log("S: myCreatedDataNFTsThatHaveNoBonds ---->");
+      // console.log(myCreatedDataNFTsThatHaveNoBonds);
+      // console.log("E: myCreatedDataNFTsThatHaveNoBonds ---->");
 
       setAllInfoLoading(false);
     })();
@@ -171,7 +171,7 @@ export const BondingCards: React.FC = () => {
   };
 
   const renewBond = async (tokenIdentifier: string, nonce: number) => {
-    console.log(tokenIdentifier, nonce);
+    // console.log(tokenIdentifier, nonce);
     const tx = bondContract.renew(new Address(mxAddress), tokenIdentifier, nonce);
     tx.setGasLimit(100000000);
     await sendTransactions({

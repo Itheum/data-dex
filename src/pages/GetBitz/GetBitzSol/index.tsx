@@ -181,8 +181,7 @@ const GetBitzSol = (props: any) => {
         }
         return { data, blobDataType, contentType };
       } else {
-        console.log("viewData threw catch error");
-        console.error(res.statusText);
+        console.error("viewData threw catch error" + res.statusText);
 
         return undefined;
       }
@@ -194,7 +193,6 @@ const GetBitzSol = (props: any) => {
 
   useEffect(() => {
     if (solNftsBitz === undefined) return;
-    console.log("fetching bitz");
     if (!populatedBitzStore) {
       if (publicKey && solNftsBitz.length > 0) {
         updateBitzBalance(-2);
@@ -210,9 +208,7 @@ const GetBitzSol = (props: any) => {
         };
 
         (async () => {
-          console.log("viewdata start");
           const getBitzGameResult = await viewData(viewDataArgs, solNftsBitz[0]);
-          console.log("viewdata end", getBitzGameResult);
           if (getBitzGameResult) {
             const bitzBeforePlay = getBitzGameResult.data.gamePlayResult.bitsScoreBeforePlay || 0;
             const sumGivenBits = getBitzGameResult.data?.bitsMain?.bitsGivenSum || 0;
@@ -239,7 +235,6 @@ const GetBitzSol = (props: any) => {
       }
     } else {
       if (!publicKey) {
-        console.log("Wallet not connected.");
         setPopulatedBitzStore(false);
       }
     }
@@ -333,7 +328,6 @@ const GetBitzSol = (props: any) => {
         />
       );
     }
-    console.log("address", address, "checkIfHasGameDataNft", checkingIfHasGameDataNFT, "hasGameDataNFT", hasGameDataNFT, "cooldown", cooldown);
     if ((address && checkingIfHasGameDataNFT && !hasGameDataNFT) || cooldown === -2) {
       return (
         <div className="relative">
