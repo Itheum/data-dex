@@ -7,7 +7,7 @@ const GetBitz: React.FC<any> = (props) => {
   const { modalMode } = props;
   const { connected } = useWallet();
 
-  return <div>{!connected ? <GetBitzMvx modalMode={modalMode} /> : <GetBitzSol modalMode={modalMode} />}</div>;
+  return <>{!connected ? <GetBitzMvx modalMode={modalMode} /> : <GetBitzSol modalMode={modalMode} />}</>;
 };
 
 export default GetBitz;

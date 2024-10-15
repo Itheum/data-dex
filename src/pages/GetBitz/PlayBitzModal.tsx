@@ -58,7 +58,7 @@ export const PlayBitzModal: React.FC<PathwaysModalProps> = (props) => {
               </button>
             </div>
           </div>
-          <div className="p-1 md:p-1">
+          <div className="min-h-[23rem]">
             <GetBitz modalMode={true} />
           </div>
         </div>

@@ -18,7 +18,6 @@ const SolWalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => 
   const onError = useCallback((error: WalletError) => {
     console.error(error);
   }, []);
-
   return (
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} onError={onError} autoConnect={autoConnect}>
