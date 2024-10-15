@@ -19,6 +19,8 @@ import {
 import { useAccountStore, useMarketStore } from "store";
 import NftMediaComponent from "./NftMediaComponent";
 
+let lastNotifiedPurchaseWasSuccessMS = 0;
+
 export interface ProcureAccessModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -28,9 +30,20 @@ export interface ProcureAccessModalProps {
   amount: number;
   setSessionId?: (e: any) => void;
   showCustomMintMsg?: boolean;
+  notifyPurchaseWasSuccess: () => void;
 }
 
-export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData, offer, amount, setSessionId, showCustomMintMsg }: ProcureAccessModalProps) {
+export default function ProcureDataNFTModal({
+  isOpen,
+  onClose,
+  buyerFee,
+  nftData,
+  offer,
+  amount,
+  setSessionId,
+  showCustomMintMsg,
+  notifyPurchaseWasSuccess,
+}: ProcureAccessModalProps) {
   const { chainID } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
   const toast = useToast();
@@ -67,8 +80,10 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
     }
 
     const sessionInfo = sessionStorage.getItem("web-wallet-tx");
+
     if (sessionInfo) {
       const { type, index, amount: amountt } = JSON.parse(sessionInfo);
+
       if (type == "purchase-tx") {
         updateOfferSupplyOnBackend(chainID, tokenLogin?.nativeAuthToken ?? "", index, amountt);
         sessionStorage.removeItem("web-wallet-tx");
@@ -78,6 +93,18 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
 
   useEffect(() => {
     setPurchaseTxStatus(trackPurchaseTxStatus.isPending ? true : false);
+
+    // tx was a success, so notify the host
+    if (trackPurchaseTxStatus.isSuccessful) {
+      const nowEpochMS = Date.now();
+
+      /* a interim way to throttle report back procure success CTA alerts (as MVX keeps firing events)
+      ... and if we don't do this, and if the user buys again on same page, they wont get the CTA alert */
+      if (nowEpochMS - lastNotifiedPurchaseWasSuccessMS > 15000) {
+        lastNotifiedPurchaseWasSuccessMS = nowEpochMS;
+        notifyPurchaseWasSuccess();
+      }
+    }
   }, [trackPurchaseTxStatus]);
 
   useEffect(() => {
@@ -148,10 +175,13 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
           shouldUseCallbackRoute ? callbackRoute : undefined,
           showCustomMintMsg
         );
+
         setPurchaseSessionId(sessionId);
+
         if (isWebWallet) {
           sessionStorage.setItem("web-wallet-tx", JSON.stringify({ type: "purchase-tx", index: offer.index, amount: amount }));
         }
+
         // if offer is sold out by this transaction, close Drawer if opened
         if (setSessionId && amount == offer.quantity) {
           setSessionId(sessionId);
@@ -166,10 +196,13 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
           "",
           showCustomMintMsg
         );
+
         setPurchaseSessionId(sessionId);
+
         if (isWebWallet) {
           sessionStorage.setItem("web-wallet-tx", JSON.stringify({ type: "purchase-tx", index: offer.index, amount: amount }));
         }
+
         // if offer is sold out by this transaction, close Drawer if opened
         if (setSessionId && amount == offer.quantity) {
           setSessionId(sessionId);
