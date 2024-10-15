@@ -98,8 +98,8 @@ export default function ProcureDataNFTModal({
     if (trackPurchaseTxStatus.isSuccessful) {
       const nowEpochMS = Date.now();
 
-      /* a interim way to throttle report back procure success CTA alerts (as MVX keeps firing events)
-      ... and if we don't do this, and if the user buys again on same page, they wont get the CTA alert */
+      /* a interim way to throttle report back notifyPurchaseWasSuccess calls (as MVX keeps firing events)
+      ... and if we don't do this, and if the user buys again on same page, they wont get the CTA alert or the CTA model keeps refiring even on close */
       if (nowEpochMS - lastNotifiedPurchaseWasSuccessMS > 15000) {
         lastNotifiedPurchaseWasSuccessMS = nowEpochMS;
         notifyPurchaseWasSuccess();

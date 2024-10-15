@@ -113,7 +113,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [amount, setAmount] = useState<number>(1);
   const [amountError, setAmountError] = useState<string>("");
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
-  const [sessionId, setSessionId] = useState<any>(); // noe that this is the purchase tx session ID thats only set if the purchase sold out the listing
+  const [sessionId, setSessionId] = useState<any>(); // note that this is the purchase tx session ID thats only set if the offer purchase sold out the full listing
   const [addressHasNft, setAddressHasNft] = useState<boolean>(false);
   const [addressCreatedNft, setAddressCreatedNft] = useState<boolean>(false);
   const marketplaceDrawer = "/datanfts/marketplace/market";
@@ -204,7 +204,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
           purchaseWasSuccess: 1,
         });
       } else {
-        // it means current URL is NFT detail page; go to wallet after the offer is sold out
+        // it means current URL is NFT detail page; go to wallet after the offer is sold out (note we don't do anything with purchaseWasSuccess yet)
         navigate("/datanfts/wallet?purchaseWasSuccess=1");
       }
     },
