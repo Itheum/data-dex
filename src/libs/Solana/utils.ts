@@ -67,7 +67,6 @@ function calculateRewardsSinceLastAllocation(currentSlot: BN, rewardsConfig: any
   }
 
   const slotDiff = currentSlot.sub(rewardsConfig.lastRewardSlot);
-  // console.log("slotDiff", rewardsConfig.rewardsPerSlot.toNumber() / 10 ** 9, slotDiff);
   return rewardsConfig.rewardsPerSlot.mul(slotDiff);
 }
 

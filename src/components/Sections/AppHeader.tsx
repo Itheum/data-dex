@@ -60,8 +60,9 @@ import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU, EXPLORER_APP_FOR_TOKEN } from "libs/c
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
 import { useWallet } from "@solana/wallet-adapter-react";
-import GetBitz from "pages/GetBitz";
 import { PlayBitzModal } from "pages/GetBitz/PlayBitzModal";
+import { useNetworkConfiguration } from "contexts/sol/SolNetworkConfigurationProvider";
+import { SolEnvEnum } from "libs/Solana/config";
 
 const exploreRouterMenu = [
   {
@@ -151,10 +152,12 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
   const { isLoggedIn: isMxLoggedIn, tokenLogin } = useGetLoginInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
+  const { networkConfiguration } = useNetworkConfiguration();
+
   // Solana
   const { publicKey } = useWallet();
   const solAddress = publicKey?.toBase58();
-  const connectedChain = publicKey ? "SD" : chainID;
+  const connectedChain = publicKey ? (networkConfiguration === "devnet" ? SolEnvEnum.devnet : SolEnvEnum.mainnet) : chainID;
   const isUserLoggedIn = isMxLoggedIn || publicKey ? true : false;
 
   const { colorMode, setColorMode } = useColorMode();
@@ -165,7 +168,6 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
   const cooldown = useAccountStore((state) => state.cooldown);
   const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet" }); //, md: "Connect MultiversX Wallet" });
   const navigate = useNavigate();
-  const [openMiniGame, setOpenMiniGame] = useState(false);
   const [showPlayBitzModal, setShowPlayBitzModal] = useState(false);
 
   const exploreRouterMenu = [
@@ -189,7 +191,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
           shortLbl: "Dash",
           Icon: MdSpaceDashboard,
           needToBeLoggedIn: true,
-          isHidden: true,
+          isHidden: false,
         },
         {
           menuEnum: MENU.SELL,
@@ -235,6 +237,15 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
           shortLbl: "NFMe",
           Icon: FaUserAstronaut,
           needToBeLoggedIn: false,
+          isHidden: false,
+        },
+        {
+          menuEnum: MENU.LIVELINESS,
+          path: "/datanfts/wallet/liveliness",
+          label: "Liveliness Staking",
+          shortLbl: "Liveliness",
+          Icon: FaTachometerAlt,
+          needToBeLoggedIn: true,
           isHidden: false,
         },
       ],
