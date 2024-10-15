@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import GetBitz from ".";
 import { EXPLORER_APP_FOR_TOKEN } from "libs/config";
@@ -6,6 +6,7 @@ import { getChainID } from "@multiversx/sdk-dapp/utils";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useAccountStore } from "store";
 import { LuFlaskRound } from "react-icons/lu";
+import { useColorMode } from "@chakra-ui/react";
 
 type PathwaysModalProps = {
   showPlayBitzModel?: boolean;
@@ -16,6 +17,13 @@ export const PlayBitzModal: React.FC<PathwaysModalProps> = (props) => {
   const { showPlayBitzModel, handleHideBitzModel } = props;
   const { connected } = useWallet();
   const bitzBalance = useAccountStore((state: any) => state.bitzBalance);
+  const { colorMode } = useColorMode();
+
+  // add the dark class for tailwind css
+  useEffect(() => {
+    document.documentElement.classList.remove("light", "dark");
+    document.documentElement.classList.toggle(colorMode);
+  }, [colorMode]);
 
   return (
     <div
@@ -26,8 +34,7 @@ export const PlayBitzModal: React.FC<PathwaysModalProps> = (props) => {
         <div className="relative bg-white rounded-lg dark:bg-[#171717] drop-shadow-[0_0px_100px_rgba(250,250,250,.8)]">
           <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Play To Get {connected ? " SOL " : " MVX "} BiTz XP</h3>
-            <div className="flex flex-row">
-              {" "}
+            <div className="flex flex-row text-gray-900 dark:text-white ">
               {bitzBalance === -2 ? <span>...</span> : <>{bitzBalance === -1 ? <div>0</div> : <div>{bitzBalance}</div>}</>}
               <LuFlaskRound fontSize={"1.4rem"} fill="#38bdf8" />
             </div>

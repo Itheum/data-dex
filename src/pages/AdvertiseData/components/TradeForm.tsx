@@ -765,6 +765,9 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         // if we have to auto-vault -- i.e most likely user first nfme id, then we can auto vault it with this TX
         // setNftIdMEPrimaryVault();
         setMintingSuccessful(true);
+        fetchSolNfts(publicKey?.toBase58()).then((nfts) => {
+          updateSolNfts(nfts);
+        });
         setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s4: 1 }));
 
         const programId = new PublicKey(BONDING_PROGRAM_ID);
@@ -808,9 +811,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         if (result) {
           updateItheumBalance(itheumBalance - bondingAmount);
           setMakePrimaryNFMeIdSuccessful(true);
-          fetchSolNfts(publicKey?.toBase58()).then((nfts) => {
-            updateSolNfts(nfts);
-          });
           setErrDataNFTStreamGeneric(null);
         }
       } catch (error) {
