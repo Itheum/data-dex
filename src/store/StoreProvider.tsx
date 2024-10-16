@@ -73,7 +73,6 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
       const nativeAuthTokenData = decodeNativeAuthToken(tokenLogin.nativeAuthToken);
       if (nativeAuthTokenData.extraInfo.timestamp) {
         const currentTime = new Date().getTime();
-        console.log(currentTime, (nativeAuthTokenData.extraInfo.timestamp + nativeAuthTokenData.ttl) * 1000);
         if (currentTime > (nativeAuthTokenData.extraInfo.timestamp + nativeAuthTokenData.ttl) * 1000) {
           return;
         }
