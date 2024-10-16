@@ -21,7 +21,6 @@ export default function InteractionTxTable(props: { address: string }) {
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const [loadingInteractions, setLoadingInteractions] = useState(-1);
   const toast = useToast();
-
   const linkIconStyle = { display: "flex" };
   const columns = useMemo<ColumnDef<InteractionsInTable, any>[]>(
     () => [
@@ -110,6 +109,7 @@ export default function InteractionTxTable(props: { address: string }) {
     };
     fetchData();
   }, []);
+
   return (
     <>
       {((loadingInteractions === -1 || loadingInteractions === -2) && (
@@ -162,6 +162,7 @@ export const getInteractionTransactions = async (
     allTransactions.forEach((tx: any) => {
       let data = "";
       let value = "";
+
       const metadata = new TransactionDecoder().getTransactionMetadata({
         sender: tx.sender.bech32,
         receiver: tx.receiver.bech32,
@@ -169,8 +170,9 @@ export const getInteractionTransactions = async (
         value: tx.value,
       });
 
-      value = convertWeiToEsdt(parseInt(metadata.functionArgs![1], 16)).toString();
+      value = metadata?.functionArgs?.[1] ? convertWeiToEsdt(parseInt(metadata.functionArgs![1], 16)).toString() : "NaN";
       data = contractsForChain(chainID).itheumToken;
+
       if (["mint", "burn", "acceptOffer", "cancelOffer", "addOffer", "changeOfferPrice"].includes(tx["function"])) {
         data = contractsForChain(chainID).itheumToken;
         if (Array.isArray(tx.operations)) {

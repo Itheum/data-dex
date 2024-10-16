@@ -185,7 +185,8 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
                 <Box color="#8c8f92d0" fontSize="md" fontWeight="normal">
                   {`Listed: ${offer?.quantity}`} <br />
                   {`Total supply: ${nftMetadata?.supply}`} <br />
-                  {`Royalty: ${convertToLocalString(nftMetadata?.royalties * 100)}%`}
+                  {`Royalty: `}
+                  {!isNaN(nftMetadata?.royalties) ? `${convertToLocalString(nftMetadata?.royalties * 100)}%` : "0%"}
                 </Box>
               )}
 
