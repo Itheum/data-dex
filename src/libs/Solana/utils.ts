@@ -6,10 +6,9 @@ import { SPL_ACCOUNT_COMPRESSION_PROGRAM_ID } from "@solana/spl-account-compress
 import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { AccountMeta, Connection, PublicKey, Transaction } from "@solana/web3.js";
 import BigNumber from "bignumber.js";
-import { contractsForChain, IS_DEVNET } from "libs/config";
 import { getApiDataDex } from "libs/utils";
 
-import { BOND_CONFIG_INDEX, BONDING_PROGRAM_ID, SolEnvEnum } from "./config";
+import { BOND_CONFIG_INDEX, BONDING_PROGRAM_ID } from "./config";
 import { CoreSolBondStakeSc, IDL } from "./CoreSolBondStakeSc";
 import { Bond } from "./types";
 

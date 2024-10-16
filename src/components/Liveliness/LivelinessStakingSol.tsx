@@ -196,13 +196,13 @@ export const LivelinessStakingSol: React.FC = () => {
   }, [numberOfBonds]);
 
   useEffect(() => {
-    if (nftMeIdBond && solNfts && userPublicKey) {
+    if (nftMeIdBond && solNfts.length > 0 && userPublicKey) {
       const _nftMeId = solNfts.find((nft) => nft.id == nftMeIdBond.assetId.toString());
       if (_nftMeId === undefined) console.error("NftMeID has not been found");
       setNftMeId(_nftMeId);
       setAllInfoLoading(false);
     }
-  }, [nftMeIdBond]);
+  }, [nftMeIdBond, solNfts]);
 
   // rewardsPerShare, accumulatedRewards, lastRewardSlot,  rewardsPerSlot, rewardsReserve, rewardsPerShare, maxApr, rewardsState
   useEffect(() => {
@@ -280,6 +280,7 @@ export const LivelinessStakingSol: React.FC = () => {
       }
     }
   }
+
   async function fetchBonds() {
     if (numberOfBonds && userPublicKey && programSol) {
       retrieveBondsAndNftMeIdVault(userPublicKey, numberOfBonds, programSol).then(({ bonds, nftMeIdVault, weightedLivelinessScore }) => {
@@ -293,6 +294,7 @@ export const LivelinessStakingSol: React.FC = () => {
       });
     }
   }
+
   async function sendAndConfirmTransaction({
     transaction,
     customErrorMessage = "Transaction failed",
