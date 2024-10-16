@@ -134,6 +134,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const { isOpen: isProcureSuccessCTAModalOpen, onOpen: onProcureSuccessCTAModalOpen, onClose: onProcureSuccessCTAModalClose } = useDisclosure();
 
   const isMobile = window.innerWidth <= 480;
+  const parsedCreationTime = moment(nftData.creationTime);
+  const isNFMeIDVaultDataNFT = isNFMeIDVaultClassDataNFT(nftData.tokenName);
 
   useEffect(() => {
     if (tokenId && offerId && location.pathname === "/datanfts/marketplace/market") {
@@ -179,6 +181,31 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     }
   }, [offerId, hasPendingTransactions]);
 
+  useEffect(() => {
+    if (!hasPendingTransactions && purchaseWasSuccess && !isProcureSuccessCTAModalOpen) {
+      (async () => {
+        setPurchaseWasSuccess(false); // reset in case of repeat purchase
+
+        await sleep(2);
+        onProcureSuccessCTAModalOpen();
+      })();
+    }
+  }, [purchaseWasSuccess, hasPendingTransactions, isProcureSuccessCTAModalOpen]);
+
+  useTrackTransactionStatus({
+    transactionId: sessionId,
+    onSuccess: () => {
+      if (props.closeDetailsView) {
+        props.closeDetailsView({
+          purchaseWasSuccess: 1,
+        });
+      } else {
+        // it means current URL is NFT detail page; go to wallet after the offer is sold out (note we don't do anything with purchaseWasSuccess yet)
+        navigate("/datanfts/wallet?purchaseWasSuccess=1");
+      }
+    },
+  });
+
   const getFavourite = async () => {
     if (tokenLogin?.nativeAuthToken) {
       const bearerToken = tokenLogin?.nativeAuthToken;
@@ -195,20 +222,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       setVolume(dataNftsVolumes[0]?.volumes[0]?.volume);
     }
   };
-
-  useTrackTransactionStatus({
-    transactionId: sessionId,
-    onSuccess: () => {
-      if (props.closeDetailsView) {
-        props.closeDetailsView({
-          purchaseWasSuccess: 1,
-        });
-      } else {
-        // it means current URL is NFT detail page; go to wallet after the offer is sold out (note we don't do anything with purchaseWasSuccess yet)
-        navigate("/datanfts/wallet?purchaseWasSuccess=1");
-      }
-    },
-  });
 
   const getAddressTokenInformation = async () => {
     if (isMxLoggedIn) {
@@ -357,20 +370,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const handleGettingLivelinessScore = (livelinessScoreVal: number) => {
     setLivelinessScore(livelinessScoreVal);
   };
-
-  const parsedCreationTime = moment(nftData.creationTime);
-  const isNFMeIDVaultDataNFT = isNFMeIDVaultClassDataNFT(nftData.tokenName);
-
-  useEffect(() => {
-    if (!hasPendingTransactions && purchaseWasSuccess && !isProcureSuccessCTAModalOpen) {
-      (async () => {
-        setPurchaseWasSuccess(false); // reset in case of repeat purchase
-
-        await sleep(2);
-        onProcureSuccessCTAModalOpen();
-      })();
-    }
-  }, [purchaseWasSuccess, hasPendingTransactions, isProcureSuccessCTAModalOpen]);
 
   const handleSetPurchaseWasSuccess = () => {
     if (!purchaseWasSuccess && !isProcureSuccessCTAModalOpen) {
@@ -603,7 +602,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             <Text fontSize="md">{`Total supply: ${nftData.supply ? nftData.supply : 1}`}</Text>
                             <Text fontSize="md">
                               {`Royalty: `}
-                              {!isNaN(nftData.royalties) ? `${convertToLocalString(nftData.royalties * 100)}%` : "-"}
+                              {!isNaN(nftData.royalties) ? `${convertToLocalString(nftData.royalties * 100)}%` : "0%"}
                             </Text>
                           </>
                         )}

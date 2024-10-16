@@ -105,6 +105,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const hasWebWalletTx = sessionStorage.getItem("web-wallet-tx");
   const { isOpen: isMintFeeInfoVisible, onClose, onOpen } = useDisclosure({ defaultIsOpen: false });
   const { isOpen: isProcureSuccessCTAModalOpen, onOpen: onProcureSuccessCTAModalOpen, onClose: onProcureSuccessCTAModalClose } = useDisclosure();
+  const [procureSuccessForCollectionAndNonce, setProcureSuccessForCollectionAndNonce] = useState<any>(null);
 
   useEffect(() => {
     (async () => {
@@ -316,6 +317,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     setOfferForDrawer(undefined);
 
     if (meta?.purchaseWasSuccess) {
+      setProcureSuccessForCollectionAndNonce(null); // we don't have this meta yet passes via the redirect so reset in case old meta from last purchase was stored
+
       await sleep(2);
       onProcureSuccessCTAModalOpen();
     }
@@ -337,6 +340,22 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     }
     setCollectionForDrawer(undefined);
   }
+
+  const handleSetPurchaseWasSuccess = (meta?: any) => {
+    (async () => {
+      if (meta?.collection && meta?.nonce) {
+        setProcureSuccessForCollectionAndNonce({
+          collection: meta?.collection,
+          nonce: meta?.nonce,
+        });
+      } else {
+        setProcureSuccessForCollectionAndNonce(null); // reset just in case repeat purchases happen
+      }
+
+      await sleep(5);
+      onProcureSuccessCTAModalOpen();
+    })();
+  };
 
   return (
     <>
@@ -477,7 +496,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                             index={index}
                             marketFreezedNonces={marketFreezedNonces}
                             openNftDetailsDrawer={openNftDetailsModal}>
-                            <MarketplaceLowerCard index={index} nftMetadata={nftMetadatas[index]} extendedOffer={offer} />
+                            <MarketplaceLowerCard
+                              index={index}
+                              nftMetadata={nftMetadatas[index]}
+                              extendedOffer={offer}
+                              notifyPurchaseWasSuccess={handleSetPurchaseWasSuccess}
+                            />
                           </UpperCardComponent>
                         ))
                       : groupedCollections.map((collectionObject: DataNFTCollectionObject, index) => {
@@ -584,6 +608,11 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           onClose={() => {
             onProcureSuccessCTAModalClose();
           }}
+          nftData={
+            procureSuccessForCollectionAndNonce
+              ? { collection: procureSuccessForCollectionAndNonce.collection, nonce: procureSuccessForCollectionAndNonce.nonce }
+              : undefined
+          }
         />
       </>
 

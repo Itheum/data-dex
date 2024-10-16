@@ -30,7 +30,7 @@ export interface ProcureAccessModalProps {
   amount: number;
   setSessionId?: (e: any) => void;
   showCustomMintMsg?: boolean;
-  notifyPurchaseWasSuccess: () => void;
+  notifyPurchaseWasSuccess?: () => void;
 }
 
 export default function ProcureDataNFTModal({
@@ -102,7 +102,10 @@ export default function ProcureDataNFTModal({
       ... and if we don't do this, and if the user buys again on same page, they wont get the CTA alert or the CTA model keeps refiring even on close */
       if (nowEpochMS - lastNotifiedPurchaseWasSuccessMS > 15000) {
         lastNotifiedPurchaseWasSuccessMS = nowEpochMS;
-        notifyPurchaseWasSuccess();
+
+        if (notifyPurchaseWasSuccess) {
+          notifyPurchaseWasSuccess();
+        }
       }
     }
   }, [trackPurchaseTxStatus]);

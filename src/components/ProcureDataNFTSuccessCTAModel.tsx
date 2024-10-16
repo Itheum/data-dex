@@ -24,7 +24,7 @@ export default function ProcureDataNFTSuccessCTAModel({ isOpen, onClose, nftData
             <Text fontSize={"22px"} textAlign="center" fontWeight="bold" mb="3" color="teal.200">
               Congrats on Your New Data NFT!
             </Text>
-            {nftData && (
+            {nftData && nftData?.tokenName && nftData?.media && (
               <Stack alignItems="center">
                 <Text
                   mb="1"
@@ -56,7 +56,7 @@ export default function ProcureDataNFTSuccessCTAModel({ isOpen, onClose, nftData
                 }}>
                 Visit Your {"Wallet"} To See It or Re-List It for Sale
               </Button>
-              {nftData && (
+              {nftData && nftData?.collection && nftData?.nonce && (
                 <ExploreAppButton
                   collection={nftData.collection || ""}
                   nonce={nftData.nonce || 0}

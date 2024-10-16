@@ -27,9 +27,10 @@ type MarketplaceLowerCardProps = {
   extendedOffer: ExtendedOffer;
   nftMetadata: DataNft;
   index: number;
+  notifyPurchaseWasSuccess?: (meta?: any) => void;
 };
 
-const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ extendedOffer: offer, nftMetadata, index }) => {
+const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ extendedOffer: offer, nftMetadata, index, notifyPurchaseWasSuccess }) => {
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -125,6 +126,14 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ extendedOffer: of
           nftData={nftMetadata}
           offer={offer}
           amount={amount}
+          notifyPurchaseWasSuccess={() => {
+            if (notifyPurchaseWasSuccess) {
+              notifyPurchaseWasSuccess({
+                collection: offer.offeredTokenIdentifier,
+                nonce: offer.offeredTokenNonce,
+              });
+            }
+          }}
         />
       )}
     </>
