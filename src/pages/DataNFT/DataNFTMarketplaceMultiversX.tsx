@@ -43,6 +43,7 @@ import { CustomPagination } from "components/CustomPagination";
 import MarketplaceLowerCard from "components/MarketplaceLowerCard";
 import MyListedDataLowerCard from "components/MyListedDataLowerCard";
 import NftMediaComponent from "components/NftMediaComponent";
+import ProcureDataNFTSuccessCTAModel from "components/ProcureDataNFTSuccessCTAModel";
 import { NoDataHere } from "components/Sections/NoDataHere";
 import ConditionalRender from "components/UtilComps/ApiWrapper";
 import UpperCardComponent from "components/UtilComps/UpperCardComponent";
@@ -103,6 +104,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const hasWebWalletTx = sessionStorage.getItem("web-wallet-tx");
   const { isOpen: isMintFeeInfoVisible, onClose, onOpen } = useDisclosure({ defaultIsOpen: false });
+  const { isOpen: isProcureSuccessCTAModalOpen, onOpen: onProcureSuccessCTAModalOpen, onClose: onProcureSuccessCTAModalClose } = useDisclosure();
 
   useEffect(() => {
     (async () => {
@@ -293,21 +295,30 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     onOpenDataNftDetails();
   }
 
-  function closeDetailsView() {
+  async function closeDetailsView(meta?: any) {
     onCloseDataNftDetails();
     let didAlterParams = false;
+
     if (searchParams.has("tokenId")) {
       searchParams.delete("tokenId");
       didAlterParams = true;
     }
+
     if (searchParams.has("offerId")) {
       searchParams.delete("offerId");
       didAlterParams = true;
     }
+
     if (didAlterParams) {
       setSearchParams(searchParams);
     }
+
     setOfferForDrawer(undefined);
+
+    if (meta?.purchaseWasSuccess) {
+      await sleep(2);
+      onProcureSuccessCTAModalOpen();
+    }
   }
 
   function closeCollectionView() {
@@ -566,6 +577,16 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           </Box>
         </Box>
       </Stack>
+
+      <>
+        <ProcureDataNFTSuccessCTAModel
+          isOpen={isProcureSuccessCTAModalOpen}
+          onClose={() => {
+            onProcureSuccessCTAModalClose();
+          }}
+        />
+      </>
+
       {offerForDrawer && (
         <>
           <Modal onClose={onCloseDataNftDetails} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={false}>
@@ -590,6 +611,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           </Modal>
         </>
       )}
+
       {collectionForDrawer && (
         <>
           <Modal onClose={onCloseDataNftCollectionModal} isOpen={isOpenDataNftCollectionModal} size="6xl" closeOnOverlayClick={false}>

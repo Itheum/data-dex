@@ -143,7 +143,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     onOpenDataNftDetails();
   }
 
-  function closeDetailsView() {
+  function closeDetailsView(meta?: any) {
     onCloseDataNftDetails();
     setNftForDrawer(undefined);
   }

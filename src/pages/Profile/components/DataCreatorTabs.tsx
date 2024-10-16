@@ -245,7 +245,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
     }
   }
 
-  function closeDetailsView() {
+  function closeDetailsView(meta?: any) {
     onCloseDataNftDetails();
   }
 
