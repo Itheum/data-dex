@@ -65,7 +65,7 @@ const LandingPage = () => {
           </Box>
 
           <Box pt={{ base: "18", "2xl": "10" }} pb="10" mx={{ base: "10px", md: "10px" }} mt="10">
-            <FeaturedDataNFTListings />
+            <FeaturedDataNFTListings hideCollapseOption={true} />
           </Box>
 
           <Box pt={{ base: "18", "2xl": "10" }} pb="10" mx={{ base: "10px", md: "10px" }} mt="10">
