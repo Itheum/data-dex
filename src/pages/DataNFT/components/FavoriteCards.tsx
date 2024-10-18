@@ -13,6 +13,7 @@ type FavoriteDataCreationNftsType = {
   nonce: number;
   tokenIdentifier: string;
 };
+
 export const FavoriteCards: React.FC = () => {
   const { tokenLogin } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();

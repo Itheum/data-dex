@@ -5,7 +5,12 @@ import { Link as ReactRouterLink } from "react-router-dom";
 import featuredTwoWeeks from "assets/img/banners/datadex-featured-2weeks.png";
 import featuredAirdropGuide from "assets/img/banners/datadex-featured-spreadsheet.png";
 
-export const FeaturedDataNFTListings: React.FC = () => {
+type FeaturedDataNFTListingsProps = {
+  hideCollapseOption?: boolean | undefined;
+};
+
+export const FeaturedDataNFTListings: React.FC<FeaturedDataNFTListingsProps> = (props) => {
+  const { hideCollapseOption } = props;
   const { isOpen: isFeaturedListingsOpen, onClose, onOpen } = useDisclosure({ defaultIsOpen: true });
   const { tokenLogin } = useGetLoginInfo();
 
@@ -99,7 +104,7 @@ export const FeaturedDataNFTListings: React.FC = () => {
                           }}
                           borderRadius="8px"
                           ml={{ base: "0", md: "5" }}
-                          onClick={() => openExplorerAppWithAuthToken("https://explorer.itheum.io/nftunes")}>
+                          onClick={() => openExplorerAppWithAuthToken("https://explorer.itheum.io/nftunes/?artist-profile=stephen-snodgrass")}>
                           <Text color="#0F0F0F">Open App: Stream Music</Text>
                         </Button>
                       </Flex>
@@ -108,7 +113,7 @@ export const FeaturedDataNFTListings: React.FC = () => {
                 </SimpleGrid>
               </AlertDescription>
             </Box>
-            <CloseButton alignSelf="flex-start" position="relative" right={-1} top={-1} onClick={onClose} />
+            {!hideCollapseOption && <CloseButton alignSelf="flex-start" position="relative" right={-1} top={-1} onClick={onClose} />}
           </Alert>
         ) : (
           <Button onClick={onOpen} mt={3} size={{ base: "sm", md: "md" }} variant="outline">
