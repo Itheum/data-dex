@@ -572,3 +572,8 @@ export const EXPLORER_APP_FOR_TOKEN: Record<string, Record<string, string>> = {
 export const PEERME_TEAM_NAME: string = IS_DEVNET ? "itheum-dao" : "itheum-trailblazer-dao";
 
 export const REPORTED_TO_BE_BAD_DATA_NFTS: string[] = IS_DEVNET ? [] : ["DATANFTFT-e936d4-02", "DATANFTFT-e936d4-03", "DATANFTFT-e936d4-08"];
+
+export enum MVX_ENV_ENUM {
+  devnet = "ED",
+  mainnet = "E1",
+}
