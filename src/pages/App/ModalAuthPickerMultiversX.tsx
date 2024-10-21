@@ -15,6 +15,7 @@ import {
   ModalCloseButton,
   useDisclosure,
   WrapItem,
+  useToast,
   useBreakpointValue,
   useColorMode,
 } from "@chakra-ui/react";
@@ -22,12 +23,20 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { NativeAuthConfigType } from "@multiversx/sdk-dapp/types";
 import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from "@multiversx/sdk-dapp/UI";
+import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
-import { IS_DEVNET, WALLETS } from "libs/config";
+import { IS_DEVNET, WALLETS, MVX_ENV_ENUM } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { getApi } from "libs/MultiversX/api";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
-import { gtagGo, clearAppSessionsLaunchMode, sleep } from "libs/utils";
+import { gtagGo, clearAppSessionsLaunchMode, sleep, getApiDataDex } from "libs/utils";
+
+/* 
+we use global vars here so we can maintain this state across routing back and forth to this unlock page
+these vars are used to detect a "new login", i.e a logged out user logged in. we can use this to enable
+"user accounts" type activity, i.e. check if its a new user or returning user etc
+*/
+let mvxGotConnected = false;
 
 function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMode: any; redirectToRoute: null | string }) {
   const { address: mxAddress } = useGetAccountInfo();
@@ -38,6 +47,7 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
   const navigate = useNavigate();
   const { colorMode } = useColorMode();
   const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
+  const toast = useToast();
 
   useEffect(() => {
     async function cleanOutRemoteXPortalAppWalletDisconnect() {
@@ -58,9 +68,30 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
     }
   }, []);
 
+  // useEffect(() => {
+  //   if (mxAddress) {
+  //     handleProgressModalClose();
+  //   }
+  // }, [mxAddress]);
+
   useEffect(() => {
-    if (mxAddress) {
+    console.log("==== effect for mxAddress. mxAddress = ", mxAddress);
+
+    if (!mxAddress) {
+      mvxGotConnected = false;
+    } else {
       handleProgressModalClose();
+
+      if (!mvxGotConnected) {
+        // the user came to the unlock page without a mvx connection and then connected a wallet,
+        // ... i.e a non-logged in user, just logged in using MVX
+        console.log("==== User JUST logged in with mxAddress = ", mxAddress);
+
+        const chainId = import.meta.env.VITE_ENV_NETWORK === "devnet" ? MVX_ENV_ENUM.devnet : MVX_ENV_ENUM.mainnet;
+        logUserLoggedInInUserAccounts(mxAddress, chainId, true);
+      }
+
+      mvxGotConnected = true;
     }
   }, [mxAddress]);
 
@@ -90,6 +121,45 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
       ...nativeAuthProps,
     },
     callbackRoute: redirectToRoute || pathname,
+  };
+
+  const logUserLoggedInInUserAccounts = async (addr: string, chainId: string, isMvx?: boolean) => {
+    try {
+      const callRes = await axios.post(`${getApiDataDex()}/datadexapi/userAccounts/userLoggedIn`, {
+        addr,
+        chainId,
+      });
+
+      const userLoggedInCallData = callRes.data;
+
+      if (userLoggedInCallData?.error) {
+        console.error("User account login call failed");
+      } else {
+        const celebrateEmojis = ["🥳", "🎊", "🍾", "🥂", "🍻", "🍾"];
+
+        if (userLoggedInCallData?.newUserAccountCreated) {
+          toast({
+            title: `${celebrateEmojis[Math.floor(Math.random() * celebrateEmojis.length)]} Welcome New User! Its Great To Have You Here.`,
+            status: "success",
+          });
+        } else if (userLoggedInCallData?.existingUserAccountLastLoginUpdated) {
+          let userMessage = "";
+
+          if (isMvx) {
+            userMessage = "Welcome Back MultiversX Champion!";
+          } else {
+            userMessage = "Welcome Back Solana Legend!";
+          }
+
+          toast({
+            title: `${celebrateEmojis[Math.floor(Math.random() * celebrateEmojis.length)]} ${userMessage}`,
+            status: "success",
+          });
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
