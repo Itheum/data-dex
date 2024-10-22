@@ -65,8 +65,8 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { mvxNfts, solNfts, updateMvxNfts } = useNftsStore();
   const purchasedDataNfts: DataNft[] = mvxNfts.filter((item) => item.creator != address);
 
-  const { publicKey, connected } = useWallet();
-  const solAddress = publicKey?.toBase58();
+  const { publicKey: solPubKey, connected } = useWallet();
+  const solAddress = solPubKey?.toBase58();
 
   useEffect(() => {
     window.scrollTo({

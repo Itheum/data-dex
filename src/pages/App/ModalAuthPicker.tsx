@@ -23,10 +23,11 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { NativeAuthConfigType } from "@multiversx/sdk-dapp/types";
 import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from "@multiversx/sdk-dapp/UI";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
-import { IS_DEVNET, WALLETS, MVX_ENV_ENUM } from "libs/config";
+import { IS_DEVNET, WALLETS, MVX_ENV_ENUM, SOL_ENV_ENUM } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { getApi } from "libs/MultiversX/api";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
@@ -37,6 +38,7 @@ we use global vars here so we can maintain this state across routing back and fo
 these vars are used to detect a "new login", i.e a logged out user logged in. we can use this to enable
 "user accounts" type activity, i.e. check if its a new user or returning user etc
 */
+let solGotConnected = false;
 let mvxGotConnected = false;
 
 function ModalAuthPicker({
@@ -49,6 +51,8 @@ function ModalAuthPicker({
   redirectToRoute: null | string;
 }) {
   const { address: mxAddress } = useGetAccountInfo();
+  const { publicKey: solPubKey } = useWallet();
+  const addressSol = solPubKey?.toBase58();
   const { chainID } = useGetNetworkConfig();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const [, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
@@ -78,12 +82,6 @@ function ModalAuthPicker({
     // }
   }, []);
 
-  // useEffect(() => {
-  //   if (mxAddress) {
-  //     handleProgressModalClose();
-  //   }
-  // }, [mxAddress]);
-
   useEffect(() => {
     console.log("==== effect for mxAddress. mxAddress = ", mxAddress);
 
@@ -104,6 +102,25 @@ function ModalAuthPicker({
       mvxGotConnected = true;
     }
   }, [mxAddress]);
+
+  useEffect(() => {
+    console.log("==== effect for addressSol. addressSol = ", addressSol);
+
+    if (!addressSol) {
+      solGotConnected = false;
+    } else {
+      if (!solGotConnected) {
+        // the user came to the unlock page without a solana connection and then connected a wallet,
+        // ... i.e a non-logged in user, just logged in using SOL
+        console.log("==== User JUST logged in with addressSol = ", addressSol);
+
+        const chainId = import.meta.env.VITE_ENV_NETWORK === "devnet" ? SOL_ENV_ENUM.devnet : SOL_ENV_ENUM.mainnet;
+        logUserLoggedInInUserAccounts(addressSol, chainId);
+      }
+
+      solGotConnected = true;
+    }
+  }, [addressSol]);
 
   useEffect(() => {
     if (openConnectModal) {
@@ -243,7 +260,7 @@ function ModalAuthPicker({
                         <LedgerLoginButton loginButtonText={"Ledger"} buttonClassName="auth_button" {...commonProps}></LedgerLoginButton>
                       </WrapItem>
 
-                      <WrapItem
+                      {/* <WrapItem
                         onClick={() => {
                           goMxLogin(WALLETS.MX_XALIAS);
                         }}
@@ -253,10 +270,10 @@ function ModalAuthPicker({
                           buttonClassName="auth_button"
                           customWalletAddress={IS_DEVNET ? "https://devnet.xalias.com" : "https://xalias.com"}
                           {...commonProps}></WebWalletLoginButton>
-                      </WrapItem>
+                      </WrapItem> */}
                     </Wrap>
                   </Stack>
-                  <Text fontSize="xl" fontWeight="bold">
+                  <Text fontSize="xl" fontWeight="bold" mt={5}>
                     Solana
                   </Text>
                   <Stack>
@@ -266,7 +283,7 @@ function ModalAuthPicker({
                           goMxLogin(WALLETS.SOLANA);
                           onProgressModalClose();
                         }}>
-                        <WalletMultiButton tabIndex={2} />
+                        <WalletMultiButton tabIndex={2} style={{ padding: "31px" }} />
                       </WrapItem>
                     </Wrap>
                   </Stack>

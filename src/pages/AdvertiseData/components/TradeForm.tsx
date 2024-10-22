@@ -1,4 +1,3 @@
-import { error } from "console";
 import React, { useEffect, useState } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
@@ -65,20 +64,19 @@ import darkNFMeIDHero from "assets/img/nfme/dark-nfmeid-vault-mint-page-hero.png
 import liteNFMeIDHero from "assets/img/nfme/lite-nfmeid-vault-mint-page-hero.png";
 import ChainSupportedInput from "components/UtilComps/ChainSupportedInput";
 import { PopoverTooltip } from "components/UtilComps/PopoverTooltip";
+import { useNetworkConfiguration } from "contexts/sol/SolNetworkConfigurationProvider";
 import { IS_DEVNET, MENU, PRINT_UI_DEBUG_PANELS } from "libs/config";
 import { labels } from "libs/language";
 import { getApi } from "libs/MultiversX/api";
 import { UserDataType } from "libs/MultiversX/types";
 import { BONDING_PROGRAM_ID, SOLANA_EXPLORER_URL } from "libs/Solana/config";
 import { CoreSolBondStakeSc, IDL } from "libs/Solana/CoreSolBondStakeSc";
+import { itheumSolPreaccess } from "libs/Solana/SolViewData";
 import { createBondTransaction, fetchBondingConfig, fetchRewardsConfig, fetchSolNfts } from "libs/Solana/utils";
 import { getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "libs/utils";
 import { useAccountStore, useMintStore } from "store";
-import { MintingModal } from "./MintingModal";
 import { useNftsStore } from "store/nfts";
-import { useNetworkConfiguration } from "contexts/sol/SolNetworkConfigurationProvider";
-import { itheumSolPreaccess } from "libs/Solana/SolViewData";
-import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
+import { MintingModal } from "./MintingModal";
 
 type TradeDataFormType = {
   dataStreamUrlForm: string;
@@ -112,7 +110,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const showInlineErrorsBeforeAction = false;
   const enableBondingInputForm = false;
 
-  const { publicKey, sendTransaction, signMessage } = useWallet();
+  const { publicKey: solPubKey, sendTransaction, signMessage } = useWallet();
   const { connection } = useConnection();
   const { networkConfiguration } = useNetworkConfiguration();
   const [solanaBondTransaction, setSolanaBondTransaction] = useState<Transaction | undefined>(undefined);
@@ -300,7 +298,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       royaltiesForm: 0,
       bondingAmount:
         lockPeriod.length > 0
-          ? publicKey
+          ? solPubKey
             ? BigNumber(lockPeriod[0]?.amount).toNumber()
             : BigNumber(lockPeriod[0]?.amount)
                 .dividedBy(10 ** 18)
@@ -334,7 +332,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     }
 
     // append the imgswapsalt to make the image unique to the user
-    const userAddress = publicKey ? publicKey?.toBase58() : mxAddress;
+    const userAddress = solPubKey ? solPubKey?.toBase58() : mxAddress;
     const imgSwapSalt = `&imgswapsalt=${userAddress.substring(0, 6)}-${userAddress.slice(-6)}_timestamp_${Date.now()}`;
     nfmeIdVaultDataStreamURL = nfmeIdVaultDataStreamURL + imgSwapSalt;
 
@@ -381,7 +379,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
   useEffect(() => {
     async function fetchBondingRelatedDataFromSolana() {
-      if (publicKey) {
+      if (solPubKey) {
         const programId = new PublicKey(BONDING_PROGRAM_ID);
         const program = new Program<CoreSolBondStakeSc>(IDL, programId, {
           connection,
@@ -393,7 +391,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       }
     }
     fetchBondingRelatedDataFromSolana();
-  }, [publicKey]);
+  }, [solPubKey]);
 
   useEffect(() => {
     if (itheumBalance && antiSpamTax && bondingAmount) {
@@ -415,9 +413,9 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     return (
       !isValid ||
       !readTermsChecked ||
-      (!publicKey && !readAntiSpamFeeChecked) ||
+      (!solPubKey && !readAntiSpamFeeChecked) ||
       !readLivelinessBonding ||
-      (!publicKey ? itheumBalance < antiSpamTax + bondingAmount : itheumBalance < bondingAmount)
+      (!solPubKey ? itheumBalance < antiSpamTax + bondingAmount : itheumBalance < bondingAmount)
     );
   }
 
@@ -502,7 +500,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
   // Step 1 of minting (user clicked on mint button on main form)
   const dataNFTSellSubmit = async () => {
-    if (!mxAddress && !publicKey) {
+    if (!mxAddress && !solPubKey) {
       toast({
         title: labels.ERR_MINT_FORM_NO_WALLET_CONN,
         status: "error",
@@ -522,6 +520,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       });
       return;
     }
+
     const isValidInput = validateBaseInput();
 
     if (isValidInput) {
@@ -542,7 +541,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const prepareMint = async () => {
     await sleep(1);
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s2: 1 }));
-    if (publicKey) {
+
+    if (solPubKey) {
       await mintDataNftSol();
     } else {
       await mintDataNftMx();
@@ -634,12 +634,13 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     explorerLinkMessage?: string;
   }) {
     try {
-      if (publicKey === null) {
+      if (solPubKey === null) {
         throw new Error("Wallet not connected");
       }
+
       const latestBlockhash = await connection.getLatestBlockhash();
       transaction.recentBlockhash = latestBlockhash.blockhash;
-      transaction.feePayer = publicKey;
+      transaction.feePayer = solPubKey;
 
       const txSignature = await sendTransaction(transaction, connection, {
         skipPreflight: true,
@@ -713,6 +714,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
   const mintDataNftSol = async () => {
     try {
+      debugger; // eslint-disable-line
+
       const cNftSolMinter = new CNftSolMinter(IS_DEVNET ? "devnet" : "mainnet");
       const optionalSDKMintCallFields: Record<string, any> = {
         nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
@@ -728,18 +731,24 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         optionalSDKMintCallFields["imgGenBg"] = "bg5_series_nfmeid_gen1";
         optionalSDKMintCallFields["imgGenSet"] = "set9_series_nfmeid_gen1";
       }
-      if (!publicKey) return;
+
+      if (!solPubKey) {
+        return;
+      }
+
       const { signatureNonce, solSignature } = await getAccessNonceAndSign();
+
       if (signatureNonce && solSignature) {
         optionalSDKMintCallFields["signatureNonce"] = signatureNonce;
         optionalSDKMintCallFields["solSignature"] = solSignature;
       }
+
       const {
         imageUrl: _imageUrl,
         metadataUrl: _metadataUrl,
         mintMeta: mintMeta,
       } = await cNftSolMinter.mint(
-        publicKey?.toBase58(), // Solana User Wallet Address
+        solPubKey?.toBase58(), // Solana User Wallet Address
         dataNFTTokenName,
         dataNFTMarshalService,
         dataNFTStreamUrl,
@@ -749,52 +758,72 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         optionalSDKMintCallFields
       );
 
-      // The actual data nft mint TX we will execute once we confirm the IPFS metadata has loaded
-      // setMintTx(dataNFTMintTX);
+      // check if any errors (they come as a string - e.g. {\"error\":\"you are not whitelisted to mint\"})
+      let errorMsg = null;
+      let tryParseForPossibleErrs = null;
 
-      if (!_imageUrl || _imageUrl.trim() === "" || !_metadataUrl || _metadataUrl.trim() === "") {
-        setErrDataNFTStreamGeneric(new Error(labels.ERR_IPFS_ASSET_SAVE_FAILED));
-      } else if (!mintMeta || mintMeta?.error || Object.keys(mintMeta).length === 0) {
-        setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_TX_GEN_COMMAND_FAILED));
+      try {
+        // note that this parse will fail if it was a success
+        tryParseForPossibleErrs = JSON.parse(mintMeta.toString());
+      } catch (e) {
+        console.log(e);
+      }
+
+      if (tryParseForPossibleErrs && tryParseForPossibleErrs?.error) {
+        errorMsg = tryParseForPossibleErrs?.error;
+
+        setErrDataNFTStreamGeneric(new Error(errorMsg));
       } else {
-        // let's attempt to checks 3 times if the IPFS data is loaded and available on the gateway
-        await checkIfNftImgAndMetadataIsAvailableOnIPFS(_imageUrl, _metadataUrl);
+        // The actual data nft mint TX we will execute once we confirm the IPFS metadata has loaded
+        // setMintTx(dataNFTMintTX);
 
-        // in solana, the mint was a success already
+        if (!_imageUrl || _imageUrl.trim() === "" || !_metadataUrl || _metadataUrl.trim() === "") {
+          setErrDataNFTStreamGeneric(new Error(labels.ERR_IPFS_ASSET_SAVE_FAILED));
+        } else if (!mintMeta || mintMeta?.error || Object.keys(mintMeta).length === 0) {
+          setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_TX_GEN_COMMAND_FAILED));
+        } else {
+          // let's attempt to checks 3 times if the IPFS data is loaded and available on the gateway
+          await checkIfNftImgAndMetadataIsAvailableOnIPFS(_imageUrl, _metadataUrl);
 
-        // if we have to auto-vault -- i.e most likely user first nfme id, then we can auto vault it with this TX
-        // setNftIdMEPrimaryVault();
-        setMintingSuccessful(true);
-        fetchSolNfts(publicKey?.toBase58()).then((nfts) => {
-          updateSolNfts(nfts);
-        });
-        setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s4: 1 }));
+          // in solana, the mint was a success already
 
-        const programId = new PublicKey(BONDING_PROGRAM_ID);
-        const addressBondsRewardsPda = PublicKey.findProgramAddressSync([Buffer.from("address_bonds_rewards"), publicKey?.toBuffer()], programId)[0];
-        const accountInfo = await connection.getAccountInfo(addressBondsRewardsPda);
+          // if we have to auto-vault -- i.e most likely user first nfme id, then we can auto vault it with this TX
+          // setNftIdMEPrimaryVault();
+          setMintingSuccessful(true);
 
-        const isExist = accountInfo !== null;
-        if (!isExist) {
-          const program = new Program<CoreSolBondStakeSc>(IDL, programId, {
-            connection,
+          fetchSolNfts(solPubKey?.toBase58()).then((nfts) => {
+            updateSolNfts(nfts);
           });
-          const rewardsConfigPda = PublicKey.findProgramAddressSync([Buffer.from("rewards_config")], programId)[0];
 
-          const transactionInitializeAddress = await program.methods
-            .initializeAddress()
-            .accounts({
-              addressBondsRewards: addressBondsRewardsPda,
-              rewardsConfig: rewardsConfigPda,
-              authority: publicKey,
-            })
-            .transaction();
+          setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s4: 1 }));
 
-          await sendAndConfirmTransaction({ transaction: transactionInitializeAddress, customErrorMessage: "Bonding Program address initialization failed" });
+          const programId = new PublicKey(BONDING_PROGRAM_ID);
+          const addressBondsRewardsPda = PublicKey.findProgramAddressSync([Buffer.from("address_bonds_rewards"), solPubKey?.toBuffer()], programId)[0];
+          const accountInfo = await connection.getAccountInfo(addressBondsRewardsPda);
+
+          const isExist = accountInfo !== null;
+
+          if (!isExist) {
+            const program = new Program<CoreSolBondStakeSc>(IDL, programId, {
+              connection,
+            });
+            const rewardsConfigPda = PublicKey.findProgramAddressSync([Buffer.from("rewards_config")], programId)[0];
+
+            const transactionInitializeAddress = await program.methods
+              .initializeAddress()
+              .accounts({
+                addressBondsRewards: addressBondsRewardsPda,
+                rewardsConfig: rewardsConfigPda,
+                authority: solPubKey,
+              })
+              .transaction();
+
+            await sendAndConfirmTransaction({ transaction: transactionInitializeAddress, customErrorMessage: "Bonding Program address initialization failed" });
+          }
+
+          const bondTransaction = await createBondTransaction(mintMeta, solPubKey, connection);
+          setSolanaBondTransaction(bondTransaction);
         }
-
-        const bondTransaction = await createBondTransaction(mintMeta, publicKey, connection);
-        setSolanaBondTransaction(bondTransaction);
       }
     } catch (e) {
       console.error(e);
@@ -813,24 +842,31 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           setMakePrimaryNFMeIdSuccessful(true);
           setErrDataNFTStreamGeneric(null);
         }
-      } catch (error) {
+      } catch (err) {
         setBondingTxHasFailed(true);
         setErrDataNFTStreamGeneric(new Error(labels.ERR_SUCCESS_MINT_BUT_BONDING_TRANSACTION_FAILED));
-        console.error("createBondTransaction failed to sign and send bond transaction", error);
+        console.error("createBondTransaction failed to sign and send bond transaction", err);
       }
     } else {
       setErrDataNFTStreamGeneric(new Error(labels.ERR_SUCCESS_MINT_BUT_BOND_NOT_CREATED));
-      console.error("createBondTransaction failed to create bond transaction", error);
+      console.error("createBondTransaction failed to create bond transaction");
     }
   };
 
   const getAccessNonceAndSign = async () => {
     const preAccessNonce = await itheumSolPreaccess();
     const message = new TextEncoder().encode(preAccessNonce);
-    if (!signMessage) throw new Error("Missing singMessage function");
+
+    if (signMessage === undefined) {
+      throw new Error("signMessage is undefined");
+    }
+
     const signature = await signMessage(message);
-    if (!preAccessNonce || !signature || !publicKey) throw new Error("Missing data for viewData");
-    const encodedSignature = bs58.encode(signature);
+    const encodedSignature = Buffer.from(signature).toString("hex");
+
+    if (!preAccessNonce || !signature || !solPubKey) {
+      throw new Error("Missing data for viewData");
+    }
 
     return { signatureNonce: preAccessNonce, solSignature: encodedSignature };
   };
@@ -980,7 +1016,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             </Flex>
           </Box>
         )}
-        {!publicKey ? (
+
+        {!solPubKey ? (
           isMintFeeInfoVisible ? (
             <Alert status="info" mt={3} rounded="lg">
               <Box display="flex" flexDirection="column" w="full">
@@ -1004,6 +1041,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             </Button>
           )
         ) : null}
+
         {PRINT_UI_DEBUG_PANELS && (
           <Box>
             <Alert status="warning" mt={3} p={2} fontSize=".8rem" rounded="lg" as="div" style={{ "display": "block" }}>
@@ -1270,7 +1308,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                   </Text>
                   <FormErrorMessage>{errors?.numberOfCopiesForm?.message}</FormErrorMessage>
                 </FormControl>
-                {!publicKey && (
+
+                {!solPubKey && (
                   <FormControl isInvalid={!!errors.royaltiesForm} minH={"8.5rem"}>
                     <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
                       Royalties
@@ -1346,7 +1385,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               />
               <FormErrorMessage>{errors?.extraAssets?.message}</FormErrorMessage>
             </FormControl>
-            {!publicKey && (
+
+            {!solPubKey && (
               <FormControl isInvalid={!!errors.donatePercentage} minH={"8.5rem"}>
                 <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt={{ base: "1", md: "4" }}>
                   Donate Percentage
@@ -1503,7 +1543,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             </Flex>
 
             <Box>
-              {(!publicKey ? itheumBalance < antiSpamTax + bondingAmount : itheumBalance < bondingAmount) && (
+              {(!solPubKey ? itheumBalance < antiSpamTax + bondingAmount : itheumBalance < bondingAmount) && (
                 <Text color="red.400" fontSize="md" mt="1 !important" mb="2">
                   {labels.ERR_MINT_FORM_NOT_ENOUGH_BOND}
                 </Text>
@@ -1624,8 +1664,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               )}
             </Box>
 
-            {publicKey ? (
-              <Alert status="warning">
+            {solPubKey ? (
+              <Alert status="warning" rounded="lg">
                 <AlertIcon />
                 All Data NFTs, including NFMeIDs minted, will include a fixed 2% royalty. <br /> These royalties are split equally 50% / 50% with you and the
                 Itheum Protocol.
@@ -1693,7 +1733,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               makePrimaryNFMeIdSuccessful={makePrimaryNFMeIdSuccessful}
               onChainMint={handleOnChainMint}
               isNFMeIDMint={isNFMeIDMint}
-              isAutoVault={publicKey ? true : (dataToPrefill?.shouldAutoVault ?? false) && !bondVaultNonce}
+              isAutoVault={solPubKey ? true : (dataToPrefill?.shouldAutoVault ?? false) && !bondVaultNonce}
               nftImgAndMetadataLoadedOnIPFS={nftImgAndMetadataLoadedOnIPFS}
               bondingTxHasFailed={bondingTxHasFailed}
               sendSolanaBondingTx={sendSolanaBondingTx}

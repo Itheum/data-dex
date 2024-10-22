@@ -59,7 +59,7 @@ export const TradeData: React.FC = () => {
           Mint your Data Streams or Data Assets as Data NFTs and list and trade them in the peer-to-peer Data NFT Marketplace.
         </Heading>
         <Wrap shouldWrapChildren={true} spacing={5} display={"flex"} flexDir={"row"} justifyContent={{ base: "center", md: "start" }} overflow={"unset"}>
-          <Box maxW="xs" overflow="hidden" mt={5} border=".01rem solid transparent" borderColor="#00C79740" borderRadius="0.75rem">
+          <Box hidden maxW="xs" overflow="hidden" mt={5} border=".01rem solid transparent" borderColor="#00C79740" borderRadius="0.75rem">
             <Image src="https://itheum-static.s3.ap-southeast-2.amazonaws.com/data-stream.png" alt="" rounded="lg" />
 
             <Box p="6">

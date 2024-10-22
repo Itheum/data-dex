@@ -31,8 +31,7 @@ interface WalletDataNftSolProps {
 
 const WalletDataNftSol: React.FC<WalletDataNftSolProps> = ({ index, solDataNft }) => {
   const { networkConfiguration } = useNetworkConfiguration();
-  // const { publicKey } = useWallet();
-  // const isCreator = solDataNft.creators && solDataNft.creators.some((creator) => creator.address === publicKey?.toBase58());
+
   return (
     <Skeleton fitContent={true} isLoaded={true} borderRadius="16px" display="flex" alignItems="center" justifyContent="center">
       <Box

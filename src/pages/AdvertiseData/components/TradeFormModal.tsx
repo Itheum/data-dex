@@ -19,12 +19,12 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { useNavigate } from "react-router-dom";
 import { labels } from "libs/language";
 import { getApiDataDex, getApiDataMarshal } from "libs/utils";
 import { useMintStore } from "store";
 import { TradeForm } from "./TradeForm";
-import { useWallet } from "@solana/wallet-adapter-react";
 
 type TradeFormProps = {
   isOpen: boolean;
@@ -46,7 +46,8 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   const navigate = useNavigate();
   const userData = useMintStore((state) => state.userData);
   const lockPeriod = useMintStore((state) => state.lockPeriodForBond);
-  const { publicKey } = useWallet();
+  const { publicKey: solPubKey } = useWallet();
+  const [onSolOnlyAndWhitelistedToMint, setOnSolOnlyAndWhitelistedToMint] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -63,6 +64,22 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
       setAntiSpamTax(antiSpamTaxT / 10 ** 18);
     })();
   }, [isOpen]);
+
+  useEffect(() => {
+    async function checkIfWhitelistedOnSolanaToMint() {
+      const resp = await fetch(`${getApiDataDex()}/datadexapi/solNftUtils/checkIfWhitelistedToMint?mintForSolAddr=${solPubKey?.toBase58()}`);
+      const data = await resp.json();
+
+      if (data?.success) {
+        setOnSolOnlyAndWhitelistedToMint(true);
+      }
+    }
+
+    if (solPubKey && !userData) {
+      // userData will be undefined on solana as it's specific to MVX
+      checkIfWhitelistedOnSolanaToMint();
+    }
+  }, [solPubKey]);
 
   const onClose = () => {
     setIsOpen(false);
@@ -199,7 +216,8 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
               dataNFTMarshalServiceStatus ||
               !dataNFTImgGenServiceValid ||
               (!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
-              (!!userData && userData.contractPaused)) && (
+              (!!userData && userData.contractPaused) ||
+              (!userData && !onSolOnlyAndWhitelistedToMint)) && (
               <Alert status="error" mb={5}>
                 <Stack>
                   <AlertTitle fontSize="md" mb={5}>
@@ -215,9 +233,10 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
                     {antiSpamTax < 0 && <Text fontSize="md">Unable to read default value of Anti-Spam Tax.</Text>}
                     {!!dataNFTMarshalServiceStatus && <Text fontSize="md">{labels.ERR_DATA_MARSHAL_DOWN}</Text>}
                     {!dataNFTImgGenServiceValid && <Text fontSize="md">{labels.ERR_MINT_FORM_GEN_IMG_API_DOWN}</Text>}
-                    {!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint && (
-                      <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>
-                    )}
+                    {(!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
+                      (!userData && !onSolOnlyAndWhitelistedToMint && (
+                        <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>
+                      ))}
                     {!!userData && userData.contractPaused && <Text fontSize="md">The minter smart contract is paused for maintenance.</Text>}
                   </AlertDescription>
                 </Stack>
@@ -270,7 +289,9 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
           width="100%"
           backgroundColor="blackAlpha.800"
           rounded="lg"
-          visibility={userData?.contractWhitelistEnabled && !userData.userWhitelistedForMint ? "visible" : "hidden"}
+          visibility={
+            (userData?.contractWhitelistEnabled && !userData.userWhitelistedForMint) || (!userData && !onSolOnlyAndWhitelistedToMint) ? "visible" : "hidden"
+          }
           borderTop="solid .1rem"
           borderColor="teal.200">
           <Text fontSize="24px" fontWeight="500" lineHeight="38px" textAlign="center" textColor="teal.200" px="2">
@@ -303,7 +324,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
           width="100%"
           backgroundColor="blackAlpha.800"
           rounded="lg"
-          visibility={(userData === null || userData === undefined) && !publicKey ? "visible" : "hidden" || lockPeriod === undefined}
+          visibility={(userData === null || userData === undefined) && !solPubKey ? "visible" : "hidden" || lockPeriod === undefined}
           borderTop="solid .1rem"
           borderColor="teal.200">
           <Text fontSize="24px" fontWeight="500" lineHeight="38px" textAlign="center" textColor="teal.200" px="2">

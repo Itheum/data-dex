@@ -85,8 +85,8 @@ const MEME_IMGS = [
 
 const GetBitzSol = (props: any) => {
   const { modalMode } = props;
-  const { publicKey, signMessage } = useWallet();
-  const address = publicKey?.toBase58();
+  const { publicKey: solPubKey, signMessage } = useWallet();
+  const address = solPubKey?.toBase58();
   const [checkingIfHasGameDataNFT, setCheckingIfHasGameDataNFT] = useState<boolean>(true);
   const [hasGameDataNFT, setHasGameDataNFT] = useState<boolean>(false);
   const [showMessage, setShowMessage] = useState<boolean>(true);
@@ -126,12 +126,12 @@ const GetBitzSol = (props: any) => {
   const [solNftsBitz, setSolNftsBitz] = useState<DasApiAsset[]>([]);
   const [populatedBitzStore, setPopulatedBitzStore] = useState<boolean>(false);
   useEffect(() => {
-    if (publicKey && solNfts) {
+    if (solPubKey && solNfts) {
       setSolNftsBitz(
         IS_DEVNET ? solNfts.filter((nft) => nft.content.metadata.name.includes("XP")) : solNfts.filter((nft) => nft.content.metadata.name.includes("IXPG2"))
       );
     }
-  }, [publicKey, solNfts]);
+  }, [solPubKey, solNfts]);
 
   useEffect(() => {
     window.scrollTo({
@@ -154,7 +154,7 @@ const GetBitzSol = (props: any) => {
         const message = new TextEncoder().encode(preAccessNonce);
         if (signMessage === undefined) throw new Error("signMessage is undefiend");
         const signature = await signMessage(message);
-        if (!preAccessNonce || !signature || !publicKey) throw new Error("Missing data for viewData");
+        if (!preAccessNonce || !signature || !solPubKey) throw new Error("Missing data for viewData");
         const encodedSignature = bs58.encode(signature);
         updateSolPreaccessNonce(preAccessNonce);
         updateSolSignedPreaccess(encodedSignature);
@@ -162,12 +162,12 @@ const GetBitzSol = (props: any) => {
         usedPreAccessNonce = preAccessNonce;
         usedPreAccessSignature = encodedSignature;
       }
-      if (!publicKey) throw new Error("Missing data for viewData");
+      if (!solPubKey) throw new Error("Missing data for viewData");
       const res = await itheumSolViewData(
         requiredDataNFT.id,
         usedPreAccessNonce,
         usedPreAccessSignature,
-        publicKey,
+        solPubKey,
         viewDataArgs.fwdHeaderKeys,
         viewDataArgs.headers
       );
@@ -194,7 +194,7 @@ const GetBitzSol = (props: any) => {
   useEffect(() => {
     if (solNftsBitz === undefined) return;
     if (!populatedBitzStore) {
-      if (publicKey && solNftsBitz.length > 0) {
+      if (solPubKey && solNftsBitz.length > 0) {
         updateBitzBalance(-2);
         updateCooldown(-2);
         updateGivenBitzSum(-2);
@@ -234,11 +234,11 @@ const GetBitzSol = (props: any) => {
         updateCollectedBitzSum(-1);
       }
     } else {
-      if (!publicKey) {
+      if (!solPubKey) {
         setPopulatedBitzStore(false);
       }
     }
-  }, [solNftsBitz, publicKey]);
+  }, [solNftsBitz, solPubKey]);
 
   useEffect(() => {
     checkIfHasGameDataNft();

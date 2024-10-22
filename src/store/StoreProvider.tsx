@@ -35,7 +35,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const [searchParams] = useSearchParams();
 
   // SOLANA
-  const { publicKey } = useWallet();
+  const { publicKey: solPubKey } = useWallet();
   const { connection } = useConnection();
 
   // ACCOUNT STORE
@@ -73,7 +73,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     (async () => {
-      if (!publicKey && bondingContract) {
+      if (!solPubKey && bondingContract) {
         const bondingAmount = await bondingContract.viewLockPeriodsWithBonds();
         updateLockPeriodForBond(bondingAmount);
       }
@@ -97,7 +97,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   }, [address, tokenLogin]);
 
   useEffect(() => {
-    if (!publicKey) {
+    if (!solPubKey) {
       return;
     }
 
@@ -109,7 +109,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
       else updateItheumBalance(-1);
     })();
 
-    fetchSolNfts(publicKey?.toBase58()).then((nfts) => {
+    fetchSolNfts(solPubKey?.toBase58()).then((nfts) => {
       updateSolNfts(nfts);
     });
 
@@ -124,7 +124,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
     });
 
     updateIsLoadingSol(false);
-  }, [publicKey]);
+  }, [solPubKey]);
 
   // fetch the Mx Bitz balance and cooldown
   useEffect(() => {
@@ -254,7 +254,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const getItheumBalanceOnSolana = async () => {
     try {
       const itheumTokenMint = new PublicKey(ITHEUM_TOKEN_ADDRESS);
-      const addressAta = getAssociatedTokenAddressSync(itheumTokenMint, publicKey!, false);
+      const addressAta = getAssociatedTokenAddressSync(itheumTokenMint, solPubKey!, false);
       const balance = await connection.getTokenAccountBalance(addressAta);
       return balance.value.uiAmount;
     } catch (error) {

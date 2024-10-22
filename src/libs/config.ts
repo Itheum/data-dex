@@ -608,6 +608,11 @@ export const SUPPORTED_MVX_COLLECTIONS = IS_DEVNET
   ? ["DATANFTFT-e0b917", "DNFTPHMA-9e2b1c", "OASISMUSIC-9b3433", "OASMUSICPL-47b186", "FOOWLDMSC-5ee8ec"]
   : ["DATANFTFT-e936d4", "DFEE-72425b"];
 
+export enum SOL_ENV_ENUM {
+  devnet = "SD",
+  mainnet = "S1",
+}
+
 export enum MVX_ENV_ENUM {
   devnet = "ED",
   mainnet = "E1",

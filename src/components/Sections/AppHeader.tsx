@@ -73,10 +73,10 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
   const { networkConfiguration } = useNetworkConfiguration();
 
   // Solana
-  const { publicKey } = useWallet();
-  const solAddress = publicKey?.toBase58();
-  const connectedChain = publicKey ? (networkConfiguration === "devnet" ? SolEnvEnum.devnet : SolEnvEnum.mainnet) : chainID;
-  const isUserLoggedIn = isMxLoggedIn || publicKey ? true : false;
+  const { publicKey: solPubKey } = useWallet();
+  const solAddress = solPubKey?.toBase58();
+  const connectedChain = solPubKey ? (networkConfiguration === "devnet" ? SolEnvEnum.devnet : SolEnvEnum.mainnet) : chainID;
+  const isUserLoggedIn = isMxLoggedIn || solPubKey ? true : false;
 
   const { colorMode, setColorMode } = useColorMode();
   const { pathname } = useLocation();
@@ -108,7 +108,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
           shortLbl: "Dash",
           Icon: MdSpaceDashboard,
           needToBeLoggedIn: true,
-          isHidden: publicKey ? true : false,
+          isHidden: solPubKey ? true : false,
         },
         {
           menuEnum: MENU.SELL,
@@ -135,7 +135,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
           shortLbl: "Market",
           Icon: FaStore,
           needToBeLoggedIn: false,
-          isHidden: publicKey ? true : false,
+          isHidden: solPubKey ? true : false,
         },
         {
           menuEnum: MENU.GETVERIFIED,
