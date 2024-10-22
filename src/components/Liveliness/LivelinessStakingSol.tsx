@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -29,11 +28,12 @@ import { DasApiAsset } from "@metaplex-foundation/digital-asset-standard-api";
 import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Commitment, PublicKey, Transaction, TransactionConfirmationStrategy } from "@solana/web3.js";
-
 import { useNavigate } from "react-router-dom";
 import NftMediaComponent from "components/NftMediaComponent";
 import { NoDataHere } from "components/Sections/NoDataHere";
 import { ConfirmationDialog } from "components/UtilComps/ConfirmationDialog";
+import { useNetworkConfiguration } from "contexts/sol/SolNetworkConfigurationProvider";
+import { IS_DEVNET } from "libs/config";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { BOND_CONFIG_INDEX, BONDING_PROGRAM_ID, SOLANA_EXPLORER_URL } from "libs/Solana/config";
 import { CoreSolBondStakeSc, IDL } from "libs/Solana/CoreSolBondStakeSc";
@@ -49,8 +49,6 @@ import { formatNumberToShort, isValidNumericCharacter } from "libs/utils";
 import { useAccountStore } from "store";
 import { useNftsStore } from "store/nfts";
 import { LivelinessScore } from "./LivelinessScore";
-import { useNetworkConfiguration } from "contexts/sol/SolNetworkConfigurationProvider";
-import { IS_DEVNET } from "libs/config";
 
 const BN10_9 = new BN(10 ** 9);
 const BN10_2 = new BN(10 ** 2);
@@ -76,12 +74,10 @@ export const LivelinessStakingSol: React.FC = () => {
   const [addressBondsRewardsData, setAddressBondsRewardsData] = useState<any>();
   const [bondConfigData, setBondConfigData] = useState<any>();
   const [rewardsConfigData, setRewardsConfigData] = useState<any>();
-
   const [vaultConfigPda, setVaultConfigPda] = useState<PublicKey | undefined>();
   const [bonds, setBonds] = useState<Bond[]>();
   const [allInfoLoading, setAllInfoLoading] = useState<boolean>(true);
   const [nftMeId, setNftMeId] = useState<DasApiAsset>();
-
   const [numberOfBonds, setNumberOfBonds] = useState<number>();
   const [claimRewardsConfirmationWorkflow, setClaimRewardsConfirmationWorkflow] = useState<boolean>(false);
   const [reinvestRewardsConfirmationWorkflow, setReinvestRewardsConfirmationWorkflow] = useState<boolean>(false);
@@ -239,6 +235,7 @@ export const LivelinessStakingSol: React.FC = () => {
       });
     }
   }
+
   useEffect(() => {
     calculateRewardAprAndEstAnnualRewards();
   }, [globalTotalBond, combinedBondsStaked, maxApr]);
@@ -542,6 +539,7 @@ export const LivelinessStakingSol: React.FC = () => {
       console.error("Transaction withdraw failed:", error);
     }
   }
+
   const TopUpSection: React.FC<{ bond: Bond }> = ({ bond }) => {
     const [currentBondEstAnnualRewards, setCurrentBondEstAnnualRewards] = useState<number>();
     const [topUpItheumValue, setTopUpItheumValue] = useState<number>(0);
@@ -619,9 +617,11 @@ export const LivelinessStakingSol: React.FC = () => {
       </HStack>
     );
   };
+
   function checkIfBondIsExpired(unbondTimestamp: any) {
     return unbondTimestamp < Math.round(Date.now() / 1000);
   }
+
   const LivelinessContainer: React.FC<{ bond: Bond }> = ({ bond }) => {
     return (
       <VStack>
@@ -630,6 +630,7 @@ export const LivelinessStakingSol: React.FC = () => {
       </VStack>
     );
   };
+
   return (
     <Flex flexDirection={"column"} width="100%">
       <Flex flexDirection={{ base: "column", md: "row" }} width="100%" justifyContent="space-between" pt={{ base: "0", md: "5" }}>
