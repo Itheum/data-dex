@@ -768,7 +768,13 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       }
 
       if (tryParseForPossibleErrs && tryParseForPossibleErrs?.error) {
-        errorMsg = tryParseForPossibleErrs?.error;
+        errorMsg = "There was a minting error.";
+
+        if (tryParseForPossibleErrs?.errMsg) {
+          errorMsg += ` Technical details: ${tryParseForPossibleErrs?.errMsg}`;
+        } else {
+          errorMsg += ` Technical details: ${tryParseForPossibleErrs?.error}`;
+        }
 
         setErrDataNFTStreamGeneric(new Error(errorMsg));
       } else {
