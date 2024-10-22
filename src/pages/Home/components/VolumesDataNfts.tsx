@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Card, CardBody, Heading, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { Link } from "react-router-dom";
 import NftMediaComponent from "components/NftMediaComponent";
 import { IS_DEVNET, getTopVolumes } from "libs/MultiversX";
 import { NftMedia } from "libs/types";
 import { convertToLocalString } from "libs/utils";
 import { useMarketStore } from "store";
-import { useWallet } from "@solana/wallet-adapter-react";
 
 interface VolumesDataNftsProps {
   // Define the props for your component here
@@ -49,6 +49,7 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
   const [topVolumesDataNfts, setTopVolumesDataNfts] = useState<VolumeDataNftsType[]>(latestOffersSkeleton);
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
   const { connected: isSolWalletConnected } = useWallet();
+
   useEffect(() => {
     (async () => {
       DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");

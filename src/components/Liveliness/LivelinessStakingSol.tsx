@@ -714,7 +714,7 @@ export const LivelinessStakingSol: React.FC = () => {
                   </Flex>{" "}
                 </HStack>{" "}
                 <Text m={{ base: "auto", md: "initial" }} mt={{ base: "10", md: "auto" }} fontSize="lg">
-                  Est. Cummulative Annual Rewards: {formatNumberToShort(estCombinedAnnualRewards / 10 ** 9)} $ITHEUM
+                  Est. Cumulative Annual Rewards: {formatNumberToShort(estCombinedAnnualRewards / 10 ** 9)} $ITHEUM
                 </Text>
               </>
             )}
@@ -932,8 +932,8 @@ export const LivelinessStakingSol: React.FC = () => {
                 <Text fontSize="sm" pb={3} opacity=".8">
                   {`Collection: ${withdrawBondConfirmationWorkflow?.bondId},   Bond Amount: ${withdrawBondConfirmationWorkflow?.bondAmount}`}
                 </Text>
-                <Text color={"red"} fontWeight="bold" fontSize="lg" pb={3} opacity="1">
-                  {`Bond Amount to receive: ${(
+                <Text color="indianred" fontWeight="bold" fontSize="lg" pb={3} opacity="1">
+                  {`Bond amount to receive: ${(
                     (withdrawBondConfirmationWorkflow?.bondAmount ?? 0) -
                     ((withdrawBondConfirmationWorkflow?.bondAmount ?? 0) * withdrawPenalty) / 100
                   ).toFixed(2)}`}
@@ -942,7 +942,7 @@ export const LivelinessStakingSol: React.FC = () => {
                 <UnorderedList mt="2" p="2">
                   <ListItem>
                     Withdrawing before bond expiry incurs a penalty of{" "}
-                    <Text as="span" fontSize="md" color="red">
+                    <Text as="span" fontSize="md" color="indianred">
                       {withdrawPenalty}%
                     </Text>
                     ; no penalty after expiry, and you get the full amount back.

@@ -30,12 +30,12 @@ export const FeaturedDataNFTListings: React.FC<FeaturedDataNFTListingsProps> = (
         {isFeaturedListingsOpen ? (
           <Alert status="success" variant="top-accent" mt={3} rounded="lg">
             <Box display="flex" flexDirection="column" w="full">
-              <AlertTitle w={{ base: "116%", lg: "auto" }}>
+              <AlertTitle w={{ base: "100%", lg: "auto" }}>
                 <Heading fontFamily="Clash-Medium" p={2} my={4} fontSize={{ base: "14px", lg: "22px" }} textAlign={{ base: "center", lg: "initial" }}>
                   Featured Marketplace Listings
                 </Heading>
               </AlertTitle>
-              <AlertDescription fontSize="md" w={{ base: "116%", lg: "auto" }}>
+              <AlertDescription fontSize="md" w={{ base: "100%", lg: "auto" }}>
                 <SimpleGrid columns={{ base: 1, lg: 2 }} gap={{ base: 3, lg: 10 }}>
                   <Box bgImage={featuredAirdropGuide} bgSize="cover" borderRadius="12px" borderColor="rgba(0, 199, 151, 0.25)" borderWidth="5px" p="2">
                     <Flex direction="column" h="200px">

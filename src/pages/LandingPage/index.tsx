@@ -64,7 +64,7 @@ const LandingPage = () => {
             <NFMeIdCTA />
           </Box>
 
-          <Box pt={{ base: "18", "2xl": "10" }} pb="10" mx={{ base: "10px", md: "10px" }} mt="10">
+          <Box pt={{ base: "0", "2xl": "10" }} pb="10" mx={{ base: "0", md: "10px" }} mt="10">
             <FeaturedDataNFTListings hideCollapseOption={true} />
           </Box>
 
@@ -76,10 +76,10 @@ const LandingPage = () => {
             <> </>
           ) : (
             <>
-              <Box m="auto" pt="10" pb="10" w={"100%"}>
+              <Box pt={{ base: "20", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
                 <VolumesDataNfts />
               </Box>
-              <Box m="auto" pt="10" pb="10" w={"100%"}>
+              <Box pt={{ base: "20", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
                 <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" />
               </Box>
             </>
