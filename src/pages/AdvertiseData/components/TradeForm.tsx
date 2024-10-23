@@ -714,6 +714,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
   const mintDataNftSol = async () => {
     try {
+      debugger; // eslint-disable-line
       const cNftSolMinter = new CNftSolMinter(IS_DEVNET ? "devnet" : "mainnet");
       const optionalSDKMintCallFields: Record<string, any> = {
         nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
@@ -1065,6 +1066,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               <Box>Token Name: {dataNFTTokenName} (should be - NFMeIDG1)</Box>
               <Box>Title: {datasetTitle} (should be - NFMe ID Vault)</Box>
               <Box>Description: {datasetDescription}</Box>
+              <Box>Solana BONDING_PROGRAM_ID: {BONDING_PROGRAM_ID}</Box>
             </Alert>
           </Box>
         )}
