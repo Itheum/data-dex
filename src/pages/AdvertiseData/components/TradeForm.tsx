@@ -1673,7 +1673,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             {solPubKey ? (
               <Alert status="warning" rounded="lg">
                 <AlertIcon />
-                All Data NFTs, including NFMeIDs minted, will include a fixed 2% royalty. <br /> These royalties are split equally 50% / 50% with you and the
+                All Data NFTs, including NFMeIDs minted, will include a fixed 5% royalty. <br /> These royalties are split equally 50% / 50% with you and the
                 Itheum Protocol.
               </Alert>
             ) : (
