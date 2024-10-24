@@ -667,7 +667,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             title: "Transaction Confirmed",
             description: (
               <a
-                href={`${SOLANA_EXPLORER_URL}/tx${txSignature}?cluster=${networkConfiguration}`}
+                href={`${SOLANA_EXPLORER_URL}/tx/${txSignature}?cluster=${networkConfiguration}`}
                 target="_blank"
                 rel="noreferrer"
                 style={{ textDecoration: "underline" }}>
@@ -714,7 +714,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
   const mintDataNftSol = async () => {
     try {
-      debugger; // eslint-disable-line
       const cNftSolMinter = new CNftSolMinter(IS_DEVNET ? "devnet" : "mainnet");
       const optionalSDKMintCallFields: Record<string, any> = {
         nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
