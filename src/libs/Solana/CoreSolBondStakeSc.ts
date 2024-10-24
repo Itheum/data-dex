@@ -1,5 +1,5 @@
 export type CoreSolBondStakeSc = {
-  "version": "0.1.0";
+  "version": "1.0.0";
   "name": "core_sol_bond_stake_sc";
   "instructions": [
     {
@@ -1276,7 +1276,7 @@ export type CoreSolBondStakeSc = {
 };
 
 export const IDL: CoreSolBondStakeSc = {
-  "version": "0.1.0",
+  "version": "1.0.0",
   "name": "core_sol_bond_stake_sc",
   "instructions": [
     {
