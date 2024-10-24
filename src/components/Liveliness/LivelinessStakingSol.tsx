@@ -85,7 +85,7 @@ export const LivelinessStakingSol: React.FC = () => {
   const { solNfts } = useNftsStore();
   const { colorMode } = useColorMode();
   const [claimableAmount, setClaimableAmount] = useState<number>(0);
-  const [withdrawBondConfirmationWorkflow, setWithdrawBondConfirmationWorkflow] = useState<{ bondId: number; bondAmount: number }>();
+  const [withdrawBondConfirmationWorkflow, setWithdrawBondConfirmationWorkflow] = useState<{ bondId: number; bondAmount: number; bondExpired: boolean }>();
   const toast = useToast();
   const [currentLiveLinessScoreLIVE, setCurrentLiveLinessScoreLIVE] = useState<number>(0);
   const [hasPendingTransaction, setHasPendingTransaction] = useState<boolean>(false);
@@ -787,6 +787,7 @@ export const LivelinessStakingSol: React.FC = () => {
                               setWithdrawBondConfirmationWorkflow({
                                 bondId: currentBond.bondId,
                                 bondAmount: currentBond.bondAmount.toNumber() / 10 ** 9,
+                                bondExpired: false,
                               });
                             }}>
                             Withdraw Bond
@@ -800,7 +801,11 @@ export const LivelinessStakingSol: React.FC = () => {
                             fontWeight="400"
                             isDisabled={currentBond.state === 0 || hasPendingTransaction}
                             onClick={() => {
-                              handleWithdrawBondClick(currentBond.bondId, currentBond.bondAmount.toNumber() / 10 ** 9);
+                              setWithdrawBondConfirmationWorkflow({
+                                bondId: currentBond.bondId,
+                                bondAmount: currentBond.bondAmount.toNumber() / 10 ** 9,
+                                bondExpired: true,
+                              });
                             }}>
                             Withdraw Bond
                           </Button>
@@ -930,24 +935,34 @@ export const LivelinessStakingSol: React.FC = () => {
             bodyContent={
               <>
                 <Text fontSize="sm" pb={3} opacity=".8">
+                  {`Bond Expired : ${withdrawBondConfirmationWorkflow?.bondExpired.toString()}`}
+
                   {`Collection: ${withdrawBondConfirmationWorkflow?.bondId},   Bond Amount: ${withdrawBondConfirmationWorkflow?.bondAmount}`}
                 </Text>
-                <Text color="indianred" fontWeight="bold" fontSize="lg" pb={3} opacity="1">
-                  {`Bond amount to receive: ${(
-                    (withdrawBondConfirmationWorkflow?.bondAmount ?? 0) -
-                    ((withdrawBondConfirmationWorkflow?.bondAmount ?? 0) * withdrawPenalty) / 100
-                  ).toFixed(2)}`}
-                </Text>
+                {(!withdrawBondConfirmationWorkflow?.bondExpired && (
+                  <Text color="indianred" fontWeight="bold" fontSize="lg" pb={3} opacity="1">
+                    {`Bond amount to receive: ${(
+                      (withdrawBondConfirmationWorkflow?.bondAmount ?? 0) -
+                      ((withdrawBondConfirmationWorkflow?.bondAmount ?? 0) * withdrawPenalty) / 100
+                    ).toFixed(2)}`}
+                  </Text>
+                )) || (
+                  <Text color="teal.200" fontWeight="bold" fontSize="lg" pb={3} opacity="1">
+                    As your bond has expired, so you can withdraw without any penalty.
+                  </Text>
+                )}
                 <Text mb="5">There are a few items to consider before you proceed with the bond withdraw:</Text>
                 <UnorderedList mt="2" p="2">
-                  <ListItem>
-                    Withdrawing before bond expiry incurs a penalty of{" "}
-                    <Text as="span" fontSize="md" color="indianred">
-                      {withdrawPenalty}%
-                    </Text>
-                    ; no penalty after expiry, and you get the full amount back.
-                  </ListItem>
-                  <ListItem>Penalties are non-refundable.</ListItem>
+                  {!withdrawBondConfirmationWorkflow?.bondExpired && (
+                    <ListItem>
+                      Withdrawing before bond expiry incurs a penalty of{" "}
+                      <Text as="span" fontSize="md" color="indianred">
+                        {withdrawPenalty}%
+                      </Text>
+                      ; no penalty after expiry, and you get the full amount back.
+                    </ListItem>
+                  )}
+                  {!withdrawBondConfirmationWorkflow?.bondExpired && <ListItem>Penalties are non-refundable.</ListItem>}
                   <ListItem>After withdrawal, your Liveliness score drops to zero, visible to buyers if your Data NFT is listed.</ListItem>
                   <ListItem>Once withdrawn, you {`can't `}re-bond to regain the Liveliness score or earn staking rewards.</ListItem>
                 </UnorderedList>
