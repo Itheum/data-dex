@@ -88,7 +88,10 @@ export const clearAppSessionsLaunchMode = () => {
   localStorage?.removeItem("itm-launch-env");
   localStorage?.removeItem("itm-datacat-linked");
   sessionStorage.removeItem("persist:sdk-dapp-signedMessageInfo"); // clear signedSessions
+  localStorage?.removeItem("network"); // clear solana network
 };
+
+export const DRIP_PAGE = "https://drip.haus/itheum";
 
 export const printPrice = (price: number, token: string): string => {
   return price <= 0 ? "FREE" : `${convertToLocalString(price)} ${token}`;
@@ -360,9 +363,10 @@ export const getBondsForOffers = async (offers: Offer[]): Promise<ExtendedOffer[
 };
 
 export const settingLivelinessScore = async (tokenIdentifier?: string, unbondTimestamp?: number, lockPeriod?: number): Promise<number | undefined> => {
-  const bondingContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   try {
     if (tokenIdentifier) {
+      // multiversX only
+      const bondingContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
       const periodOfBond = await bondingContract.viewBonds([tokenIdentifier]);
       const newDate = new Date();
       const currentTimestamp = Math.floor(newDate.getTime() / 1000);

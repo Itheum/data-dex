@@ -54,11 +54,11 @@ import {
   transformDescription,
   viewDataDisabledMessage,
 } from "libs/utils";
+import { isNFMeIDVaultClassDataNFT } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import AccessDataStreamModal from "./AccessDatastreamModal";
 import BurnDataNFTModal from "./BurnDataNFTModal";
 import ListDataNFTModal from "../ListDataNFTModal";
-import { isNFMeIDVaultClassDataNFT } from "libs/utils";
 
 export default function WalletDataNFTMX(item: any) {
   const { chainID, network } = useGetNetworkConfig();

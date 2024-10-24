@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { NftMedia } from "libs/types";
 import Card3DAnimation from "./Card3DAnimation";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 interface NftMediaComponentProps {
   imageUrls?: string[];
@@ -48,6 +49,7 @@ const NftMediaComponent: React.FC<NftMediaComponentProps> = (props) => {
   const [nextImageIndex, setNextImageIndex] = useState(0);
   const makeFlip = nextImageIndex !== imageIndex;
   const isMobile = window.innerWidth <= 480;
+  const { connected: isConnectedOnSol } = useWallet();
 
   useEffect(() => {
     if (autoSlide && media.length > 1 && !switchedImageManually) {
@@ -78,7 +80,7 @@ const NftMediaComponent: React.FC<NftMediaComponentProps> = (props) => {
 
   return (
     <Container justifyContent="center" mt="0" h={imageHeight ? String(transformSizeInNumber(imageHeight) + 25) + "px" : "290px"} position="relative">
-      <Box style={{ marginTop: marginTop }} alignItems={"center"} justifyContent={"center"}>
+      <Box style={{ marginTop: marginTop }} rounded={"3xl"} alignItems={"center"} justifyContent={"center"}>
         <Flex justifyContent={{ base: "center" }} alignItems={"center"} flexDirection="column">
           <Flex justifyContent="center">
             <Card3DAnimation onClick={() => goToNextImage(true)}>
@@ -195,12 +197,12 @@ const NftMediaComponent: React.FC<NftMediaComponentProps> = (props) => {
             top: "0",
             bottom: "0",
             right: "0",
-            left: "0",
+            left: "-1px",
             height: "236px",
             width: "236px",
             marginInlineStart: "1.2rem",
             marginInlineEnd: "1rem",
-            borderRadius: "32px",
+            borderRadius: "6px",
             cursor: "pointer",
             opacity: 0,
           }}
@@ -220,10 +222,9 @@ const NftMediaComponent: React.FC<NftMediaComponentProps> = (props) => {
           }
           whileHover={{ opacity: 1, backdropFilter: "blur(1px)", backgroundColor: "#1b1b1ba0" }}
           transition={isMobile ? { duration: 1.2 } : { duration: 0.3 }}>
-          <Text as="div" border="1px solid" borderColor="teal.400" borderRadius="5px" variant="outline" w={20} h={8} textAlign="center" mx="20">
-            <Text as="p" mt={1} fontWeight="400" textColor="white">
-              Details
-            </Text>
+          <Text border="1px solid" borderColor="teal.400" borderRadius="5px" w={"140px"} fontWeight="400" textColor="white" textAlign={"center"} mx={"auto"}>
+            {/* {isConnectedOnSol ? "View on Explorer" : "Details"} */}
+            Details
           </Text>
         </motion.button>
       )}

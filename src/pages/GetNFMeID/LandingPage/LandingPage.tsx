@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Button, Image, Heading, Link, Flex, Text, Spacer, useColorMode } from "@chakra-ui/react";
+import { Box, Button, Image, Heading, Link, Flex, Text, Spacer, useColorMode, Toast } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useNavigate } from "react-router-dom";
 import darkNfMeIDVaultHero from "assets/img/landing/nfme/dark-hero-nfme-landing-page.png";
@@ -7,11 +7,15 @@ import liteNfMeIDVaultHero from "assets/img/landing/nfme/lite-hero-nfme-landing-
 import mvxIcon from "assets/img/mx-logo.png";
 import solIcon from "assets/img/sol-logo.png";
 import { gtagGo } from "libs/utils";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useToast } from "@chakra-ui/react";
 
 export const LandingPage = ({ onShowConnectWalletModal }: { onShowConnectWalletModal?: any }) => {
   const { colorMode } = useColorMode();
   const { address: mxAddress } = useGetAccountInfo();
   const navigate = useNavigate();
+  const { connected } = useWallet();
+  const toast = useToast();
 
   return (
     <Box mb="10">
@@ -107,7 +111,14 @@ export const LandingPage = ({ onShowConnectWalletModal }: { onShowConnectWalletM
                 if (mxAddress) {
                   navigate("/mintdata?launchTemplate=nfmeidvault");
                 } else {
-                  onShowConnectWalletModal("mvx", "/mintdata?launchTemplate=nfmeidvault");
+                  toast({
+                    title: "Action Required",
+                    description: "Please log out from Solana and login to MultiversX blockchain to mint your NFMe ID Vault.",
+                    status: "info",
+                    duration: 5000,
+                    colorScheme: "teal",
+                    isClosable: true,
+                  });
                 }
               }}>
               Mint Your NFMe ID Vault on MultiversX
@@ -118,22 +129,32 @@ export const LandingPage = ({ onShowConnectWalletModal }: { onShowConnectWalletM
             <Box h="100px">
               <Image m="auto" mt="10px" boxSize="73px" height="auto" src={solIcon} alt="Solana " borderRadius="lg" />
             </Box>
-            <Text fontWeight="bold">Coming Very Soon to Solana</Text>
+            <Text fontWeight="bold">Live Now on Solana!</Text>
             <Spacer />
             <Button
               as={Link}
               m="auto"
               colorScheme="teal"
-              variant="outline"
+              variant="solid"
               px={7}
               py={6}
               rounded="lg"
               onClick={() => {
                 gtagGo("nfm", "mint", "sol");
-              }}
-              href="https://docs.google.com/forms/d/e/1FAIpQLScpguzOBjyQBj2iDzaI2E0wN9SIAQGoS92FPDM9qkk8B-rzFA/viewform"
-              isExternal>
-              Claim NFMe ID NFT Airdrop on Solana
+                if (connected) {
+                  navigate("/mintdata?launchTemplate=nfmeidvault");
+                } else {
+                  toast({
+                    title: "Action Required",
+                    description: "Please log out from MultiversX and login to Solana blockchain to mint your NFMe ID Vault.",
+                    status: "info",
+                    duration: 5000,
+                    colorScheme: "teal",
+                    isClosable: true,
+                  });
+                }
+              }}>
+              Mint Your NFMe ID Vault on Solana{" "}
             </Button>
           </Flex>
         </Flex>

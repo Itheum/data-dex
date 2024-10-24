@@ -33,6 +33,7 @@ import { contractsForChain } from "libs/config";
 import { labels } from "libs/language";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
 import { formatNumberToShort } from "libs/utils";
+import { useNftsStore } from "store/nfts";
 
 type CompensationNftsType = {
   nonce: number;
@@ -55,7 +56,7 @@ export const BondingCards: React.FC = () => {
   DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
   const [bondingOffers, setBondingOffers] = useState<Array<DataNft>>([]);
   const [dataNftsWithNoBond, setDataNftsWithNoBond] = useState<Array<DataNft>>([]);
-
+  const { mvxNfts } = useNftsStore();
   const [contractConfiguration, setContractConfiguration] = useState<BondConfiguration>({
     contractState: 0,
     bondPaymentTokenIdentifier: "",
@@ -94,7 +95,7 @@ export const BondingCards: React.FC = () => {
       setAllInfoLoading(true);
 
       // get all the users data NFTs (so we know which ones they withdrew)
-      const allMyDataNFTs = await getOnChainNFTs();
+      const allMyDataNFTs = mvxNfts;
       const allMyDataNFTsWithBalance = allMyDataNFTs.map((nft) => new DataNft({ ...nft, balance: nft.balance ? nft.balance : 1 }));
 
       const itemsForCompensation: Array<CompensationNftsType> = [];
@@ -105,13 +106,13 @@ export const BondingCards: React.FC = () => {
 
       let bondedDataNfts: DataNft[] = [];
 
-      console.log("S: myBonds ---->");
-      console.log(myBonds);
+      // console.log("S: myBonds ---->");
+      // console.log(myBonds);
 
       // make a list of nonces that are in bonds so we can filter out allMyDataNFTsWithBalance
       const bondsNonceList = myBonds.map((i: any) => i.nonce);
-      console.log(bondsNonceList);
-      console.log("E: myBonds ---->");
+      // console.log(bondsNonceList);
+      // console.log("E: myBonds ---->");
 
       // a list of Data NFTs the user never put a bond on OR they withdrew the bond and "exited"
       const myCreatedDataNFTsThatHaveNoBonds = allMyDataNFTsWithBalance
@@ -139,13 +140,13 @@ export const BondingCards: React.FC = () => {
       setContractBonds(myBonds.reverse());
       setAllCompensation(compensation.reverse());
 
-      console.log("S: bondedDataNfts ---->");
-      console.log(bondedDataNfts);
-      console.log("E: bondedDataNfts ---->");
+      // console.log("S: bondedDataNfts ---->");
+      // console.log(bondedDataNfts);
+      // console.log("E: bondedDataNfts ---->");
 
-      console.log("S: myCreatedDataNFTsThatHaveNoBonds ---->");
-      console.log(myCreatedDataNFTsThatHaveNoBonds);
-      console.log("E: myCreatedDataNFTsThatHaveNoBonds ---->");
+      // console.log("S: myCreatedDataNFTsThatHaveNoBonds ---->");
+      // console.log(myCreatedDataNFTsThatHaveNoBonds);
+      // console.log("E: myCreatedDataNFTsThatHaveNoBonds ---->");
 
       setAllInfoLoading(false);
     })();
@@ -170,7 +171,7 @@ export const BondingCards: React.FC = () => {
   };
 
   const renewBond = async (tokenIdentifier: string, nonce: number) => {
-    console.log(tokenIdentifier, nonce);
+    // console.log(tokenIdentifier, nonce);
     const tx = bondContract.renew(new Address(mxAddress), tokenIdentifier, nonce);
     tx.setGasLimit(100000000);
     await sendTransactions({
@@ -186,14 +187,14 @@ export const BondingCards: React.FC = () => {
     });
   };
 
-  const getOnChainNFTs = async () => {
-    const dataNftsT: DataNft[] = await getNftsOfACollectionForAnAddress(
-      mxAddress,
-      contractsForChain(chainID).dataNftTokens.map((v) => v.id),
-      chainID
-    );
-    return dataNftsT;
-  };
+  // const getOnChainNFTs = async () => {
+  //   const dataNftsT: DataNft[] = await getNftsOfACollectionForAnAddress(
+  //     mxAddress,
+  //     contractsForChain(chainID).dataNftTokens.map((v) => v.id),
+  //     chainID
+  //   );
+  //   return dataNftsT;
+  // };
 
   return (
     <Flex width="100%" flexWrap="wrap" gap={7} px={{ base: 0, md: 12 }} mt={10}>

@@ -38,9 +38,11 @@ export const LivelinessStaking: React.FC = () => {
   const [combinedBondsStaked, setCombinedBondsStaked] = useState<number>(0);
   const [rewardApr, setRewardApr] = useState<number>(0);
   const [maxApr, setMaxApr] = useState<number>(0);
+
   const [accumulatedRewards, setAccumulatedRewards] = useState<number>(0);
   const [globalTotalBond, setGlobalTotalBond] = useState<number>(0);
   const [globalRewardsPerBlock, setGlobalRewardsPerBlock] = useState<number>(0);
+
   const [nfmeId, setNfmeId] = useState<DataNft | undefined>(undefined);
   const [nfmeIdBond, setNfmeIdBond] = useState<Bond>();
   const [topUpItheumValue, setTopUpItheumValue] = useState<number>(0);
@@ -103,11 +105,11 @@ export const LivelinessStaking: React.FC = () => {
       const rewardPerYear = localRewardsPerBlock * blockPerYear;
       const calculatedRewardApr = Math.floor((rewardPerYear / combinedBondsStaked) * 10000) / 100;
 
-      console.log("=======================");
-      console.log("globalTotalBond :", globalTotalBond);
-      console.log("calculatedRewardApr :", calculatedRewardApr);
-      console.log("maxApr :", maxApr);
-      console.log("=======================");
+      // console.log("=======================");
+      // console.log("globalTotalBond :", globalTotalBond);
+      // console.log("calculatedRewardApr :", calculatedRewardApr);
+      // console.log("maxApr :", maxApr);
+      // console.log("=======================");
 
       if (maxApr === 0) {
         setRewardApr(calculatedRewardApr);

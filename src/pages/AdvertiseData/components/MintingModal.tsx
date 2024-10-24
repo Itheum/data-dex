@@ -31,6 +31,7 @@ import {
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { useNavigate } from "react-router-dom";
 import NftMediaComponent from "components/NftMediaComponent";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 type MintingModalProps = {
   isOpen: boolean;
@@ -49,6 +50,8 @@ type MintingModalProps = {
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   closeProgressModal: () => void;
   onChainMint: () => void;
+  bondingTxHasFailed?: boolean;
+  sendSolanaBondingTx?: () => void;
 };
 
 export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
@@ -69,6 +72,8 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
     setIsOpen,
     closeProgressModal,
     onChainMint,
+    bondingTxHasFailed,
+    sendSolanaBondingTx,
   } = props;
   const { colorMode } = useColorMode();
   const navigate = useNavigate();
@@ -78,7 +83,7 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
   const { hasPendingTransactions } = useGetPendingTransactions();
   // some local state for better UX, i.e. to not sure the mint button once clicked (using only hasPendingTransactions has some delay and button flickers)
   const [localMintJustClicked, setLocalMintJustClicked] = useState(false);
-
+  const { connected: isSolWalletConnected } = useWallet();
   useEffect(() => {
     setLocalMintJustClicked(false);
   }, []);
@@ -121,13 +126,11 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
             </HStack>
 
             <HStack>
-              {(!saveProgress.s4 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
-              <VStack>
-                <Text fontSize="lg">
-                  Minting your new {isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} on the blockchain{" "}
-                  {isAutoVault ? "& setting it as your primary NFMe ID Vault" : ""}
-                </Text>
-              </VStack>
+              <Box w={6}>{(!saveProgress.s4 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}</Box>
+              <Text fontSize="lg">
+                Minting your new {isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} on the blockchain{" "}
+                {isAutoVault ? "& setting it as your primary NFMe ID Vault" : ""}
+              </Text>
             </HStack>
 
             {!mintingSuccessful ? (
@@ -202,11 +205,11 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
 
             {isAutoVault ? (
               <>
-                {mintingSuccessful && makePrimaryNFMeIdSuccessful && (
+                {mintingSuccessful && makePrimaryNFMeIdSuccessful ? (
                   <Box textAlign="center" mt="2">
                     <Alert status="success">
                       <Text fontSize="lg" colorScheme="teal">
-                        Success! {isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} Minted and set as your NFMe ID Vault.
+                        Success! {isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} Minted and {isSolWalletConnected ? "bonded" : "set as your NFMe ID Vault"}.
                       </Text>
                     </Alert>
                     <HStack mt="4">
@@ -230,6 +233,23 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
                       </Button>
                     </HStack>
                   </Box>
+                ) : (
+                  mintingSuccessful &&
+                  bondingTxHasFailed && (
+                    <Box textAlign="center" mt={4}>
+                      <Text fontSize="lg" colorScheme="teal" color="teal.200" mb={2}>
+                        Note: You can only complete the bonding step here.
+                      </Text>
+                      <Button
+                        colorScheme="teal"
+                        variant="solid"
+                        onClick={() => {
+                          sendSolanaBondingTx ? sendSolanaBondingTx() : console.error("Retry is not possible.");
+                        }}>
+                        Retry Bonding
+                      </Button>
+                    </Box>
+                  )
                 )}
               </>
             ) : (

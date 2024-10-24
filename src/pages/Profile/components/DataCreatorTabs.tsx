@@ -44,6 +44,7 @@ import { DataNftMarketContract } from "../../../libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { backendApi, createNftId, sleep } from "../../../libs/utils";
 import { useMarketStore } from "../../../store";
+import { useNftsStore } from "store/nfts";
 
 interface PropsType {
   tabState: number;
@@ -90,6 +91,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
   const { isOpen: isOpenListingDetails, onOpen: onOpenListingDetails, onClose: onCloseListingDetails } = useDisclosure();
   const { colorMode } = useColorMode();
+  const { mvxNfts } = useNftsStore();
 
   const profileTabs = [
     {
@@ -124,14 +126,14 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
     },
   ];
 
-  const getOnChainNFTs = async () => {
-    const dataNftsT: DataNft[] = await getNftsOfACollectionForAnAddress(
-      address,
-      contractsForChain(chainID).dataNftTokens.map((v) => v.id),
-      chainID
-    );
-    return dataNftsT;
-  };
+  // const getOnChainNFTs = async () => {
+  //   const dataNftsT: DataNft[] = await getNftsOfACollectionForAnAddress(
+  //     address,
+  //     contractsForChain(chainID).dataNftTokens.map((v) => v.id),
+  //     chainID
+  //   );
+  //   return dataNftsT;
+  // };
 
   useEffect(() => {
     if (!profileAddress || hasPendingTransactions) return;
@@ -141,7 +143,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       try {
         // start loading offers
         setIsLoadingFirst(true);
-        const _dataNfts = await getOnChainNFTs();
+        const _dataNfts = mvxNfts; ///TODO CHECKawait getOnChainNFTs();
         setDataNft(_dataNfts);
 
         const backendApiRoute = backendApi(chainID);

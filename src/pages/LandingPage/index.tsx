@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Center, Flex, Heading, Image, Text, useColorMode } from "@chakra-ui/react";
+import { useWallet } from "@solana/wallet-adapter-react";
 import imgHeroDataNFTs from "assets/img/landing/hero-data-nfts.png";
 import imgHeroMetaverseMask from "assets/img/landing/hero-metaverse-mask.png";
 import NewCreatorCTA from "components/NewCreatorCTA";
@@ -13,6 +14,7 @@ import VolumesDataNfts from "pages/Home/components/VolumesDataNfts";
 const LandingPage = () => {
   const { colorMode } = useColorMode();
   let containerShadow = "rgb(255 255 255 / 16%) 0px 10px 36px 0px, rgb(255 255 255 / 6%) 0px 0px 0px 1px";
+  const { connected: isSolWalletConnected } = useWallet();
 
   if (colorMode === "light") {
     containerShadow = "rgb(0 0 0 / 16%) 0px 10px 36px 0px, rgb(0 0 0 / 6%) 0px 0px 0px 1px";
@@ -62,7 +64,7 @@ const LandingPage = () => {
             <NFMeIdCTA />
           </Box>
 
-          <Box pt={{ base: "18", "2xl": "10" }} pb="10" mx={{ base: "10px", md: "10px" }} mt="10">
+          <Box pt={{ base: "0", "2xl": "10" }} pb="10" mx={{ base: "0", md: "10px" }} mt="10">
             <FeaturedDataNFTListings hideCollapseOption={true} />
           </Box>
 
@@ -70,13 +72,18 @@ const LandingPage = () => {
             <NewCreatorCTA />
           </Box>
 
-          <Box pt={{ base: "20", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
-            <VolumesDataNfts />
-          </Box>
-
-          <Box pt={{ base: "20", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
-            <RecentDataNFTs headingText="Recent Data NFTs" />
-          </Box>
+          {isSolWalletConnected ? (
+            <> </>
+          ) : (
+            <>
+              <Box pt={{ base: "20", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
+                <VolumesDataNfts />
+              </Box>
+              <Box pt={{ base: "20", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
+                <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" />
+              </Box>
+            </>
+          )}
 
           <Box mx={{ base: 8, "lg": 20 }} py="10">
             <Heading as="h2" size="lg" fontFamily="Clash-Medium" textAlign={["center", "initial"]}>
