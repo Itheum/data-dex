@@ -29,9 +29,7 @@ import NftMediaComponent from "components/NftMediaComponent";
 import { NoDataHere } from "components/Sections/NoDataHere";
 import { ConfirmationDialog } from "components/UtilComps/ConfirmationDialog";
 import { IS_DEVNET } from "libs/config";
-import { contractsForChain } from "libs/config";
 import { labels } from "libs/language";
-import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
 import { formatNumberToShort } from "libs/utils";
 import { useNftsStore } from "store/nfts";
 
@@ -41,7 +39,6 @@ type CompensationNftsType = {
 };
 
 export const BondingCards: React.FC = () => {
-  const { chainID } = useGetNetworkConfig();
   const { colorMode } = useColorMode();
   const { address: mxAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -51,9 +48,15 @@ export const BondingCards: React.FC = () => {
   const [nfmeIdNonce, setNfmeIdNonce] = useState<number>(0);
   const [errDataNFTStreamGeneric, setErrDataNFTStreamGeneric] = useState<any>(null);
   const [allInfoLoading, setAllInfoLoading] = useState<boolean>(true);
-  const [withdrawBondConfirmationWorkflow, setWithdrawBondConfirmationWorkflow] = useState<any>(null);
+  const [withdrawBondConfirmationWorkflow, setWithdrawBondConfirmationWorkflow] = useState<{
+    collection: string;
+    nonce: number;
+    bondExpired: boolean;
+    amountAfterPenalty?: any;
+  }>();
 
   DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
+
   const [bondingOffers, setBondingOffers] = useState<Array<DataNft>>([]);
   const [dataNftsWithNoBond, setDataNftsWithNoBond] = useState<Array<DataNft>>([]);
   const { mvxNfts } = useNftsStore();
@@ -97,22 +100,15 @@ export const BondingCards: React.FC = () => {
       // get all the users data NFTs (so we know which ones they withdrew)
       const allMyDataNFTs = mvxNfts;
       const allMyDataNFTsWithBalance = allMyDataNFTs.map((nft) => new DataNft({ ...nft, balance: nft.balance ? nft.balance : 1 }));
-
       const itemsForCompensation: Array<CompensationNftsType> = [];
       const contractConfigurationRequest = await bondContract.viewContractConfiguration();
-
       const contractBondsReq = await bondContract.viewAllBonds();
       const myBonds = contractBondsReq.filter((bond) => bond.address === mxAddress);
 
       let bondedDataNfts: DataNft[] = [];
 
-      // console.log("S: myBonds ---->");
-      // console.log(myBonds);
-
       // make a list of nonces that are in bonds so we can filter out allMyDataNFTsWithBalance
       const bondsNonceList = myBonds.map((i: any) => i.nonce);
-      // console.log(bondsNonceList);
-      // console.log("E: myBonds ---->");
 
       // a list of Data NFTs the user never put a bond on OR they withdrew the bond and "exited"
       const myCreatedDataNFTsThatHaveNoBonds = allMyDataNFTsWithBalance
@@ -140,14 +136,6 @@ export const BondingCards: React.FC = () => {
       setContractBonds(myBonds.reverse());
       setAllCompensation(compensation.reverse());
 
-      // console.log("S: bondedDataNfts ---->");
-      // console.log(bondedDataNfts);
-      // console.log("E: bondedDataNfts ---->");
-
-      // console.log("S: myCreatedDataNFTsThatHaveNoBonds ---->");
-      // console.log(myCreatedDataNFTsThatHaveNoBonds);
-      // console.log("E: myCreatedDataNFTsThatHaveNoBonds ---->");
-
       setAllInfoLoading(false);
     })();
   }, [hasPendingTransactions]);
@@ -171,7 +159,6 @@ export const BondingCards: React.FC = () => {
   };
 
   const renewBond = async (tokenIdentifier: string, nonce: number) => {
-    // console.log(tokenIdentifier, nonce);
     const tx = bondContract.renew(new Address(mxAddress), tokenIdentifier, nonce);
     tx.setGasLimit(100000000);
     await sendTransactions({
@@ -182,19 +169,11 @@ export const BondingCards: React.FC = () => {
   const withdrawBonds = async (tokenIdentifier: string, nonce: number) => {
     const tx = bondContract.withdraw(new Address(mxAddress), tokenIdentifier, nonce);
     tx.setGasLimit(100000000);
+
     await sendTransactions({
       transactions: [tx],
     });
   };
-
-  // const getOnChainNFTs = async () => {
-  //   const dataNftsT: DataNft[] = await getNftsOfACollectionForAnAddress(
-  //     mxAddress,
-  //     contractsForChain(chainID).dataNftTokens.map((v) => v.id),
-  //     chainID
-  //   );
-  //   return dataNftsT;
-  // };
 
   return (
     <Flex width="100%" flexWrap="wrap" gap={7} px={{ base: 0, md: 12 }} mt={10}>
@@ -304,7 +283,15 @@ export const BondingCards: React.FC = () => {
                                     new BigNumber(0)
                                 }
                                 onClick={() => {
-                                  setWithdrawBondConfirmationWorkflow({ collection: dataNft.collection, nonce: dataNft.nonce });
+                                  setWithdrawBondConfirmationWorkflow({
+                                    collection: dataNft.collection,
+                                    nonce: dataNft.nonce,
+                                    bondExpired: false,
+                                    amountAfterPenalty: calculateRemainedAmountAfterPenalty(
+                                      BigNumber(contractBond.remainingAmount),
+                                      BigNumber(contractBond.bondAmount)
+                                    ),
+                                  });
                                 }}>
                                 Withdraw Bond
                               </Button>
@@ -316,7 +303,7 @@ export const BondingCards: React.FC = () => {
                                 fontWeight="400"
                                 isDisabled={mxAddress === "" || hasPendingTransactions}
                                 onClick={() => {
-                                  setWithdrawBondConfirmationWorkflow({ collection: dataNft.collection, nonce: dataNft.nonce });
+                                  setWithdrawBondConfirmationWorkflow({ collection: dataNft.collection, nonce: dataNft.nonce, bondExpired: true });
                                 }}>
                                 Withdraw Bond
                               </Button>
@@ -429,23 +416,42 @@ export const BondingCards: React.FC = () => {
       {/* Confirmation Dialogs for actions that need explanation */}
       <>
         <ConfirmationDialog
-          isOpen={withdrawBondConfirmationWorkflow !== null}
+          isOpen={withdrawBondConfirmationWorkflow !== undefined}
           onCancel={() => {
-            setWithdrawBondConfirmationWorkflow(null);
+            setWithdrawBondConfirmationWorkflow(undefined);
           }}
           onProceed={() => {
-            withdrawBonds(withdrawBondConfirmationWorkflow.collection, withdrawBondConfirmationWorkflow.nonce);
-            setWithdrawBondConfirmationWorkflow(null);
+            if (withdrawBondConfirmationWorkflow) {
+              withdrawBonds(withdrawBondConfirmationWorkflow.collection, withdrawBondConfirmationWorkflow.nonce);
+              setWithdrawBondConfirmationWorkflow(undefined);
+            }
           }}
           bodyContent={
             <>
               <Text fontSize="sm" pb={3} opacity=".8">
                 {`Collection: ${withdrawBondConfirmationWorkflow?.collection}, Nonce: ${withdrawBondConfirmationWorkflow?.nonce}`}
               </Text>
-              <Text mb="5">There are a few items to consider before you proceed with the bond withdraw:</Text>
-              <UnorderedList mt="2" p="2">
-                <ListItem>Withdrawing before bond expiry incurs a penalty; no penalty after expiry, and you get the full amount back.</ListItem>
-                <ListItem>Penalties are non-refundable.</ListItem>
+              {(!withdrawBondConfirmationWorkflow?.bondExpired && (
+                <Text color="indianred" fontWeight="bold" fontSize="lg" pb={3} opacity="1">
+                  Amount receivable after penalty: {withdrawBondConfirmationWorkflow?.amountAfterPenalty} ITHEUM
+                </Text>
+              )) || (
+                <Text color="teal.200" fontWeight="bold" fontSize="lg" pb={3} opacity="1">
+                  As your bond has expired, so you can withdraw without any penalty.
+                </Text>
+              )}
+              <Text mb="2">There are a few items to consider before you proceed with the bond withdraw:</Text>
+              <UnorderedList p="2">
+                {!withdrawBondConfirmationWorkflow?.bondExpired && (
+                  <ListItem>
+                    Withdrawing before bond expiry incurs a penalty of{" "}
+                    <Text as="span" fontSize="md" color="indianred">
+                      {contractConfiguration.withdrawPenalty / 100}%
+                    </Text>
+                    ; no penalty after expiry, and you get the full amount back.
+                  </ListItem>
+                )}
+                {!withdrawBondConfirmationWorkflow?.bondExpired && <ListItem>Penalties are non-refundable.</ListItem>}
                 <ListItem>After withdrawal, your Liveliness score drops to zero, visible to buyers if your Data NFT is listed.</ListItem>
                 <ListItem>Once withdrawn, you {`can't `}re-bond to regain the Liveliness score or earn staking rewards.</ListItem>
                 <ListItem>If the bond was linked to your Primary NFMe ID Vault, {`you'll`} need to set up a new one as your primary.</ListItem>

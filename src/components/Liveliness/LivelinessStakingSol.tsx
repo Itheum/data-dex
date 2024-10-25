@@ -935,13 +935,11 @@ export const LivelinessStakingSol: React.FC = () => {
             bodyContent={
               <>
                 <Text fontSize="sm" pb={3} opacity=".8">
-                  {`Bond Expired : ${withdrawBondConfirmationWorkflow?.bondExpired.toString()}`}
-
                   {`Collection: ${withdrawBondConfirmationWorkflow?.bondId},   Bond Amount: ${withdrawBondConfirmationWorkflow?.bondAmount}`}
                 </Text>
                 {(!withdrawBondConfirmationWorkflow?.bondExpired && (
                   <Text color="indianred" fontWeight="bold" fontSize="lg" pb={3} opacity="1">
-                    {`Bond amount to receive: ${(
+                    {`Amount receivable after penalty: ${(
                       (withdrawBondConfirmationWorkflow?.bondAmount ?? 0) -
                       ((withdrawBondConfirmationWorkflow?.bondAmount ?? 0) * withdrawPenalty) / 100
                     ).toFixed(2)}`}
@@ -951,8 +949,8 @@ export const LivelinessStakingSol: React.FC = () => {
                     As your bond has expired, so you can withdraw without any penalty.
                   </Text>
                 )}
-                <Text mb="5">There are a few items to consider before you proceed with the bond withdraw:</Text>
-                <UnorderedList mt="2" p="2">
+                <Text mb="2">There are a few items to consider before you proceed with the bond withdraw:</Text>
+                <UnorderedList p="2">
                   {!withdrawBondConfirmationWorkflow?.bondExpired && (
                     <ListItem>
                       Withdrawing before bond expiry incurs a penalty of{" "}
