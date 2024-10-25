@@ -384,7 +384,7 @@ export const nfMeIDVaultConfig = {
   "shouldAutoVault": true,
   additionalInformation: {
     "tokenName": "NFMeIDG1",
-    "programName": "NFMe ID",
+    "programName": "NFMe ID Avatar",
     "dataStreamURL_PRD": "https://api.itheumcloud.com/datadexapi/nfmeIdVault/dataStream?dmf-allow-http403=1",
     "dataStreamURL": "https://api.itheumcloud-stg.com/datadexapi/nfmeIdVault/dataStream?dmf-allow-http403=1",
     "dataPreviewURL": "https://api.itheumcloud.com/datadexapi/nfmeIdVault/previewStream",

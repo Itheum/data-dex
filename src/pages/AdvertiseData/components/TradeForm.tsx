@@ -422,6 +422,23 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   }, [solanaBondTransaction]);
 
   function shouldMintYourDataNftBeDisabled(): boolean | undefined {
+    console.log(
+      !isValid ||
+        !readTermsChecked ||
+        (!solPubKey && !readAntiSpamFeeChecked) ||
+        !readLivelinessBonding ||
+        (!solPubKey ? itheumBalance < antiSpamTax + bondingAmount : itheumBalance < bondingAmount)
+    );
+
+    console.log("isValid ", isValid);
+    console.log("readTermsChecked ", readTermsChecked);
+    console.log("(!solPubKey && !readAntiSpamFeeChecked) ", !solPubKey && !readAntiSpamFeeChecked);
+    console.log("!readLivelinessBonding ", !readLivelinessBonding);
+    console.log(
+      "(!solPubKey ? itheumBalance < antiSpamTax + bondingAmount : itheumBalance < bondingAmount) ",
+      !solPubKey ? itheumBalance < antiSpamTax + bondingAmount : itheumBalance < bondingAmount
+    );
+
     return (
       !isValid ||
       !readTermsChecked ||
