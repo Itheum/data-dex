@@ -53,7 +53,7 @@ export const TradeData: React.FC = () => {
     <Box>
       <Stack mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
         <Heading size="xl" fontFamily="Clash-Medium">
-          Mint Data NFTs solConnected = {solConnected.toString()}
+          Mint Data NFTs
         </Heading>
         <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light">
           Mint your Data Streams or Data Assets as Data NFTs and list and trade them in the peer-to-peer Data NFT Marketplace.

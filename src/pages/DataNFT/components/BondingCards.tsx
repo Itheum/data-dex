@@ -454,7 +454,7 @@ export const BondingCards: React.FC = () => {
                 {!withdrawBondConfirmationWorkflow?.bondExpired && <ListItem>Penalties are non-refundable.</ListItem>}
                 <ListItem>After withdrawal, your Liveliness score drops to zero, visible to buyers if your Data NFT is listed.</ListItem>
                 <ListItem>Once withdrawn, you {`can't `}re-bond to regain the Liveliness score or earn staking rewards.</ListItem>
-                <ListItem>If the bond was linked to your Primary NFMe ID Vault, {`you'll`} need to set up a new one as your primary.</ListItem>
+                <ListItem>If the bond was linked to your Primary NFMe ID, {`you'll`} need to set up a new one as your primary.</ListItem>
               </UnorderedList>
 
               <Text mt="5">With the above in mind, are your SURE you want to proceed and Withdraw Bond?</Text>

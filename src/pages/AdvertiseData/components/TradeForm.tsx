@@ -63,6 +63,7 @@ import extraAssetDemo from "assets/img/extra-asset-demo.gif";
 import darkNFMeIDHero from "assets/img/nfme/dark-nfmeid-vault-mint-page-hero.png";
 import liteNFMeIDHero from "assets/img/nfme/lite-nfmeid-vault-mint-page-hero.png";
 import ChainSupportedInput from "components/UtilComps/ChainSupportedInput";
+import { ConfirmationDialog } from "components/UtilComps/ConfirmationDialog";
 import { PopoverTooltip } from "components/UtilComps/PopoverTooltip";
 import { useNetworkConfiguration } from "contexts/sol/SolNetworkConfigurationProvider";
 import { IS_DEVNET, MENU, PRINT_UI_DEBUG_PANELS } from "libs/config";
@@ -160,6 +161,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
   const updateSolNfts = useNftsStore((state) => state.updateSolNfts);
   const [bondingTxHasFailed, setBondingTxHasFailed] = useState<boolean>(false);
+  const [solNFMeIDMintConfirmationWorkflow, setSolNFMeIDMintConfirmationWorkflow] = useState<boolean>(false);
+
   // S: React hook form + yup integration ---->
   // Declaring a validation schema for the form with the validation needed
   let preSchema = {
@@ -333,7 +336,16 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
     // append the imgswapsalt to make the image unique to the user
     const userAddress = solPubKey ? solPubKey?.toBase58() : mxAddress;
-    const imgSwapSalt = `&imgswapsalt=${userAddress.substring(0, 6)}-${userAddress.slice(-6)}_timestamp_${Date.now()}`;
+
+    // if it's solana then append chain=sol (defaults to MVX)
+    let chainMeta = "";
+
+    if (solPubKey) {
+      chainMeta = "&chain=sol";
+    }
+
+    const imgSwapSalt = `&imgswapsalt=${userAddress.substring(0, 6)}-${userAddress.slice(-6)}_timestamp_${Date.now()}${chainMeta}`;
+
     nfmeIdVaultDataStreamURL = nfmeIdVaultDataStreamURL + imgSwapSalt;
 
     return nfmeIdVaultDataStreamURL;
@@ -341,7 +353,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   // E: React hook form + yup integration ---->
 
   useEffect(() => {
-    // does the user have a primary vault set? (if not and then mint a NFMe, we can auto set it)
+    // does the user have a primary vault set? (if not and then mint a NFMe ID, we can auto set it)
     async function fetchVaultNonce() {
       if (mxAddress) {
         const nonce = await bond.viewAddressVaultNonce(new Address(mxAddress), IS_DEVNET ? dataNftTokenIdentifier.devnet : dataNftTokenIdentifier.mainnet);
@@ -424,7 +436,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       // mint and auto vault is a success
       if (mintingSuccessful && makePrimaryNFMeIdSuccessful) {
         toast({
-          title: 'Success! Data NFT Minted and set as your NFMe ID Vault. Head over to your "Wallet" to view your new NFT',
+          title: 'Success! Data NFT Minted and set as your NFMe ID. Head over to your "Wallet" to view your new NFT',
           status: "success",
           isClosable: true,
         });
@@ -605,7 +617,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       const { sessionId, error } = await sendTransactions({
         transactions: [vaultTx],
         transactionsDisplayInfo: {
-          processingMessage: "Setting as NFMe ID Vault",
+          processingMessage: "Setting as NFMe ID",
           errorMessage: "NFMe ID setting failed :(",
           successMessage: "NFMe ID set successfully!",
         },
@@ -971,7 +983,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     onCancelled: mintTxCancelled,
   });
 
-  // track make primary NFMe ID  TX
+  // track make primary NFMe ID TX
   useTrackTransactionStatus({
     transactionId: makePrimaryNFMeIdSessionId,
     onSuccess: makePrimaryVaultTxSuccess,
@@ -1015,7 +1027,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           <Box>
             <Flex>
               <Box>
-                <Image src={colorMode === "light" ? liteNFMeIDHero : darkNFMeIDHero} alt="What is the NFMe ID Vault?" rounded="lg" />
+                <Image src={colorMode === "light" ? liteNFMeIDHero : darkNFMeIDHero} alt="What is NFMe ID?" rounded="lg" />
               </Box>
             </Flex>
           </Box>
@@ -1063,7 +1075,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               <Box>Royalties: {dataNFTRoyalties} (should be - 2)</Box>
               <Box>Donate %: {donatePercentage} (should be - 0)</Box>
               <Box>Token Name: {dataNFTTokenName} (should be - NFMeIDG1)</Box>
-              <Box>Title: {datasetTitle} (should be - NFMe ID Vault)</Box>
+              <Box>Title: {datasetTitle} (should be - NFMe ID)</Box>
               <Box>Description: {datasetDescription}</Box>
               <Box>Solana BONDING_PROGRAM_ID: {BONDING_PROGRAM_ID}</Box>
             </Alert>
@@ -1480,7 +1492,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 <Highlight
                   query={[`${bondingAmount.toLocaleString()} $ITHEUM`, `${bondingPeriod.toString()} ${amountOfTimeUnit}`, `${maxApy}% Max APR`]}
                   styles={{ px: "2", py: "0", rounded: "full", bg: "teal.200" }}>
-                  {`To mint your ${isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} , you need to bond ${bondingAmount.toLocaleString()} $ITHEUM for ${bondingPeriod.toString()} ${amountOfTimeUnit}. Bonds earn an estimated ${maxApy}% Max APR as staking rewards.`}
+                  {`To mint your ${isNFMeIDMint ? "NFMe ID" : "Data NFT"} , you need to bond ${bondingAmount.toLocaleString()} $ITHEUM for ${bondingPeriod.toString()} ${amountOfTimeUnit}. Bonds earn an estimated ${maxApy}% Max APR as staking rewards.`}
                 </Highlight>
               </Heading>
 
@@ -1717,8 +1729,20 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
             <Flex>
               <ChainSupportedInput feature={MENU.SELL}>
-                <Button mt="10" colorScheme="teal" isLoading={isMintingModalOpen} onClick={dataNFTSellSubmit} isDisabled={shouldMintYourDataNftBeDisabled()}>
-                  {isNFMeIDMint ? "Mint Your NFMe ID Vault" : "Mint Your Data NFT Collection"}
+                <Button
+                  mt="10"
+                  colorScheme="teal"
+                  isLoading={isMintingModalOpen}
+                  onClick={() => {
+                    // For solana, as there are a few steps involved, lets inform the user what to expect next
+                    if (solPubKey) {
+                      setSolNFMeIDMintConfirmationWorkflow(true);
+                    } else {
+                      dataNFTSellSubmit();
+                    }
+                  }}
+                  isDisabled={shouldMintYourDataNftBeDisabled()}>
+                  {isNFMeIDMint ? "Mint Your NFMe ID" : "Mint Your Data NFT Collection"}
                 </Button>
               </ChainSupportedInput>
             </Flex>
@@ -1746,6 +1770,35 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           </>
         )}
       </Box>
+
+      <>
+        {/* Claim Rewards Dialog */}
+        <ConfirmationDialog
+          isOpen={solNFMeIDMintConfirmationWorkflow}
+          onCancel={() => {
+            setSolNFMeIDMintConfirmationWorkflow(false);
+          }}
+          onProceed={() => {
+            setSolNFMeIDMintConfirmationWorkflow(false);
+            dataNFTSellSubmit();
+          }}
+          bodyContent={
+            <>
+              <Text mb="5">1. Sign a message to verify your wallet (no gas required).</Text>
+              <Text mt="5">2. (First-time minting only) Sign a transaction to prepare your Liveliness bond.</Text>
+              <Text mt="5">3. Sign a transaction to bond $ITHEUM and activate your NFMe ID for staking rewards.</Text>
+              <Text fontWeight="bold" fontSize="md" color="teal.200" mt={5}>
+                Please complete all the steps above for a successful NFMe ID mint and bonding.
+              </Text>{" "}
+            </>
+          }
+          dialogData={{
+            title: "Next Steps for Minting Your NFMe ID. ",
+            proceedBtnTxt: "I'm Ready, Let's Mint My NFMe ID",
+            cancelBtnText: "Cancel and Close",
+          }}
+        />
+      </>
     </form>
   );
 };

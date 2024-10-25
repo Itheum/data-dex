@@ -919,6 +919,8 @@ export const LivelinessStakingSol: React.FC = () => {
             cancelBtnText: "Cancel and Close",
           }}
         />
+
+        {/* Withdraw Bond Dialog */}
         <>
           <ConfirmationDialog
             isOpen={withdrawBondConfirmationWorkflow != undefined}

@@ -84,6 +84,7 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
   // some local state for better UX, i.e. to not sure the mint button once clicked (using only hasPendingTransactions has some delay and button flickers)
   const [localMintJustClicked, setLocalMintJustClicked] = useState(false);
   const { connected: isSolWalletConnected } = useWallet();
+
   useEffect(() => {
     setLocalMintJustClicked(false);
   }, []);
@@ -99,7 +100,7 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
     <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false} blockScrollOnMount={false} size={{ base: "sm", md: "lg" }}>
       <ModalOverlay />
       <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-        <ModalHeader>{isNFMeIDMint ? "NFMe ID Vault" : "Data NFT Collection"} Minting Progress</ModalHeader>
+        <ModalHeader>{isNFMeIDMint ? "NFMe ID" : "Data NFT Collection"} Minting Progress</ModalHeader>
         {((!!errDataNFTStreamGeneric && !hasPendingTransactions) || mintingSuccessful) && <ModalCloseButton />}
         <ModalBody pb={6}>
           {/* <Box fontSize=".8rem" rounded="lg" as="div" style={{ "display": "none" }}>
@@ -112,7 +113,7 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
           <Stack spacing={5}>
             <HStack>
               {(!saveProgress.s1 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
-              <Text fontSize="lg">Generating encrypted data stream metadata</Text>
+              <Text fontSize="lg">Generating private and encrypted data stream</Text>
             </HStack>
 
             <HStack>
@@ -128,8 +129,8 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
             <HStack>
               <Box w={6}>{(!saveProgress.s4 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}</Box>
               <Text fontSize="lg">
-                Minting your new {isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} on the blockchain{" "}
-                {isAutoVault ? "& setting it as your primary NFMe ID Vault" : ""}
+                Minting your {isNFMeIDMint ? "NFMe ID" : "Data NFT"} and bonding $ITHEUM to generate your liveliness staking rewards{" "}
+                {isAutoVault && !isSolWalletConnected ? "& setting it as your primary NFMe ID" : ""}
               </Text>
             </HStack>
 
@@ -194,7 +195,7 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
                       onChainMint();
                       setLocalMintJustClicked(true);
                     }}>
-                    Mint and Reveal your New {isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"}!
+                    Mint and Reveal your New {isNFMeIDMint ? "NFMe ID" : "Data NFT"}!
                   </Button>
                   <Text fontSize="sm" colorScheme="teal" align="center" mt={2}>
                     (You will be asked to sign {isAutoVault ? "2 transactions" : "1 transaction"})
@@ -209,7 +210,7 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
                   <Box textAlign="center" mt="2">
                     <Alert status="success">
                       <Text fontSize="lg" colorScheme="teal">
-                        Success! {isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} Minted and {isSolWalletConnected ? "bonded" : "set as your NFMe ID Vault"}.
+                        Success! {isNFMeIDMint ? "NFMe ID" : "Data NFT"} Minted and {isSolWalletConnected ? "bonded" : "set as your NFMe ID"}.
                       </Text>
                     </Alert>
                     <HStack mt="4">
@@ -258,7 +259,7 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
                   <Box textAlign="center" mt="2">
                     <Alert status="success">
                       <Text fontSize="lg" colorScheme="teal">
-                        Success! Your {isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} has been minted.
+                        Success! Your {isNFMeIDMint ? "NFMe ID" : "Data NFT"} has been minted.
                       </Text>
                     </Alert>
                     <HStack mt="4">

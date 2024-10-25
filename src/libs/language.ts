@@ -16,7 +16,7 @@ export const labels = {
   "ERR_MINT_FORM_MINT_AGAIN_WAIT": "(ER-13) You can mint next Data NFT-FT after ",
   "ERR_MINT_FORM_NO_WALLET_CONN": "Connect your wallet to proceed with mint. (ER-14)",
   "ERR_MINT_NO_TX": "Cannot send transaction to the blockchain. (ER-15)",
-  "ERR_SET_AS_PRIMARY_NF_ME_ID_VAULT_TX": "Failed to set Data NFT as a primary NFMe ID Vault. (ER-30)",
+  "ERR_SET_AS_PRIMARY_NF_ME_ID_VAULT_TX": "Failed to set Data NFT as a primary NFMe ID. (ER-30)",
   "ERR_PROCURE_UPTIME_CHECK_DOWN":
     "The Data Marshal is unavailable to provide a status check on this Data Stream URL. This may mean that the Data Stream is unavailable. Do not proceed with the transaction. (ER-16)",
   "ERR_MARKET_REQ_FAIL": "Could not fetch marketplace requirements. (ER-17)",

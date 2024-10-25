@@ -251,7 +251,7 @@ export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
               <Box w={[tileBoxW, "initial"]} border="1px solid transparent" borderColor="#00C79740" borderRadius="16px" m={{ base: "auto", md: "initial" }}>
                 <Stack p="5" h={"430px"} alignItems="center">
                   <Heading size="md" fontFamily="Clash-Medium" pb={2}>
-                    NFMe ID Vault
+                    NFMe ID
                   </Heading>
                   <Spacer />
                   <NftMediaComponent imageUrls={[myNFMe]} imageHeight="200px" imageWidth="200px" borderRadius="md" shouldDisplayArrows={false} />
@@ -266,7 +266,7 @@ export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
                       onClick={() => {
                         navigate("/mintdata?launchTemplate=nfmeidvault");
                       }}>
-                      <Text>Mint Your NFMe ID Vault</Text>
+                      <Text>Mint Your NFMe ID</Text>
                     </Button>
                   </Flex>
                 </Stack>

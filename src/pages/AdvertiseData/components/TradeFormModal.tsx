@@ -202,7 +202,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
               }}
             />
             <Heading as="h4" fontFamily="Clash-Medium" size="lg">
-              {dataToPrefill?.isNFMeID ? "Mint Your NFMe ID Vault" : "Mint Your Data NFT Collection"}
+              {dataToPrefill?.isNFMeID ? "Mint Your NFMe ID" : "Mint Your Data NFT Collection"}
             </Heading>
           </HStack>
         </ModalHeader>

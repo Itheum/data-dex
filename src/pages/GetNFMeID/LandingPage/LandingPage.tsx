@@ -21,7 +21,7 @@ export const LandingPage = ({ onShowConnectWalletModal }: { onShowConnectWalletM
     <Box mb="10">
       <Box width={{ base: "90%", md: "80%" }} textAlign={{ base: "center", md: "center" }} m="auto" pt="10">
         <Heading as="h1" size={{ base: "xl", md: "xl" }} fontFamily="Clash-Regular" mt="5">
-          NFMe ID Vault +{" "}
+          NFMe ID +{" "}
           <Text as="span" color="teal.200">
             Liveliness Reputation Staking
           </Text>{" "}
@@ -36,7 +36,7 @@ export const LandingPage = ({ onShowConnectWalletModal }: { onShowConnectWalletM
               Your Gateway Into the Itheum Protocol{" "}
             </Heading>
             <Text fontSize="lg" mt="1rem">
-              NFMe ID Vaults are special Data NFTs that anyone can mint to prove their on-chain reputation. <br />
+              NFMe IDs are special Data NFTs that anyone can mint to prove their on-chain reputation. <br />
               <br />
               Minting an NFMe ID requires a fully refundable $ITHEUM bond, which signals your on-chain {`'Liveliness'`} reputation. <br />
             </Text>
@@ -113,7 +113,7 @@ export const LandingPage = ({ onShowConnectWalletModal }: { onShowConnectWalletM
                 } else {
                   toast({
                     title: "Action Required",
-                    description: "Please log out from Solana and login to MultiversX blockchain to mint your NFMe ID Vault.",
+                    description: "Please log out from Solana and login to MultiversX blockchain to mint your NFMe ID.",
                     status: "info",
                     duration: 5000,
                     colorScheme: "teal",
@@ -121,7 +121,7 @@ export const LandingPage = ({ onShowConnectWalletModal }: { onShowConnectWalletM
                   });
                 }
               }}>
-              Mint Your NFMe ID Vault on MultiversX
+              Mint Your NFMe ID on MultiversX
             </Button>
           </Flex>
 
@@ -146,7 +146,7 @@ export const LandingPage = ({ onShowConnectWalletModal }: { onShowConnectWalletM
                 } else {
                   toast({
                     title: "Action Required",
-                    description: "Please log out from MultiversX and login to Solana blockchain to mint your NFMe ID Vault.",
+                    description: "Please log out from MultiversX and login to Solana blockchain to mint your NFMe ID.",
                     status: "info",
                     duration: 5000,
                     colorScheme: "teal",
@@ -154,7 +154,7 @@ export const LandingPage = ({ onShowConnectWalletModal }: { onShowConnectWalletM
                   });
                 }
               }}>
-              Mint Your NFMe ID Vault on Solana{" "}
+              Mint Your NFMe ID on Solana{" "}
             </Button>
           </Flex>
         </Flex>
