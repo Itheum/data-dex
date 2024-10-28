@@ -18,7 +18,9 @@ export const getNetworkProvider = (chainID: string) => {
 
   const envValue = import.meta.env[envKey];
   const isApi = envValue && envValue.includes("api");
-  return isApi ? new ApiNetworkProvider(envValue, { timeout: 10000 }) : new ProxyNetworkProvider(envValue || defaultUrl, { timeout: 10000 });
+  return isApi
+    ? new ApiNetworkProvider(envValue, { timeout: uxConfig.mxAPITimeoutMs })
+    : new ProxyNetworkProvider(envValue || defaultUrl, { timeout: uxConfig.mxAPITimeoutMs });
 };
 
 export const getNetworkProviderCodification = (chainID: string) => {
