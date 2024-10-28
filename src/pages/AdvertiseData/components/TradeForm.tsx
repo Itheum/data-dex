@@ -278,9 +278,9 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   };
 
   preSchema = { ...preSchema, ...bondingPreSchema };
-  const amountOfTime = timeUntil(lockPeriod[0].lockPeriod);
 
   const validationSchema = Yup.object().shape(preSchema);
+  const amountOfTime = lockPeriod.length > 0 ? timeUntil(lockPeriod[0]?.lockPeriod) : { count: -1, unit: "-1" };
   // Destructure the methods needed from React Hook Form useForm component
   const {
     control,
@@ -307,8 +307,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 .dividedBy(10 ** 18)
                 .toNumber()
           : -1,
-
-      bondingPeriod: lockPeriod.length > 0 ? amountOfTime.count : -1,
+      bondingPeriod: lockPeriod.length > 0 && amountOfTime?.count !== -1 ? amountOfTime?.count : -1,
     }, // declaring default values for inputs not necessary to declare
     mode: "onChange", // mode stay for when the validation should be applied
     resolver: yupResolver(validationSchema), // telling to React Hook Form that we want to use yupResolver as the validation schema
@@ -1035,7 +1034,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   };
 
   // unit of time for bonding
-  const amountOfTimeUnit = amountOfTime?.unit || "-1";
+  const amountOfTimeUnit = amountOfTime?.unit !== "-1" ? amountOfTime?.unit : "[Failed to fetch - refresh to try again]";
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -1549,7 +1548,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
                   <FormControl isInvalid={!!errors.bondingPeriod}>
                     <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
-                      Bonding Period ({amountOfTime.unit})
+                      Bonding Period ({amountOfTime?.unit !== "-1" ? amountOfTime?.unit : "[Failed to fetch - refresh to try again]"})
                     </Text>
                     <Controller
                       control={control}
