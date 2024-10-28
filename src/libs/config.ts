@@ -81,7 +81,7 @@ export const uxConfig = {
   txConfirmationsNeededLrg: 2,
   dateStr: "DD/MM/YYYY",
   dateStrTm: "DD/MM/YYYY LT",
-  mxAPITimeoutMs: 10000,
+  mxAPITimeoutMs: 20000,
 };
 
 export const CLAIM_TYPES = {
