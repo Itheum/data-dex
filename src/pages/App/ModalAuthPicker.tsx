@@ -174,6 +174,7 @@ function ModalAuthPicker({
           toast({
             title: `${celebrateEmojis[Math.floor(Math.random() * celebrateEmojis.length)]} Welcome New User! Its Great To Have You Here.`,
             status: "success",
+            isClosable: true,
           });
         } else if (userLoggedInCallData?.existingUserAccountLastLoginUpdated) {
           let userMessage = "";
@@ -187,6 +188,7 @@ function ModalAuthPicker({
           toast({
             title: `${celebrateEmojis[Math.floor(Math.random() * celebrateEmojis.length)]} ${userMessage}`,
             status: "success",
+            isClosable: true,
           });
         }
       }

@@ -73,7 +73,7 @@ import { UserDataType } from "libs/MultiversX/types";
 import { BONDING_PROGRAM_ID, SOLANA_EXPLORER_URL } from "libs/Solana/config";
 import { CoreSolBondStakeSc, IDL } from "libs/Solana/CoreSolBondStakeSc";
 import { itheumSolPreaccess } from "libs/Solana/SolViewData";
-import { createBondTransaction, fetchBondingConfig, fetchRewardsConfig, fetchSolNfts } from "libs/Solana/utils";
+import { createBondTransaction, fetchRewardsConfig, fetchSolNfts } from "libs/Solana/utils";
 import { getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "libs/utils";
 import { useAccountStore, useMintStore } from "store";
 import { useNftsStore } from "store/nfts";
@@ -160,7 +160,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const [needsMoreITHEUMToProceed, setNeedsMoreITHEUMToProceed] = useState<boolean>(false);
   const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
   const updateSolNfts = useNftsStore((state) => state.updateSolNfts);
-  const [bondingTxHasFailed, setBondingTxHasFailed] = useState<boolean>(false);
+  const [solBondingTxHasFailed, setSolBondingTxHasFailed] = useState<boolean>(false);
   const [solNFMeIDMintConfirmationWorkflow, setSolNFMeIDMintConfirmationWorkflow] = useState<boolean>(false);
 
   // S: React hook form + yup integration ---->
@@ -421,23 +421,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   }, [solanaBondTransaction]);
 
   function shouldMintYourDataNftBeDisabled(): boolean | undefined {
-    console.log(
-      !isValid ||
-        !readTermsChecked ||
-        (!solPubKey && !readAntiSpamFeeChecked) ||
-        !readLivelinessBonding ||
-        (!solPubKey ? itheumBalance < antiSpamTax + bondingAmount : itheumBalance < bondingAmount)
-    );
-
-    console.log("isValid ", isValid);
-    console.log("readTermsChecked ", readTermsChecked);
-    console.log("(!solPubKey && !readAntiSpamFeeChecked) ", !solPubKey && !readAntiSpamFeeChecked);
-    console.log("!readLivelinessBonding ", !readLivelinessBonding);
-    console.log(
-      "(!solPubKey ? itheumBalance < antiSpamTax + bondingAmount : itheumBalance < bondingAmount) ",
-      !solPubKey ? itheumBalance < antiSpamTax + bondingAmount : itheumBalance < bondingAmount
-    );
-
     return (
       !isValid ||
       !readTermsChecked ||
@@ -704,6 +687,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             ),
             duration: 12000,
             isClosable: true,
+            position: "bottom-right",
           },
           error: {
             title: customErrorMessage,
@@ -718,6 +702,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             ),
             duration: 12000,
             isClosable: true,
+            position: "bottom-right",
           },
           loading: { title: "Processing Transaction", description: "Please wait...", colorScheme: "teal" },
         }
@@ -734,6 +719,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         status: "error",
         duration: 9000,
         isClosable: true,
+        position: "bottom-right",
       });
 
       throw error;
@@ -806,9 +792,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
         setErrDataNFTStreamGeneric(new Error(errorMsg));
       } else {
-        // The actual data nft mint TX we will execute once we confirm the IPFS metadata has loaded
-        // setMintTx(dataNFTMintTX);
-
         if (!_imageUrl || _imageUrl.trim() === "" || !_metadataUrl || _metadataUrl.trim() === "") {
           setErrDataNFTStreamGeneric(new Error(labels.ERR_IPFS_ASSET_SAVE_FAILED));
         } else if (!mintMeta || mintMeta?.error || Object.keys(mintMeta).length === 0) {
@@ -816,12 +799,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         } else {
           // let's attempt to checks 3 times if the IPFS data is loaded and available on the gateway
           await checkIfNftImgAndMetadataIsAvailableOnIPFS(_imageUrl, _metadataUrl);
-
-          // in solana, the mint was a success already
-
-          // if we have to auto-vault -- i.e most likely user first nfme id, then we can auto vault it with this TX
-          // setNftIdMEPrimaryVault();
-          setMintingSuccessful(true);
 
           fetchSolNfts(solPubKey?.toBase58()).then((nfts) => {
             updateSolNfts(nfts);
@@ -832,15 +809,16 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           const programId = new PublicKey(BONDING_PROGRAM_ID);
           const addressBondsRewardsPda = PublicKey.findProgramAddressSync([Buffer.from("address_bonds_rewards"), solPubKey?.toBuffer()], programId)[0];
           const accountInfo = await connection.getAccountInfo(addressBondsRewardsPda);
-
           const isExist = accountInfo !== null;
 
+          // if no addressBondsRewardsPda was found, this means the user has never minted and bonded on Solana NFMe contract before -- so we first need to "initializeAddress"
+          // ... in this workflow, the user has to sign and submit 2 transactions (initializeAddress and then createBondTransaction)
           if (!isExist) {
             const program = new Program<CoreSolBondStakeSc>(IDL, programId, {
               connection,
             });
-            const rewardsConfigPda = PublicKey.findProgramAddressSync([Buffer.from("rewards_config")], programId)[0];
 
+            const rewardsConfigPda = PublicKey.findProgramAddressSync([Buffer.from("rewards_config")], programId)[0];
             const transactionInitializeAddress = await program.methods
               .initializeAddress()
               .accounts({
@@ -866,16 +844,20 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const sendSolanaBondingTx = async () => {
     if (solanaBondTransaction) {
       try {
-        setBondingTxHasFailed(false);
+        setSolBondingTxHasFailed(false);
 
         const result = await sendAndConfirmTransaction({ transaction: solanaBondTransaction, customErrorMessage: "Failed to send the bonding transaction" });
+
         if (result) {
           updateItheumBalance(itheumBalance - bondingAmount);
           setMakePrimaryNFMeIdSuccessful(true);
           setErrDataNFTStreamGeneric(null);
+
+          // in solana, the mint was a success already above in the API, but we only consider it a success here if all the steps complete (i.e. mint + bond)
+          setMintingSuccessful(true);
         }
       } catch (err) {
-        setBondingTxHasFailed(true);
+        setSolBondingTxHasFailed(true);
         setErrDataNFTStreamGeneric(new Error(labels.ERR_SUCCESS_MINT_BUT_BONDING_TRANSACTION_FAILED));
         console.error("createBondTransaction failed to sign and send bond transaction", err);
       }
@@ -960,6 +942,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
     for (let tries = 0; tries < 3 && !assetsLoadedOnIPFSwasSuccess; tries++) {
       console.log("Try to fetch the metadata IPFS", tries);
+
       try {
         await sleep(tries);
         const { result, dataNFTTraitsFromRes } = await confirmIfNftImgAndMetadataIsAvailableOnIPFS(imageUrl, metadataUrl);
@@ -1764,15 +1747,13 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             </Flex>
 
             <MintingModal
+              isSolanaMinting={!!solPubKey}
               isOpen={isMintingModalOpen}
               setIsOpen={setIsMintingModalOpen}
               errDataNFTStreamGeneric={errDataNFTStreamGeneric}
               saveProgress={saveProgress}
-              imageUrl={imageUrl}
               dataNFTImg={dataNFTImg}
               dataNFTTraits={dataNFTTraits}
-              metadataUrl={metadataUrl}
-              setSaveProgress={setSaveProgress}
               closeProgressModal={closeProgressModal}
               mintingSuccessful={mintingSuccessful}
               makePrimaryNFMeIdSuccessful={makePrimaryNFMeIdSuccessful}
@@ -1780,7 +1761,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               isNFMeIDMint={isNFMeIDMint}
               isAutoVault={solPubKey ? true : (dataToPrefill?.shouldAutoVault ?? false) && !bondVaultNonce}
               nftImgAndMetadataLoadedOnIPFS={nftImgAndMetadataLoadedOnIPFS}
-              bondingTxHasFailed={bondingTxHasFailed}
+              solBondingTxHasFailed={solBondingTxHasFailed}
               sendSolanaBondingTx={sendSolanaBondingTx}
             />
           </>
