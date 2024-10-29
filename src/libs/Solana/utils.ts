@@ -270,7 +270,7 @@ export async function retrieveBondsAndNftMeIdVault(
   lastIndex: number,
   program?: Program<CoreSolBondStakeSc>,
   connection?: Connection
-): Promise<{ bonds: Bond[]; nftMeIdVault: Bond | undefined; weightedLivelinessScore: number }> {
+): Promise<{ myBonds: Bond[]; nftMeIdVault: Bond | undefined; weightedLivelinessScore: number }> {
   try {
     if (program === undefined) {
       const programId = new PublicKey(BONDING_PROGRAM_ID);
@@ -282,24 +282,29 @@ export async function retrieveBondsAndNftMeIdVault(
         throw new Error("Connection is required to retrieve bonds");
       }
     }
-    const bonds: Bond[] = [];
+
+    const myBonds: Bond[] = [];
     let nftMeIdVault: Bond | undefined;
     let totalBondAmount = new BN(0);
     let totalBondWeight = new BN(0);
-    const currentTimestampt = Math.floor(Date.now() / 1000);
+    const currentTimestamp = Math.floor(Date.now() / 1000);
 
     ///TODO THIS CAN BE improved by using a single fetch, only for the modified bond. not all of them if i just top up one
     for (let i = 1; i <= lastIndex; i++) {
       const bondPda = PublicKey.findProgramAddressSync([Buffer.from("bond"), userPublicKey.toBuffer(), Buffer.from([i])], program.programId)[0];
       const bond = await program.account.bond.fetch(bondPda);
       const bondUpgraded = { ...bond, bondId: i, unbondTimestamp: bond.unbondTimestamp.toNumber(), bondTimestamp: bond.bondTimestamp.toNumber() };
+
       if (bond.isVault && bond.state === 1) {
         nftMeIdVault = bondUpgraded;
       }
+
       // calculate the correct live Bond score
+      const LOCK_PERIOD_ON_PROGRAM = import.meta.env.VITE_ENV_SOLANA_STAKING_LOCK_SEC || 3600; // note that you have to change this based on contract val (3600 is 1h)
+
       if (bond.state === 1) {
         //lvb1
-        const scorePerBond = Math.floor(computeBondScore(43200, currentTimestampt, bond.unbondTimestamp.toNumber())) / 100;
+        const scorePerBond = Math.floor(computeBondScore(LOCK_PERIOD_ON_PROGRAM, currentTimestamp, bond.unbondTimestamp.toNumber())) / 100;
         //b1 * lvb1
         const bondWeight = bond.bondAmount.mul(new BN(scorePerBond));
         // b1 * lvb1 + b2 * lvb2 + b3 * lvb3 + ... + bn * lvbn
@@ -308,12 +313,13 @@ export async function retrieveBondsAndNftMeIdVault(
         //b1 + b2 + b3 + ... + bn
         totalBondAmount = totalBondAmount.add(bond.bondAmount);
       }
-      bonds.push(bondUpgraded);
+
+      myBonds.push(bondUpgraded);
     }
     // result
     const weightedLivelinessScore = totalBondWeight.mul(new BN(100)).div(totalBondAmount);
 
-    return { bonds: bonds, nftMeIdVault: nftMeIdVault, weightedLivelinessScore: weightedLivelinessScore.toNumber() / 100 };
+    return { myBonds, nftMeIdVault: nftMeIdVault, weightedLivelinessScore: weightedLivelinessScore.toNumber() / 100 };
   } catch (error) {
     console.error("retrieveBondsError", error);
 

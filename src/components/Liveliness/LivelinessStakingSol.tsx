@@ -28,7 +28,6 @@ import { DasApiAsset } from "@metaplex-foundation/digital-asset-standard-api";
 import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Commitment, PublicKey, Transaction, TransactionConfirmationStrategy } from "@solana/web3.js";
-import { useNavigate } from "react-router-dom";
 import NftMediaComponent from "components/NftMediaComponent";
 import { NoDataHere } from "components/Sections/NoDataHere";
 import { ConfirmationDialog } from "components/UtilComps/ConfirmationDialog";
@@ -51,7 +50,6 @@ import { useNftsStore } from "store/nfts";
 import { LivelinessScore } from "./LivelinessScore";
 
 const BN10_9 = new BN(10 ** 9);
-const BN10_2 = new BN(10 ** 2);
 
 export const LivelinessStakingSol: React.FC = () => {
   const { connection } = useConnection();
@@ -99,8 +97,8 @@ export const LivelinessStakingSol: React.FC = () => {
 
     setProgramSol(program);
 
-    async function fetchBondConfigPdas() {
-      const bondConfigPda1 = await PublicKey.findProgramAddressSync([Buffer.from("bond_config"), Buffer.from([1])], programId)[0];
+    async function fetchBondConfigPDAs() {
+      const bondConfigPda1 = PublicKey.findProgramAddressSync([Buffer.from("bond_config"), Buffer.from([1])], programId)[0];
       setBondConfigPda(bondConfigPda1);
 
       const _rewardsConfigPda = PublicKey.findProgramAddressSync([Buffer.from("rewards_config")], programId)[0];
@@ -114,7 +112,7 @@ export const LivelinessStakingSol: React.FC = () => {
       setAddressBondsRewardsPda(_addressBondsRewardsPda);
     }
 
-    fetchBondConfigPdas();
+    fetchBondConfigPDAs();
   }, []);
 
   // when a tx is happening we need to update the data
@@ -140,35 +138,6 @@ export const LivelinessStakingSol: React.FC = () => {
       computeAndSetClaimableAmount();
     }
   }, [bondConfigData, rewardsConfigData, addressBondsRewardsData]);
-
-  async function computeAndSetClaimableAmount() {
-    const currentSLot = await connection.getSlot();
-
-    const _claimableAmount = computeAddressClaimableAmount(
-      new BN(currentSLot),
-      rewardsConfigData,
-      addressBondsRewardsData.addressRewardsPerShare,
-      addressBondsRewardsData.addressTotalBondAmount,
-      globalTotalBond
-    );
-    setClaimableAmount(_claimableAmount / 10 ** 9 + addressClaimableAmount);
-  }
-
-  async function fetchAddressRewardsData() {
-    if (!programSol || !addressBondsRewardsPda) return;
-
-    try {
-      const data = await programSol.account.addressBondsRewards.fetch(addressBondsRewardsPda);
-      setAddressBondsRewardsData(data);
-      setCombinedBondsStaked(data.addressTotalBondAmount);
-      setCombinedLiveliness(data.weightedLivelinessScore.toNumber() / 100);
-      setAddressClaimableAmount(data.claimableAmount.toNumber() / 10 ** 9);
-      setNumberOfBonds(data.currentIndex);
-      if (data.currentIndex === 0) setAllInfoLoading(false);
-    } catch (error) {
-      console.error("Failed to fetch address rewards data:", error);
-    }
-  }
 
   useEffect(() => {
     async function fetchAccountInfo() {
@@ -198,10 +167,26 @@ export const LivelinessStakingSol: React.FC = () => {
     }
   }, [nftMeIdBond, solNfts]);
 
-  // rewardsPerShare, accumulatedRewards, lastRewardSlot,  rewardsPerSlot, rewardsReserve, rewardsPerShare, maxApr, rewardsState
   useEffect(() => {
     fetchRewardsConfigData();
   }, [rewardsConfigPda, programSol]);
+
+  useEffect(() => {
+    if (programSol && userPublicKey && bondConfigPda) {
+      programSol?.account.bondConfig.fetch(bondConfigPda).then((data: any) => {
+        setBondConfigData(data);
+        setWithdrawPenalty(new BN(data.withdrawPenalty).toNumber() / 100);
+      });
+    }
+  }, [bondConfigPda, programSol]);
+
+  useEffect(() => {
+    fetchVaultConfigData();
+  }, [vaultConfigPda, programSol]);
+
+  useEffect(() => {
+    calculateRewardAprAndEstAnnualRewards();
+  }, [globalTotalBond, combinedBondsStaked, maxApr]);
 
   async function fetchRewardsConfigData() {
     if (programSol && userPublicKey && rewardsConfigPda) {
@@ -213,21 +198,6 @@ export const LivelinessStakingSol: React.FC = () => {
     }
   }
 
-  // bondAmount, bondState, lockPeriod, withdrawPenalty, merkleTree
-  useEffect(() => {
-    if (programSol && userPublicKey && bondConfigPda) {
-      programSol?.account.bondConfig.fetch(bondConfigPda).then((data: any) => {
-        setBondConfigData(data);
-        setWithdrawPenalty(new BN(data.withdrawPenalty).toNumber() / 100);
-      });
-    }
-  }, [bondConfigPda, programSol]);
-
-  /// totalBondAmoun, mintOfToken, totalPenalizedAmount, vault
-  useEffect(() => {
-    fetchVaultConfigData();
-  }, [vaultConfigPda, programSol]);
-
   async function fetchVaultConfigData() {
     if (programSol && vaultConfigPda) {
       programSol.account.vaultConfig.fetch(vaultConfigPda).then((data: any) => {
@@ -236,9 +206,34 @@ export const LivelinessStakingSol: React.FC = () => {
     }
   }
 
-  useEffect(() => {
-    calculateRewardAprAndEstAnnualRewards();
-  }, [globalTotalBond, combinedBondsStaked, maxApr]);
+  async function computeAndSetClaimableAmount() {
+    const currentSLot = await connection.getSlot();
+
+    const _claimableAmount = computeAddressClaimableAmount(
+      new BN(currentSLot),
+      rewardsConfigData,
+      addressBondsRewardsData.addressRewardsPerShare,
+      addressBondsRewardsData.addressTotalBondAmount,
+      globalTotalBond
+    );
+    setClaimableAmount(_claimableAmount / 10 ** 9 + addressClaimableAmount);
+  }
+
+  async function fetchAddressRewardsData() {
+    if (!programSol || !addressBondsRewardsPda) return;
+
+    try {
+      const data = await programSol.account.addressBondsRewards.fetch(addressBondsRewardsPda);
+      setAddressBondsRewardsData(data);
+      setCombinedBondsStaked(data.addressTotalBondAmount);
+      setCombinedLiveliness(data.weightedLivelinessScore.toNumber() / 100);
+      setAddressClaimableAmount(data.claimableAmount.toNumber() / 10 ** 9);
+      setNumberOfBonds(data.currentIndex);
+      if (data.currentIndex === 0) setAllInfoLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch address rewards data:", error);
+    }
+  }
 
   function calculateRewardAprAndEstAnnualRewards(value?: number, amount?: BN) {
     if (combinedBondsStaked.toNumber() === 0) {
@@ -278,12 +273,12 @@ export const LivelinessStakingSol: React.FC = () => {
 
   async function fetchBonds() {
     if (numberOfBonds && userPublicKey && programSol) {
-      retrieveBondsAndNftMeIdVault(userPublicKey, numberOfBonds, programSol).then(({ bonds, nftMeIdVault, weightedLivelinessScore }) => {
+      retrieveBondsAndNftMeIdVault(userPublicKey, numberOfBonds, programSol).then(({ myBonds, nftMeIdVault, weightedLivelinessScore }) => {
         if (nftMeIdVault === undefined) {
           setAllInfoLoading(false);
         }
 
-        setBonds(bonds);
+        setBonds(myBonds);
         setNftMeIdBond(nftMeIdVault);
         setCurrentLiveLinessScoreLIVE(weightedLivelinessScore);
       });
@@ -303,10 +298,12 @@ export const LivelinessStakingSol: React.FC = () => {
       if (!userPublicKey) {
         throw new Error("Wallet not connected");
       }
-      const latestBlockhash = await connection.getLatestBlockhash();
-      transaction.recentBlockhash = latestBlockhash.blockhash;
+      const latestBlockHash = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = latestBlockHash.blockhash;
       transaction.feePayer = userPublicKey;
+
       setHasPendingTransaction(true);
+
       const txSignature = await sendTransaction(transaction, connection, {
         skipPreflight: true,
         preflightCommitment: "finalized",
@@ -314,10 +311,12 @@ export const LivelinessStakingSol: React.FC = () => {
 
       const strategy: TransactionConfirmationStrategy = {
         signature: txSignature,
-        blockhash: latestBlockhash.blockhash,
-        lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
+        blockhash: latestBlockHash.blockhash,
+        lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
       };
+
       const confirmationPromise = connection.confirmTransaction(strategy, "finalized" as Commitment);
+
       toast.promise(
         confirmationPromise.then((response) => {
           if (response.value.err) {
@@ -357,6 +356,7 @@ export const LivelinessStakingSol: React.FC = () => {
           loading: { title: "Processing Transaction", description: "Please wait...", colorScheme: "teal" },
         }
       );
+
       const result = await confirmationPromise;
       setHasPendingTransaction(false);
 
@@ -368,6 +368,7 @@ export const LivelinessStakingSol: React.FC = () => {
     } catch (error) {
       // Show error toast
       setHasPendingTransaction(false);
+
       toast({
         title: "User rejected the request",
         description: (error as Error).message,
@@ -543,6 +544,7 @@ export const LivelinessStakingSol: React.FC = () => {
   const TopUpSection: React.FC<{ bond: Bond }> = ({ bond }) => {
     const [currentBondEstAnnualRewards, setCurrentBondEstAnnualRewards] = useState<number>();
     const [topUpItheumValue, setTopUpItheumValue] = useState<number>(0);
+
     return (
       <HStack my={2} justifyContent="center" alignItems="flex-start" w="100%">
         <VStack alignItems={"start"} w={"100%"} justifyContent="space-between">
