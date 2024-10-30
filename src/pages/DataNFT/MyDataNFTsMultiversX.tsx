@@ -22,9 +22,10 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
-import { useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { BsClockHistory } from "react-icons/bs";
 import { FaBrush, FaCoins } from "react-icons/fa";
 import { MdFavoriteBorder, MdLockOutline, MdOutlineShoppingBag } from "react-icons/md";
@@ -50,6 +51,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { chainID } = useGetNetworkConfig();
   const itheumToken = contractsForChain(chainID).itheumToken;
   const { address } = useGetAccountInfo();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const navigate = useNavigate();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
@@ -63,6 +65,14 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const solAddress = solPubKey?.toBase58();
 
   useEffect(() => {
+    if (tabState == 5) {
+      // we are in liveliness, and if user is not logged in -- then we take them to liveliness homepage
+      if (!isMxLoggedIn && !solPubKey) {
+        console.log("User not logged in so take them to home page");
+        navigate("/NFMeID");
+      }
+    }
+
     window.scrollTo({
       top: 0,
       behavior: "smooth",

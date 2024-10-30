@@ -64,6 +64,88 @@ import { formatNumberRoundFloor } from "libs/utils";
 import { PlayBitzModal } from "pages/GetBitz/PlayBitzModal";
 import { useAccountStore } from "store";
 
+const exploreRouterMenu = [
+  {
+    sectionId: "MainSections",
+    sectionLabel: "Main Sections",
+    sectionItems: [
+      {
+        menuEnum: MENU.PROFILE,
+        path: "/profile",
+        label: "Profile",
+        shortLbl: "Profile",
+        Icon: MdPerson,
+        needToBeLoggedIn: true,
+        isHidden: true,
+      },
+      {
+        menuEnum: MENU.HOME,
+        path: "/dashboard",
+        label: "Dashboard",
+        shortLbl: "Dash",
+        Icon: MdSpaceDashboard,
+        needToBeLoggedIn: true,
+        isHidden: false,
+      },
+      {
+        menuEnum: MENU.SELL,
+        path: "/mintdata",
+        label: "Mint Data",
+        shortLbl: "Mint",
+        Icon: RiExchangeFill,
+        needToBeLoggedIn: true,
+        isHidden: false,
+      },
+      {
+        menuEnum: MENU.NFTMINE,
+        path: "/datanfts/wallet",
+        label: "Data NFT Wallet",
+        shortLbl: "Wallet",
+        Icon: MdAccountBalanceWallet,
+        needToBeLoggedIn: true,
+        isHidden: false,
+      },
+      {
+        menuEnum: MENU.NFTALL,
+        path: "/datanfts/marketplace",
+        label: "Data NFT Marketplace",
+        shortLbl: "Market",
+        Icon: FaStore,
+        needToBeLoggedIn: false,
+        isHidden: false,
+      },
+      {
+        menuEnum: MENU.GETVERIFIED,
+        path: "/getVerified",
+        label: "Become a Verified Data Creator",
+        shortLbl: "Get Verified",
+        Icon: FaUserCheck,
+        needToBeLoggedIn: false,
+        needToBeLoggedOut: true,
+        isHidden: true,
+      },
+      {
+        menuEnum: MENU.NFMEID,
+        path: "/NFMeID",
+        label: "Get a NFMe ID",
+        shortLbl: "NFMe ID",
+        Icon: FaUserAstronaut,
+        needToBeLoggedIn: false,
+        isHidden: false,
+      },
+      {
+        menuEnum: MENU.LIVELINESS,
+        path: "/datanfts/wallet/liveliness",
+        label: "Liveliness Staking",
+        shortLbl: "Liveliness",
+        Icon: FaTachometerAlt,
+        needToBeLoggedIn: true,
+        isHidden: false,
+      },
+    ],
+  },
+];
+
 const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { onShowConnectWalletModal?: any; setMenuItem: any; handleLogout: any }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { chainID } = useGetNetworkConfig();
@@ -151,7 +233,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
           menuEnum: MENU.NFMEID,
           path: "/NFMeID",
           label: "Get a NFMe ID",
-          shortLbl: "NFMe",
+          shortLbl: "NFMe ID",
           Icon: FaUserAstronaut,
           needToBeLoggedIn: false,
           isHidden: false,
