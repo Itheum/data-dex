@@ -23,7 +23,7 @@ import {
 } from "@chakra-ui/react";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { BsClockHistory } from "react-icons/bs";
 import { FaBrush, FaCoins } from "react-icons/fa";
@@ -47,6 +47,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { chainID } = useGetNetworkConfig();
   const itheumToken = contractsForChain(chainID).itheumToken;
   const { address } = useGetAccountInfo();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const navigate = useNavigate();
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
@@ -58,6 +59,14 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
 
   useEffect(() => {
+    if (tabState == 5) {
+      // we are in liveliness, and if user is not logged in -- then we take them to liveliness homepage
+      if (!isMxLoggedIn) {
+        console.log("User not logged in so take them to home page");
+        navigate("/NFMeID");
+      }
+    }
+
     window.scrollTo({
       top: 0,
       behavior: "smooth",

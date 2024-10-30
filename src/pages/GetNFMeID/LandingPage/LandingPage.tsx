@@ -10,14 +10,12 @@ import { gtagGo } from "libs/utils";
 
 export const LandingPage = ({ onShowConnectWalletModal }: { onShowConnectWalletModal?: any }) => {
   const { colorMode } = useColorMode();
-  const { address: mxAddress } = useGetAccountInfo();
-  const navigate = useNavigate();
 
   return (
     <Box mb="10">
       <Box width={{ base: "90%", md: "80%" }} textAlign={{ base: "center", md: "center" }} m="auto" pt="10">
         <Heading as="h1" size={{ base: "xl", md: "xl" }} fontFamily="Clash-Regular" mt="5">
-          NFMe ID Vault +{" "}
+          NFMe ID +{" "}
           <Text as="span" color="teal.200">
             Liveliness Reputation Staking
           </Text>{" "}
@@ -26,7 +24,11 @@ export const LandingPage = ({ onShowConnectWalletModal }: { onShowConnectWalletM
           Farm Your Reputation For Rewards
         </Heading>
 
-        <Flex flexDirection={{ base: "column", md: "row" }} justifyContent="center" alignItems={{ base: "center", md: "normal" }} mt="10">
+        <Box w="80%" m="auto" mt="8">
+          <ClaimCTAs onShowConnectWalletModal={onShowConnectWalletModal} />
+        </Box>
+
+        <Flex flexDirection={{ base: "column", md: "row" }} justifyContent="center" alignItems={{ base: "center", md: "normal" }} mt="20">
           <Box border="1px solid" borderColor="teal.400" borderRadius="lg" p="5" mx={{ base: "0", md: "5" }} my={{ base: "5", md: "0" }} width="320px">
             <Heading as="h2" color="teal.200" fontWeight="bold" fontSize="2xl" fontFamily="Clash-Regular">
               Your Gateway Into the Itheum Protocol{" "}
@@ -87,57 +89,66 @@ export const LandingPage = ({ onShowConnectWalletModal }: { onShowConnectWalletM
           Get Started!
         </Heading>
 
-        <Flex flexDirection={{ base: "column", md: "row" }} justifyContent="space-around" alignItems="center">
-          <Flex flexDirection="column" justifyContent="space-between" h="210px" w="390px" my={{ base: "5", md: "0" }}>
-            <Box h="100px">
-              <Image m="auto" boxSize="100px" height="auto" src={mvxIcon} alt="MultiversX " borderRadius="lg" />
-            </Box>
-            <Text fontWeight="bold">Live Now on MultiversX!</Text>
-            <Spacer />
-            <Button
-              m="auto"
-              variant="solid"
-              colorScheme="teal"
-              px={7}
-              py={6}
-              rounded="lg"
-              onClick={() => {
-                gtagGo("nfm", "mint", "mvx");
-
-                if (mxAddress) {
-                  navigate("/mintdata?launchTemplate=nfmeidvault");
-                } else {
-                  onShowConnectWalletModal("mvx", "/mintdata?launchTemplate=nfmeidvault");
-                }
-              }}>
-              Mint Your NFMe ID Vault on MultiversX
-            </Button>
-          </Flex>
-
-          <Flex flexDirection="column" justifyContent="space-between" h="210px" w="390px" my={{ base: "5", md: "0" }}>
-            <Box h="100px">
-              <Image m="auto" mt="10px" boxSize="73px" height="auto" src={solIcon} alt="Solana " borderRadius="lg" />
-            </Box>
-            <Text fontWeight="bold">Coming Very Soon to Solana</Text>
-            <Spacer />
-            <Button
-              as={Link}
-              m="auto"
-              colorScheme="teal"
-              variant="outline"
-              px={7}
-              py={6}
-              rounded="lg"
-              onClick={() => {
-                gtagGo("nfm", "mint", "sol");
-              }}
-              href="https://docs.google.com/forms/d/e/1FAIpQLScpguzOBjyQBj2iDzaI2E0wN9SIAQGoS92FPDM9qkk8B-rzFA/viewform"
-              isExternal>
-              Claim NFMe ID NFT Airdrop on Solana
-            </Button>
-          </Flex>
-        </Flex>
+        <ClaimCTAs onShowConnectWalletModal={onShowConnectWalletModal} />
       </Flex>
     </Box>
+  );
+};
+
+const ClaimCTAs = ({ onShowConnectWalletModal }: { onShowConnectWalletModal?: any }) => {
+  const { address: mxAddress } = useGetAccountInfo();
+  const navigate = useNavigate();
+
+  return (
+    <Flex flexDirection={{ base: "column", md: "row" }} justifyContent="space-around" alignItems="center">
+      <Flex flexDirection="column" justifyContent="space-between" h="210px" w="390px" my={{ base: "5", md: "0" }}>
+        <Box h="100px">
+          <Image m="auto" boxSize="100px" height="auto" src={mvxIcon} alt="MultiversX " borderRadius="lg" />
+        </Box>
+        <Text fontWeight="bold">Live Now on MultiversX!</Text>
+        <Spacer />
+        <Button
+          m="auto"
+          variant="solid"
+          colorScheme="teal"
+          px={7}
+          py={6}
+          rounded="lg"
+          onClick={() => {
+            gtagGo("nfm", "mint", "mvx");
+
+            if (mxAddress) {
+              navigate("/mintdata?launchTemplate=nfmeidvault");
+            } else {
+              onShowConnectWalletModal("mvx", "/mintdata?launchTemplate=nfmeidvault");
+            }
+          }}>
+          Claim Your NFMe ID on MultiversX
+        </Button>
+      </Flex>
+
+      <Flex flexDirection="column" justifyContent="space-between" h="210px" w="390px" my={{ base: "5", md: "0" }}>
+        <Box h="100px">
+          <Image m="auto" mt="10px" boxSize="73px" height="auto" src={solIcon} alt="Solana " borderRadius="lg" />
+        </Box>
+        <Text fontWeight="bold">Coming November 2024 to Solana</Text>
+        <Spacer />
+        <Button
+          as={Link}
+          m="auto"
+          colorScheme="teal"
+          variant="outline"
+          px={7}
+          py={6}
+          rounded="lg"
+          onClick={() => {
+            gtagGo("nfm", "mint", "sol");
+          }}
+          href="https://docs.google.com/forms/d/e/1FAIpQLScpguzOBjyQBj2iDzaI2E0wN9SIAQGoS92FPDM9qkk8B-rzFA/viewform"
+          isExternal>
+          Claim NFMe ID NFT Whitelist on Solana
+        </Button>
+      </Flex>
+    </Flex>
   );
 };
