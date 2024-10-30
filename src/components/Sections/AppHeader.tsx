@@ -124,7 +124,7 @@ const exploreRouterMenu = [
         menuEnum: MENU.NFMEID,
         path: "/NFMeID",
         label: "Get a NFMe ID",
-        shortLbl: "NFMe",
+        shortLbl: "NFMe ID",
         Icon: FaUserAstronaut,
         needToBeLoggedIn: false,
         isHidden: false,
