@@ -73,7 +73,7 @@ import { UserDataType } from "libs/MultiversX/types";
 import { BONDING_PROGRAM_ID, SOLANA_EXPLORER_URL } from "libs/Solana/config";
 import { CoreSolBondStakeSc, IDL } from "libs/Solana/CoreSolBondStakeSc";
 import { itheumSolPreaccess } from "libs/Solana/SolViewData";
-import { createBondTransaction, fetchRewardsConfig, fetchSolNfts } from "libs/Solana/utils";
+import { createBondTransaction, fetchRewardsConfigSol, fetchSolNfts } from "libs/Solana/utils";
 import { getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "libs/utils";
 import { useAccountStore, useMintStore } from "store";
 import { useNftsStore } from "store/nfts";
@@ -162,6 +162,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const updateSolNfts = useNftsStore((state) => state.updateSolNfts);
   const [solBondingTxHasFailed, setSolBondingTxHasFailed] = useState<boolean>(false);
   const [solNFMeIDMintConfirmationWorkflow, setSolNFMeIDMintConfirmationWorkflow] = useState<boolean>(false);
+  const [solBondingConfigObtainedFromChainErr, setSolBondingConfigObtainedFromChainErr] = useState<boolean>(false);
 
   // S: React hook form + yup integration ---->
   // Declaring a validation schema for the form with the validation needed
@@ -372,6 +373,17 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   }, [currDataCATSellObj]);
 
   useEffect(() => {
+    // check if we got the data for lockPeriod from Solana Program (lockPeriod also is for MVX, but not checking that here)
+    if (solPubKey) {
+      if (lockPeriod?.length === 0) {
+        setSolBondingConfigObtainedFromChainErr(true);
+      } else {
+        setSolBondingConfigObtainedFromChainErr(false);
+      }
+    }
+  }, [lockPeriod]);
+
+  useEffect(() => {
     async function fetchBondingRelatedData() {
       if (mxAddress) {
         bond.viewLockPeriodsWithBonds().then((periodsT) => {
@@ -396,8 +408,14 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           connection,
         });
 
-        fetchRewardsConfig(program).then((rewardsT: any) => {
-          setMaxApy(rewardsT.maxApr);
+        fetchRewardsConfigSol(program).then((rewardsT: any) => {
+          if (rewardsT?.error) {
+            setSolBondingConfigObtainedFromChainErr(true);
+            setMaxApy(-1);
+          } else {
+            setSolBondingConfigObtainedFromChainErr(false);
+            setMaxApy(rewardsT.maxApr);
+          }
         });
       }
     }
@@ -425,6 +443,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       !isValid ||
       !readTermsChecked ||
       (!solPubKey && !readAntiSpamFeeChecked) ||
+      (solPubKey && solBondingConfigObtainedFromChainErr) ||
       !readLivelinessBonding ||
       (!solPubKey ? itheumBalance < antiSpamTax + bondingAmount : itheumBalance < bondingAmount)
     );
@@ -1724,6 +1743,13 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                   )}
                 </Box>{" "}
               </>
+            )}
+
+            {solPubKey && solBondingConfigObtainedFromChainErr && (
+              <Alert status="error" rounded="lg" mt="2">
+                <AlertIcon />
+                {labels.ERR_SOL_CANT_GET_ONCHAIN_CONFIG}
+              </Alert>
             )}
 
             <Flex>

@@ -73,14 +73,13 @@ function getAmountAprBounded(maxApr: BN, amount: BN): BN {
   return amount.mul(maxApr).div(new BN(MAX_PERCENT)).div(new BN(SLOTS_IN_YEAR));
 }
 
-// fetch Data from the blockchain
-
-export async function fetchBondingConfig(programSol: any) {
-  /// bondAmount, bondState, lockPeriod, withdrawPenalty, merkleTree
+// Fetch the bonding data config from the Solana Program
+export async function fetchBondingConfigSol(programSol: any) {
   try {
-    const bondConfigPda = await PublicKey.findProgramAddressSync([Buffer.from("bond_config"), Buffer.from([1])], programSol.programId)[0];
+    const bondConfigPda = PublicKey.findProgramAddressSync([Buffer.from("bond_config"), Buffer.from([1])], programSol.programId)[0];
 
     const res = await programSol?.account.bondConfig.fetch(bondConfigPda);
+
     return {
       bondConfigPda: bondConfigPda,
       lockPeriod: res.lockPeriod.toNumber(),
@@ -91,11 +90,14 @@ export async function fetchBondingConfig(programSol: any) {
     };
   } catch (error) {
     console.error("fetchBondingConfigError", error);
+    return {
+      error: true,
+    };
   }
 }
 
-export async function fetchRewardsConfig(programSol: any) {
-  // rewardsPerShare, accumulatedRewards, lastRewardSlot,  rewardsPerSlot, rewardsReserve,  maxApr, rewardsState
+// Fetch the rewards data config from the Solana Program
+export async function fetchRewardsConfigSol(programSol: any) {
   try {
     const _rewardsConfigPda = PublicKey.findProgramAddressSync([Buffer.from("rewards_config")], programSol.programId)[0];
     const res = await programSol?.account.rewardsConfig.fetch(_rewardsConfigPda);
@@ -112,6 +114,9 @@ export async function fetchRewardsConfig(programSol: any) {
     };
   } catch (error) {
     console.error("fetchRewardsConfigError", error);
+    return {
+      error: true,
+    };
   }
 }
 

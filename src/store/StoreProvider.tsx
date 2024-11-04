@@ -22,7 +22,7 @@ import { getAccountTokenFromApi, getItheumPriceFromApi } from "libs/MultiversX/a
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { BONDING_PROGRAM_ID, SolEnvEnum } from "libs/Solana/config";
 import { CoreSolBondStakeSc, IDL } from "libs/Solana/CoreSolBondStakeSc";
-import { fetchBondingConfig, fetchSolNfts, ITHEUM_TOKEN_ADDRESS } from "libs/Solana/utils";
+import { fetchBondingConfigSol, fetchSolNfts, ITHEUM_TOKEN_ADDRESS } from "libs/Solana/utils";
 import { computeRemainingCooldown, convertWeiToEsdt, decodeNativeAuthToken, tokenDecimals } from "libs/utils";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
 import { useNftsStore } from "./nfts";
@@ -117,10 +117,15 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
     const program = new Program<CoreSolBondStakeSc>(IDL, programId, {
       connection,
     });
-    fetchBondingConfig(program).then((periodsT: any) => {
-      const lockPeriod: number = periodsT.lockPeriod;
-      const amount: BigNumber.Value = periodsT.bondAmount;
-      updateLockPeriodForBond([{ lockPeriod, amount }]);
+
+    fetchBondingConfigSol(program).then((periodsT: any) => {
+      if (periodsT?.error) {
+        updateLockPeriodForBond([]);
+      } else {
+        const lockPeriod: number = periodsT.lockPeriod;
+        const amount: BigNumber.Value = periodsT.bondAmount;
+        updateLockPeriodForBond([{ lockPeriod, amount }]);
+      }
     });
 
     updateIsLoadingSol(false);

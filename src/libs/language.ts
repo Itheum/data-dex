@@ -35,6 +35,8 @@ export const labels = {
     "The Data Marshal is unavailable to provide a status check on this Data Stream URL. This may mean that the Data Stream is unavailable or that your network is blocking the check. You may proceed with the transaction at your own risk. (ER-26)",
   "ERR_BONDING_STAKING_COULD_NOT_GET_DATA_NFTS":
     "Could not get a list of all your Data NFTs to show liveliness bonding status on each. Could be related to you having too many or the network is slow (ER-33)",
+  "ERR_SOL_CANT_GET_ONCHAIN_CONFIG":
+    "Unable to get bonding and rewards config from the Solana blockchain so you cannot proceed with the mint. Please reload the page to try again. (ER-36)",
 
   "MINT_FORM_POPUP_INFO_DATA_STREAM":
     "The URL of the hosted data asset that you would like to trade. This URL should be publicly accessible behind a secure domain (one that starts with https://)",
