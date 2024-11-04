@@ -22,8 +22,10 @@ import { Address } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { useWallet } from "@solana/wallet-adapter-react";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import liveliness from "assets/img/nfme/liveliness.png";
 import myNFMe from "assets/img/nfme/nfme-data-nft-token.png";
 import illustration from "assets/img/whitelist/getWhitelist.png";
 import ClaimModalMx from "components/ClaimModal/ClaimModalMultiversX";
@@ -40,7 +42,6 @@ import AppMarketplace from "pages/Home/components/AppMarketplace";
 import { TrendingData } from "./components/TrendingData";
 import VolumesDataNfts from "./components/VolumesDataNfts";
 import NftMediaComponent from "../../components/NftMediaComponent";
-import liveliness from "assets/img/nfme/liveliness.png";
 
 export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
   const { colorMode } = useColorMode();
@@ -57,7 +58,7 @@ export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
   const [claimContractPauseValue, setClaimContractPauseValue] = useState(false);
   const navigate = useNavigate();
   const mxClaimsContract = new ClaimsContract(chainID);
-
+  const { connected: isSolWalletConnected } = useWallet();
   // S: Claims
   useEffect(() => {
     // this will trigger during component load/page load, so let's get the latest claims balances
@@ -250,7 +251,7 @@ export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
               <Box w={[tileBoxW, "initial"]} border="1px solid transparent" borderColor="#00C79740" borderRadius="16px" m={{ base: "auto", md: "initial" }}>
                 <Stack p="5" h={"430px"} alignItems="center">
                   <Heading size="md" fontFamily="Clash-Medium" pb={2}>
-                    NFMe ID Vault
+                    NFMe ID
                   </Heading>
                   <Spacer />
                   <NftMediaComponent imageUrls={[myNFMe]} imageHeight="200px" imageWidth="200px" borderRadius="md" shouldDisplayArrows={false} />
@@ -265,7 +266,7 @@ export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
                       onClick={() => {
                         navigate("/mintdata?launchTemplate=nfmeidvault");
                       }}>
-                      <Text>Mint Your NFMe ID Vault</Text>
+                      <Text>Mint Your NFMe ID</Text>
                     </Button>
                   </Flex>
                 </Stack>
@@ -404,18 +405,21 @@ export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
         </Box>
 
         <Box mx={{ base: 5, lg: 24 }}>
-          <Box m="auto" pt="10" pb="10" w={"100%"}>
-            <VolumesDataNfts />
-          </Box>
-
-          <Box m="auto" pt="10" pb="10" w={"100%"}>
-            <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" />
-          </Box>
-
-          <Box m="auto" pt="10" pb="10" w={"100%"}>
-            <TrendingData />
-          </Box>
-
+          {isSolWalletConnected ? (
+            <> </>
+          ) : (
+            <>
+              <Box m="auto" pt="10" pb="10" w={"100%"}>
+                <VolumesDataNfts />
+              </Box>
+              <Box m="auto" pt="10" pb="10" w={"100%"}>
+                <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" />
+              </Box>
+              <Box m="auto" pt="10" pb="10" w={"100%"}>
+                <TrendingData />
+              </Box>{" "}
+            </>
+          )}
           <Box m="auto" pt="10" pb="10" w={"100%"}>
             <Heading size="lg" fontFamily="Clash-Medium" fontWeight="semibold">
               Get Started

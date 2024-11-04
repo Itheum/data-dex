@@ -7,6 +7,7 @@ import "libs/MultiversX/custom.css";
 import { getSentryProfile } from "libs/utils";
 import Launcher from "pages/App/Launcher";
 import reportWebVitals from "./reportWebVitals";
+import "./tailwind.css"; // tailwindcss
 
 if (import.meta.env.NODE_ENV === "production") {
   Sentry.init({

@@ -16,7 +16,7 @@ export const labels = {
   "ERR_MINT_FORM_MINT_AGAIN_WAIT": "(ER-13) You can mint next Data NFT-FT after ",
   "ERR_MINT_FORM_NO_WALLET_CONN": "Connect your wallet to proceed with mint. (ER-14)",
   "ERR_MINT_NO_TX": "Cannot send transaction to the blockchain. (ER-15)",
-  "ERR_SET_AS_PRIMARY_NF_ME_ID_VAULT_TX": "Failed to set Data NFT as a primary NFMe ID Vault. (ER-30)",
+  "ERR_SET_AS_PRIMARY_NF_ME_ID_VAULT_TX": "Failed to set Data NFT as a primary NFMe ID. (ER-30)",
   "ERR_PROCURE_UPTIME_CHECK_DOWN":
     "The Data Marshal is unavailable to provide a status check on this Data Stream URL. This may mean that the Data Stream is unavailable. Do not proceed with the transaction. (ER-16)",
   "ERR_MARKET_REQ_FAIL": "Could not fetch marketplace requirements. (ER-17)",
@@ -35,6 +35,8 @@ export const labels = {
     "The Data Marshal is unavailable to provide a status check on this Data Stream URL. This may mean that the Data Stream is unavailable or that your network is blocking the check. You may proceed with the transaction at your own risk. (ER-26)",
   "ERR_BONDING_STAKING_COULD_NOT_GET_DATA_NFTS":
     "Could not get a list of all your Data NFTs to show liveliness bonding status on each. Could be related to you having too many or the network is slow (ER-33)",
+  "ERR_SOL_CANT_GET_ONCHAIN_CONFIG":
+    "Unable to get bonding and rewards config from the Solana blockchain so you cannot proceed with the mint. Please reload the page to try again. (ER-36)",
 
   "MINT_FORM_POPUP_INFO_DATA_STREAM":
     "The URL of the hosted data asset that you would like to trade. This URL should be publicly accessible behind a secure domain (one that starts with https://)",
@@ -49,5 +51,7 @@ export const labels = {
   "ADD_FAVORITE_FAILS": "Could not add to favorites. (ER-27)",
   "REMOVE_FAVORITE_FAILS": "Could not remove from favorites. (ER-28)",
   "ERR_MARKET_NR_OFFERS_FAIL": "Could not fetch number of marketplace offers. (ER-29)",
-  "ERR_MINT_FORM_NOT_ENOUGH_BOND": "You have insufficient ITHEUM tokens for the Liveness Bonding.",
+  "ERR_MINT_FORM_NOT_ENOUGH_BOND": "You have insufficient ITHEUM tokens for the Liveliness Bonding.",
+  "ERR_SUCCESS_MINT_BUT_BOND_NOT_CREATED": "Your mint was a success, but could not create a bonding transaction. (ER-34)",
+  "ERR_SUCCESS_MINT_BUT_BONDING_TRANSACTION_FAILED": "Your mint was a success, but the bonding transaction has failed (ER-35)",
 };

@@ -24,18 +24,22 @@ import {
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { BsClockHistory } from "react-icons/bs";
 import { FaBrush, FaCoins } from "react-icons/fa";
 import { MdFavoriteBorder, MdLockOutline, MdOutlineShoppingBag } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { LivelinessStakingSol } from "components/Liveliness/LivelinessStakingSol";
 import { NoDataHere } from "components/Sections/NoDataHere";
+import WalletDataNftSol from "components/SolanaNfts/WalletDataNftSol";
 import InteractionTxTable from "components/Tables/InteractionTxTable";
 import useThrottle from "components/UtilComps/UseThrottle";
 import WalletDataNFTMX from "components/WalletDataNFTMX/WalletDataNFTMX";
 import { contractsForChain } from "libs/config";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
 import { useMarketStore } from "store";
+import { useNftsStore } from "store/nfts";
 import { BondingCards } from "./components/BondingCards";
 import { CompensationCards } from "./components/CompensationCards";
 import { FavoriteCards } from "./components/FavoriteCards";
@@ -49,19 +53,21 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { address } = useGetAccountInfo();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const navigate = useNavigate();
+  const { hasPendingTransactions } = useGetPendingTransactions();
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
-  const [dataNfts, setDataNfts] = useState<Array<DataNft>>([]);
-  const purchasedDataNfts: DataNft[] = dataNfts.filter((item) => item.creator != address);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
-  const { hasPendingTransactions } = useGetPendingTransactions();
   const [nftForDrawer, setNftForDrawer] = useState<DataNft | undefined>();
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
+  const { mvxNfts, solNfts, updateMvxNfts } = useNftsStore();
+  const purchasedDataNfts: DataNft[] = mvxNfts.filter((item) => item.creator != address);
+  const { publicKey: solPubKey, connected } = useWallet();
+  const solAddress = solPubKey?.toBase58();
 
   useEffect(() => {
     if (tabState == 5) {
       // we are in liveliness, and if user is not logged in -- then we take them to liveliness homepage
-      if (!isMxLoggedIn) {
+      if (!isMxLoggedIn && !solPubKey) {
         console.log("User not logged in so take them to home page");
         navigate("/NFMeID");
       }
@@ -73,12 +79,14 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     });
   }, []);
 
+  ///TODO: Could we remove this useEffect ?
   useEffect(() => {
     if (hasPendingTransactions) return;
+
     (async () => {
       const _dataNfts = await getOnChainNFTs();
       const _alteredDataNfts = _dataNfts.map((nft) => new DataNft({ ...nft, balance: nft.balance ? nft.balance : 1 }));
-      setDataNfts(_alteredDataNfts);
+      updateMvxNfts(_alteredDataNfts);
     })();
 
     setOneNFTImgLoaded(false);
@@ -95,23 +103,23 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       tabName: "Your Data NFT(s)",
       icon: FaBrush,
       isDisabled: false,
-      pieces: dataNfts.length,
+      pieces: mvxNfts?.length || solNfts?.length,
     },
     {
       tabName: "Purchased",
       icon: MdOutlineShoppingBag,
-      isDisabled: false,
+      isDisabled: solAddress ? true : false,
       pieces: purchasedDataNfts.length,
     },
     {
       tabName: "Favorite",
       icon: MdFavoriteBorder,
-      isDisabled: false,
+      isDisabled: solAddress ? true : false,
     },
     {
       tabName: "Activity",
       icon: BsClockHistory,
-      isDisabled: false,
+      isDisabled: solAddress ? true : false,
     },
     {
       tabName: "Liveliness",
@@ -121,11 +129,12 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     {
       tabName: "Compensation",
       icon: FaCoins,
-      isDisabled: false,
+      isDisabled: solAddress ? true : false,
     },
   ];
 
   const getOnChainNFTs = async () => {
+    if (!address) return [];
     const dataNftsT: DataNft[] = await getNftsOfACollectionForAnAddress(
       address,
       contractsForChain(chainID).dataNftTokens.map((v) => v.id),
@@ -135,7 +144,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   };
 
   function openNftDetailsDrawer(index: number) {
-    setNftForDrawer(dataNfts[index]);
+    setNftForDrawer(mvxNfts[index]);
     onOpenDataNftDetails();
   }
 
@@ -187,26 +196,28 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
           <TabPanels>
             {/* Your Data NFTs */}
             <TabPanel mt={2} width={"full"}>
-              {tabState === 1 && dataNfts.length > 0 ? (
+              {tabState === 1 && (mvxNfts?.length > 0 || solNfts?.length > 0) ? (
                 <SimpleGrid
                   columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
                   spacingY={4}
                   mx={{ base: 0, "2xl": "24 !important" }}
                   mt="5 !important"
                   justifyItems={"center"}>
-                  {dataNfts.map((item, index) => (
-                    <WalletDataNFTMX
-                      key={index}
-                      id={index}
-                      hasLoaded={oneNFTImgLoaded}
-                      setHasLoaded={setOneNFTImgLoaded}
-                      maxPayment={maxPaymentFeeMap[itheumToken]}
-                      sellerFee={marketRequirements ? marketRequirements.sellerTaxPercentage : 0}
-                      openNftDetailsDrawer={openNftDetailsDrawer}
-                      isProfile={false}
-                      {...item}
-                    />
-                  ))}
+                  {mvxNfts.length > 0
+                    ? mvxNfts.map((item, index) => (
+                        <WalletDataNFTMX
+                          key={index}
+                          id={index}
+                          hasLoaded={oneNFTImgLoaded}
+                          setHasLoaded={setOneNFTImgLoaded}
+                          maxPayment={maxPaymentFeeMap[itheumToken]}
+                          sellerFee={marketRequirements ? marketRequirements.sellerTaxPercentage : 0}
+                          openNftDetailsDrawer={openNftDetailsDrawer}
+                          isProfile={false}
+                          {...item}
+                        />
+                      ))
+                    : solNfts.map((item, index) => <WalletDataNftSol key={index} index={index} solDataNft={item} />)}
                 </SimpleGrid>
               ) : (
                 <Flex onClick={getOnChainNFTs}>
@@ -265,8 +276,16 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
             <TabPanel mt={2} width={"full"}>
               {tabState === 5 ? (
                 <Flex flexDirection={{ base: "column" }} alignItems="start">
-                  <LivelinessStaking />
-                  <BondingCards />
+                  {connected ? (
+                    <>
+                      <LivelinessStakingSol />
+                    </>
+                  ) : (
+                    <>
+                      <LivelinessStaking />
+                      <BondingCards />
+                    </>
+                  )}
                 </Flex>
               ) : (
                 <Flex onClick={getOnChainNFTs}>

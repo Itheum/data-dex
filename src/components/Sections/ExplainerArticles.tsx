@@ -7,7 +7,7 @@ const ExplainerArticles = ({ reduceGap }: { reduceGap?: boolean }) => {
     <Flex flexWrap="wrap" gap={reduceGap ? 2 : 5} backgroundColor="none" justifyContent="space-between">
       <ArticleCard
         imgTitle="NFMe ID + Liveliness Staking"
-        title="NFMe ID Vault + Liveliness Reputation Staking"
+        title="NFMe ID + Liveliness Reputation Staking"
         link="https://docs.itheum.io/product-docs/product/liveliness-on-chain-reputation/liveliness-staking-guide"
       />
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Card, CardBody, Heading, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { Link } from "react-router-dom";
 import NftMediaComponent from "components/NftMediaComponent";
 import { IS_DEVNET, getTopVolumes } from "libs/MultiversX";
@@ -47,6 +48,7 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
   const { tokenLogin } = useGetLoginInfo();
   const [topVolumesDataNfts, setTopVolumesDataNfts] = useState<VolumeDataNftsType[]>(latestOffersSkeleton);
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
+  const { connected: isSolWalletConnected } = useWallet();
 
   useEffect(() => {
     (async () => {
@@ -76,7 +78,9 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
     })();
   }, []);
 
-  return (
+  return isSolWalletConnected ? (
+    <> </>
+  ) : (
     <>
       <Heading as="h4" fontFamily="Clash-Medium" fontWeight="semibold" size="lg" mb="5" textAlign={["center", "initial"]}>
         Most Traded Data NFTs

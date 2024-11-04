@@ -15,6 +15,9 @@ import {
   dataNftMarketContractAddress_Mx_Mainnet,
   dataNftMintContractAddress_Mx_Mainnet,
   dataNFTFTTicker_Mx_Mainnet,
+  itheumTokenContractAddress_Solana_Testnet,
+  itheumTokenContractAddress_Solana_Devnet,
+  itheumTokenContractAddress_Solana_Mainnet,
 } from "./contractAddresses";
 
 export function contractsForChain(chainID: string): ContractsType {
@@ -71,9 +74,28 @@ export function contractsForChain(chainID: string): ContractsType {
         ],
       };
     }
-  }
+    case "SD": {
+      return {
+        itheumToken: itheumTokenContractAddress_Solana_Devnet,
+        claims: new Address(""),
+        faucet: new Address(""),
+        market: new Address(""),
+        dataNftTokens: [],
+      };
+    }
+    case "S1": {
+      return {
+        itheumToken: itheumTokenContractAddress_Solana_Mainnet,
+        claims: new Address(""),
+        faucet: new Address(""),
+        market: new Address(""),
+        dataNftTokens: [],
+      };
+    }
 
-  throw Error("Undefined chainID");
+    default:
+      throw Error("Undefined chainID");
+  }
 }
 
 export const uxConfig = {
@@ -153,6 +175,8 @@ export const CHAINS = {
   43113: "Avalanche - Testnet",
   "1": "MVX - Mainnet",
   "D": "MVX - Devnet",
+  "SD": "Solana - Devnet",
+  "S1": "Solana - Mainnet",
 };
 
 // these are used by moralis SDK to identify the chain (e.g. Web3Api.account.getNFTs)
@@ -178,6 +202,7 @@ export const OPENSEA_CHAIN_NAMES: Record<string, string> = {
 export const SUPPORTED_CHAINS = ["1", "D", 5, 80001, 97, 1666700000, 43113];
 
 export const WALLETS = {
+  SOLANA: "solana", // not sure if i need to check explicitly for wich wallet is being used
   METAMASK: "evm_metamask",
   WC: "evm_wc",
   MX_XPORTALAPP: "el_maiar",
@@ -200,6 +225,8 @@ export function notSupportedOnChain(menuItem: any, chainID: string) {
     43113: [MENU.CLAIMS, MENU.TX],
     "D": [MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
     "1": [MENU.FAUCET, MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.DATACAT, BUTTONS.JOIN_NOW],
+    "SD": [MENU.PROFILE, MENU.TX, MENU.CLAIMS, MENU.PURCHASED, MENU.DATACAT, MENU.GUARDRAILS],
+    "S1": [MENU.PROFILE, MENU.TX, MENU.CLAIMS, MENU.PURCHASED, MENU.DATACAT, MENU.GUARDRAILS],
   };
 
   if (UNSUPPORTED_CHAIN_FEATURES[chainID]) {
@@ -217,6 +244,7 @@ export const CHAIN_TX_VIEWER = {
   43113: "https://testnet.snowtrace.io/tx/",
   "1": "https://explorer.multiversx.com",
   "D": "https://devnet-explorer.multiversx.com",
+  "SD": "///TODO solana explorer",
 };
 
 export const CHAIN_TX_LIST = {
@@ -229,6 +257,7 @@ export const CHAIN_TX_LIST = {
 export const CHAIN_TOKEN_SYMBOL = (chainID: string) => {
   const mapping: Record<string, any[]> = {
     ITHEUM: ["1", "D"],
+    sITHEUM: ["S1", "SD"], /// TODO needed?
     eITHEUM: [5, 1],
     mITHEUM: [80001, 137],
     bITHEUM: [97, 56],
@@ -355,12 +384,12 @@ export const nfMeIDVaultConfig = {
   "shouldAutoVault": true,
   additionalInformation: {
     "tokenName": "NFMeIDG1",
-    "programName": "NFMe ID Vault",
+    "programName": "NFMe ID Avatar",
     "dataStreamURL_PRD": "https://api.itheumcloud.com/datadexapi/nfmeIdVault/dataStream?dmf-allow-http403=1",
     "dataStreamURL": "https://api.itheumcloud-stg.com/datadexapi/nfmeIdVault/dataStream?dmf-allow-http403=1",
     "dataPreviewURL": "https://api.itheumcloud.com/datadexapi/nfmeIdVault/previewStream",
     "img": "nfme_id_vault_preview",
-    "description": "Activate this Gen1 NFMe ID Vault Data NFT as your web3 identity.",
+    "description": "Activate this Gen1 NFMe ID Data NFT as your web3 identity.",
   },
 };
 
@@ -572,6 +601,17 @@ export const EXPLORER_APP_FOR_TOKEN: Record<string, Record<string, string>> = {
 export const PEERME_TEAM_NAME: string = IS_DEVNET ? "itheum-dao" : "itheum-trailblazer-dao";
 
 export const REPORTED_TO_BE_BAD_DATA_NFTS: string[] = IS_DEVNET ? [] : ["DATANFTFT-e936d4-02", "DATANFTFT-e936d4-03", "DATANFTFT-e936d4-08"];
+
+export const MARKETPLACE_DETAILS_PAGE = IS_DEVNET ? "https://test.datadex.itheum.io/datanfts/marketplace/" : "https://datadex.itheum.io/datanfts/marketplace/";
+
+export const SUPPORTED_MVX_COLLECTIONS = IS_DEVNET
+  ? ["DATANFTFT-e0b917", "DNFTPHMA-9e2b1c", "OASISMUSIC-9b3433", "OASMUSICPL-47b186", "FOOWLDMSC-5ee8ec"]
+  : ["DATANFTFT-e936d4", "DFEE-72425b"];
+
+export enum SOL_ENV_ENUM {
+  devnet = "SD",
+  mainnet = "S1",
+}
 
 export enum MVX_ENV_ENUM {
   devnet = "ED",

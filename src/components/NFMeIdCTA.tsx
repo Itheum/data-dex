@@ -41,7 +41,7 @@ const NFMeIdCTA = () => {
               navigate("/NFMeId");
             }
           }}>
-          Mint Your NFMe ID Vault
+          Mint Your NFMe ID
         </Button>
 
         <Button
