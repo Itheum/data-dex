@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Button, Image, Heading, Link, Flex, Text, Spacer, useColorMode } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { useNavigate } from "react-router-dom";
 import darkNfMeIDVaultHero from "assets/img/landing/nfme/dark-hero-nfme-landing-page.png";
 import liteNfMeIDVaultHero from "assets/img/landing/nfme/lite-hero-nfme-landing-page.png";
@@ -97,35 +98,38 @@ export const LandingPage = ({ onShowConnectWalletModal }: { onShowConnectWalletM
 
 const ClaimCTAs = ({ onShowConnectWalletModal }: { onShowConnectWalletModal?: any }) => {
   const { address: mxAddress } = useGetAccountInfo();
+  const { connected: connectedSolWallet } = useWallet();
   const navigate = useNavigate();
 
   return (
     <Flex flexDirection={{ base: "column", md: "row" }} justifyContent="space-around" alignItems="center">
-      <Flex flexDirection="column" justifyContent="space-between" h="210px" w="390px" my={{ base: "5", md: "0" }}>
-        <Box h="100px">
-          <Image m="auto" boxSize="100px" height="auto" src={mvxIcon} alt="MultiversX " borderRadius="lg" />
-        </Box>
-        <Text fontWeight="bold">Live Now on MultiversX!</Text>
-        <Spacer />
-        <Button
-          m="auto"
-          variant="solid"
-          colorScheme="teal"
-          px={7}
-          py={6}
-          rounded="lg"
-          onClick={() => {
-            gtagGo("nfm", "mint", "mvx");
+      {!connectedSolWallet && (
+        <Flex flexDirection="column" justifyContent="space-between" h="210px" w="390px" my={{ base: "5", md: "0" }}>
+          <Box h="100px">
+            <Image m="auto" boxSize="100px" height="auto" src={mvxIcon} alt="MultiversX " borderRadius="lg" />
+          </Box>
+          <Text fontWeight="bold">Live Now on MultiversX!</Text>
+          <Spacer />
+          <Button
+            m="auto"
+            variant="solid"
+            colorScheme="teal"
+            px={7}
+            py={6}
+            rounded="lg"
+            onClick={() => {
+              gtagGo("nfm", "mint", "mvx");
 
-            if (mxAddress) {
-              navigate("/mintdata?launchTemplate=nfmeidvault");
-            } else {
-              onShowConnectWalletModal("mvx", "/mintdata?launchTemplate=nfmeidvault");
-            }
-          }}>
-          Claim Your NFMe ID on MultiversX
-        </Button>
-      </Flex>
+              if (mxAddress) {
+                navigate("/mintdata?launchTemplate=nfmeidvault");
+              } else {
+                onShowConnectWalletModal("mvx", "/mintdata?launchTemplate=nfmeidvault");
+              }
+            }}>
+            Claim Your NFMe ID on MultiversX
+          </Button>
+        </Flex>
+      )}
 
       <Flex flexDirection="column" justifyContent="space-between" h="210px" w="390px" my={{ base: "5", md: "0" }}>
         <Box h="100px">
