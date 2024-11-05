@@ -322,7 +322,7 @@ export async function retrieveBondsAndNftMeIdVault(
       myBonds.push(bondUpgraded);
     }
     // result
-    const weightedLivelinessScore = totalBondWeight.mul(new BN(100)).div(totalBondAmount);
+    const weightedLivelinessScore = totalBondAmount.isZero() ? new BigNumber(0) : totalBondWeight.mul(new BN(100)).div(totalBondAmount);
 
     return { myBonds, nftMeIdVault: nftMeIdVault, weightedLivelinessScore: weightedLivelinessScore.toNumber() / 100 };
   } catch (error) {
