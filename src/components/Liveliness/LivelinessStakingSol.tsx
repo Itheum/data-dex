@@ -650,9 +650,12 @@ export const LivelinessStakingSol: React.FC = () => {
               <>
                 <Text fontSize="3xl">Combined Liveliness: {combinedLiveliness}% </Text>
                 {IS_DEVNET && (
-                  <Text>
-                    LIVE:{currentLiveLinessScoreLIVE ?? 0} --- diff:{(combinedLiveliness - currentLiveLinessScoreLIVE).toFixed(2)}
-                  </Text>
+                  <>
+                    <Text>
+                      LIVE:{currentLiveLinessScoreLIVE ?? 0} --- diff:{(combinedLiveliness - currentLiveLinessScoreLIVE).toFixed(2)}
+                    </Text>
+                    <Text>Last contract stored value: {parseFloat((addressBondsRewardsData.weightedLivelinessScore.toNumber() / 100).toString())}</Text>
+                  </>
                 )}
                 <Progress hasStripe isAnimated value={combinedLiveliness} rounded="base" colorScheme="teal" width={"100%"} />
                 <Text fontSize="xl">Combined Bonds Staked: {formatNumberToShort(combinedBondsStaked.toNumber() / 10 ** 9)} $ITHEUM</Text>
