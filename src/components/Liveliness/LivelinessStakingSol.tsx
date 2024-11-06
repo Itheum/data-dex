@@ -37,17 +37,12 @@ import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { BOND_CONFIG_INDEX, BONDING_PROGRAM_ID, SOLANA_EXPLORER_URL } from "libs/Solana/config";
 import { CoreSolBondStakeSc, IDL } from "libs/Solana/CoreSolBondStakeSc";
 import { Bond } from "libs/Solana/types";
-import {
-  computeAddressClaimableAmount,
-  computeCurrentLivelinessScore,
-  ITHEUM_TOKEN_ADDRESS,
-  retrieveBondsAndNftMeIdVault,
-  SLOTS_IN_YEAR,
-} from "libs/Solana/utils";
+import { computeAddressClaimableAmount, computeBondScore, ITHEUM_TOKEN_ADDRESS, retrieveBondsAndNftMeIdVault, SLOTS_IN_YEAR } from "libs/Solana/utils";
 import { formatNumberToShort, isValidNumericCharacter } from "libs/utils";
 import { useAccountStore } from "store";
 import { useNftsStore } from "store/nfts";
 import { LivelinessScore } from "./LivelinessScore";
+import { set } from "@coral-xyz/anchor/dist/cjs/utils/features";
 
 const BN10_9 = new BN(10 ** 9);
 
@@ -57,7 +52,7 @@ export const LivelinessStakingSol: React.FC = () => {
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
   const [estCombinedAnnualRewards, setEstCombinedAnnualRewards] = useState<number>(0);
   const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
-  const [combinedLiveliness, setCombinedLiveliness] = useState<number>(0);
+  const [vaultLiveliness, setVaultLiveliness] = useState<number>(0);
   const [combinedBondsStaked, setCombinedBondsStaked] = useState<BN>(new BN(0));
   const [rewardApr, setRewardApr] = useState<number>(0);
   const [maxApr, setMaxApr] = useState<number>(0);
@@ -77,6 +72,8 @@ export const LivelinessStakingSol: React.FC = () => {
   const [allInfoLoading, setAllInfoLoading] = useState<boolean>(true);
   const [nftMeId, setNftMeId] = useState<DasApiAsset>();
   const [numberOfBonds, setNumberOfBonds] = useState<number>();
+  const [vaultBondId, setVaultBondId] = useState<number>();
+  const [vaultBondData, setVaultBondData] = useState<any>();
   const [claimRewardsConfirmationWorkflow, setClaimRewardsConfirmationWorkflow] = useState<boolean>(false);
   const [reinvestRewardsConfirmationWorkflow, setReinvestRewardsConfirmationWorkflow] = useState<boolean>(false);
   const [nftMeIdBond, setNftMeIdBond] = useState<Bond>();
@@ -98,7 +95,7 @@ export const LivelinessStakingSol: React.FC = () => {
     setProgramSol(program);
 
     async function fetchBondConfigPDAs() {
-      const bondConfigPda1 = PublicKey.findProgramAddressSync([Buffer.from("bond_config"), Buffer.from([1])], programId)[0];
+      const bondConfigPda1 = PublicKey.findProgramAddressSync([Buffer.from("bond_config"), Buffer.from([BOND_CONFIG_INDEX])], programId)[0];
       setBondConfigPda(bondConfigPda1);
 
       const _rewardsConfigPda = PublicKey.findProgramAddressSync([Buffer.from("rewards_config")], programId)[0];
@@ -126,15 +123,6 @@ export const LivelinessStakingSol: React.FC = () => {
 
   useEffect(() => {
     if (bondConfigData && rewardsConfigData && addressBondsRewardsData && globalTotalBond) {
-      const newCombinedLiveliness =
-        Math.floor(
-          computeCurrentLivelinessScore(
-            addressBondsRewardsData.lastUpdateTimestamp.toNumber(),
-            bondConfigData.lockPeriod.toNumber(),
-            addressBondsRewardsData.weightedLivelinessScore.toNumber()
-          )
-        ) / 100;
-      setCombinedLiveliness(newCombinedLiveliness > 0 ? newCombinedLiveliness : 0);
       computeAndSetClaimableAmount();
     }
   }, [bondConfigData, rewardsConfigData, addressBondsRewardsData]);
@@ -188,6 +176,13 @@ export const LivelinessStakingSol: React.FC = () => {
     calculateRewardAprAndEstAnnualRewards();
   }, [globalTotalBond, combinedBondsStaked, maxApr]);
 
+  useEffect(() => {
+    if (bondConfigData && vaultBondData) {
+      let vaultScore = computeBondScore(bondConfigData.lockPeriod.toNumber(), Math.floor(Date.now() / 1000), vaultBondData.unbondTimestamp.toNumber());
+      setVaultLiveliness(vaultScore);
+    }
+  }, [bondConfigData, vaultBondData]);
+
   async function fetchRewardsConfigData() {
     if (programSol && userPublicKey && rewardsConfigPda) {
       programSol.account.rewardsConfig.fetch(rewardsConfigPda).then((data: any) => {
@@ -226,9 +221,20 @@ export const LivelinessStakingSol: React.FC = () => {
       const data = await programSol.account.addressBondsRewards.fetch(addressBondsRewardsPda);
       setAddressBondsRewardsData(data);
       setCombinedBondsStaked(data.addressTotalBondAmount);
-      setCombinedLiveliness(data.weightedLivelinessScore.toNumber() / 100);
       setAddressClaimableAmount(data.claimableAmount.toNumber() / 10 ** 9);
       setNumberOfBonds(data.currentIndex);
+      setVaultBondId(data.vaultBondId);
+
+      if (data.vaultBondId != 0) {
+        const vaultBond = await programSol!.account.bond.fetch(
+          PublicKey.findProgramAddressSync(
+            [Buffer.from("bond"), userPublicKey!.toBuffer(), new BN(data.vaultBondId).toBuffer("le", 2)],
+            programSol.programId
+          )[0]
+        );
+        setVaultBondData(vaultBond);
+      }
+
       if (data.currentIndex === 0) setAllInfoLoading(false);
     } catch (error) {
       console.error("Failed to fetch address rewards data:", error);
@@ -383,7 +389,10 @@ export const LivelinessStakingSol: React.FC = () => {
 
   async function renewBondSol(bondId: number) {
     try {
-      const bondIdPda = PublicKey.findProgramAddressSync([Buffer.from("bond"), userPublicKey!.toBuffer(), Buffer.from([bondId])], programSol!.programId)[0];
+      const bondIdPda = PublicKey.findProgramAddressSync(
+        [Buffer.from("bond"), userPublicKey!.toBuffer(), new BN(bondId).toBuffer("le", 2)],
+        programSol!.programId
+      )[0];
 
       const transaction = await programSol!.methods
         .renew(BOND_CONFIG_INDEX, bondId)
@@ -406,13 +415,42 @@ export const LivelinessStakingSol: React.FC = () => {
     }
   }
 
+  async function updateVaultBond(bondId: number, nonce: number) {
+    try {
+      const bondIdPda = PublicKey.findProgramAddressSync(
+        [Buffer.from("bond"), userPublicKey!.toBuffer(), new BN(bondId).toBuffer("le", 2)],
+        programSol!.programId
+      )[0];
+
+      const transaction = await programSol!.methods
+        .updateVaultBond(BOND_CONFIG_INDEX, bondId, new BN(nonce))
+        .accounts({
+          addressBondsRewards: addressBondsRewardsPda,
+          bondConfig: bondConfigPda,
+          bond: bondIdPda,
+          authority: userPublicKey!,
+        })
+        .transaction();
+
+      await sendAndConfirmTransaction({
+        transaction,
+        customErrorMessage: "Failed to update vault bond",
+      });
+    } catch (error) {
+      console.error("Failed to update vault bond:", error);
+    }
+  }
+
   async function topUpBondSol(bondId: number, amount: number) {
     try {
       if (bondId === 0) {
         console.error("Bond not found, id is 0");
         return;
       }
-      const bondIdPda = PublicKey.findProgramAddressSync([Buffer.from("bond"), userPublicKey!.toBuffer(), Buffer.from([bondId])], programSol!.programId)[0];
+      const bondIdPda = PublicKey.findProgramAddressSync(
+        [Buffer.from("bond"), userPublicKey!.toBuffer(), new BN(bondId).toBuffer("le", 2)],
+        programSol!.programId
+      )[0];
       const vaultAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), vaultConfigPda!, true);
       const userItheumAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), userPublicKey!, true);
 
@@ -449,13 +487,13 @@ export const LivelinessStakingSol: React.FC = () => {
     return newExpiry.toDateString();
   };
 
-  async function handleClaimRewardsClick() {
+  async function handleClaimRewardsClick(vault_bond_id: number) {
     try {
       if (!programSol || !userPublicKey) return;
       const vaultAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), vaultConfigPda!, true);
       const userItheumAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), userPublicKey!, true);
       const transaction = await programSol.methods
-        .claimRewards(BOND_CONFIG_INDEX)
+        .claimRewards(BOND_CONFIG_INDEX, vault_bond_id)
         .accounts({
           addressBondsRewards: addressBondsRewardsPda,
           bondConfig: bondConfigPda,
@@ -474,7 +512,7 @@ export const LivelinessStakingSol: React.FC = () => {
         transaction,
         customErrorMessage: "Failed to claim the rewards failed",
       });
-      if (result) updateItheumBalance(itheumBalance + (combinedLiveliness >= 95 ? claimableAmount : (combinedLiveliness * claimableAmount) / 100));
+      if (result) updateItheumBalance(itheumBalance + (vaultLiveliness >= 95 ? claimableAmount : (vaultLiveliness * claimableAmount) / 100));
     } catch (error) {
       console.error("Transaction ClaimingRewards  failed:", error);
     }
@@ -484,7 +522,10 @@ export const LivelinessStakingSol: React.FC = () => {
     try {
       if (!programSol || !userPublicKey || !nftMeIdBond) return;
       const bondId = nftMeIdBond.bondId;
-      const bondIdPda = PublicKey.findProgramAddressSync([Buffer.from("bond"), userPublicKey!.toBuffer(), Buffer.from([bondId])], programSol!.programId)[0];
+      const bondIdPda = PublicKey.findProgramAddressSync(
+        [Buffer.from("bond"), userPublicKey!.toBuffer(), new BN(bondId).toBuffer("le", 2)],
+        programSol!.programId
+      )[0];
 
       const transaction = await programSol.methods
         .stakeRewards(BOND_CONFIG_INDEX, nftMeIdBond.bondId)
@@ -511,7 +552,10 @@ export const LivelinessStakingSol: React.FC = () => {
     try {
       if (!programSol || !userPublicKey || bondId <= 0) return;
 
-      const bondIdPda = PublicKey.findProgramAddressSync([Buffer.from("bond"), userPublicKey.toBuffer(), Buffer.from([bondId])], programSol.programId)[0];
+      const bondIdPda = PublicKey.findProgramAddressSync(
+        [Buffer.from("bond"), userPublicKey.toBuffer(), new BN(bondId).toBuffer("le", 2)],
+        programSol.programId
+      )[0];
       const vaultAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), vaultConfigPda!, true);
       const userItheumAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), userPublicKey!, true);
 
@@ -601,7 +645,7 @@ export const LivelinessStakingSol: React.FC = () => {
                 size="sm"
                 isDisabled={!userPublicKey || topUpItheumValue < 1 || hasPendingTransaction}
                 onClick={() => {
-                  topUpBondSol(bond?.bondId ?? 0, topUpItheumValue);
+                  topUpBondSol(bond?.bondId ?? 0, topUpItheumValue); // top up works only with the vault bond
                 }}>
                 Top-Up Now
               </Button>
@@ -628,7 +672,8 @@ export const LivelinessStakingSol: React.FC = () => {
     return (
       <VStack>
         <LivelinessScore unbondTimestamp={bond?.unbondTimestamp} lockPeriod={bondConfigData?.lockPeriod.toNumber()} />
-        <TopUpSection bond={bond} />
+        {/* REPLACE WITH LOGIC BELOW */}
+        {bond.bondId == vaultBondId && <TopUpSection bond={bond} />}
       </VStack>
     );
   };
@@ -648,22 +693,14 @@ export const LivelinessStakingSol: React.FC = () => {
               </Flex>
             ) : (
               <>
-                <Text fontSize="3xl">Combined Liveliness: {combinedLiveliness}% </Text>
-                {IS_DEVNET && (
-                  <>
-                    <Text>
-                      LIVE:{currentLiveLinessScoreLIVE ?? 0} --- diff:{(combinedLiveliness - currentLiveLinessScoreLIVE).toFixed(2)}
-                    </Text>
-                    <Text>Last contract stored value: {parseFloat((addressBondsRewardsData.weightedLivelinessScore.toNumber() / 100).toString())}</Text>
-                  </>
-                )}
-                <Progress hasStripe isAnimated value={combinedLiveliness} rounded="base" colorScheme="teal" width={"100%"} />
+                <Text fontSize="3xl">Vault Liveliness: {vaultLiveliness}% </Text>
+                <Progress hasStripe isAnimated value={vaultLiveliness} rounded="base" colorScheme="teal" width={"100%"} />
                 <Text fontSize="xl">Combined Bonds Staked: {formatNumberToShort(combinedBondsStaked.toNumber() / 10 ** 9)} $ITHEUM</Text>
                 <Text fontSize="xl">Global Total Bonded: {formatNumberToShort(globalTotalBond.div(BN10_9).toNumber())} $ITHEUM</Text>
                 <Text fontSize="xl">Current Staking APR: {isNaN(rewardApr) ? 0 : rewardApr}%</Text>
                 {maxApr > 0 && <Text fontSize="xl">Max APR: {maxApr}%</Text>}
                 <Text fontSize="xl">
-                  Current Accumulated Rewards: {formatNumberToShort(combinedLiveliness >= 95 ? claimableAmount : (combinedLiveliness * claimableAmount) / 100)}{" "}
+                  Current Accumulated Rewards: {formatNumberToShort(vaultLiveliness >= 95 ? claimableAmount : (vaultLiveliness * claimableAmount) / 100)}{" "}
                   $ITHEUM
                 </Text>
                 <Text fontSize="xl">Potential Rewards If Combined Liveliness &gt;95%: {formatNumberToShort(claimableAmount)} $ITHEUM</Text>
@@ -673,7 +710,7 @@ export const LivelinessStakingSol: React.FC = () => {
                       <Tooltip
                         hasArrow
                         shouldWrapChildren
-                        isDisabled={!(!userPublicKey || claimableAmount < 1 || combinedLiveliness === 0)}
+                        isDisabled={!(!userPublicKey || claimableAmount < 1 || vaultLiveliness === 0)}
                         label={"Rewards claiming is disabled if liveliness is 0, rewards amount is lower than 1 or there are transactions pending"}>
                         <Button
                           fontSize="lg"
@@ -681,13 +718,15 @@ export const LivelinessStakingSol: React.FC = () => {
                           px={6}
                           width="180px"
                           onClick={() => {
-                            if (combinedLiveliness >= 95) {
-                              handleClaimRewardsClick();
+                            if (
+                              computeBondScore(bondConfigData.lockPeriod.toNumber(), Math.floor(Date.now() / 1000), vaultBondData.unbondTimestamp.toNumber())
+                            ) {
+                              handleClaimRewardsClick(addressBondsRewardsData.vaultBondId);
                             } else {
                               setClaimRewardsConfirmationWorkflow(true);
                             }
                           }}
-                          isDisabled={!userPublicKey || claimableAmount < 1 || combinedLiveliness === 0 || hasPendingTransaction}>
+                          isDisabled={!userPublicKey || claimableAmount < 1 || vaultLiveliness === 0 || hasPendingTransaction || vaultBondId == 0}>
                           Claim Rewards
                         </Button>
                       </Tooltip>
@@ -696,7 +735,7 @@ export const LivelinessStakingSol: React.FC = () => {
                       <Tooltip
                         hasArrow
                         shouldWrapChildren
-                        isDisabled={!(!userPublicKey || nftMeId === undefined || claimableAmount < 1 || combinedLiveliness === 0)}
+                        isDisabled={!(!userPublicKey || nftMeId === undefined || claimableAmount < 1 || vaultLiveliness === 0)}
                         label={
                           "Rewards reinvesting is disabled if you have no NFT as a Primary NFMe ID, liveliness is 0, rewards amount is lower than 1 or there are transactions pending"
                         }>
@@ -705,7 +744,9 @@ export const LivelinessStakingSol: React.FC = () => {
                           colorScheme="teal"
                           px={6}
                           width="180px"
-                          isDisabled={!userPublicKey || nftMeId === undefined || claimableAmount < 1 || combinedLiveliness === 0 || hasPendingTransaction}
+                          isDisabled={
+                            !userPublicKey || nftMeId === undefined || claimableAmount < 1 || vaultLiveliness === 0 || hasPendingTransaction || vaultBondId == 0
+                          }
                           onClick={() => {
                             setReinvestRewardsConfirmationWorkflow(true);
                           }}>
@@ -739,128 +780,159 @@ export const LivelinessStakingSol: React.FC = () => {
         ) : !numberOfBonds ? (
           <NoDataHere imgFromTop="2" />
         ) : (
-          bonds?.map((currentBond, index) => {
-            const dataNft = solNfts?.find((dataNft) => currentBond.assetId.toString() === dataNft.id);
-            if (!dataNft) return null;
-            const metadata = dataNft.content.metadata;
-            return (
-              <Card
-                _disabled={{ cursor: "not-allowed", opacity: "0.7" }}
-                key={index}
-                bg={colorMode === "dark" ? "#1b1b1b50" : "white"}
-                border=".1rem solid"
-                borderColor="#00C79740"
-                borderRadius="3xl"
-                p={5}
-                w="100%"
-                aria-disabled={currentBond.state === 0}>
-                <Flex gap={5} flexDirection={{ base: "column", md: "row" }}>
-                  <Box minW="250px" textAlign="center">
-                    <Box>
-                      <NftMediaComponent
-                        ///TODO? extra asset nftMedia={dataNft.content.files as []}
-                        imageUrls={[dataNft.content.links && dataNft.content.links["image"] ? (dataNft.content.links["image"] as string) : DEFAULT_NFT_IMAGE]}
-                        imageHeight="160px"
-                        imageWidth="160px"
-                        borderRadius="10px"
-                      />
+          bonds
+            ?.slice()
+            .sort((a, b) => {
+              // Check if either bond has the specified vaultBondId and prioritize it as top 1
+              // Replace with your actual vaultBondId variable
+              if (a.bondId === vaultBondId) return -1; // `a` is prioritized to top if it matches vaultBondId
+              if (b.bondId === vaultBondId) return 1; // `b` is prioritized if it matches vaultBondId
+
+              // Sort by state, with bonds having state = 1 coming first
+              if (a.state === 1 && b.state !== 1) return -1;
+              if (b.state === 1 && a.state !== 1) return 1;
+
+              // Otherwise, maintain the existing order
+              return 0;
+            })
+            .map((currentBond, index) => {
+              const dataNft = solNfts?.find((dataNft) => currentBond.assetId.toString() === dataNft.id);
+              if (!dataNft) return null;
+              const metadata = dataNft.content.metadata;
+              return (
+                <Card
+                  _disabled={{ cursor: "not-allowed", opacity: "0.7" }}
+                  key={index}
+                  bg={colorMode === "dark" ? "#1b1b1b50" : "white"}
+                  border=".1rem solid"
+                  borderColor="#00C79740"
+                  borderRadius="3xl"
+                  p={5}
+                  w="100%"
+                  aria-disabled={currentBond.state === 0}>
+                  <Flex gap={5} flexDirection={{ base: "column", md: "row" }}>
+                    <Box minW="250px" textAlign="center">
+                      <Box>
+                        <NftMediaComponent
+                          ///TODO? extra asset nftMedia={dataNft.content.files as []}
+                          imageUrls={[dataNft.content.links && dataNft.content.links["image"] ? (dataNft.content.links["image"] as string) : DEFAULT_NFT_IMAGE]}
+                          imageHeight="160px"
+                          imageWidth="160px"
+                          borderRadius="10px"
+                        />
+                      </Box>
+                      <Flex pt={3} flexDirection={"column"} alignItems="center" w="100%">
+                        <Button
+                          w={"100%"}
+                          colorScheme="teal"
+                          px={6}
+                          isDisabled={currentBond.state == 0 || !userPublicKey || hasPendingTransaction}
+                          onClick={() => {
+                            renewBondSol(currentBond?.bondId ?? 0);
+                          }}>
+                          Renew Bond
+                        </Button>
+                        <Text mt={1} fontSize=".75rem">{`New expiry will be ${calculateNewPeriodAfterNewBond(bondConfigData?.lockPeriod.toNumber())}`}</Text>
+                      </Flex>
+                      <Flex gap={4} pt={3} flexDirection={"column"} w="100%" alignItems="center">
+                        <Flex flexDirection={{ base: "column" }} gap={2} pt={3} alignItems="center" w="100%">
+                          {!checkIfBondIsExpired(currentBond?.unbondTimestamp) ? (
+                            <Button
+                              w="100%"
+                              colorScheme="red"
+                              variant="outline"
+                              textColor="indianred"
+                              fontWeight="400"
+                              isDisabled={currentBond.state == 0 || !userPublicKey || hasPendingTransaction}
+                              onClick={() => {
+                                setWithdrawBondConfirmationWorkflow({
+                                  bondId: currentBond.bondId,
+                                  bondAmount: currentBond.bondAmount.toNumber() / 10 ** 9,
+                                  bondExpired: false,
+                                });
+                              }}>
+                              Withdraw Bond
+                            </Button>
+                          ) : (
+                            <Button
+                              w="100%"
+                              colorScheme="teal"
+                              variant="outline"
+                              textColor="teal.200"
+                              fontWeight="400"
+                              isDisabled={currentBond.state === 0 || hasPendingTransaction}
+                              onClick={() => {
+                                setWithdrawBondConfirmationWorkflow({
+                                  bondId: currentBond.bondId,
+                                  bondAmount: currentBond.bondAmount.toNumber() / 10 ** 9,
+                                  bondExpired: true,
+                                });
+                              }}>
+                              Withdraw Bond
+                            </Button>
+                          )}
+                          <Text fontSize="1rem" textColor="teal.200">
+                            {formatNumberToShort(new BN(currentBond?.bondAmount ?? 0).div(BN10_9).toNumber())}
+                            &nbsp;$ITHEUM Bonded
+                          </Text>
+                          <Box>
+                            {currentBond.bondId !== vaultBondId ? (
+                              <Button
+                                colorScheme="teal"
+                                isDisabled={userPublicKey?.toBase58() === ""}
+                                onClick={() => {
+                                  updateVaultBond(currentBond.bondId, dataNft.compression.leaf_id);
+                                }}>
+                                Set as Primary NFMe ID
+                              </Button>
+                            ) : (
+                              <Text fontSize="md" w="200px" m="auto">
+                                ✅ Currently set as your Primary NFMe ID
+                              </Text>
+                            )}
+                          </Box>
+                        </Flex>
+                      </Flex>{" "}
                     </Box>
-                    <Flex pt={3} flexDirection={"column"} alignItems="center" w="100%">
-                      <Button
-                        w={"100%"}
-                        colorScheme="teal"
-                        px={6}
-                        isDisabled={currentBond.state == 0 || !userPublicKey || hasPendingTransaction}
-                        onClick={() => {
-                          renewBondSol(currentBond?.bondId ?? 0);
-                        }}>
-                        Renew Bond
-                      </Button>
-                      <Text mt={1} fontSize=".75rem">{`New expiry will be ${calculateNewPeriodAfterNewBond(bondConfigData?.lockPeriod.toNumber())}`}</Text>
-                    </Flex>
-                    <Flex gap={4} pt={3} flexDirection={"column"} w="100%" alignItems="center">
-                      <Flex flexDirection={{ base: "column" }} gap={2} pt={3} alignItems="center" w="100%">
-                        {!checkIfBondIsExpired(currentBond?.unbondTimestamp) ? (
-                          <Button
-                            w="100%"
-                            colorScheme="red"
-                            variant="outline"
-                            textColor="indianred"
-                            fontWeight="400"
-                            isDisabled={currentBond.state == 0 || !userPublicKey || hasPendingTransaction}
-                            onClick={() => {
-                              setWithdrawBondConfirmationWorkflow({
-                                bondId: currentBond.bondId,
-                                bondAmount: currentBond.bondAmount.toNumber() / 10 ** 9,
-                                bondExpired: false,
-                              });
-                            }}>
-                            Withdraw Bond
-                          </Button>
-                        ) : (
-                          <Button
-                            w="100%"
-                            colorScheme="teal"
-                            variant="outline"
-                            textColor="teal.200"
-                            fontWeight="400"
-                            isDisabled={currentBond.state === 0 || hasPendingTransaction}
-                            onClick={() => {
-                              setWithdrawBondConfirmationWorkflow({
-                                bondId: currentBond.bondId,
-                                bondAmount: currentBond.bondAmount.toNumber() / 10 ** 9,
-                                bondExpired: true,
-                              });
-                            }}>
-                            Withdraw Bond
-                          </Button>
-                        )}
-                        <Text fontSize="1rem" textColor="teal.200">
-                          {formatNumberToShort(new BN(currentBond?.bondAmount ?? 0).div(BN10_9).toNumber())}
-                          &nbsp;$ITHEUM Bonded
+                    <Flex p={0} ml={{ md: "3" }} flexDirection="column" alignItems="start" w="full">
+                      <Flex flexDirection="column" w="100%">
+                        <Text fontFamily="Clash-Medium">{metadata.name}</Text>
+                        <Link isExternal href={`${SOLANA_EXPLORER_URL}address/${dataNft.id}?cluster=${networkConfiguration}`}>
+                          <Text fontSize="lg" pb={3}>
+                            {`Nft Id: ${dataNft.id.substring(0, 6)}...${dataNft.id.substring(dataNft.id.length - 6)}`}
+                            <ExternalLinkIcon marginLeft={3} marginBottom={1} />
+                          </Text>
+                        </Link>
+                        <Text fontSize="lg" pb={3}>
+                          {`Bond Id: ${currentBond.bondId}`}
                         </Text>
                       </Flex>
-                    </Flex>{" "}
-                  </Box>
-                  <Flex p={0} ml={{ md: "3" }} flexDirection="column" alignItems="start" w="full">
-                    <Flex flexDirection="column" w="100%">
-                      <Text fontFamily="Clash-Medium">{metadata.name}</Text>
-                      <Link isExternal href={`${SOLANA_EXPLORER_URL}address/${dataNft.id}?cluster=${networkConfiguration}`}>
-                        <Text fontSize="lg" pb={3}>
-                          {`Nft Id: ${dataNft.id.substring(0, 6)}...${dataNft.id.substring(dataNft.id.length - 6)}`}
-                          <ExternalLinkIcon marginLeft={3} marginBottom={1} />
-                        </Text>
-                      </Link>
-                      <Text fontSize="lg" pb={3}>
-                        {`Bond Id: ${currentBond.bondId}`}
-                      </Text>
+                      {currentBond.state !== 0 && <LivelinessContainer bond={currentBond} />}
                     </Flex>
-                    {currentBond.state !== 0 && <LivelinessContainer bond={currentBond} />}
+                    {currentBond.state === 0 && (
+                      <Box
+                        position="absolute"
+                        top="0"
+                        left="0"
+                        width="100%"
+                        height="100%"
+                        bg={"rgba(202, 0, 0, 0.05)"}
+                        zIndex="11"
+                        opacity="0.9"
+                        pointerEvents="none"
+                        borderRadius="inherit"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center">
+                        <Text fontSize="3xl" mt={2} fontWeight="bold" color="red.500">
+                          Inactive
+                        </Text>
+                      </Box>
+                    )}
                   </Flex>
-                  {currentBond.state === 0 && (
-                    <Box
-                      position="absolute"
-                      top="0"
-                      left="0"
-                      width="100%"
-                      height="100%"
-                      bg={"rgba(202, 0, 0, 0.05)"}
-                      zIndex="11"
-                      opacity="0.9"
-                      pointerEvents="none"
-                      borderRadius="inherit"
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center">
-                      <Text fontSize="3xl" mt={2} fontWeight="bold" color="red.500">
-                        Inactive
-                      </Text>
-                    </Box>
-                  )}
-                </Flex>
-              </Card>
-            );
-          })
+                </Card>
+              );
+            })
         )}
       </Flex>
 
@@ -873,12 +945,12 @@ export const LivelinessStakingSol: React.FC = () => {
             setClaimRewardsConfirmationWorkflow(false);
           }}
           onProceed={() => {
-            handleClaimRewardsClick();
+            handleClaimRewardsClick(addressBondsRewardsData.vaultBondId);
             setClaimRewardsConfirmationWorkflow(false);
           }}
           bodyContent={
             <>
-              <Text mb="5">To get Max Accumulated Rewards, your Combined Liveliness must be over 95%. Yours is currently {combinedLiveliness}%</Text>
+              <Text mb="5">To get Max Accumulated Rewards, your Combined Liveliness must be over 95%. Yours is currently {vaultLiveliness}%</Text>
               <Text mt="5">To boost Combined Liveliness, renew the bond on each Data NFT before claiming</Text>
               <Text mt="5">Cancel to renew bonds first, or proceed if {`you're`} okay with lower rewards.</Text>
             </>
@@ -906,12 +978,12 @@ export const LivelinessStakingSol: React.FC = () => {
                 Info: The reinvested amount will be added to the latest active bond and will renew the bond.
               </Text>{" "}
               <Text mt={1} fontSize=".75rem">{`New expiry will be ${calculateNewPeriodAfterNewBond(bondConfigData?.lockPeriod.toNumber())}`}</Text>
-              {combinedLiveliness <= 95 && (
+              {vaultLiveliness <= 95 && (
                 <>
                   <Text mb="3" fontWeight={"bold"} fontSize={"lg"} mt="7">
                     Get Max Rewards if Combined Liveliness {`>`} 95%
                   </Text>
-                  <Text mb="5">To reinvest Max Accumulated Rewards, your Combined Liveliness must be over 95%. Yours is currently {combinedLiveliness}%</Text>
+                  <Text mb="5">To reinvest Max Accumulated Rewards, your Combined Liveliness must be over 95%. Yours is currently {vaultLiveliness}%</Text>
                   <Text mt="5">To boost Combined Liveliness, renew the bond on each Data NFT before reinvesting.</Text>
                   <Text mt="5">Cancel to renew bonds first, or proceed if {`you're`} okay with lower rewards.</Text>
                 </>
