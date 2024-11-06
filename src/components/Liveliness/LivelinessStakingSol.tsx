@@ -492,6 +492,10 @@ export const LivelinessStakingSol: React.FC = () => {
       if (!programSol || !userPublicKey) return;
       const vaultAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), vaultConfigPda!, true);
       const userItheumAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), userPublicKey!, true);
+      const bondPda = PublicKey.findProgramAddressSync(
+        [Buffer.from("bond"), userPublicKey.toBuffer(), new BN(vault_bond_id).toBuffer("le", 2)],
+        programSol.programId
+      )[0];
       const transaction = await programSol.methods
         .claimRewards(BOND_CONFIG_INDEX, vault_bond_id)
         .accounts({
@@ -501,6 +505,7 @@ export const LivelinessStakingSol: React.FC = () => {
           mintOfTokenToReceive: new PublicKey(ITHEUM_TOKEN_ADDRESS),
           vaultConfig: vaultConfigPda,
           vault: vaultAta,
+          bond: bondPda,
           authority: userPublicKey,
           authorityTokenAccount: userItheumAta,
           tokenProgram: TOKEN_PROGRAM_ID,
@@ -518,17 +523,17 @@ export const LivelinessStakingSol: React.FC = () => {
     }
   }
 
-  async function handleReinvestRewardsClick() {
+  async function handleReinvestRewardsClick(vaultBondId: number) {
     try {
       if (!programSol || !userPublicKey || !nftMeIdBond) return;
-      const bondId = nftMeIdBond.bondId;
+
       const bondIdPda = PublicKey.findProgramAddressSync(
-        [Buffer.from("bond"), userPublicKey!.toBuffer(), new BN(bondId).toBuffer("le", 2)],
+        [Buffer.from("bond"), userPublicKey!.toBuffer(), new BN(vaultBondId).toBuffer("le", 2)],
         programSol!.programId
       )[0];
 
       const transaction = await programSol.methods
-        .stakeRewards(BOND_CONFIG_INDEX, nftMeIdBond.bondId)
+        .stakeRewards(BOND_CONFIG_INDEX, vaultBondId)
         .accounts({
           addressBondsRewards: addressBondsRewardsPda,
           bondConfig: bondConfigPda,
@@ -721,7 +726,7 @@ export const LivelinessStakingSol: React.FC = () => {
                             if (
                               computeBondScore(bondConfigData.lockPeriod.toNumber(), Math.floor(Date.now() / 1000), vaultBondData.unbondTimestamp.toNumber())
                             ) {
-                              handleClaimRewardsClick(addressBondsRewardsData.vaultBondId);
+                              handleClaimRewardsClick(vaultBondId!);
                             } else {
                               setClaimRewardsConfirmationWorkflow(true);
                             }
@@ -969,7 +974,7 @@ export const LivelinessStakingSol: React.FC = () => {
             setReinvestRewardsConfirmationWorkflow(false);
           }}
           onProceed={() => {
-            handleReinvestRewardsClick();
+            handleReinvestRewardsClick(vaultBondId!);
             setReinvestRewardsConfirmationWorkflow(false);
           }}
           bodyContent={
