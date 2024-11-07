@@ -138,19 +138,22 @@ const ClaimCTAs = ({ onShowConnectWalletModal }: { onShowConnectWalletModal?: an
         <Text fontWeight="bold">Coming November 2024 to Solana</Text>
         <Spacer />
         <Button
-          as={Link}
           m="auto"
+          variant="solid"
           colorScheme="teal"
-          variant="outline"
           px={7}
           py={6}
           rounded="lg"
           onClick={() => {
             gtagGo("nfm", "mint", "sol");
-          }}
-          href="https://docs.google.com/forms/d/e/1FAIpQLScpguzOBjyQBj2iDzaI2E0wN9SIAQGoS92FPDM9qkk8B-rzFA/viewform"
-          isExternal>
-          Claim NFMe ID NFT Whitelist on Solana
+
+            if (connectedSolWallet) {
+              navigate("/mintdata?launchTemplate=nfmeidvault");
+            } else {
+              window.open("https://docs.google.com/forms/d/e/1FAIpQLScpguzOBjyQBj2iDzaI2E0wN9SIAQGoS92FPDM9qkk8B-rzFA/viewform");
+            }
+          }}>
+          {connectedSolWallet ? "Mint NFMe ID NFT on Solana" : "Claim NFMe ID NFT Whitelist on Solana"}
         </Button>
       </Flex>
     </Flex>

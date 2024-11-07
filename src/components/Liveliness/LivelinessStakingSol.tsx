@@ -32,7 +32,6 @@ import NftMediaComponent from "components/NftMediaComponent";
 import { NoDataHere } from "components/Sections/NoDataHere";
 import { ConfirmationDialog } from "components/UtilComps/ConfirmationDialog";
 import { useNetworkConfiguration } from "contexts/sol/SolNetworkConfigurationProvider";
-import { IS_DEVNET } from "libs/config";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { BOND_CONFIG_INDEX, BONDING_PROGRAM_ID, SOLANA_EXPLORER_URL } from "libs/Solana/config";
 import { CoreSolBondStakeSc, IDL } from "libs/Solana/CoreSolBondStakeSc";
@@ -42,7 +41,6 @@ import { formatNumberToShort, isValidNumericCharacter } from "libs/utils";
 import { useAccountStore } from "store";
 import { useNftsStore } from "store/nfts";
 import { LivelinessScore } from "./LivelinessScore";
-import { set } from "@coral-xyz/anchor/dist/cjs/utils/features";
 
 const BN10_9 = new BN(10 ** 9);
 
@@ -82,7 +80,6 @@ export const LivelinessStakingSol: React.FC = () => {
   const [claimableAmount, setClaimableAmount] = useState<number>(0);
   const [withdrawBondConfirmationWorkflow, setWithdrawBondConfirmationWorkflow] = useState<{ bondId: number; bondAmount: number; bondExpired: boolean }>();
   const toast = useToast();
-  const [currentLiveLinessScoreLIVE, setCurrentLiveLinessScoreLIVE] = useState<number>(0);
   const [hasPendingTransaction, setHasPendingTransaction] = useState<boolean>(false);
   const { networkConfiguration } = useNetworkConfiguration();
 
@@ -139,6 +136,7 @@ export const LivelinessStakingSol: React.FC = () => {
         }
       }
     }
+
     fetchAccountInfo();
   }, [addressBondsRewardsPda, programSol]);
 
@@ -149,7 +147,11 @@ export const LivelinessStakingSol: React.FC = () => {
   useEffect(() => {
     if (nftMeIdBond && solNfts.length > 0 && userPublicKey) {
       const _nftMeId = solNfts.find((nft) => nft.id == nftMeIdBond.assetId.toString());
-      if (_nftMeId === undefined) console.error("NftMeID has not been found");
+
+      if (_nftMeId === undefined) {
+        console.error("NftMeID has not been found");
+      }
+
       setNftMeId(_nftMeId);
       setAllInfoLoading(false);
     }
@@ -178,7 +180,7 @@ export const LivelinessStakingSol: React.FC = () => {
 
   useEffect(() => {
     if (bondConfigData && vaultBondData) {
-      let vaultScore = computeBondScore(bondConfigData.lockPeriod.toNumber(), Math.floor(Date.now() / 1000), vaultBondData.unbondTimestamp.toNumber());
+      const vaultScore = computeBondScore(bondConfigData.lockPeriod.toNumber(), Math.floor(Date.now() / 1000), vaultBondData.unbondTimestamp.toNumber());
       setVaultLiveliness(vaultScore);
     }
   }, [bondConfigData, vaultBondData]);
@@ -211,6 +213,7 @@ export const LivelinessStakingSol: React.FC = () => {
       addressBondsRewardsData.addressTotalBondAmount,
       globalTotalBond
     );
+
     setClaimableAmount(_claimableAmount / 10 ** 9 + addressClaimableAmount);
   }
 
@@ -248,13 +251,18 @@ export const LivelinessStakingSol: React.FC = () => {
     }
 
     if (globalTotalBond.toNumber() > 0) {
-      if (value) value = value * 10 ** 9;
-      else value = 0;
+      if (value) {
+        value = value * 10 ** 9;
+      } else {
+        value = 0;
+      }
+
       const amountToCompute = amount ? amount.add(new BN(value)) : combinedBondsStaked;
       const percentage: number = amountToCompute.toNumber() / globalTotalBond.toNumber();
       const localRewardsPerBlock: number = globalRewardsPerBlock * percentage;
       const rewardPerYear: number = localRewardsPerBlock * SLOTS_IN_YEAR;
       const calculatedRewardApr = Math.floor((rewardPerYear / amountToCompute.toNumber()) * 10000) / 100;
+
       if (!value) {
         if (maxApr === 0) {
           setRewardApr(calculatedRewardApr);
@@ -267,11 +275,13 @@ export const LivelinessStakingSol: React.FC = () => {
         if (amount) {
           return rewardPerYear;
         }
+
         setEstCombinedAnnualRewards(rewardPerYear);
       } else {
         if (amount) {
           return (amountToCompute.toNumber() * maxApr) / 100;
         }
+
         setEstCombinedAnnualRewards((amountToCompute.toNumber() * maxApr) / 100);
       }
     }
@@ -286,7 +296,6 @@ export const LivelinessStakingSol: React.FC = () => {
 
         setBonds(myBonds);
         setNftMeIdBond(nftMeIdVault);
-        setCurrentLiveLinessScoreLIVE(weightedLivelinessScore);
       });
     }
   }
@@ -294,16 +303,15 @@ export const LivelinessStakingSol: React.FC = () => {
   async function sendAndConfirmTransaction({
     transaction,
     customErrorMessage = "Transaction failed",
-    explorerLinkMessage = "View transaction on Solana Explorer",
   }: {
     transaction: Transaction;
     customErrorMessage?: string;
-    explorerLinkMessage?: string;
   }) {
     try {
       if (!userPublicKey) {
         throw new Error("Wallet not connected");
       }
+
       const latestBlockHash = await connection.getLatestBlockhash();
       transaction.recentBlockhash = latestBlockHash.blockhash;
       transaction.feePayer = userPublicKey;
@@ -447,14 +455,16 @@ export const LivelinessStakingSol: React.FC = () => {
         console.error("Bond not found, id is 0");
         return;
       }
+
       const bondIdPda = PublicKey.findProgramAddressSync(
         [Buffer.from("bond"), userPublicKey!.toBuffer(), new BN(bondId).toBuffer("le", 2)],
         programSol!.programId
       )[0];
+
       const vaultAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), vaultConfigPda!, true);
       const userItheumAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), userPublicKey!, true);
-
       const amountToSend: BN = new BN(amount).mul(BN10_9);
+
       const transaction = await programSol!.methods
         .topUp(BOND_CONFIG_INDEX, bondId, amountToSend)
         .accounts({
@@ -471,10 +481,12 @@ export const LivelinessStakingSol: React.FC = () => {
           associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         })
         .transaction();
+
       const result = await sendAndConfirmTransaction({
         transaction,
         customErrorMessage: "Failed to top-up bond",
       });
+
       if (result) updateItheumBalance(itheumBalance - amount);
     } catch (error) {
       console.error("Transaction to top-up bondfailed:", error);
@@ -496,6 +508,7 @@ export const LivelinessStakingSol: React.FC = () => {
         [Buffer.from("bond"), userPublicKey.toBuffer(), new BN(vault_bond_id).toBuffer("le", 2)],
         programSol.programId
       )[0];
+
       const transaction = await programSol.methods
         .claimRewards(BOND_CONFIG_INDEX, vault_bond_id)
         .accounts({
@@ -802,7 +815,10 @@ export const LivelinessStakingSol: React.FC = () => {
             })
             .map((currentBond, index) => {
               const dataNft = solNfts?.find((dataNft) => currentBond.assetId.toString() === dataNft.id);
-              if (!dataNft) return null;
+              if (!dataNft) {
+                return null;
+              }
+
               const metadata = dataNft.content.metadata;
               return (
                 <Card
@@ -816,10 +832,9 @@ export const LivelinessStakingSol: React.FC = () => {
                   w="100%"
                   aria-disabled={currentBond.state === 0}>
                   <Flex gap={5} flexDirection={{ base: "column", md: "row" }}>
-                    <Box minW="250px" textAlign="center">
+                    <Box minW="250px" textAlign="center" bgColor="1blue.900">
                       <Box>
                         <NftMediaComponent
-                          ///TODO? extra asset nftMedia={dataNft.content.files as []}
                           imageUrls={[dataNft.content.links && dataNft.content.links["image"] ? (dataNft.content.links["image"] as string) : DEFAULT_NFT_IMAGE]}
                           imageHeight="160px"
                           imageWidth="160px"
@@ -899,20 +914,24 @@ export const LivelinessStakingSol: React.FC = () => {
                         </Flex>
                       </Flex>{" "}
                     </Box>
-                    <Flex p={0} ml={{ md: "3" }} flexDirection="column" alignItems="start" w="full">
-                      <Flex flexDirection="column" w="100%">
+                    <Flex p={0} ml={{ md: "3" }} flexDirection="column" alignItems="start" w="full" bgColor="1green.900">
+                      <Flex flexDirection="column" w="100%" bgColor="1pink.900">
                         <Text fontFamily="Clash-Medium">{metadata.name}</Text>
                         <Link isExternal href={`${SOLANA_EXPLORER_URL}address/${dataNft.id}?cluster=${networkConfiguration}`}>
                           <Text fontSize="lg" pb={3}>
-                            {`Nft Id: ${dataNft.id.substring(0, 6)}...${dataNft.id.substring(dataNft.id.length - 6)}`}
+                            {`Nft ID: ${dataNft.id.substring(0, 6)}...${dataNft.id.substring(dataNft.id.length - 6)}`}
                             <ExternalLinkIcon marginLeft={3} marginBottom={1} />
                           </Text>
                         </Link>
                         <Text fontSize="lg" pb={3}>
-                          {`Bond Id: ${currentBond.bondId}`}
+                          {`Bond ID: ${currentBond.bondId}`}
                         </Text>
                       </Flex>
-                      {currentBond.state !== 0 && <LivelinessContainer bond={currentBond} />}
+                      {currentBond.state !== 0 && (
+                        <Box w="100%" bgColor="1blue.800">
+                          <LivelinessContainer bond={currentBond} />
+                        </Box>
+                      )}
                     </Flex>
                     {currentBond.state === 0 && (
                       <Box
