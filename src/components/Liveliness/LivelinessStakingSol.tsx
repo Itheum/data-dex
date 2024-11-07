@@ -228,6 +228,15 @@ export const LivelinessStakingSol: React.FC = () => {
       setNumberOfBonds(data.currentIndex);
       setVaultBondId(data.vaultBondId);
 
+      if (data.vaultBondId == 0) {
+        toast({
+          title: "Vault Warning",
+          description: "Your vault bond is not set, please set it to be able to claim rewards",
+          status: "warning",
+          duration: 5000,
+        });
+      }
+
       if (data.vaultBondId != 0) {
         const vaultBond = await programSol!.account.bond.fetch(
           PublicKey.findProgramAddressSync(
