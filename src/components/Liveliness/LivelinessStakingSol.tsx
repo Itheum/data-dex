@@ -235,6 +235,14 @@ export const LivelinessStakingSol: React.FC = () => {
             programSol.programId
           )[0]
         );
+        if (vaultBond.state === 0) {
+          toast({
+            title: "Vault Warning",
+            description: "Your vault bond is inactive, please change it to able to claim rewards",
+            status: "warning",
+            duration: 5000,
+          });
+        }
         setVaultBondData(vaultBond);
       }
 
