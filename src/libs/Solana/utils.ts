@@ -120,13 +120,6 @@ export async function fetchRewardsConfigSol(programSol: any) {
   }
 }
 
-export function computeCurrentLivelinessScore(lastUpdateTimestamp: number, lockPeriod: number, weightedLivelinessScore: number): number {
-  const currentTimestamp = Math.round(Date.now() / 1000);
-  const decay = (currentTimestamp - lastUpdateTimestamp) / lockPeriod;
-  const livelinessScore = weightedLivelinessScore * (1 - decay);
-  return livelinessScore; // returns 9456 for 95.46%
-}
-
 export function computeAddressClaimableAmount(
   currentSlot: BN,
   rewardsConfig: any,
@@ -227,15 +220,13 @@ export async function createBondTransaction(
       return _bondId;
     });
 
-    const isVault = true;
-
-    const bondPda = PublicKey.findProgramAddressSync([Buffer.from("bond"), userPublicKey.toBuffer(), Buffer.from([bondId])], program.programId)[0];
+    const bondPda = PublicKey.findProgramAddressSync([Buffer.from("bond"), userPublicKey.toBuffer(), new BN(bondId).toBuffer("le", 2)], program.programId)[0];
     const assetUsagePda = PublicKey.findProgramAddressSync([new PublicKey(assetId).toBuffer()], program.programId)[0];
     const vaultConfigPda = PublicKey.findProgramAddressSync([Buffer.from("vault_config")], programId)[0];
     const vaultAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), vaultConfigPda, true);
     const userItheumAta = await getAssociatedTokenAddress(new PublicKey(ITHEUM_TOKEN_ADDRESS), userPublicKey, true);
 
-    const bondConfigPda = await PublicKey.findProgramAddressSync([Buffer.from("bond_config"), Buffer.from([1])], program.programId)[0];
+    const bondConfigPda = await PublicKey.findProgramAddressSync([Buffer.from("bond_config"), Buffer.from([BOND_CONFIG_INDEX])], program.programId)[0];
     const bondConfigData = await program.account.bondConfig.fetch(bondConfigPda).then((data: any) => {
       const bondAmount = data.bondAmount;
       const merkleTree = data.merkleTree;
@@ -244,7 +235,7 @@ export async function createBondTransaction(
 
     // Create the transaction using bond method from program
     const transaction = await program.methods
-      .bond(BOND_CONFIG_INDEX, bondId, bondConfigData.amount, new BN(nonce), isVault, proofRoot, _dataHash, _creatorHash)
+      .bond(BOND_CONFIG_INDEX, bondId, bondConfigData.amount, new BN(nonce), proofRoot, _dataHash, _creatorHash)
       .accounts({
         addressBondsRewards: addressBondsRewardsPda,
         assetUsage: assetUsagePda,
@@ -296,11 +287,11 @@ export async function retrieveBondsAndNftMeIdVault(
 
     ///TODO THIS CAN BE improved by using a single fetch, only for the modified bond. not all of them if i just top up one
     for (let i = 1; i <= lastIndex; i++) {
-      const bondPda = PublicKey.findProgramAddressSync([Buffer.from("bond"), userPublicKey.toBuffer(), Buffer.from([i])], program.programId)[0];
+      const bondPda = PublicKey.findProgramAddressSync([Buffer.from("bond"), userPublicKey.toBuffer(), new BN(i).toBuffer("le", 2)], program.programId)[0];
       const bond = await program.account.bond.fetch(bondPda);
       const bondUpgraded = { ...bond, bondId: i, unbondTimestamp: bond.unbondTimestamp.toNumber(), bondTimestamp: bond.bondTimestamp.toNumber() };
 
-      if (bond.isVault && bond.state === 1) {
+      if (bond.state === 1) {
         nftMeIdVault = bondUpgraded;
       }
 
@@ -309,7 +300,8 @@ export async function retrieveBondsAndNftMeIdVault(
 
       if (bond.state === 1) {
         //lvb1
-        const scorePerBond = Math.floor(computeBondScore(LOCK_PERIOD_ON_PROGRAM, currentTimestamp, bond.unbondTimestamp.toNumber())) / 100;
+
+        const scorePerBond = Math.floor(computeBondScore(LOCK_PERIOD_ON_PROGRAM, currentTimestamp, bond.unbondTimestamp.toNumber()));
         //b1 * lvb1
         const bondWeight = bond.bondAmount.mul(new BN(scorePerBond));
         // b1 * lvb1 + b2 * lvb2 + b3 * lvb3 + ... + bn * lvbn
@@ -324,7 +316,7 @@ export async function retrieveBondsAndNftMeIdVault(
     // result
     const weightedLivelinessScore = totalBondAmount.isZero() ? new BigNumber(0) : totalBondWeight.mul(new BN(100)).div(totalBondAmount);
 
-    return { myBonds, nftMeIdVault: nftMeIdVault, weightedLivelinessScore: weightedLivelinessScore.toNumber() / 100 };
+    return { myBonds, nftMeIdVault: nftMeIdVault, weightedLivelinessScore: weightedLivelinessScore.toNumber() / 10000 };
   } catch (error) {
     console.error("retrieveBondsError", error);
 
@@ -332,8 +324,7 @@ export async function retrieveBondsAndNftMeIdVault(
   }
 }
 
-// TESTING PURPOSES
-function computeBondScore(lockPeriod: number, currentTimestamp: number, unbondTimestamp: number): number {
+export function computeBondScore(lockPeriod: number, currentTimestamp: number, unbondTimestamp: number): number {
   if (currentTimestamp >= unbondTimestamp) {
     return 0;
   } else {
@@ -343,7 +334,7 @@ function computeBondScore(lockPeriod: number, currentTimestamp: number, unbondTi
       return 0;
     } else {
       const divResult = 10000 / lockPeriod;
-      return divResult * difference;
+      return Number(((divResult * difference) / 100).toFixed(2));
     }
   }
 }

@@ -592,7 +592,7 @@ export type CoreSolBondStakeSc = {
         },
         {
           "name": "bondId";
-          "type": "u8";
+          "type": "u16";
         },
         {
           "name": "amount";
@@ -601,10 +601,6 @@ export type CoreSolBondStakeSc = {
         {
           "name": "nonce";
           "type": "u64";
-        },
-        {
-          "name": "isVault";
-          "type": "bool";
         },
         {
           "name": "root";
@@ -623,6 +619,50 @@ export type CoreSolBondStakeSc = {
           "type": {
             "array": ["u8", 32];
           };
+        },
+      ];
+    },
+    {
+      "name": "updateVaultBond";
+      "accounts": [
+        {
+          "name": "addressBondsRewards";
+          "isMut": true;
+          "isSigner": false;
+        },
+        {
+          "name": "bond";
+          "isMut": true;
+          "isSigner": false;
+        },
+        {
+          "name": "bondConfig";
+          "isMut": false;
+          "isSigner": false;
+        },
+        {
+          "name": "authority";
+          "isMut": true;
+          "isSigner": true;
+        },
+        {
+          "name": "systemProgram";
+          "isMut": false;
+          "isSigner": false;
+        },
+      ];
+      "args": [
+        {
+          "name": "bondConfigIndex";
+          "type": "u8";
+        },
+        {
+          "name": "bondId";
+          "type": "u16";
+        },
+        {
+          "name": "nonce";
+          "type": "u64";
         },
       ];
     },
@@ -667,7 +707,7 @@ export type CoreSolBondStakeSc = {
         },
         {
           "name": "bondId";
-          "type": "u8";
+          "type": "u16";
         },
       ];
     },
@@ -742,7 +782,7 @@ export type CoreSolBondStakeSc = {
         },
         {
           "name": "bondId";
-          "type": "u8";
+          "type": "u16";
         },
       ];
     },
@@ -817,7 +857,7 @@ export type CoreSolBondStakeSc = {
         },
         {
           "name": "bondId";
-          "type": "u8";
+          "type": "u16";
         },
         {
           "name": "amount";
@@ -866,7 +906,7 @@ export type CoreSolBondStakeSc = {
         },
         {
           "name": "bondId";
-          "type": "u8";
+          "type": "u16";
         },
       ];
     },
@@ -881,6 +921,11 @@ export type CoreSolBondStakeSc = {
         {
           "name": "bondConfig";
           "isMut": false;
+          "isSigner": false;
+        },
+        {
+          "name": "bond";
+          "isMut": true;
           "isSigner": false;
         },
         {
@@ -934,6 +979,10 @@ export type CoreSolBondStakeSc = {
           "name": "bondConfigIndex";
           "type": "u8";
         },
+        {
+          "name": "bondId";
+          "type": "u16";
+        },
       ];
     },
   ];
@@ -957,11 +1006,7 @@ export type CoreSolBondStakeSc = {
           },
           {
             "name": "currentIndex";
-            "type": "u8";
-          },
-          {
-            "name": "weightedLivelinessScore";
-            "type": "u64";
+            "type": "u16";
           },
           {
             "name": "lastUpdateTimestamp";
@@ -974,6 +1019,10 @@ export type CoreSolBondStakeSc = {
           {
             "name": "claimableAmount";
             "type": "u64";
+          },
+          {
+            "name": "vaultBondId";
+            "type": "u16";
           },
           {
             "name": "padding";
@@ -1045,10 +1094,6 @@ export type CoreSolBondStakeSc = {
           {
             "name": "state";
             "type": "u8";
-          },
-          {
-            "name": "isVault";
-            "type": "bool";
           },
           {
             "name": "bondTimestamp";
@@ -1271,6 +1316,11 @@ export type CoreSolBondStakeSc = {
       "code": 6018;
       "name": "AssetIdMismatch";
       "msg": "Asset Id mismatch";
+    },
+    {
+      "code": 6019;
+      "name": "VaultBondIdMismatch";
+      "msg": "Vault bond id mismatch";
     },
   ];
 };
@@ -1869,7 +1919,7 @@ export const IDL: CoreSolBondStakeSc = {
         },
         {
           "name": "bondId",
-          "type": "u8",
+          "type": "u16",
         },
         {
           "name": "amount",
@@ -1878,10 +1928,6 @@ export const IDL: CoreSolBondStakeSc = {
         {
           "name": "nonce",
           "type": "u64",
-        },
-        {
-          "name": "isVault",
-          "type": "bool",
         },
         {
           "name": "root",
@@ -1900,6 +1946,50 @@ export const IDL: CoreSolBondStakeSc = {
           "type": {
             "array": ["u8", 32],
           },
+        },
+      ],
+    },
+    {
+      "name": "updateVaultBond",
+      "accounts": [
+        {
+          "name": "addressBondsRewards",
+          "isMut": true,
+          "isSigner": false,
+        },
+        {
+          "name": "bond",
+          "isMut": true,
+          "isSigner": false,
+        },
+        {
+          "name": "bondConfig",
+          "isMut": false,
+          "isSigner": false,
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true,
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+        },
+      ],
+      "args": [
+        {
+          "name": "bondConfigIndex",
+          "type": "u8",
+        },
+        {
+          "name": "bondId",
+          "type": "u16",
+        },
+        {
+          "name": "nonce",
+          "type": "u64",
         },
       ],
     },
@@ -1944,7 +2034,7 @@ export const IDL: CoreSolBondStakeSc = {
         },
         {
           "name": "bondId",
-          "type": "u8",
+          "type": "u16",
         },
       ],
     },
@@ -2019,7 +2109,7 @@ export const IDL: CoreSolBondStakeSc = {
         },
         {
           "name": "bondId",
-          "type": "u8",
+          "type": "u16",
         },
       ],
     },
@@ -2094,7 +2184,7 @@ export const IDL: CoreSolBondStakeSc = {
         },
         {
           "name": "bondId",
-          "type": "u8",
+          "type": "u16",
         },
         {
           "name": "amount",
@@ -2143,7 +2233,7 @@ export const IDL: CoreSolBondStakeSc = {
         },
         {
           "name": "bondId",
-          "type": "u8",
+          "type": "u16",
         },
       ],
     },
@@ -2158,6 +2248,11 @@ export const IDL: CoreSolBondStakeSc = {
         {
           "name": "bondConfig",
           "isMut": false,
+          "isSigner": false,
+        },
+        {
+          "name": "bond",
+          "isMut": true,
           "isSigner": false,
         },
         {
@@ -2211,6 +2306,10 @@ export const IDL: CoreSolBondStakeSc = {
           "name": "bondConfigIndex",
           "type": "u8",
         },
+        {
+          "name": "bondId",
+          "type": "u16",
+        },
       ],
     },
   ],
@@ -2234,11 +2333,7 @@ export const IDL: CoreSolBondStakeSc = {
           },
           {
             "name": "currentIndex",
-            "type": "u8",
-          },
-          {
-            "name": "weightedLivelinessScore",
-            "type": "u64",
+            "type": "u16",
           },
           {
             "name": "lastUpdateTimestamp",
@@ -2251,6 +2346,10 @@ export const IDL: CoreSolBondStakeSc = {
           {
             "name": "claimableAmount",
             "type": "u64",
+          },
+          {
+            "name": "vaultBondId",
+            "type": "u16",
           },
           {
             "name": "padding",
@@ -2322,10 +2421,6 @@ export const IDL: CoreSolBondStakeSc = {
           {
             "name": "state",
             "type": "u8",
-          },
-          {
-            "name": "isVault",
-            "type": "bool",
           },
           {
             "name": "bondTimestamp",
@@ -2548,6 +2643,11 @@ export const IDL: CoreSolBondStakeSc = {
       "code": 6018,
       "name": "AssetIdMismatch",
       "msg": "Asset Id mismatch",
+    },
+    {
+      "code": 6019,
+      "name": "VaultBondIdMismatch",
+      "msg": "Vault bond id mismatch",
     },
   ],
 };
