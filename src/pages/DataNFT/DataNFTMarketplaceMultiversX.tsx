@@ -23,6 +23,7 @@ import {
   Tabs,
   Text,
   Tooltip,
+  Spinner,
   useColorMode,
   useDisclosure,
   useToast,
@@ -474,87 +475,103 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
             <TabPanels>
               <TabPanel mt={2} width={"full"}>
-                {!loadingOffers && !nftMetadatasLoading && extendedOffers.length === 0 ? (
-                  <NoDataHere />
+                {loadingOffers || nftMetadatasLoading ? (
+                  <Flex direction={"column"} justifyContent={"center"} alignItems={"center"} minHeight={"500px"}>
+                    <Spinner size="xl" color="teal.200" margin="auto !important" label="Loading Data NFT Offers..." />
+                  </Flex>
                 ) : (
-                  <SimpleGrid
-                    columns={showGroupedDataNfts ? { sm: 1, lg: 2 } : { sm: 1, md: 2, lg: 3, xl: 4 }}
-                    spacingY={4}
-                    gap={8}
-                    mx={{ base: 0, "2xl": "12 !important" }}
-                    mt="5 !important"
-                    justifyItems={"center"}>
-                    {!showGroupedDataNfts
-                      ? extendedOffers.map((offer, index) => (
-                          <UpperCardComponent
-                            key={index}
-                            nftImageLoading={oneNFTImgLoaded && !loadingOffers}
-                            imageUrl={`https://${getApi(chainID)}/nfts/${offer?.offeredTokenIdentifier}-${hexZero(offer?.offeredTokenNonce)}/thumbnail`}
-                            setNftImageLoaded={setOneNFTImgLoaded}
-                            nftMetadata={nftMetadatas[index]}
-                            offer={offer}
-                            index={index}
-                            marketFreezedNonces={marketFreezedNonces}
-                            openNftDetailsDrawer={openNftDetailsModal}>
-                            <MarketplaceLowerCard
-                              index={index}
-                              nftMetadata={nftMetadatas[index]}
-                              extendedOffer={offer}
-                              notifyPurchaseWasSuccess={handleSetPurchaseWasSuccess}
-                            />
-                          </UpperCardComponent>
-                        ))
-                      : groupedCollections.map((collectionObject: DataNFTCollectionObject, index) => {
-                          const { dataNfts } = collectionObject;
-                          const offer: DataNftCollectionType = dataNfts[0];
-                          return (
-                            <DataNftCollectionCard
-                              key={index}
-                              index={index}
-                              nftImageLoading={oneNFTImgLoaded && !loadingOffers}
-                              imageUrl={offer.nftImgUrl}
-                              title={offer.title}
-                              description={offer.description}
-                              floorPrice={convertWeiToEsdt(
-                                offer.minOffer.wantedTokenAmount as BigNumber.Value,
-                                tokenDecimals(offer.minOffer.wantedTokenIdentifier)
-                              ).toNumber()}
-                              listed={offer.minOffer?.quantity}
-                              openNftDetailsDrawer={openNftDetailsModal}
-                              supply={offer?.supply}
-                              dataPreview={offer?.dataPreview}
-                            />
-                          );
-                        })}
-                  </SimpleGrid>
+                  <>
+                    {extendedOffers.length === 0 ? (
+                      <NoDataHere />
+                    ) : (
+                      <SimpleGrid
+                        columns={showGroupedDataNfts ? { sm: 1, lg: 2 } : { sm: 1, md: 2, lg: 3, xl: 4 }}
+                        spacingY={4}
+                        gap={8}
+                        mx={{ base: 0, "2xl": "12 !important" }}
+                        mt="5 !important"
+                        justifyItems={"center"}>
+                        {!showGroupedDataNfts
+                          ? extendedOffers.map((offer, index) => (
+                              <UpperCardComponent
+                                key={index}
+                                nftImageLoading={oneNFTImgLoaded && !loadingOffers}
+                                imageUrl={`https://${getApi(chainID)}/nfts/${offer?.offeredTokenIdentifier}-${hexZero(offer?.offeredTokenNonce)}/thumbnail`}
+                                setNftImageLoaded={setOneNFTImgLoaded}
+                                nftMetadata={nftMetadatas[index]}
+                                offer={offer}
+                                index={index}
+                                marketFreezedNonces={marketFreezedNonces}
+                                openNftDetailsDrawer={openNftDetailsModal}>
+                                <MarketplaceLowerCard
+                                  index={index}
+                                  nftMetadata={nftMetadatas[index]}
+                                  extendedOffer={offer}
+                                  notifyPurchaseWasSuccess={handleSetPurchaseWasSuccess}
+                                />
+                              </UpperCardComponent>
+                            ))
+                          : groupedCollections.map((collectionObject: DataNFTCollectionObject, index) => {
+                              const { dataNfts } = collectionObject;
+                              const offer: DataNftCollectionType = dataNfts[0];
+                              return (
+                                <DataNftCollectionCard
+                                  key={index}
+                                  index={index}
+                                  nftImageLoading={oneNFTImgLoaded && !loadingOffers}
+                                  imageUrl={offer.nftImgUrl}
+                                  title={offer.title}
+                                  description={offer.description}
+                                  floorPrice={convertWeiToEsdt(
+                                    offer.minOffer.wantedTokenAmount as BigNumber.Value,
+                                    tokenDecimals(offer.minOffer.wantedTokenIdentifier)
+                                  ).toNumber()}
+                                  listed={offer.minOffer?.quantity}
+                                  openNftDetailsDrawer={openNftDetailsModal}
+                                  supply={offer?.supply}
+                                  dataPreview={offer?.dataPreview}
+                                />
+                              );
+                            })}
+                      </SimpleGrid>
+                    )}
+                  </>
                 )}
               </TabPanel>
               <TabPanel mt={2} width={"full"}>
-                {!loadingOffers && !nftMetadatasLoading && extendedOffers.length === 0 ? (
-                  <NoDataHere />
+                {loadingOffers || nftMetadatasLoading ? (
+                  <Flex direction={"column"} justifyContent={"center"} alignItems={"center"} minHeight={"500px"}>
+                    <Spinner size="xl" color="teal.200" margin="auto !important" label="Loading Data NFT Offers..." />
+                  </Flex>
                 ) : (
-                  <SimpleGrid
-                    columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
-                    spacingY={4}
-                    mx={{ base: 0, "2xl": "24 !important" }}
-                    mt="5 !important"
-                    justifyItems={"center"}>
-                    {extendedOffers.length > 0 &&
-                      extendedOffers.map((offer, index) => (
-                        <UpperCardComponent
-                          key={index}
-                          nftImageLoading={oneNFTImgLoaded && !loadingOffers}
-                          imageUrl={`https://${getApi(chainID)}/nfts/${offer?.offeredTokenIdentifier}-${hexZero(offer?.offeredTokenNonce)}/thumbnail`}
-                          setNftImageLoaded={setOneNFTImgLoaded}
-                          nftMetadata={nftMetadatas[index]}
-                          offer={offer}
-                          index={index}
-                          marketFreezedNonces={marketFreezedNonces}
-                          openNftDetailsDrawer={openNftDetailsModal}>
-                          <MyListedDataLowerCard offer={offer} nftMetadata={nftMetadatas[index]} />
-                        </UpperCardComponent>
-                      ))}
-                  </SimpleGrid>
+                  <>
+                    {extendedOffers.length === 0 ? (
+                      <NoDataHere />
+                    ) : (
+                      <SimpleGrid
+                        columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
+                        spacingY={4}
+                        mx={{ base: 0, "2xl": "24 !important" }}
+                        mt="5 !important"
+                        justifyItems={"center"}>
+                        {extendedOffers.length > 0 &&
+                          extendedOffers.map((offer, index) => (
+                            <UpperCardComponent
+                              key={index}
+                              nftImageLoading={oneNFTImgLoaded && !loadingOffers}
+                              imageUrl={`https://${getApi(chainID)}/nfts/${offer?.offeredTokenIdentifier}-${hexZero(offer?.offeredTokenNonce)}/thumbnail`}
+                              setNftImageLoaded={setOneNFTImgLoaded}
+                              nftMetadata={nftMetadatas[index]}
+                              offer={offer}
+                              index={index}
+                              marketFreezedNonces={marketFreezedNonces}
+                              openNftDetailsDrawer={openNftDetailsModal}>
+                              <MyListedDataLowerCard offer={offer} nftMetadata={nftMetadatas[index]} />
+                            </UpperCardComponent>
+                          ))}
+                      </SimpleGrid>
+                    )}
+                  </>
                 )}
               </TabPanel>
             </TabPanels>
