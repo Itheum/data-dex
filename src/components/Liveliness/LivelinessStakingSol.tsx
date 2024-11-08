@@ -916,7 +916,7 @@ export const LivelinessStakingSol: React.FC = () => {
                             {currentBond.bondId !== vaultBondId ? (
                               <Button
                                 colorScheme="teal"
-                                isDisabled={userPublicKey?.toBase58() === ""}
+                                isDisabled={userPublicKey?.toBase58() === "" || currentBond.state == 0}
                                 onClick={() => {
                                   updateVaultBond(currentBond.bondId, dataNft.compression.leaf_id);
                                 }}>
@@ -1048,7 +1048,9 @@ export const LivelinessStakingSol: React.FC = () => {
             onProceed={() => {
               handleWithdrawBondClick(
                 withdrawBondConfirmationWorkflow!.bondId!,
-                withdrawBondConfirmationWorkflow!.bondAmount - (withdrawBondConfirmationWorkflow!.bondAmount * withdrawPenalty) / 100
+                withdrawBondConfirmationWorkflow!.bondExpired
+                  ? withdrawBondConfirmationWorkflow!.bondAmount
+                  : (withdrawBondConfirmationWorkflow!.bondAmount * (100 - withdrawPenalty)) / 100
               );
               setWithdrawBondConfirmationWorkflow(undefined);
             }}
