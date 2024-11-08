@@ -916,7 +916,7 @@ export const LivelinessStakingSol: React.FC = () => {
                             {currentBond.bondId !== vaultBondId ? (
                               <Button
                                 colorScheme="teal"
-                                isDisabled={userPublicKey?.toBase58() === ""}
+                                isDisabled={userPublicKey?.toBase58() === "" || currentBond.state == 0}
                                 onClick={() => {
                                   updateVaultBond(currentBond.bondId, dataNft.compression.leaf_id);
                                 }}>
