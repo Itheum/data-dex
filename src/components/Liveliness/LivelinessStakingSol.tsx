@@ -1048,7 +1048,9 @@ export const LivelinessStakingSol: React.FC = () => {
             onProceed={() => {
               handleWithdrawBondClick(
                 withdrawBondConfirmationWorkflow!.bondId!,
-                withdrawBondConfirmationWorkflow!.bondAmount - (withdrawBondConfirmationWorkflow!.bondAmount * withdrawPenalty) / 100
+                withdrawBondConfirmationWorkflow!.bondExpired
+                  ? withdrawBondConfirmationWorkflow!.bondAmount
+                  : (withdrawBondConfirmationWorkflow!.bondAmount * (100 - withdrawPenalty)) / 100
               );
               setWithdrawBondConfirmationWorkflow(undefined);
             }}
