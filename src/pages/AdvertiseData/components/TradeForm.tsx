@@ -657,11 +657,9 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   async function sendAndConfirmTransaction({
     transaction,
     customErrorMessage = "Transaction failed",
-    explorerLinkMessage = "View transaction on Solana Explorer",
   }: {
     transaction: Transaction;
     customErrorMessage?: string;
-    explorerLinkMessage?: string;
   }) {
     try {
       if (solPubKey === null) {

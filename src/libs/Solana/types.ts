@@ -15,7 +15,6 @@ export interface Bond {
   bump: number;
   bondId: number;
   state: number;
-  isVault: boolean;
   bondTimestamp: number;
   unbondTimestamp: number;
   bondAmount: BN;

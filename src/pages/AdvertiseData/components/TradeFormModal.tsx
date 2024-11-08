@@ -305,7 +305,11 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
             rounded="lg"
             mt={7}
             onClick={() => {
-              navigate("/getVerified");
+              if (solPubKey) {
+                window.open("https://docs.google.com/forms/d/e/1FAIpQLScpguzOBjyQBj2iDzaI2E0wN9SIAQGoS92FPDM9qkk8B-rzFA/viewform");
+              } else {
+                navigate("/getVerified");
+              }
             }}>
             Find out how you can get whitelisted
           </Button>

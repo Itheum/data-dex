@@ -78,7 +78,7 @@ export const FeaturedDataNFTListings: React.FC<FeaturedDataNFTListingsProps> = (
                     <Flex direction="column" h="200px">
                       <>
                         <Text fontSize="22px" fontWeight="bold" color="#fff" textAlign={{ base: "center", lg: "initial" }}>
-                          2 Weeks EP
+                          TWO WEEK EP
                         </Text>
                         <Text display={{ base: "none", lg: "block" }} fontSize="15px" mt="5" color="#fff" fontWeight="bold">
                           TWO WEEK EP, featuring three songs composed and recorded in 2024, captures the musical journey of Stephen Snodgrass. Once you own the
