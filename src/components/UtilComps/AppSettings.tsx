@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Text, Flex, Heading, Stack, FormControl, FormLabel, Switch, SimpleGrid } from "@chakra-ui/react";
+import { ApiNetworkProvider } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { ApiNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { getApi, getNetworkProvider, getNetworkProviderCodification } from "libs/MultiversX/api";

@@ -1,7 +1,7 @@
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
+import { ApiNetworkProvider, ProxyNetworkProvider } from "@multiversx/sdk-core/out";
 import { AccountType } from "@multiversx/sdk-dapp/types";
 import { NftType, TokenType } from "@multiversx/sdk-dapp/types/tokens.types";
-import { ApiNetworkProvider, ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import axios from "axios";
 import { IS_DEVNET, contractsForChain, uxConfig } from "libs/config";
 
@@ -19,8 +19,8 @@ export const getNetworkProvider = (chainID: string) => {
   const envValue = import.meta.env[envKey];
   const isApi = envValue && envValue.includes("api");
   return isApi
-    ? new ApiNetworkProvider(envValue, { timeout: uxConfig.mxAPITimeoutMs })
-    : new ProxyNetworkProvider(envValue || defaultUrl, { timeout: uxConfig.mxAPITimeoutMs });
+    ? new ApiNetworkProvider(envValue, { timeout: uxConfig.mxAPITimeoutMs, clientName: "ithuemDataDex" })
+    : new ProxyNetworkProvider(envValue || defaultUrl, { timeout: uxConfig.mxAPITimeoutMs, clientName: "ithuemDataDex" });
 };
 
 export const getNetworkProviderCodification = (chainID: string) => {
