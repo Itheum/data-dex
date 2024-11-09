@@ -1,8 +1,8 @@
 import React from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { Box, Text, Flex, HStack, Link, useColorMode } from "@chakra-ui/react";
+import { ApiNetworkProvider } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { ApiNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import { getApi, getNetworkProvider, getNetworkProviderCodification } from "libs/MultiversX/api";
 import { getSentryProfile } from "libs/utils";
 
