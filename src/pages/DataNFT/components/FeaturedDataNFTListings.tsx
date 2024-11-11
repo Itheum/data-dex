@@ -30,15 +30,15 @@ export const FeaturedDataNFTListings: React.FC<FeaturedDataNFTListingsProps> = (
         {isFeaturedListingsOpen ? (
           <Alert status="success" variant="top-accent" mt={3} rounded="lg">
             <Box display="flex" flexDirection="column" w="full">
-              <AlertTitle w={{ base: "100%", lg: "auto" }}>
-                <Heading fontFamily="Clash-Medium" p={2} my={4} fontSize={{ base: "14px", lg: "22px" }} textAlign={{ base: "center", lg: "initial" }}>
+              <AlertTitle w={{ base: "auto", lg: "auto" }}>
+                <Heading fontFamily="Clash-Medium" p={2} my={4} fontSize={{ base: "16px", lg: "22px" }} textAlign={{ base: "center", lg: "initial" }}>
                   Featured Marketplace Listings
                 </Heading>
               </AlertTitle>
-              <AlertDescription fontSize="md" w={{ base: "100%", lg: "auto" }}>
+              <AlertDescription fontSize="md" w={{ base: "auto", lg: "auto" }}>
                 <SimpleGrid columns={{ base: 1, lg: 2 }} gap={{ base: 3, lg: 10 }}>
                   <Box bgImage={featuredAirdropGuide} bgSize="cover" borderRadius="12px" borderColor="rgba(0, 199, 151, 0.25)" borderWidth="5px" p="2">
-                    <Flex direction="column" h="200px">
+                    <Flex direction="column" h="235px">
                       <>
                         <Text fontSize="22px" fontWeight="bold" color="#fff" textAlign={{ base: "center", lg: "initial" }}>
                           Airdrop Guide
@@ -75,14 +75,14 @@ export const FeaturedDataNFTListings: React.FC<FeaturedDataNFTListingsProps> = (
                   </Box>
 
                   <Box bgImage={featuredTwoWeeks} bgSize="cover" borderRadius="12px" borderColor="rgba(0, 199, 151, 0.25)" borderWidth="5px" p="2">
-                    <Flex direction="column" h="200px">
+                    <Flex direction="column" h="235px">
                       <>
                         <Text fontSize="22px" fontWeight="bold" color="#fff" textAlign={{ base: "center", lg: "initial" }}>
-                          2 Weeks EP
+                          TWOWEEK EP
                         </Text>
                         <Text display={{ base: "none", lg: "block" }} fontSize="15px" mt="5" color="#fff" fontWeight="bold">
-                          TWO WEEK EP, featuring three songs composed and recorded in 2024, captures the musical journey of Stephen Snodgrass. Once you own the
-                          Data NFT, you can stream the music tracks using the dedicated Itheum app NF-Tunes.
+                          TWOWEEK EP features groundbreaking music with a Web3 twist, released as a series of collectible sets. Once you own a Data NFT, you can
+                          stream the tracks directly through NF-Tunes, the dedicated Itheum app.
                         </Text>
                         <Text display={{ base: "block", lg: "none" }} lineHeight="normal" textAlign="center" fontSize="10px" mt="5" color="#fff">
                           Once you own the Data NFT, you can stream the music tracks using the dedicated Itheum app NF-Tunes.
@@ -92,7 +92,12 @@ export const FeaturedDataNFTListings: React.FC<FeaturedDataNFTListingsProps> = (
                       <Flex flexDirection={{ base: "column", md: "row" }} alignItems="center">
                         <Link as={ReactRouterLink} to={"/datanfts/marketplace/DATANFTFT-e936d4-ae"} style={{ textDecoration: "none" }}>
                           <Button size={{ base: "sm", md: "md" }} mt="20px" colorScheme="teal" borderRadius="8px">
-                            <Text>View Data NFT Collection</Text>
+                            <Text>View Collection 1</Text>
+                          </Button>
+                        </Link>
+                        <Link as={ReactRouterLink} to={"/datanfts/marketplace/DATANFTFT-e936d4-d5"} style={{ textDecoration: "none" }} ml="2">
+                          <Button size={{ base: "sm", md: "md" }} mt="20px" colorScheme="teal" borderRadius="8px">
+                            <Text>View Collection 2</Text>
                           </Button>
                         </Link>
                         <Button
@@ -113,7 +118,7 @@ export const FeaturedDataNFTListings: React.FC<FeaturedDataNFTListingsProps> = (
                 </SimpleGrid>
               </AlertDescription>
             </Box>
-            {!hideCollapseOption && <CloseButton alignSelf="flex-start" position="relative" right={-1} top={-1} onClick={onClose} />}
+            {!hideCollapseOption && !isMobile && <CloseButton alignSelf="flex-start" position="relative" right={-1} top={-1} onClick={onClose} />}
           </Alert>
         ) : (
           <Button onClick={onOpen} mt={3} size={{ base: "sm", md: "md" }} variant="outline">

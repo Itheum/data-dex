@@ -64,7 +64,7 @@ const LandingPage = () => {
             <NFMeIdCTA />
           </Box>
 
-          <Box pt={{ base: "0", "2xl": "10" }} pb="10" mx={{ base: "0", md: "10px" }} mt="10">
+          <Box pt={{ base: "18", "2xl": "10" }} pb="10" mx={{ base: "auto", md: "10px" }} mt="10">
             <FeaturedDataNFTListings hideCollapseOption={true} />
           </Box>
 
