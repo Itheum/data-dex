@@ -564,6 +564,7 @@ export const EXPLORER_APP_SUPPORTED_TOKENS: any = {
       { tokenIdentifier: "DATANFTFT-e936d4", nonce: 10 },
       { tokenIdentifier: "DATANFTFT-e936d4", nonce: 11 },
       { tokenIdentifier: "DATANFTFT-e936d4", nonce: 174 },
+      { tokenIdentifier: "DATANFTFT-e936d4", nonce: 213 },
     ],
     "deepforest": [...Array.from({ length: 91 }, (_, i) => ({ tokenIdentifier: "DFEE-72425b", nonce: i }))],
     "timecapsule": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 5 }],
