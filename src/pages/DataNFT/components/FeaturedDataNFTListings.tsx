@@ -109,7 +109,7 @@ export const FeaturedDataNFTListings: React.FC<FeaturedDataNFTListingsProps> = (
                           }}
                           borderRadius="8px"
                           ml={{ base: "0", md: "5" }}
-                          onClick={() => openExplorerAppWithAuthToken("https://explorer.itheum.io/nftunes/?artist-profile=stephen-snodgrass")}>
+                          onClick={() => openExplorerAppWithAuthToken("https://explorer.itheum.io/nftunes/?artist-profile=two-week")}>
                           <Text color="#0F0F0F">Open App: Stream Music</Text>
                         </Button>
                       </Flex>
