@@ -28,9 +28,9 @@ export default function () {
           {dataDexVersion} {nonProdEnv && <>{nonProdEnv}</>}
         </Text>
         <Text fontSize="xx-small">
-          Network Provider: {isPublicNetworkProvider ? "Public" : "Private"} {isApiNetworkProvider ? "API" : "Gateway"}
+          MVX Network Provider: {isPublicNetworkProvider ? "Public" : "Private"} {isApiNetworkProvider ? "API" : "Gateway"}
         </Text>
-        <Text fontSize="xx-small">API Provider: {isPublicApi ? "Public" : "Private"}</Text>
+        <Text fontSize="xx-small">MVX API Provider: {isPublicApi ? "Public" : "Private"}</Text>
         <HStack>
           <Link fontSize="xs" href="https://itheum.com/legal/datadex/termsofuse" isExternal>
             Terms of Use <ExternalLinkIcon mx={1} />
