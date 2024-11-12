@@ -890,7 +890,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                           <Link
                                             as={ReactRouterLink}
                                             to={`/datanfts/marketplace/${nftData.tokenIdentifier}/offer-${to.index}`}
-                                            reloadDocument
                                             style={{ textDecoration: "none" }}>
                                             <Button w="full" colorScheme="teal" variant="outline" size="sm">
                                               {window.innerWidth > 500 ? "View Offer" : "View"}
@@ -900,7 +899,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                           <Link
                                             as={ReactRouterLink}
                                             to={`/datanfts/marketplace/${nftData.tokenIdentifier}/offer-${to.index}`}
-                                            reloadDocument
                                             style={{ textDecoration: "none" }}>
                                             <Button w="full" colorScheme="teal" variant="outline" size="sm">
                                               {window.innerWidth > 500 ? "View Offer" : "View"}

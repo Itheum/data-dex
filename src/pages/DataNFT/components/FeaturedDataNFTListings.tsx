@@ -54,13 +54,13 @@ export const FeaturedDataNFTListings: React.FC<FeaturedDataNFTListingsProps> = (
                       <Spacer display={{ base: "none", lg: "block" }} />
                       <Flex flexDirection={{ base: "column", md: "row" }} alignItems="center">
                         <Link as={ReactRouterLink} to={"/datanfts/marketplace/DATANFTFT-e936d4-b9"} style={{ textDecoration: "none" }}>
-                          <Button size={{ base: "sm", md: "md" }} mt="20px" colorScheme="teal" borderRadius="8px">
+                          <Button size={{ base: "sm", md: "md" }} mt={{ base: "20px", md: "20px" }} colorScheme="teal" borderRadius="8px">
                             <Text>View Data NFT Collection</Text>
                           </Button>
                         </Link>
                         <Button
                           size={{ base: "sm", md: "md" }}
-                          mt="20px"
+                          mt={{ base: "10px", md: "20px" }}
                           bgGradient="linear(to-r, #ffce00, #ff7201)"
                           _hover={{
                             bgGradient: "linear(to-r, #ff7201, #ffce00)",
@@ -91,18 +91,18 @@ export const FeaturedDataNFTListings: React.FC<FeaturedDataNFTListingsProps> = (
                       <Spacer display={{ base: "none", lg: "block" }} />
                       <Flex flexDirection={{ base: "column", md: "row" }} alignItems="center">
                         <Link as={ReactRouterLink} to={"/datanfts/marketplace/DATANFTFT-e936d4-ae"} style={{ textDecoration: "none" }}>
-                          <Button size={{ base: "sm", md: "md" }} mt="20px" colorScheme="teal" borderRadius="8px">
+                          <Button size={{ base: "sm", md: "md" }} mt={{ base: "20px", md: "20px" }} colorScheme="teal" borderRadius="8px">
                             <Text>View Collection 1</Text>
                           </Button>
                         </Link>
                         <Link as={ReactRouterLink} to={"/datanfts/marketplace/DATANFTFT-e936d4-d5"} style={{ textDecoration: "none" }} ml="2">
-                          <Button size={{ base: "sm", md: "md" }} mt="20px" colorScheme="teal" borderRadius="8px">
+                          <Button size={{ base: "sm", md: "md" }} mt={{ base: "10px", md: "20px" }} colorScheme="teal" borderRadius="8px">
                             <Text>View Collection 2</Text>
                           </Button>
                         </Link>
                         <Button
                           size={{ base: "sm", md: "md" }}
-                          mt="20px"
+                          mt={{ base: "10px", md: "20px" }}
                           bgGradient="linear(to-r, #ffce00, #ff7201)"
                           _hover={{
                             bgGradient: "linear(to-r, #ff7201, #ffce00)",
