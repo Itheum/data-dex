@@ -29,7 +29,9 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [hasRequestLoaded, setHasRequestLoaded] = useState<boolean>(false);
 
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const tokenIdentifier = viewContractConfig.tokenIdentifier;

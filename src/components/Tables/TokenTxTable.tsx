@@ -13,7 +13,9 @@ import { DataTable } from "./Components/DataTable";
 import { timeSince, TokenTableProps, TransactionInTable } from "./Components/tableUtils";
 
 export default function TokenTxTable(props: TokenTableProps) {
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const [data, setData] = useState<TransactionInTable[]>([]);
   const [loadingData, setLoadingData] = useState<boolean>(true);
   const linkIconStyle = { display: "flex" };

@@ -18,7 +18,9 @@ export type CompensationNftPair = {
 
 export const CompensationCards: React.FC = () => {
   const { address: mxAddress } = useGetAccountInfo();
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   const [compensationPairs, setCompensationPairs] = useState<Array<CompensationNftPair>>([]);

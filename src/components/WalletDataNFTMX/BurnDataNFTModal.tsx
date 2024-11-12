@@ -23,7 +23,9 @@ type BurnDataNFTModalPropType = {
 
 export default function BurnDataNFTModal(props: BurnDataNFTModalPropType) {
   const { isOpen, onClose, selectedDataNft } = props;
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const { colorMode } = useColorMode();
   const [burnNFTModalState, setBurnNFTModalState] = useState(1); // 1 and 2
   const [dataNftBurnAmountError, setDataNftBurnAmountError] = useState("");

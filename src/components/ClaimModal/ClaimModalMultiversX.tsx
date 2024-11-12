@@ -23,7 +23,9 @@ import { formatNumberRoundFloor } from "libs/utils";
 
 const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimType, mxClaimsContract }: any) => {
   const { address: mxAddress } = useGetAccountInfo();
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const { colorMode } = useColorMode();
 
   const resetClaimState = () => {

@@ -50,7 +50,9 @@ interface PropsType {
 }
 
 export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
   const isApiUp = useMarketStore((state) => state.isApiUp);

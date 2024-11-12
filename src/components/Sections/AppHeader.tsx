@@ -144,7 +144,9 @@ const exploreRouterMenu = [
 
 const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { onShowConnectWalletModal?: any; setMenuItem: any; handleLogout: any }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn, tokenLogin } = useGetLoginInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
@@ -735,7 +737,9 @@ function shouldDisplayQuickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
 }
 
 function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
 
   return (

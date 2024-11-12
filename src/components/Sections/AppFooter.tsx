@@ -11,7 +11,9 @@ const nonProdEnv = `env:${getSentryProfile()}`;
 
 export default function () {
   const { colorMode } = useColorMode();
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const isPublicApi = getMvxRpcApi(chainID).includes("api.multiversx.com");
   const isPublicNetworkProvider = getNetworkProviderCodification(chainID).includes(".multiversx.com");
   const isApiNetworkProvider = getNetworkProvider(chainID) instanceof ApiNetworkProvider;

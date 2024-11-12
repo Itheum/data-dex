@@ -87,7 +87,9 @@ interface DataNftVolume {
 export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const toast = useToast();
   const navigate = useNavigate();
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const { tokenLogin, isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { colorMode } = useColorMode();
   const { tokenId: tokenIdParam, offerId: offerIdParam } = useParams();

@@ -14,7 +14,9 @@ type Props = {
 };
 
 export default function AppMarketplace(props: Props) {
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const [learnMoreProd, setLearnMoreProg] = useState<keyof typeof progInfoMeta>("rhc");
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const { isOpen: isPS4ModalOpen, onOpen: onPS4ModalOpen, onClose: onPS4ModalClose } = useDisclosure();

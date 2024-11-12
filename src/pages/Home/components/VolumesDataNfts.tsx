@@ -43,7 +43,9 @@ for (let i = 0; i < 10; i++) {
 const skeletonHeight = { base: "260px", md: "190px", "2xl": "220px" };
 
 const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const [loadingOffers, setLoadingOffers] = useState<boolean>(true);
   const { tokenLogin } = useGetLoginInfo();
   const [topVolumesDataNfts, setTopVolumesDataNfts] = useState<VolumeDataNftsType[]>(latestOffersSkeleton);

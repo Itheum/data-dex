@@ -9,7 +9,9 @@ import { CHAIN_TOKEN_SYMBOL, IS_DEVNET } from "libs/config";
 import { FaucetContract } from "libs/MultiversX/faucet";
 
 const Faucet = ({ tileBoxW, tileBoxH }: any) => {
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const { colorMode } = useColorMode();
   const { address: mxAddress } = useGetAccountInfo();
   const [isMxFaucetDisabled, setIsMxFaucetDisabled] = useState(false);

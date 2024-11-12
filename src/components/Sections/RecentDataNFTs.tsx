@@ -38,7 +38,9 @@ for (let i = 0; i < 10; i++) {
 
 const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; headingSize?: string }) => {
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
   const [latestOffers, setLatestOffers] = useState<RecentDataNFTType[]>(latestOffersSkeleton);
   const { tokenLogin } = useGetLoginInfo();

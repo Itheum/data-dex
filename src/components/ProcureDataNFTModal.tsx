@@ -44,7 +44,9 @@ export default function ProcureDataNFTModal({
   showCustomMintMsg,
   notifyPurchaseWasSuccess,
 }: ProcureAccessModalProps) {
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
   const toast = useToast();
   const { colorMode } = useColorMode();

@@ -20,7 +20,9 @@ type DataStreamModalPropType = {
 
 export default function AccessDataStreamModal(props: DataStreamModalPropType) {
   const { isOpen, onClose, unlockAccessProgress, errorMessage } = props;
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const { tokenLogin } = useGetLoginInfo();
 
   return (

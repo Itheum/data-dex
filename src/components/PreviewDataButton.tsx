@@ -18,7 +18,9 @@ type PreviewDataButtonPropType = {
 
 export default function PreviewDataButton(props: PreviewDataButtonPropType) {
   const { loginMethod } = useGetLoginInfo();
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
   const { colorMode } = useColorMode();
   const { previewDataURL, buttonSize = "sm", buttonWidth = "full", tokenName } = props;

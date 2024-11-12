@@ -24,7 +24,9 @@ export const Enterprise: React.FC = () => {
   const [minterVersion, setMinterVersion] = useState<string>("3.0.0");
 
   const navigate = useNavigate();
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const factory = new Factory(IS_DEVNET ? "devnet" : "mainnet");

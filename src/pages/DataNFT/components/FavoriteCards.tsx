@@ -17,7 +17,9 @@ type FavoriteDataCreationNftsType = {
 
 export const FavoriteCards: React.FC = () => {
   const { tokenLogin } = useGetLoginInfo();
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
   const [favouriteItems, setFavouriteItems] = React.useState<Array<string>>([]);

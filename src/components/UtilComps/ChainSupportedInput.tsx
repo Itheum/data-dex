@@ -4,7 +4,9 @@ import { IoConstructOutline } from "react-icons/io5";
 import { notSupportedOnChain } from "libs/config";
 
 export default function ChainSupportedInput({ feature, children }: { feature: any; children: any }) {
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
 
   if (notSupportedOnChain(feature, chainID)) {
     if (children.length && children.length > 1) {

@@ -20,7 +20,9 @@ type ClaimRoyaltiesProps = {
 
 export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
   const { nftMinter, claimAddress } = props;
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const mxClaimsContract = new ClaimsContract(chainID);

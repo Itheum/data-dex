@@ -11,7 +11,9 @@ import { TradeFormModal } from "./components/TradeFormModal";
 
 export const TradeData: React.FC = () => {
   const { address: mxAddress } = useGetAccountInfo();
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const [dataCATAccount] = useState<Record<any, any>>(dataCATDemoUserData);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [prefilledData, setPrefilledData] = useState<any>(null);

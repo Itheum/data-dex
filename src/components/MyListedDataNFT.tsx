@@ -67,7 +67,9 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
     onUpdatePriceModalOpen,
     index,
   } = props;
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
   const ChainExplorer = CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER];
