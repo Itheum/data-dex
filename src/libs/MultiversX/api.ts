@@ -34,7 +34,7 @@ export const getMvxRpcPublicOnlyApi = (chainID: string) => {
 };
 
 /* 
-Here we load the private RPC or public RPC based on usage randomization - i. 30% of time load public / 70% of time private
+Here we load the private RPC or public RPC based on usage randomization - i. 10% of time load public / 90% of time private
 this will help load balance performance and costs
 
 getMvxRpcApi SHOULD be used for critical use cases for fetching data in the app
@@ -49,7 +49,8 @@ export const getMvxRpcApi = (chainID: string) => {
   const defaultUrl = chainID === "1" ? "api.multiversx.com" : "devnet-api.multiversx.com";
 
   // 30% of chance, default to the Public API
-  const defaultToPublic = Math.random() < 0.3; // math random gives you close to even distribution from 0 - 1
+  // const defaultToPublic = Math.random() < 0.1; // math random gives you close to even distribution from 0 - 1
+  const defaultToPublic = false; // always do private
 
   if (defaultToPublic) {
     window.ITH_GLOBAL_MVX_RPC_API_SESSION = defaultUrl;
