@@ -54,7 +54,7 @@ import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, REPORTED_TO_BE_BAD_DATA_NFTS, uxConfig } from "libs/config";
 import { labels } from "libs/language";
 import { getFavoritesFromBackendApi, getOffersByIdAndNoncesFromBackendApi, getVolumes } from "libs/MultiversX";
-import { getApi } from "libs/MultiversX/api";
+import { getMvxRpcApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import {
   computeMaxBuyForOfferForAddress,
@@ -225,7 +225,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
   const getAddressTokenInformation = async () => {
     if (isMxLoggedIn) {
-      const apiLink = getApi(chainID);
+      const apiLink = getMvxRpcApi(chainID);
       const nftApiLink = `https://${apiLink}/accounts/${address}/nfts/${tokenId}`;
       axios
         .get(nftApiLink)
@@ -243,7 +243,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   };
 
   function getTokenDetails() {
-    const apiLink = getApi(chainID);
+    const apiLink = getMvxRpcApi(chainID);
     const nftApiLink = `https://${apiLink}/nfts/${tokenId}`;
 
     axios

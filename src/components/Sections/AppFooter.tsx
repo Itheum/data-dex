@@ -3,7 +3,7 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { Box, Text, Flex, HStack, Link, useColorMode } from "@chakra-ui/react";
 import { ApiNetworkProvider } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { getApi, getNetworkProvider, getNetworkProviderCodification } from "libs/MultiversX/api";
+import { getMvxRpcApi, getNetworkProvider, getNetworkProviderCodification } from "libs/MultiversX/api";
 import { getSentryProfile } from "libs/utils";
 
 const dataDexVersion = import.meta.env.VITE_APP_VERSION ?? "version number unknown";
@@ -12,7 +12,7 @@ const nonProdEnv = `env:${getSentryProfile()}`;
 export default function () {
   const { colorMode } = useColorMode();
   const { chainID } = useGetNetworkConfig();
-  const isPublicApi = getApi(chainID).includes("api.multiversx.com");
+  const isPublicApi = getMvxRpcApi(chainID).includes("api.multiversx.com");
   const isPublicNetworkProvider = getNetworkProviderCodification(chainID).includes(".multiversx.com");
   const isApiNetworkProvider = getNetworkProvider(chainID) instanceof ApiNetworkProvider;
 

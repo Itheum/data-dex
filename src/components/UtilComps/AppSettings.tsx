@@ -4,7 +4,7 @@ import { ApiNetworkProvider } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
-import { getApi, getNetworkProvider, getNetworkProviderCodification } from "libs/MultiversX/api";
+import { getMvxRpcApi, getNetworkProvider, getNetworkProviderCodification } from "libs/MultiversX/api";
 import { getApiDataDex, getApiDataMarshal, getSentryProfile } from "libs/utils";
 
 const dataDexVersion = import.meta.env.VITE_APP_VERSION ? `v${import.meta.env.VITE_APP_VERSION}` : "version number unknown";
@@ -12,7 +12,7 @@ const nonProdEnv = `${getSentryProfile()}`;
 
 export default function () {
   const { chainID } = useGetNetworkConfig();
-  const isPublicApi = getApi(chainID).includes("api.multiversx.com");
+  const isPublicApi = getMvxRpcApi(chainID).includes("api.multiversx.com");
   const isPublicNetworkProvider = getNetworkProviderCodification(chainID).includes(".multiversx.com");
   const isApiNetworkProvider = getNetworkProvider(chainID) instanceof ApiNetworkProvider;
   const [previewDataOnDevnetSession, setPreviewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
@@ -81,7 +81,7 @@ export default function () {
                 Dynamic Settings
               </Heading>
               <Box fontSize="sm">
-                <Text>MultiversX API being used : {getApi(chainID)}</Text>
+                <Text>MultiversX API being used : {getMvxRpcApi(chainID)}</Text>
                 <Text>MultiversX Gateway being used : {getNetworkProviderCodification(chainID)}</Text>
                 <Text>Web2 Data DEX API : {getApiDataDex(chainID)}</Text>
                 <Text>Web2 Data Marshal API : {getApiDataMarshal(chainID)}</Text>

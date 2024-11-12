@@ -24,7 +24,7 @@ import BigNumber from "bignumber.js";
 import moment from "moment/moment";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
-import { getApi } from "libs/MultiversX/api";
+import { getMvxRpcApi } from "libs/MultiversX/api";
 import { convertWeiToEsdt, convertToLocalString, getTokenWantedRepresentation, hexZero, tokenDecimals } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import FrozenOverlay from "./FrozenOverlay";
@@ -81,7 +81,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
         <Box maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">
           <Flex justifyContent="center" pt={5}>
             <NftMediaComponent
-              imageUrls={[`https://${getApi(chainID)}/nfts/${offer.offeredTokenIdentifier}-${hexZero(offer.offeredTokenNonce)}/thumbnail`]}
+              imageUrls={[`https://${getMvxRpcApi(chainID)}/nfts/${offer.offeredTokenIdentifier}-${hexZero(offer.offeredTokenNonce)}/thumbnail`]}
               imageHeight="200px"
               imageWidth="200px"
               borderRadius="md"

@@ -5,6 +5,7 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { Link as ReactRouterLink } from "react-router-dom";
 import NftMediaComponent from "components/NftMediaComponent";
+import { getMvxRpcApi } from "libs/MultiversX/api";
 import { Favourite } from "../../../components/Favourite/Favourite";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
 import { IS_DEVNET, getFavoritesFromBackendApi } from "../../../libs/MultiversX";
@@ -21,12 +22,12 @@ export const FavoriteCards: React.FC = () => {
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
   const [favouriteItems, setFavouriteItems] = React.useState<Array<string>>([]);
   const [dataNfts, setDataNfts] = React.useState<Array<DataNft>>([]);
-
   const skeletonHeight = { base: "160px", md: "190px", "2xl": "220px" };
 
   useEffect(() => {
     (async () => {
-      DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
+      DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet", `https://${getMvxRpcApi(chainID)}`);
+
       if (tokenLogin?.nativeAuthToken) {
         const bearerToken = tokenLogin.nativeAuthToken;
         const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);

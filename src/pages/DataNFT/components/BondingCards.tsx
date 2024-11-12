@@ -30,6 +30,7 @@ import { NoDataHere } from "components/Sections/NoDataHere";
 import { ConfirmationDialog } from "components/UtilComps/ConfirmationDialog";
 import { IS_DEVNET } from "libs/config";
 import { labels } from "libs/language";
+import { getNftsOfACollectionForAnAddress, getMvxRpcApi } from "libs/MultiversX/api";
 import { formatNumberToShort } from "libs/utils";
 import { useNftsStore } from "store/nfts";
 
@@ -39,6 +40,7 @@ type CompensationNftsType = {
 };
 
 export const BondingCards: React.FC = () => {
+  const { chainID } = useGetNetworkConfig();
   const { colorMode } = useColorMode();
   const { address: mxAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -55,7 +57,7 @@ export const BondingCards: React.FC = () => {
     amountAfterPenalty?: any;
   }>();
 
-  DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
+  DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet", `https://${getMvxRpcApi(chainID)}`);
 
   const [bondingOffers, setBondingOffers] = useState<Array<DataNft>>([]);
   const [dataNftsWithNoBond, setDataNftsWithNoBond] = useState<Array<DataNft>>([]);

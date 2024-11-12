@@ -3,12 +3,14 @@ import React, { Fragment, useEffect, useState } from "react";
 import { Box, Flex, Text } from "@chakra-ui/react";
 import { Bond, BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import { useNavigate, useParams } from "react-router-dom";
 import { CustomPagination } from "components/CustomPagination";
 import useThrottle from "components/UtilComps/UseThrottle";
 import { IS_DEVNET } from "libs/config";
+import { getMvxRpcApi } from "libs/MultiversX/api";
 import { BondingParameters } from "./components/BondingParameters";
 import { CollectionDashboard } from "./components/CollectionDashboard";
 import { CompensationDashboard } from "./components/CompensationDashboard";
@@ -20,12 +22,15 @@ type CompensationNftsType = {
 };
 
 export const Bonding: React.FC = () => {
+  const { chainID } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const bondContractAdminDevnet = import.meta.env.VITE_ENV_BONDING_ADMIN_DEVNET;
   const bondContractAdminMainnet = import.meta.env.VITE_ENV_BONDING_ADMIN_MAINNET;
   const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
-  DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
+
+  DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet", `https://${getMvxRpcApi(chainID)}`);
+
   const [bondingDataNfts, setBondingDataNfts] = useState<Array<DataNft>>([]);
   const [compensationDataNfts, setCompensationDataNfts] = useState<Array<DataNft>>([]);
   const [contractBonds, setContractBonds] = useState<Bond[]>([]);

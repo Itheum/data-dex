@@ -68,7 +68,7 @@ import { PopoverTooltip } from "components/UtilComps/PopoverTooltip";
 import { useNetworkConfiguration } from "contexts/sol/SolNetworkConfigurationProvider";
 import { IS_DEVNET, MENU, PRINT_UI_DEBUG_PANELS } from "libs/config";
 import { labels } from "libs/language";
-import { getApi } from "libs/MultiversX/api";
+import { getMvxRpcApi } from "libs/MultiversX/api";
 import { UserDataType } from "libs/MultiversX/types";
 import { BONDING_PROGRAM_ID, SOLANA_EXPLORER_URL } from "libs/Solana/config";
 import { CoreSolBondStakeSc, IDL } from "libs/Solana/CoreSolBondStakeSc";
@@ -628,7 +628,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     // if we have to auto-vault -- i.e most likely user first nfme id, then we can auto vault it with this TX
     if ((dataToPrefill?.shouldAutoVault ?? false) && !bondVaultNonce) {
       const dataNftTokenId = IS_DEVNET ? dataNftTokenIdentifier.devnet : dataNftTokenIdentifier.mainnet;
-      const nonceToVault = (await axios.get(`https://${getApi(IS_DEVNET ? "D" : "1")}/nfts/count?search=${dataNftTokenId}`)).data;
+      const nonceToVault = (await axios.get(`https://${getMvxRpcApi(IS_DEVNET ? "D" : "1")}/nfts/count?search=${dataNftTokenId}`)).data;
       const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
       const vaultTx = bondContract.setVaultNonce(new Address(mxAddress), nonceToVault, dataNftTokenId);
 

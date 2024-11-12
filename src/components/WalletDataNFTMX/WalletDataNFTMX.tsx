@@ -41,7 +41,7 @@ import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, contractsForChain, uxConfig } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
-import { getApi } from "libs/MultiversX/api";
+import { getMvxRpcApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import {
   backendApi,
@@ -54,11 +54,12 @@ import {
   transformDescription,
   viewDataDisabledMessage,
 } from "libs/utils";
-import { isNFMeIDVaultClassDataNFT } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import AccessDataStreamModal from "./AccessDatastreamModal";
 import BurnDataNFTModal from "./BurnDataNFTModal";
 import ListDataNFTModal from "../ListDataNFTModal";
+import { isNFMeIDVaultClassDataNFT } from "libs/utils";
+import { IS_DEVNET } from "libs/MultiversX";
 
 export default function WalletDataNFTMX(item: any) {
   const { chainID, network } = useGetNetworkConfig();
@@ -160,7 +161,7 @@ export default function WalletDataNFTMX(item: any) {
       // Use a loop with a boolean condition
       while (!success) {
         indexResponse = await axios.get(
-          `https://${getApi(chainID)}/accounts/${contractsForChain(chainID).market}/transactions?hashes=${txHash}&withScResults=true&withLogs=true`
+          `https://${getMvxRpcApi(chainID)}/accounts/${contractsForChain(chainID).market}/transactions?hashes=${txHash}&withScResults=true&withLogs=true`
         );
 
         if (indexResponse.data[0].status === "success" && typeof indexResponse.data[0].pendingResults === "undefined") {
@@ -238,7 +239,8 @@ export default function WalletDataNFTMX(item: any) {
         throw Error(labels.ERR_NATIVE_AUTH_TOKEN_MISSING);
       }
 
-      DataNft.setNetworkConfig(network.id);
+      DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet", `https://${getMvxRpcApi(chainID)}`);
+
       const dataNft = await DataNft.createFromApi({ tokenIdentifier, nonce });
       const arg = {
         mvxNativeAuthOrigins: [decodeNativeAuthToken(tokenLogin.nativeAuthToken).origin],

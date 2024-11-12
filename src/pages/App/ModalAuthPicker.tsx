@@ -29,7 +29,7 @@ import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { IS_DEVNET, WALLETS, MVX_ENV_ENUM, SOL_ENV_ENUM } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
-import { getApi } from "libs/MultiversX/api";
+import { getMvxRpcApi } from "libs/MultiversX/api";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
 import { gtagGo, clearAppSessionsLaunchMode, sleep, getApiDataDex } from "libs/utils";
 
@@ -144,7 +144,7 @@ function ModalAuthPicker({
   };
 
   const nativeAuthProps: NativeAuthConfigType = {
-    apiAddress: `https://${getApi(chainID)}`,
+    apiAddress: `https://${getMvxRpcApi(chainID)}`,
     // origin: "https://test.datadex.itheum.io",
     expirySeconds: 3600,
   };
