@@ -3,7 +3,7 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { TransactionsToastList, SignTransactionsModals, NotificationModal } from "@multiversx/sdk-dapp/UI";
 import { DappProvider } from "@multiversx/sdk-dapp/wrappers";
 import { TermsChangedNoticeModal } from "components/TermsChangedNoticeModal";
-import { uxConfig } from "libs/config";
+import { uxConfig, IS_DEVNET } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { getMvxRpcApi } from "libs/MultiversX/api";
 import { walletConnectV2ProjectId, MX_TOAST_LIFETIME_IN_MS } from "libs/mxConstants";
@@ -40,7 +40,7 @@ function Launcher() {
           name: "itheumDataDEX",
           walletConnectV2ProjectId,
           apiTimeout: uxConfig.mxAPITimeoutMs,
-          apiAddress: `https://${getMvxRpcApi(chainID)}`,
+          apiAddress: IS_DEVNET ? `https://${getMvxRpcApi("D")}` : `https://${getMvxRpcApi(chainID)}`, // we have to do the IS_DEVNET check as if not, chainID is being cached to 1 always and we always go to Mainnet
         }}
         dappConfig={{
           shouldUseWebViewProvider: true,
