@@ -19,7 +19,9 @@ export const GuardRails: React.FC = () => {
   const { colorMode } = useColorMode();
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const userData = useMintStore((state) => state.userData);
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const mxDataNftMintContract = new DataNftMintContract(chainID);
   const historyGuardrails = historicGuardrails;
 

@@ -11,7 +11,9 @@ function processHerotag(value: string): string {
 }
 
 export const DataCreatorInfo: React.FC = () => {
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const ChainExplorer = CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER];
   const { profileAddress } = useParams();
 

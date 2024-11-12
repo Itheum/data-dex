@@ -58,7 +58,9 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   const [dataCatLinkedSession, setDataCatLinkedSession] = useLocalStorage("itm-datacat-linked", null);
   const { address: mxAddress } = useGetAccountInfo();
   const { isLoggedIn: isMxLoggedIn, loginMethod: mxLoginMethod } = useGetLoginInfo();
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const [menuItem, setMenuItem] = useState(MENU.LANDING);
   const [rfKeys] = useState({
     tools: 0,

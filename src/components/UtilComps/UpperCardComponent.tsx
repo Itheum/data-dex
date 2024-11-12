@@ -57,7 +57,9 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
   const { colorMode } = useColorMode();
   // Multiversx API
   const { address } = useGetAccountInfo();
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const ChainExplorer = CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER];
   const navigate = useNavigate();

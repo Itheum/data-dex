@@ -34,7 +34,9 @@ type TradeFormProps = {
 export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   const { isOpen, setIsOpen, dataToPrefill } = props;
   const { colorMode } = useColorMode();
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const [minRoyalties, setMinRoyalties] = useState<number>(-1);
   const [maxRoyalties, setMaxRoyalties] = useState<number>(-1);
   const [maxSupply, setMaxSupply] = useState<number>(-1);

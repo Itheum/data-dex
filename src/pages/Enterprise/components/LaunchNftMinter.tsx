@@ -31,7 +31,9 @@ export const LaunchNftMinter: React.FC<LaunchNftMinterProps> = (props) => {
   const [isRequiredMintTax, setIsRequiredMintTax] = useState<boolean>(false);
 
   const { address } = useGetAccountInfo();
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
 
   const validationSchema = Yup.object().shape({
     senderAddress: Yup.mixed<IAddress>().required(),

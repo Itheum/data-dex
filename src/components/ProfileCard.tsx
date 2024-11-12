@@ -52,7 +52,9 @@ const ProfileCard = ({
   hasLoaded: boolean;
   setHasLoaded: any;
 }) => {
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const ChainExplorer = CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER];
 
   const nftId = createNftId(collection, nonce);

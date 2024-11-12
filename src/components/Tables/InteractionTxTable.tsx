@@ -16,7 +16,9 @@ import { DataTable } from "./Components/DataTable";
 import { InteractionsInTable, timeSince } from "./Components/tableUtils";
 
 export default function InteractionTxTable(props: { address: string }) {
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const [data, setData] = useState<InteractionsInTable[]>([]);
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const [loadingInteractions, setLoadingInteractions] = useState(-1);

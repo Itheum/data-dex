@@ -62,7 +62,9 @@ import { isNFMeIDVaultClassDataNFT } from "libs/utils";
 import { IS_DEVNET } from "libs/MultiversX";
 
 export default function WalletDataNFTMX(item: any) {
-  const { chainID, network } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const { loginMethod, tokenLogin } = useGetLoginInfo();
   const { colorMode } = useColorMode();
   const { address } = useGetAccountInfo();
@@ -99,10 +101,14 @@ export default function WalletDataNFTMX(item: any) {
 
     const [, sessionInfo] = signedTransactionsArray[0];
     try {
-      const txHash = sessionInfo.transactions[0].hash;
+      if (sessionInfo.transactions) {
+        const txHash = sessionInfo.transactions[0].hash;
 
-      if (webWalletListTxHash == "") {
-        setWebWalletListTxHash(txHash);
+        if (webWalletListTxHash == "") {
+          setWebWalletListTxHash(txHash);
+        }
+      } else {
+        console.log("ERR: WalletDataNFTMX hasSignedTransactions sessionInfo.transactions is undefined");
       }
     } catch (e) {
       sessionStorage.removeItem("web-wallet-tx");

@@ -14,7 +14,9 @@ export type DataNFTLiveUptimeProps = {
 };
 
 const DataNFTLiveUptime = (props: DataNFTLiveUptimeProps) => {
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const [liveUptimeCheckInProgress, setLiveUptimeCheckInProgress] = useState(true);
   const [liveUptimeOKMsg, setLiveUptimeOKMsg] = useState<null | string>(null);
   const [liveUptimeFAILMsg, setLiveUptimeFAILMsg] = useState<null | string>(null);

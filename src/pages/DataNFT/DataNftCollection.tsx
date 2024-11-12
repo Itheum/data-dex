@@ -35,7 +35,9 @@ export const DataNftCollectionCard: FC<DataNftCollectionCardComponentProps> = ({
 }) => {
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const { loginMethod } = useGetLoginInfo();
   const { colorMode } = useColorMode();
   const isNFMeIDVaultDataNFT = isNFMeIDVaultClassDataNFT(title);

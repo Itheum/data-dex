@@ -11,7 +11,9 @@ import { DataTable } from "./Components/DataTable";
 import { ClaimsInTable, timeSince } from "./Components/tableUtils";
 
 export default function ClaimsTxTable(props: { address: string }) {
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const [data, setData] = useState<ClaimsInTable[]>([]);
   const [loadingClaims, setLoadingClaims] = useState(-1);
   const toast = useToast();

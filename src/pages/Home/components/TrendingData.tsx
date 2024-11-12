@@ -39,7 +39,9 @@ for (let i = 0; i < 10; i++) {
 const skeletonHeight = { base: "260px", md: "190px", "2xl": "220px" };
 
 export const TrendingData: React.FC = () => {
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const [trendingDataNfts, setTrendingDataNfts] = useState<Array<TrendingDataNftsType>>(latestOffersSkeleton);
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
   const { tokenLogin } = useGetLoginInfo();

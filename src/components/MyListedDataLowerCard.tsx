@@ -45,7 +45,9 @@ type MyListedDataLowerCardProps = {
 };
 
 const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetadata }) => {
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const { colorMode } = useColorMode();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { tokenLogin, loginMethod } = useGetLoginInfo();

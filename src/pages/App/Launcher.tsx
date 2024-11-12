@@ -12,7 +12,9 @@ import AppMx from "./AppMultiversX";
 import ModalAuthPickerMx from "./ModalAuthPickerMultiversX";
 
 function Launcher() {
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const [launchModeSession, setLaunchModeSession] = useLocalStorage("itm-launch-mode", null);
   const [launchMode, setLaunchMode] = useState(launchModeSession || "no-auth");
   const [redirectToRoute, setRedirectToRoute] = useState<null | string>(null);

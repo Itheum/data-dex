@@ -20,7 +20,9 @@ export default function ExploreAppButton({
   customLabel?: string;
   customMargin?: number;
 }) {
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const { tokenLogin } = useGetLoginInfo();
 
   const shouldShowTheButton = () => {

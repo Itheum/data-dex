@@ -105,7 +105,9 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const { colorMode } = useColorMode();
   const toast = useToast();
   const { address: mxAddress } = useGetAccountInfo();
-  const { chainID } = useGetNetworkConfig();
+  const {
+    network: { chainId: chainID },
+  } = useGetNetworkConfig();
   const lockPeriod = useMintStore((state) => state.lockPeriodForBond);
   const dataNFTMarshalService: string = getApiDataMarshal(chainID);
   const bond = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
