@@ -103,7 +103,7 @@ export const DataNftCollectionCard: FC<DataNftCollectionCardComponentProps> = ({
           </Text>
 
           <Stack padding="8px" borderRadius="8px" direction="row" justify="center" align="center" spacing="10px" background="rgba(226, 174, 234, 0.1)">
-            <Text opacity=".8" fontFamily="Inter" lineHeight="1.6" fontWeight="medium" fontSize="12px" color="#E2AEEA">
+            <Text opacity=".8" fontFamily="Clash-Light" lineHeight="1.6" fontWeight="medium" fontSize="12px" color="#E2AEEA">
               Fully Transferable License
             </Text>
           </Stack>
@@ -115,7 +115,7 @@ export const DataNftCollectionCard: FC<DataNftCollectionCardComponentProps> = ({
             borderRadius="8px"
             width="70%"
             height="12%">
-            <Text fontFamily="Inter" lineHeight="1.6" fontWeight="medium" fontSize="14px" color="#0F0F0F">
+            <Text fontFamily="Clash-Light" lineHeight="1.6" fontWeight="medium" fontSize="14px" color="#0F0F0F">
               View Data NFT Collection
             </Text>
           </Button>
@@ -136,7 +136,7 @@ export const DataNftCollectionCard: FC<DataNftCollectionCardComponentProps> = ({
                 onClick={() => {
                   window.open(dataPreview);
                 }}>
-                <Text fontFamily="Inter" lineHeight="1.6" fontWeight="medium" fontSize="14px" textAlign="center">
+                <Text fontFamily="Clash-Light" lineHeight="1.6" fontWeight="medium" fontSize="14px" textAlign="center">
                   Preview Data
                 </Text>
               </Button>

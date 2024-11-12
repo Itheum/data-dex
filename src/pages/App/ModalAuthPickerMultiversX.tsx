@@ -70,12 +70,6 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (mxAddress) {
-  //     handleProgressModalClose();
-  //   }
-  // }, [mxAddress]);
-
   useEffect(() => {
     console.log("==== effect for mxAddress. mxAddress = ", mxAddress);
 

@@ -66,7 +66,7 @@ export function contractsForChain(chainID: string): ContractsType {
             id: dataNFTFTTicker_Mx_Mainnet,
             contract: new Address(dataNftMintContractAddress_Mx_Mainnet),
           },
-          //deep forest album
+          // deep forest album
           { id: "DFEE-72425b", contract: new Address("erd1qqqqqqqqqqqqqpgq0lcp4hrr2jg54e09cex3ema6h0rtakw2wgtst0krnk") },
         ],
       };
@@ -95,18 +95,10 @@ export const MENU = {
   HOME: 0,
   BUY: 1,
   SELL: 2,
-  PURCHASED: 3,
   TX: 4,
-  VAULT: 5,
   NFT: 6,
-  COALITION: 7,
-  STREAM: 8,
-  ADVERTISED: 9,
   NFTMINE: 10,
   NFTALL: 11,
-  COALITIONALL: 12,
-  DATAPROOFS: 13,
-  TRUSTEDCOMP: 14,
   FAUCET: 14,
   CLAIMS: 15,
   LANDING: 16,
@@ -117,10 +109,6 @@ export const MENU = {
   GUARDRAILS: 21,
   NFMEID: 22,
   LIVELINESS: 22,
-};
-
-export const BUTTONS = {
-  JOIN_NOW: 0,
 };
 
 export const PATHS = {
@@ -142,44 +130,11 @@ export const PATHS = {
 };
 
 export const CHAINS = {
-  31337: "Localhost",
-  "_1": "Eth - Mainnet",
-  5: "Eth - Görli",
-  137: "Matic - Mainnet",
-  80001: "Matic - Mumbai",
-  97: "BSC - Chapel",
-  56: "BSC - Mainnet",
-  1666700000: "Harmony - Testnet",
-  43113: "Avalanche - Testnet",
   "1": "MVX - Mainnet",
   "D": "MVX - Devnet",
 };
 
-// these are used by moralis SDK to identify the chain (e.g. Web3Api.account.getNFTs)
-export const CHAIN_NAMES = {
-  31337: "localhost",
-  1: "eth",
-  5: "goerli",
-  137: "matic",
-  80001: "mumbai",
-  97: "bsc testnet",
-  56: "bsc",
-  1666700000: "harmony testnet",
-  43113: "avalanche testnet",
-};
-
-export const OPENSEA_CHAIN_NAMES: Record<string, string> = {
-  1: "eth",
-  5: "goerli",
-  137: "matic",
-  80001: "mumbai",
-};
-
-export const SUPPORTED_CHAINS = ["1", "D", 5, 80001, 97, 1666700000, 43113];
-
 export const WALLETS = {
-  METAMASK: "evm_metamask",
-  WC: "evm_wc",
   MX_XPORTALAPP: "el_maiar",
   MX_DEFI: "el_defi",
   MX_WEBWALLET: "el_webwallet",
@@ -193,13 +148,8 @@ export const consoleNotice = `DATA DEX NOTES --------------------------\n
 
 export function notSupportedOnChain(menuItem: any, chainID: string) {
   const UNSUPPORTED_CHAIN_FEATURES: Record<string, number[]> = {
-    5: [MENU.TX],
-    31337: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
-    97: [MENU.TX, MENU.COALITION],
-    1666700000: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
-    43113: [MENU.CLAIMS, MENU.TX],
-    "D": [MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
-    "1": [MENU.FAUCET, MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.DATACAT, BUTTONS.JOIN_NOW],
+    "D": [],
+    "1": [MENU.FAUCET],
   };
 
   if (UNSUPPORTED_CHAIN_FEATURES[chainID]) {
@@ -210,30 +160,13 @@ export function notSupportedOnChain(menuItem: any, chainID: string) {
 }
 
 export const CHAIN_TX_VIEWER = {
-  5: "https://goerli.etherscan.io/tx/",
-  80001: "https://explorer-mumbai.maticvigil.com/tx/",
-  97: "https://testnet.bscscan.com/tx/",
-  1666700000: "https://explorer.pops.one/#/",
-  43113: "https://testnet.snowtrace.io/tx/",
   "1": "https://explorer.multiversx.com",
   "D": "https://devnet-explorer.multiversx.com",
-};
-
-export const CHAIN_TX_LIST = {
-  80001: {
-    advertiseEvents: "AdvertiseEventsPA",
-    purchaseEvents: "PurchaseEventsPA",
-  },
 };
 
 export const CHAIN_TOKEN_SYMBOL = (chainID: string) => {
   const mapping: Record<string, any[]> = {
     ITHEUM: ["1", "D"],
-    eITHEUM: [5, 1],
-    mITHEUM: [80001, 137],
-    bITHEUM: [97, 56],
-    hITHEUM: [1666700000],
-    aITHEUM: [43113],
   };
 
   let sym = null;
@@ -248,12 +181,6 @@ export const CHAIN_TOKEN_SYMBOL = (chainID: string) => {
 
   return sym;
 };
-
-export const TERMS = [
-  { id: "1", val: "Research Purposes Only", coin: 2 },
-  { id: "2", val: "Research or Commercial Purposes Only", coin: 2 },
-  { id: "3", val: "Fully License (any use case)", coin: 2 },
-];
 
 export const progInfoMeta = {
   rhc: {
@@ -307,21 +234,6 @@ export const progInfoMeta = {
   },
 };
 
-export const tmpProgIdMapping = {
-  "70dc6bd0-59b0-11e8-8d54-2d562f6cba54": "Red Heart Challenge",
-  "bc9ce3e0-8f00-11e7-b1ff-9fef83fc8a42": "Hypertension Insights Intense",
-  "476ab840-1cb7-11e9-84fe-e935b365220a": "Blood Pressure OnDemand",
-  "183f0290-f726-11e7-9186-3bcb5c5d22db": "Chronic Wounds Healing Progress Tracker",
-  "ef62c220-50e1-11e7-9bd2-2f33680a66b6": "Blood Pressure Tracker",
-  "48d7b020-eab0-11ea-a466-0334ff0e8bf2": "OkPulse",
-  "custom-gamer-activity": "Gamer Passport Activity",
-  "playstation-gamer-passport": "Sony Playstation Gamer Passport",
-};
-
-export const isValidNumericDecimalCharacter = (char: any) => {
-  return char.match(/[0-9.]/);
-};
-
 export const dataCATDemoUserData = {
   "lastName": "User",
   "firstName": "DexDemo",
@@ -362,15 +274,6 @@ export const nfMeIDVaultConfig = {
     "img": "nfme_id_vault_preview",
     "description": "Activate this Gen1 NFMe ID Vault Data NFT as your web3 identity.",
   },
-};
-
-export const styleStrings = {
-  gradientBorderMulticolor: "linear-gradient(black, black) padding-box, linear-gradient(to left top, #00C797, #FF439D) border-box",
-  gradientBorderMulticolorLight: "linear-gradient(white, white) padding-box, linear-gradient(to left top, #00C797, #FF439D) border-box",
-  gradientBorderPassive: "linear-gradient(#0F0F0F, #0F0F0F) padding-box, linear-gradient(to right, rgb(79 209 197 / 20%), rgb(79 209 197 / 60%)) border-box",
-  gradientBorderPassiveLight: "linear-gradient(white, white) padding-box, linear-gradient(to right, rgb(79 209 197 / 20%), rgb(79 209 197 / 60%)) border-box",
-  gradientBorderMulticolorToBottomRight: "linear-gradient(#0F0F0F, #0F0F0F) padding-box, linear-gradient(to left top, #00C797, #FF439D) border-box",
-  gradientBorderMulticolorToBottomRightLight: "linear-gradient(white, white) padding-box, linear-gradient(to left top, #00C797, #FF439D) border-box",
 };
 
 export interface GuardRailsInfo {
@@ -467,8 +370,6 @@ export const upcomingGuardRails = {
   accepted_payments: null,
   accepted_tokens: null,
 };
-
-export const whitelistWallets: Array<string> = [];
 
 export const PREVIEW_DATA_ON_DEVNET_SESSION_KEY = "itm-preview-data-on-devnet";
 

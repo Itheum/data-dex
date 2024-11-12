@@ -1,11 +1,11 @@
 import { BondContract, Offer } from "@itheum/sdk-mx-data-nft/out";
-import { Interaction, ResultsParser } from "@multiversx/sdk-core/out";
 import { numberToPaddedHex } from "@multiversx/sdk-core/out/utils.codec";
-import BigNumber from "bignumber.js";
-import { IS_DEVNET, OPENSEA_CHAIN_NAMES } from "libs/config";
+import { IS_DEVNET } from "libs/config";
 import { ExtendedOffer } from "libs/types";
 import { convertToLocalString } from "./number";
-import { getNetworkProvider } from "../MultiversX/api";
+
+export const VIEW_DATA_DISABLED_DEVNET_MESSAGE = "View Data is disabled on Devnet Data Dex";
+export const VIEW_DATA_DISABLED_HUB_MESSAGE = "View Data is disabled on Data Dex when logged in through the xPortal Hub";
 
 export const qsParams = () => {
   const urlSearchParams = new URLSearchParams(window.location.search);
@@ -14,21 +14,7 @@ export const qsParams = () => {
   return params;
 };
 
-export const itheumTokenRoundUtil = (balance: BigNumber.Value, decimals: number) => {
-  const balanceWeiString = balance.toString();
-  const balanceWeiBN = new BigNumber(balanceWeiString);
-  const decimalsBN = new BigNumber(decimals);
-  const divisor = new BigNumber(10).pow(decimalsBN);
-  const beforeDecimal = balanceWeiBN.div(divisor);
-
-  return beforeDecimal.toString();
-};
-
 export const sleep = (sec: number) => new Promise((r) => setTimeout(r, sec * 1000));
-
-export const buyOnOpenSea = (txNFTId: string, dnftContract: string, chainID: string) => {
-  window.open(`https://testnets.opensea.io/assets/${OPENSEA_CHAIN_NAMES[chainID]}/${dnftContract}/${txNFTId}`);
-};
 
 export const backendApi = (chainID: string) => {
   const envKey = chainID === "1" ? "VITE_ENV_BACKEND_MAINNET_API" : "VITE_ENV_BACKEND_API";
@@ -115,17 +101,6 @@ export const getSentryProfile = () => {
   return profile;
 };
 
-export const roundDown = (num: number, precision: number) => {
-  let number;
-  if (typeof num === "string") {
-    number = parseFloat(num);
-  } else {
-    number = num;
-  }
-  const m = Math.pow(10, precision);
-  return Math.floor(number * m) / m;
-};
-
 export const hexZero = (nr: number) => {
   let hexnonce = nr.toString(16);
   if (hexnonce.length % 2 !== 0) {
@@ -140,14 +115,6 @@ export const getTokenWantedRepresentation = (token: string, nonce: number) => {
     return `${token}-${hexnonce}`;
   } else {
     return token.split("-")[0];
-  }
-};
-
-export const getTokenImgSrc = (token_identifier: string, token_nonce: number) => {
-  if (token_nonce > 0 && !token_identifier.includes("LKMEX")) {
-    return `https://api.multiversx.com/nfts/${token_identifier}-${hexZero(token_nonce)}/thumbnail`;
-  } else {
-    return `https://media.multiversx.com/tokens/asset/${token_identifier}/logo.png`;
   }
 };
 
@@ -206,10 +173,6 @@ export const getApiDataMarshal = (chainID: string) => {
   return import.meta.env[envKey] || defaultUrl;
 };
 
-export const getExplorerTrailBlazerURL = (chainID: string) => {
-  return chainID === "1" ? "https://explorer.itheum.io/project-trailblazer" : "https://stg.explorer.itheum.io/project-trailblazer";
-};
-
 export const shouldPreviewDataBeEnabled = (chainID: string, loginMethod: string, previewDataOnDevnetSession: any) => {
   return !((chainID == "D" && !previewDataOnDevnetSession) || loginMethod === "extra");
 };
@@ -219,21 +182,6 @@ export const viewDataDisabledMessage = (loginMethod: string) => {
   else return VIEW_DATA_DISABLED_DEVNET_MESSAGE;
 };
 
-export function findNthOccurrenceFromEnd(string: string, char: string, n: number) {
-  const reversedString = string.split("").reverse().join("");
-  let index = -1;
-
-  for (let i = 0; i < n; i++) {
-    index = reversedString.indexOf(char, index + 1);
-    if (index === -1) {
-      return -1;
-    }
-  }
-
-  // Subtract the found index from the length of the string - 1 (because string index starts from 0)
-  return string.length - 1 - index;
-}
-
 // Is an NFT a NFMeID Vault class (if so it will start with NFMeIDVault.. i.e NFMeIDVaultG1)
 export function isNFMeIDVaultClassDataNFT(tokenName: string | undefined) {
   if (tokenName && tokenName.replaceAll(" ", "").toLowerCase().includes("nfmeid")) {
@@ -242,17 +190,6 @@ export function isNFMeIDVaultClassDataNFT(tokenName: string | undefined) {
     return false;
   }
 }
-
-export const ITHEUM_EXPLORER_PROD_URL = "https://explorer.itheum.io";
-export const ITHEUM_EXPLORER_STG_URL = "https://stg.explorer.itheum.io";
-export const ITHEUM_EXPLORER_TEST_URL = "https://test.explorer.itheum.io";
-export const ITHEUM_DATADEX_PROD_URL = "https://datadex.itheum.io";
-export const ITHEUM_DATADEX_STG_URL = "https://stg.datadex.itheum.io";
-export const ITHEUM_DATADEX_TEST_URL = "https://test.datadex.itheum.io";
-
-export const nativeAuthOrigins = () => {
-  return [ITHEUM_EXPLORER_PROD_URL, ITHEUM_EXPLORER_STG_URL, ITHEUM_EXPLORER_TEST_URL, window.location.origin];
-};
 
 export const TranslateBoolean = (value: boolean): string => {
   return value === true ? "True" : "False";
@@ -307,22 +244,6 @@ export const decodeNativeAuthToken = (accessToken: string) => {
   }
 
   return result;
-};
-
-export const VIEW_DATA_DISABLED_DEVNET_MESSAGE = "View Data is disabled on Devnet Data Dex";
-export const VIEW_DATA_DISABLED_HUB_MESSAGE = "View Data is disabled on Data Dex when logged in through the xPortal Hub";
-
-export const getTypedValueFromContract = async (chainID: string, methodForContractCall: Interaction) => {
-  const networkProvider = getNetworkProvider(chainID);
-  const query = methodForContractCall.check().buildQuery();
-  const queryResponse = await networkProvider.queryContract(query);
-  const endpointDefinition = methodForContractCall.getEndpoint();
-  const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
-  if (firstValue) {
-    return firstValue.valueOf().toNumber();
-  } else {
-    return -1;
-  }
 };
 
 export const getLivelinessScore = (seconds: number, lockPeriod: number) => {

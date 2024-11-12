@@ -24,6 +24,7 @@ import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/a
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import liveliness from "assets/img/nfme/liveliness.png";
 import myNFMe from "assets/img/nfme/nfme-data-nft-token.png";
 import illustration from "assets/img/whitelist/getWhitelist.png";
 import ClaimModalMx from "components/ClaimModal/ClaimModalMultiversX";
@@ -36,11 +37,9 @@ import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponen
 import { CLAIM_TYPES, MENU, uxConfig } from "libs/config";
 import { ClaimsContract } from "libs/MultiversX/claims";
 import { formatNumberToShort } from "libs/utils";
-import AppMarketplace from "pages/Home/components/AppMarketplace";
 import { TrendingData } from "./components/TrendingData";
 import VolumesDataNfts from "./components/VolumesDataNfts";
 import NftMediaComponent from "../../components/NftMediaComponent";
-import liveliness from "assets/img/nfme/liveliness.png";
 
 export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
   const { colorMode } = useColorMode();
@@ -424,10 +423,6 @@ export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
             </Heading>
 
             <ExplainerArticles reduceGap={true} />
-          </Box>
-
-          <Box m="auto" pt="10" pb="6rem" w={"100%"}>
-            <AppMarketplace setMenuItem={setMenuItem} />
           </Box>
         </Box>
       </Stack>

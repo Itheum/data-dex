@@ -320,7 +320,7 @@ export const LivelinessStaking: React.FC = () => {
                     <Box h="1px" w="100%" borderStyle="solid" borderWidth="1px" borderColor="#00C79740" />
                     <HStack my={2} justifyContent="center" alignItems="flex-start" w="100%">
                       <VStack alignItems={"start"} w={"100%"}>
-                        <Text fontSize="xl" alignItems={"flex-start"} fontFamily="Inter" color="teal.200" fontWeight="bold">
+                        <Text fontSize="xl" alignItems={"flex-start"} fontFamily="Clash-Light" color="teal.200" fontWeight="bold">
                           Top-Up Liveliness for Boosted Rewards
                         </Text>
                         <Text fontSize="lg">Available Balance: {formatNumberToShort(itheumBalance)} $ITHEUM</Text>

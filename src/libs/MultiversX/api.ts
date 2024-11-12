@@ -6,14 +6,6 @@ import axios from "axios";
 import { IS_DEVNET, contractsForChain, uxConfig } from "libs/config";
 import { getDataFromClientSessionCache, setDataToClientSessionCache } from "libs/utils/util";
 
-declare const window: {
-  ITH_GLOBAL_MVX_PUBLIC_RPC_API_SESSION: string;
-  ITH_GLOBAL_MVX_RPC_API_SESSION: string;
-} & Window;
-
-window.ITH_GLOBAL_MVX_PUBLIC_RPC_API_SESSION = "";
-window.ITH_GLOBAL_MVX_RPC_API_SESSION = "";
-
 /* 
 We already return the public MVX API here, but we store and load it from the window object 
 so we don't have to keep running the ENV variable logic
@@ -22,15 +14,7 @@ getMvxRpcPublicOnlyApi can be used for non-critical use cases for fetching data 
 e.g. recent data nft, trending data data,
 */
 export const getMvxRpcPublicOnlyApi = (chainID: string) => {
-  if (window.ITH_GLOBAL_MVX_PUBLIC_RPC_API_SESSION !== "") {
-    console.log("ITH_GLOBAL_MVX_PUBLIC_RPC_API_SESSION served from session ", window.ITH_GLOBAL_MVX_PUBLIC_RPC_API_SESSION);
-    return window.ITH_GLOBAL_MVX_PUBLIC_RPC_API_SESSION;
-  }
-
-  const defaultUrl = chainID === "1" ? "api.multiversx.com" : "devnet-api.multiversx.com";
-  window.ITH_GLOBAL_MVX_PUBLIC_RPC_API_SESSION = defaultUrl;
-
-  return window.ITH_GLOBAL_MVX_PUBLIC_RPC_API_SESSION;
+  return chainID === "1" ? "api.multiversx.com" : "devnet-api.multiversx.com";
 };
 
 /* 
@@ -40,33 +24,34 @@ this will help load balance performance and costs
 getMvxRpcApi SHOULD be used for critical use cases for fetching data in the app
 e.g. offers, market etc
 */
+declare const window: {
+  ITH_GLOBAL_MVX_RPC_API_SESSION: string;
+} & Window;
+
+window.ITH_GLOBAL_MVX_RPC_API_SESSION = "";
+
 export const getMvxRpcApi = (chainID: string) => {
   if (window.ITH_GLOBAL_MVX_RPC_API_SESSION !== "") {
     console.log("ITH_GLOBAL_MVX_RPC_API_SESSION served from session ", window.ITH_GLOBAL_MVX_RPC_API_SESSION);
     return window.ITH_GLOBAL_MVX_RPC_API_SESSION;
-  } else {
-    console.log("ITH_GLOBAL_MVX_RPC_API_SESSION NOT in session, chainID = ", chainID);
   }
 
-  const defaultUrl = chainID === "1" ? "api.multiversx.com" : "devnet-api.multiversx.com";
+  let mvxRpcApiToUse = chainID === "1" ? "api.multiversx.com" : "devnet-api.multiversx.com";
 
   // 30% of chance, default to the Public API
   // const defaultToPublic = Math.random() < 0.1; // math random gives you close to even distribution from 0 - 1
   const defaultToPublic = false; // always do private
 
-  if (defaultToPublic) {
-    window.ITH_GLOBAL_MVX_RPC_API_SESSION = defaultUrl;
-
-    console.log("ITH_GLOBAL_MVX_RPC_API_SESSION defaulted based on chance to public ", window.ITH_GLOBAL_MVX_RPC_API_SESSION);
-  } else {
-    // else, we revert to original logic of using ENV variable
+  if (!defaultToPublic) {
     const envKey = chainID === "1" ? "VITE_ENV_API_MAINNET_KEY" : "VITE_ENV_API_DEVNET_KEY";
-
-    window.ITH_GLOBAL_MVX_RPC_API_SESSION = import.meta.env[envKey] || defaultUrl;
-    console.log("ITH_GLOBAL_MVX_RPC_API_SESSION fetched rom ENV ", window.ITH_GLOBAL_MVX_RPC_API_SESSION);
+    mvxRpcApiToUse = import.meta.env[envKey] || mvxRpcApiToUse;
   }
 
-  return window.ITH_GLOBAL_MVX_RPC_API_SESSION;
+  window.ITH_GLOBAL_MVX_RPC_API_SESSION = mvxRpcApiToUse;
+
+  console.log(`ITH_GLOBAL_MVX_RPC_API_SESSION NOT in session, ${chainID} mvxRpcApiToUse = ${mvxRpcApiToUse}`);
+
+  return mvxRpcApiToUse;
 };
 
 export const getNetworkProvider = (chainID: string) => {

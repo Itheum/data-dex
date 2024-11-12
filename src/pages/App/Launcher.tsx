@@ -30,12 +30,12 @@ function Launcher() {
     clearAppSessionsLaunchMode();
   };
 
-  let rpcToUse = "";
+  let mvxRpcApiToUse = "";
 
   if (IS_DEVNET) {
-    rpcToUse = `https://${getMvxRpcApi("D")}`;
+    mvxRpcApiToUse = `https://${getMvxRpcApi("D")}`;
   } else {
-    rpcToUse = `https://${getMvxRpcApi("1")}`;
+    mvxRpcApiToUse = `https://${getMvxRpcApi("1")}`;
   }
 
   return (
@@ -46,7 +46,7 @@ function Launcher() {
           name: "itheumDataDEX",
           walletConnectV2ProjectId,
           apiTimeout: uxConfig.mxAPITimeoutMs,
-          apiAddress: rpcToUse,
+          apiAddress: mvxRpcApiToUse,
         }}
         dappConfig={{
           shouldUseWebViewProvider: true,
