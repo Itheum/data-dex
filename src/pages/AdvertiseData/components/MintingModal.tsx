@@ -29,30 +29,32 @@ import {
   Wrap,
 } from "@chakra-ui/react";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { useNavigate } from "react-router-dom";
 import NftMediaComponent from "components/NftMediaComponent";
 
 type MintingModalProps = {
+  isSolanaMinting: boolean;
   isOpen: boolean;
   errDataNFTStreamGeneric: any;
   saveProgress: Record<any, any>;
-  setSaveProgress: any;
   dataNFTImg: string;
   dataNFTTraits: any;
   mintingSuccessful: boolean;
   makePrimaryNFMeIdSuccessful: boolean;
-  imageUrl: string;
-  metadataUrl: string;
   isNFMeIDMint: boolean;
   isAutoVault: boolean;
   nftImgAndMetadataLoadedOnIPFS: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   closeProgressModal: () => void;
   onChainMint: () => void;
+  solBondingTxHasFailed?: boolean;
+  sendSolanaBondingTx?: () => void;
 };
 
 export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
   const {
+    isSolanaMinting,
     isOpen,
     errDataNFTStreamGeneric,
     saveProgress,
@@ -60,15 +62,14 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
     dataNFTTraits,
     mintingSuccessful,
     makePrimaryNFMeIdSuccessful,
-    setSaveProgress,
-    imageUrl,
-    metadataUrl,
     isNFMeIDMint,
     isAutoVault,
     nftImgAndMetadataLoadedOnIPFS,
     setIsOpen,
     closeProgressModal,
     onChainMint,
+    solBondingTxHasFailed,
+    sendSolanaBondingTx,
   } = props;
   const { colorMode } = useColorMode();
   const navigate = useNavigate();
@@ -78,6 +79,7 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
   const { hasPendingTransactions } = useGetPendingTransactions();
   // some local state for better UX, i.e. to not sure the mint button once clicked (using only hasPendingTransactions has some delay and button flickers)
   const [localMintJustClicked, setLocalMintJustClicked] = useState(false);
+  const { connected: isSolWalletConnected } = useWallet();
 
   useEffect(() => {
     setLocalMintJustClicked(false);
@@ -94,20 +96,15 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
     <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false} blockScrollOnMount={false} size={{ base: "sm", md: "lg" }}>
       <ModalOverlay />
       <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-        <ModalHeader>{isNFMeIDMint ? "NFMe ID Vault" : "Data NFT Collection"} Minting Progress</ModalHeader>
+        <ModalHeader>
+          {isSolanaMinting ? "Solana" : "MultiversX"} {isNFMeIDMint ? "NFMe ID" : "Data NFT Collection"} Minting Progress
+        </ModalHeader>
         {((!!errDataNFTStreamGeneric && !hasPendingTransactions) || mintingSuccessful) && <ModalCloseButton />}
         <ModalBody pb={6}>
-          {/* <Box fontSize=".8rem" rounded="lg" as="div" style={{ "display": "none" }}>
-            dataNFTImg: {dataNFTImg}, <br />
-            imageUrl: {imageUrl}, <br />
-            metadataUrl: {metadataUrl}, <br />
-            nftImgAndMetadataInitializing: {nftImgAndMetadataInitializing.toString()}, <br />
-            nftImgAndMetadataLoadedOnIPFS: {nftImgAndMetadataLoadedOnIPFS.toString()}
-          </Box> */}
           <Stack spacing={5}>
             <HStack>
               {(!saveProgress.s1 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
-              <Text fontSize="lg">Generating encrypted data stream metadata</Text>
+              <Text fontSize="lg">Generating private and encrypted data stream</Text>
             </HStack>
 
             <HStack>
@@ -121,13 +118,11 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
             </HStack>
 
             <HStack>
-              {(!saveProgress.s4 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
-              <VStack>
-                <Text fontSize="lg">
-                  Minting your new {isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} on the blockchain{" "}
-                  {isAutoVault ? "& setting it as your primary NFMe ID Vault" : ""}
-                </Text>
-              </VStack>
+              <Box w={6}>{(!saveProgress.s4 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}</Box>
+              <Text fontSize="lg">
+                Minting your {isNFMeIDMint ? "NFMe ID" : "Data NFT"} and bonding $ITHEUM to generate your liveliness staking rewards{" "}
+                {isAutoVault && !isSolWalletConnected ? "& setting it as your primary NFMe ID" : ""}
+              </Text>
             </HStack>
 
             {!mintingSuccessful ? (
@@ -180,7 +175,8 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
               </>
             )}
 
-            {nftImgAndMetadataLoadedOnIPFS && !mintingSuccessful && (
+            {/* Only on MultiversX we do the "Mint to Reveal Step" -- not needed on Solana */}
+            {nftImgAndMetadataLoadedOnIPFS && !mintingSuccessful && !isSolanaMinting && (
               <VStack>
                 <Box>
                   <Button
@@ -191,7 +187,7 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
                       onChainMint();
                       setLocalMintJustClicked(true);
                     }}>
-                    Mint and Reveal your New {isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"}!
+                    Mint and Reveal your New {isNFMeIDMint ? "NFMe ID" : "Data NFT"}!
                   </Button>
                   <Text fontSize="sm" colorScheme="teal" align="center" mt={2}>
                     (You will be asked to sign {isAutoVault ? "2 transactions" : "1 transaction"})
@@ -202,11 +198,11 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
 
             {isAutoVault ? (
               <>
-                {mintingSuccessful && makePrimaryNFMeIdSuccessful && (
+                {mintingSuccessful && makePrimaryNFMeIdSuccessful ? (
                   <Box textAlign="center" mt="2">
                     <Alert status="success">
                       <Text fontSize="lg" colorScheme="teal">
-                        Success! {isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} Minted and set as your NFMe ID Vault.
+                        Success! {isNFMeIDMint ? "NFMe ID" : "Data NFT"} Minted and {isSolWalletConnected ? "bonded" : "set as your NFMe ID"}.
                       </Text>
                     </Alert>
                     <HStack mt="4">
@@ -230,6 +226,23 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
                       </Button>
                     </HStack>
                   </Box>
+                ) : (
+                  mintingSuccessful &&
+                  solBondingTxHasFailed && (
+                    <Box textAlign="center" mt={4}>
+                      <Text fontSize="lg" colorScheme="teal" color="teal.200" mb={2}>
+                        Note: You can only complete the bonding step here.
+                      </Text>
+                      <Button
+                        colorScheme="teal"
+                        variant="solid"
+                        onClick={() => {
+                          sendSolanaBondingTx ? sendSolanaBondingTx() : console.error("Retry is not possible.");
+                        }}>
+                        Retry Bonding
+                      </Button>
+                    </Box>
+                  )
                 )}
               </>
             ) : (
@@ -238,7 +251,7 @@ export const MintingModal: React.FC<MintingModalProps> = memo((props) => {
                   <Box textAlign="center" mt="2">
                     <Alert status="success">
                       <Text fontSize="lg" colorScheme="teal">
-                        Success! Your {isNFMeIDMint ? "NFMe ID Vault" : "Data NFT"} has been minted.
+                        Success! Your {isNFMeIDMint ? "NFMe ID" : "Data NFT"} has been minted.
                       </Text>
                     </Alert>
                     <HStack mt="4">

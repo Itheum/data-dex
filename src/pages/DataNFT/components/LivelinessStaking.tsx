@@ -38,9 +38,11 @@ export const LivelinessStaking: React.FC = () => {
   const [combinedBondsStaked, setCombinedBondsStaked] = useState<number>(0);
   const [rewardApr, setRewardApr] = useState<number>(0);
   const [maxApr, setMaxApr] = useState<number>(0);
+
   const [accumulatedRewards, setAccumulatedRewards] = useState<number>(0);
   const [globalTotalBond, setGlobalTotalBond] = useState<number>(0);
   const [globalRewardsPerBlock, setGlobalRewardsPerBlock] = useState<number>(0);
+
   const [nfmeId, setNfmeId] = useState<DataNft | undefined>(undefined);
   const [nfmeIdBond, setNfmeIdBond] = useState<Bond>();
   const [topUpItheumValue, setTopUpItheumValue] = useState<number>(0);
@@ -67,7 +69,7 @@ export const LivelinessStaking: React.FC = () => {
         setMaxApr(Math.floor(data.contractDetails.maxApr * 100) / 100);
         setGlobalRewardsPerBlock(new BigNumber(data.contractDetails.rewardsPerBlock).dividedBy(10 ** 18).toNumber());
 
-        // 0 means the user has not set a primary NFMe ID Vault yet
+        // 0 means the user has not set a primary NFMe ID yet
         if (data.userData.vaultNonce !== 0) {
           const dataNft = await DataNft.createFromApi({
             nonce: data.userData.vaultNonce,
@@ -103,11 +105,11 @@ export const LivelinessStaking: React.FC = () => {
       const rewardPerYear = localRewardsPerBlock * blockPerYear;
       const calculatedRewardApr = Math.floor((rewardPerYear / combinedBondsStaked) * 10000) / 100;
 
-      console.log("=======================");
-      console.log("globalTotalBond :", globalTotalBond);
-      console.log("calculatedRewardApr :", calculatedRewardApr);
-      console.log("maxApr :", maxApr);
-      console.log("=======================");
+      // console.log("=======================");
+      // console.log("globalTotalBond :", globalTotalBond);
+      // console.log("calculatedRewardApr :", calculatedRewardApr);
+      // console.log("maxApr :", maxApr);
+      // console.log("=======================");
 
       if (maxApr === 0) {
         setRewardApr(calculatedRewardApr);
@@ -239,7 +241,7 @@ export const LivelinessStaking: React.FC = () => {
       <Box flex="1" px={{ base: 0, md: 12 }} mt={{ base: "30px", md: 0 }}>
         <>
           <Heading fontSize="1.5rem" fontFamily="Clash-Medium" color="teal.200" mb="20px" textAlign={{ base: "center", md: "left" }}>
-            Your NFMe ID Vault
+            Your NFMe ID
           </Heading>
           <VStack border=".1rem solid" borderColor="#00C79740" borderRadius="3xl" p={6} alignItems={"start"} minW={{ md: "30rem" }} minH={{ md: "25rem" }}>
             {allInfoLoading ? (
@@ -424,20 +426,20 @@ export const LivelinessStaking: React.FC = () => {
                 ) : (
                   <Box w="90%" mt="10">
                     <Text fontWeight="bold">
-                      You do not seem to have an Active NFMe ID Vault yet. If you did, you can top-up bonus $ITHEUM tokens and earn extra staking rewards. You
-                      have a few options:
+                      You do not seem to have an Active NFMe ID yet. If you did, you can top-up bonus $ITHEUM tokens and earn extra staking rewards. You have a
+                      few options:
                     </Text>
 
                     <Text fontSize="md" my="5">
-                      1. Do you have other Data NFTs with an active Liveliness Bond? If so, you can set one of them as your NFMe ID Vault by clicking on the{" "}
+                      1. Do you have other Data NFTs with an active Liveliness Bond? If so, you can set one of them as your NFMe ID by clicking on the{" "}
                       {"'Set as Primary NFMe ID'"} option below.
                     </Text>
 
                     <Text fontSize="md" my="5">
-                      2. Mint your very own new NFMe ID Vault!
+                      2. Mint your very own NFMe ID!
                     </Text>
                     <Button colorScheme="teal" borderRadius="12px" variant="outline" size="sm" onClick={() => navigate("/mintdata?launchTemplate=nfmeidvault")}>
-                      <Text px={2}>Mint NFMe ID Vault</Text>
+                      <Text px={2}>Mint NFMe ID</Text>
                     </Button>
                   </Box>
                 )}

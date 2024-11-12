@@ -9,10 +9,12 @@ import liteLivelinessRewards from "assets/img/landing/nfme/lite-liveliness-rewar
 import liteMintWithBond from "assets/img/landing/nfme/lite-mint-nfmeid-with-bond.png";
 import liteTopUp from "assets/img/landing/nfme/lite-nfmeid-topup.png";
 import { gtagGo } from "libs/utils";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 export const LivelinessStaking = ({ onShowConnectWalletModal }: { onShowConnectWalletModal?: any }) => {
   const { colorMode } = useColorMode();
   const { address: mxAddress } = useGetAccountInfo();
+  const { connected: connectedSolWallet } = useWallet();
   const navigate = useNavigate();
 
   return (
@@ -40,8 +42,7 @@ export const LivelinessStaking = ({ onShowConnectWalletModal }: { onShowConnectW
               />
             </Box>
             <Text p="5" fontSize="lg" textAlign={{ base: "center", md: "left" }}>
-              Bond a minimum amount of $ITHEUM to mint your NFMe ID Vault and activate your Liveliness score, which is your on-chain reputation as a Data
-              Creator.
+              Bond a minimum amount of $ITHEUM to mint your NFMe ID and activate your Liveliness score, which is your on-chain reputation as a Data Creator.
               <br />
               <br />
               This bond also triggers staking rewards based on your token bond and Liveliness score. Renew your Liveliness bond anytime, keeping it close to
@@ -84,11 +85,9 @@ export const LivelinessStaking = ({ onShowConnectWalletModal }: { onShowConnectW
               />
             </Box>
             <Text p="5" fontSize="lg" textAlign={{ base: "center", md: "left" }}>
-              The more $ITHEUM bonds you lock and the higher your {`"Combined Liveliness"`} across all Data NFTs or NFMe ID Vaults, the greater your rewards.{" "}
+              The more $ITHEUM bonds you lock and the higher your {`"Combined Liveliness"`} across all Data NFTs or NFMe IDs, the greater your rewards. <br />
               <br />
-              <br />
-              You can claim rewards anytime or reinvest them directly into your NFMe ID Vault. Maintain a combined Liveliness score over 95% to maximize your
-              rewards.
+              You can claim rewards anytime or reinvest them directly into your NFMe ID. Maintain a combined Liveliness score over 95% to maximize your rewards.
             </Text>
           </Flex>
         </Flex>
@@ -105,7 +104,7 @@ export const LivelinessStaking = ({ onShowConnectWalletModal }: { onShowConnectW
             onClick={() => {
               gtagGo("nfm", "try", "stake");
 
-              if (mxAddress) {
+              if (mxAddress || connectedSolWallet) {
                 navigate("/liveliness");
               } else {
                 onShowConnectWalletModal("mvx", "/liveliness");

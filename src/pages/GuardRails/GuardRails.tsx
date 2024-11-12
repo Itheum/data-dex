@@ -51,7 +51,6 @@ export const GuardRails: React.FC = () => {
       return `${hours} hour${hours > 1 ? "s" : ""} ${remainingMinutes} minutes`;
     }
   }
-
   return (
     <Flex as="div" flexDirection="column" mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
       <Heading fontSize="36px" fontFamily="Clash-Medium" mt={14} mb="32px">

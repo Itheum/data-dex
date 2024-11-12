@@ -32,6 +32,7 @@ export const CompensationCards: React.FC = () => {
   const { isOpen: isOpenCalculateCompensation, onOpen: onOpenCalculateCompensation, onClose: onCloseCalculateCompensation } = useDisclosure();
 
   useEffect(() => {
+    if (!mxAddress) return;
     setIsCompensationNftLoading(false);
     (async () => {
       const contractBonds = await bondContract.viewAllBonds();
