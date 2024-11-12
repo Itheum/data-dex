@@ -34,6 +34,10 @@ function Launcher() {
     clearAppSessionsLaunchMode();
   };
 
+  console.log("DEBUG: import.meta.env.VITE_ENV_NETWORK :", import.meta.env.VITE_ENV_NETWORK);
+  console.log("DEBUG: chainID :", chainID);
+  console.log("DEBUG: https://${getMvxRpcApi(chainID)} :", `https://${getMvxRpcApi(chainID)}`);
+
   return (
     <>
       <DappProvider
