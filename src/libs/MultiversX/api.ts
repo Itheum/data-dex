@@ -44,6 +44,8 @@ export const getMvxRpcApi = (chainID: string) => {
   if (window.ITH_GLOBAL_MVX_RPC_API_SESSION !== "") {
     console.log("ITH_GLOBAL_MVX_RPC_API_SESSION served from session ", window.ITH_GLOBAL_MVX_RPC_API_SESSION);
     return window.ITH_GLOBAL_MVX_RPC_API_SESSION;
+  } else {
+    console.log("ITH_GLOBAL_MVX_RPC_API_SESSION NOT in session, chainID = ", chainID);
   }
 
   const defaultUrl = chainID === "1" ? "api.multiversx.com" : "devnet-api.multiversx.com";
