@@ -10,7 +10,7 @@ import { useParams } from "react-router-dom";
 import { IS_DEVNET } from "libs/config";
 import { tokenContractAddress_Mx_Devnet, tokenContractAddress_Mx_Mainnet } from "libs/contractAddresses";
 import { ImageTooltip } from "../../../../components/UtilComps/ImageTooltip";
-import { getApi } from "../../../../libs/MultiversX/api";
+import { getMvxRpcApi } from "../../../../libs/MultiversX/api";
 import { ClaimsContract } from "../../../../libs/MultiversX/claims";
 
 type ClaimRoyaltiesProps = {
@@ -31,8 +31,8 @@ export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
 
   const getAddressToken = async () => {
     // request for minter tokens and egld balance
-    const urlForExternalToken = `https://${getApi(chainID)}/accounts/${minterAddress}/tokens?size=10000`;
-    const egldAccountBalance = `https://${getApi(chainID)}/accounts/${minterAddress}`;
+    const urlForExternalToken = `https://${getMvxRpcApi(chainID)}/accounts/${minterAddress}/tokens?size=10000`;
+    const egldAccountBalance = `https://${getMvxRpcApi(chainID)}/accounts/${minterAddress}`;
     const { data: externalTokenData } = await axios.get(urlForExternalToken);
     const { data: egldBalance } = await axios.get(egldAccountBalance);
     // request for claims portal

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardBody, Heading, Image, Link, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
+import { Card, CardBody, Heading, Link, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
 import { DataNft, Offer, createTokenIdentifier } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
@@ -7,10 +7,9 @@ import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { Link as ReactRouterLink } from "react-router-dom";
 import NftMediaComponent from "components/NftMediaComponent";
 import { IS_DEVNET, getFavoritesFromBackendApi, getHealthCheckFromBackendApi, getRecentOffersFromBackendApi } from "libs/MultiversX";
-import { getApi, getNftsByIds } from "libs/MultiversX/api";
-import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
+import { getMvxRpcApi } from "libs/MultiversX/api";
 import { RecentDataNFTType } from "libs/types";
-import { convertWeiToEsdt, hexZero, sleep } from "libs/utils";
+import { convertWeiToEsdt } from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
 import { NoDataHere } from "./NoDataHere";
 import { Favourite } from "../Favourite/Favourite";
@@ -46,7 +45,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const favoriteNfts = useAccountStore((state) => state.favoriteNfts);
   const updateFavoriteNfts = useAccountStore((state) => state.updateFavoriteNfts);
-  const marketContract = new DataNftMarketContract(chainID);
+  const [web2ApiDown, setWeb2ApiDown] = useState<boolean>(false);
 
   useEffect(() => {
     apiWrapper();
@@ -69,7 +68,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
   };
 
   const apiWrapper = async () => {
-    DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
+    DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet", `https://${getMvxRpcApi(chainID)}`);
 
     try {
       const isApiUp = await getHealthCheckFromBackendApi(chainID);
@@ -77,8 +76,9 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
       if (isApiUp) {
         const offers = await getRecentOffersFromBackendApi(chainID);
         const recentNonces = offers.map((nft: any) => ({ nonce: nft.offeredTokenNonce }));
-        const dataNfts: DataNft[] = await DataNft.createManyFromApi(recentNonces);
 
+        console.log("Debug ABOUT TO HIT RecentDataNFTs:createManyFromApi");
+        const dataNfts: DataNft[] = await DataNft.createManyFromApi(recentNonces);
         const _latestOffers: RecentDataNFTType[] = [];
 
         offers.forEach((offer: Offer) => {
@@ -105,54 +105,17 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
             });
           }
         });
+
         setLatestOffers(_latestOffers);
         setLoadedOffers(true);
       } else {
         throw new Error("API is down");
       }
     } catch (error) {
-      const highestOfferIndex = await marketContract.getLastValidOfferId();
-
-      // get latest 10 offers from the SC
-      const startIndex = Math.max(highestOfferIndex - 40, 0);
-      const stopIndex = highestOfferIndex;
-
-      const offers = await marketContract.viewOffers(startIndex, stopIndex);
-      const slicedOffers = offers.slice(0, 10);
-      // get these offers metadata from the API
-      const nftIds = slicedOffers.map((offer) => `${offer.offeredTokenIdentifier}-${hexZero(offer.offeredTokenNonce)}`);
-      const dataNfts = await getNftsByIds(nftIds, chainID);
-
-      // merge the offer data and meta data
-      const _latestOffers: RecentDataNFTType[] = [];
-
-      slicedOffers.forEach((offer, idx) => {
-        const _nft = dataNfts.find((nft) => createTokenIdentifier(nft.collection, nft.nonce) === nft.identifier);
-
-        if (_nft !== undefined) {
-          const _nftMetaData = DataNft.decodeAttributes(_nft.attributes);
-
-          _latestOffers.push({
-            creator: new Address(_nftMetaData.creator ?? ""),
-            owner: new Address(offer.owner),
-            offeredTokenIdentifier: offer.offeredTokenIdentifier,
-            offeredTokenNonce: offer.offeredTokenNonce,
-            offeredTokenAmount: offer.offeredTokenAmount,
-            index: idx,
-            wantedTokenIdentifier: offer.wantedTokenIdentifier,
-            wantedTokenNonce: offer.wantedTokenNonce,
-            wantedTokenAmount: offer.wantedTokenAmount,
-            quantity: offer.quantity,
-            tokenName: _nftMetaData.tokenName,
-            title: _nftMetaData.title,
-            nftImgUrl: "https://" + getApi(chainID) + "/nfts/" + _nft.identifier + "/thumbnail",
-            royalties: _nftMetaData.royalties,
-            media: _nftMetaData.media,
-          });
-        }
-      });
-      await sleep(1);
-      setLatestOffers(_latestOffers);
+      console.log("Web2 API is down so gracefully handle it");
+      console.error(error);
+      setWeb2ApiDown(true);
+      setLatestOffers([]);
       setLoadedOffers(true);
     }
   };
@@ -169,7 +132,9 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
         {headingText}
       </Heading>
 
-      {loadedOffers && latestOffers.length === 0 && <NoDataHere imgFromTop="5rem" />}
+      {loadedOffers && latestOffers.length === 0 && (
+        <NoDataHere imgFromTop="5rem" customMsg={`${web2ApiDown ? "Web2 API is down, gracefully roll down to full Web3 Mode" : undefined}`} />
+      )}
 
       <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(240px, 1fr))">
         {latestOffers.map((item: RecentDataNFTType, idx: number) => {

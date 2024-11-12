@@ -22,7 +22,7 @@ import axios from "axios";
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
 import { contractsForChain } from "libs/config";
-import { getApi } from "libs/MultiversX/api";
+import { getMvxRpcApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { sleep, printPrice, convertToLocalString, getTokenWantedRepresentation, backendApi, getApiDataMarshal, convertWeiToEsdt } from "libs/utils";
 import { useMarketStore } from "store";
@@ -106,7 +106,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
     maxQuantityPerAddress = maxPerAddress
   ) {
     const indexResponse = await axios.get(
-      `https://${getApi(chainID)}/accounts/${contractsForChain(chainID).market}/transactions?hashes=${txHash}&status=success&withScResults=true&withLogs=true`
+      `https://${getMvxRpcApi(chainID)}/accounts/${contractsForChain(chainID).market}/transactions?hashes=${txHash}&status=success&withScResults=true&withLogs=true`
     );
 
     const results = indexResponse.data[0].results;

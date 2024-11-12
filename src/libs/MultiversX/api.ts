@@ -4,12 +4,66 @@ import { AccountType } from "@multiversx/sdk-dapp/types";
 import { NftType, TokenType } from "@multiversx/sdk-dapp/types/tokens.types";
 import axios from "axios";
 import { IS_DEVNET, contractsForChain, uxConfig } from "libs/config";
+import { getDataFromClientSessionCache, setDataToClientSessionCache } from "libs/utils/util";
 
-export const getApi = (chainID: string) => {
-  const envKey = chainID === "1" ? "VITE_ENV_API_MAINNET_KEY" : "VITE_ENV_API_DEVNET_KEY";
+declare const window: {
+  ITH_GLOBAL_MVX_PUBLIC_RPC_API_SESSION: string;
+  ITH_GLOBAL_MVX_RPC_API_SESSION: string;
+} & Window;
+
+window.ITH_GLOBAL_MVX_PUBLIC_RPC_API_SESSION = "";
+window.ITH_GLOBAL_MVX_RPC_API_SESSION = "";
+
+/* 
+We already return the public MVX API here, but we store and load it from the window object 
+so we don't have to keep running the ENV variable logic
+
+getMvxRpcPublicOnlyApi can be used for non-critical use cases for fetching data in the app
+e.g. recent data nft, trending data data,
+*/
+export const getMvxRpcPublicOnlyApi = (chainID: string) => {
+  if (window.ITH_GLOBAL_MVX_PUBLIC_RPC_API_SESSION !== "") {
+    console.log("ITH_GLOBAL_MVX_PUBLIC_RPC_API_SESSION served from session ", window.ITH_GLOBAL_MVX_PUBLIC_RPC_API_SESSION);
+    return window.ITH_GLOBAL_MVX_PUBLIC_RPC_API_SESSION;
+  }
+
+  const defaultUrl = chainID === "1" ? "api.multiversx.com" : "devnet-api.multiversx.com";
+  window.ITH_GLOBAL_MVX_PUBLIC_RPC_API_SESSION = defaultUrl;
+
+  return window.ITH_GLOBAL_MVX_PUBLIC_RPC_API_SESSION;
+};
+
+/* 
+Here we load the private RPC or public RPC based on usage randomization - i. 30% of time load public / 70% of time private
+this will help load balance performance and costs
+
+getMvxRpcApi SHOULD be used for critical use cases for fetching data in the app
+e.g. offers, market etc
+*/
+export const getMvxRpcApi = (chainID: string) => {
+  if (window.ITH_GLOBAL_MVX_RPC_API_SESSION !== "") {
+    console.log("ITH_GLOBAL_MVX_RPC_API_SESSION served from session ", window.ITH_GLOBAL_MVX_RPC_API_SESSION);
+    return window.ITH_GLOBAL_MVX_RPC_API_SESSION;
+  }
+
   const defaultUrl = chainID === "1" ? "api.multiversx.com" : "devnet-api.multiversx.com";
 
-  return import.meta.env[envKey] || defaultUrl;
+  // 30% of chance, default to the Public API
+  const defaultToPublic = Math.random() < 0.3; // math random gives you close to even distribution from 0 - 1
+
+  if (defaultToPublic) {
+    window.ITH_GLOBAL_MVX_RPC_API_SESSION = defaultUrl;
+
+    console.log("ITH_GLOBAL_MVX_RPC_API_SESSION defaulted based on chance to public ", window.ITH_GLOBAL_MVX_RPC_API_SESSION);
+  } else {
+    // else, we revert to original logic of using ENV variable
+    const envKey = chainID === "1" ? "VITE_ENV_API_MAINNET_KEY" : "VITE_ENV_API_DEVNET_KEY";
+
+    window.ITH_GLOBAL_MVX_RPC_API_SESSION = import.meta.env[envKey] || defaultUrl;
+    console.log("ITH_GLOBAL_MVX_RPC_API_SESSION fetched rom ENV ", window.ITH_GLOBAL_MVX_RPC_API_SESSION);
+  }
+
+  return window.ITH_GLOBAL_MVX_RPC_API_SESSION;
 };
 
 export const getNetworkProvider = (chainID: string) => {
@@ -19,8 +73,8 @@ export const getNetworkProvider = (chainID: string) => {
   const envValue = import.meta.env[envKey];
   const isApi = envValue && envValue.includes("api");
   return isApi
-    ? new ApiNetworkProvider(envValue, { timeout: uxConfig.mxAPITimeoutMs, clientName: "ithuemDataDex" })
-    : new ProxyNetworkProvider(envValue || defaultUrl, { timeout: uxConfig.mxAPITimeoutMs, clientName: "ithuemDataDex" });
+    ? new ApiNetworkProvider(envValue, { timeout: uxConfig.mxAPITimeoutMs, clientName: "itheumDataDex" })
+    : new ProxyNetworkProvider(envValue || defaultUrl, { timeout: uxConfig.mxAPITimeoutMs, clientName: "itheumDataDex" });
 };
 
 export const getNetworkProviderCodification = (chainID: string) => {
@@ -38,7 +92,7 @@ export const getExplorer = (chainID: string) => {
 };
 
 export const getClaimTransactions = async (address: string, chainID: string) => {
-  const api = getApi(chainID);
+  const api = getMvxRpcApi(chainID);
   const claimsContractAddress = contractsForChain(chainID).claims;
   try {
     const allTxs = `https://${api}/accounts/${address}/transactions?size=25&receiver=${claimsContractAddress}&function=claim&withOperations=true`;
@@ -106,7 +160,8 @@ export const getClaimTransactions = async (address: string, chainID: string) => 
 };
 
 export const getNftsOfACollectionForAnAddress = async (address: string, collectionTickers: string[], chainID: string): Promise<DataNft[]> => {
-  DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
+  DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet", `https://${getMvxRpcApi(chainID)}`);
+
   try {
     const ownerByAddress = await DataNft.ownedByAddress(address, collectionTickers);
     return ownerByAddress;
@@ -116,18 +171,34 @@ export const getNftsOfACollectionForAnAddress = async (address: string, collecti
   }
 };
 
+/*
+Ideally this should be in the Data NFT SDK so it can be client caches, but for now we can keep it here @TODO
+*/
 export const getNftsByIds = async (nftIds: string[], chainID: string): Promise<NftType[]> => {
-  const api = getApi(chainID);
+  const api = getMvxRpcApi(chainID);
   try {
-    const url = `https://${api}/nfts?withSupply=true&identifiers=${nftIds.join(",")}`;
-    const { data } = await axios.get<NftType[]>(url, {
-      timeout: uxConfig.mxAPITimeoutMs,
-    });
+    const fetchUrl = `https://${api}/nfts?withSupply=true&identifiers=${nftIds.join(",")}`;
+
+    // check if its in session cache
+    let jsonDataPayload = null;
+    const getFromSessionCache = getDataFromClientSessionCache(fetchUrl);
+
+    if (!getFromSessionCache) {
+      const { data } = await axios.get<NftType[]>(fetchUrl, {
+        timeout: uxConfig.mxAPITimeoutMs,
+      });
+
+      jsonDataPayload = data;
+
+      setDataToClientSessionCache(fetchUrl, jsonDataPayload, 5 * 60 * 1000);
+    } else {
+      jsonDataPayload = getFromSessionCache;
+    }
 
     // match input and output order
     const sorted: NftType[] = [];
     for (const nftId of nftIds) {
-      for (const nft of data) {
+      for (const nft of jsonDataPayload) {
         if (nftId === nft.identifier) {
           sorted.push(nft);
           break;
@@ -149,7 +220,7 @@ export const getNftsByIds = async (nftIds: string[], chainID: string): Promise<N
 
 export const getAccountTokenFromApi = async (address: string, tokenId: string, chainID: string): Promise<TokenType | undefined> => {
   try {
-    const api = getApi(chainID);
+    const api = getMvxRpcApi(chainID);
     const url = `https://${api}/accounts/${address}/tokens/${tokenId}`;
     const { data } = await axios.get<TokenType>(url, {
       timeout: uxConfig.mxAPITimeoutMs,
@@ -178,7 +249,7 @@ export const getItheumPriceFromApi = async (): Promise<number | undefined> => {
 
 export const getAccountDetailFromApi = async (address: string, chainID: string): Promise<AccountType | undefined> => {
   try {
-    const api = getApi(chainID);
+    const api = getMvxRpcApi(chainID);
     const url = `https://${api}/accounts/${address}`;
     const { data } = await axios.get<AccountType>(url, {
       timeout: uxConfig.mxAPITimeoutMs,
@@ -192,7 +263,7 @@ export const getAccountDetailFromApi = async (address: string, chainID: string):
 };
 
 export const getTokenDecimalsRequest = async (tokenIdentifier: string | undefined, chainID: string) => {
-  const tokenIdentifierUrl = `https://${getApi(chainID)}/tokens/${tokenIdentifier}`;
+  const tokenIdentifierUrl = `https://${getMvxRpcApi(chainID)}/tokens/${tokenIdentifier}`;
   try {
     const { data } = await axios.get(tokenIdentifierUrl);
     if (tokenIdentifier !== undefined) {

@@ -20,7 +20,7 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { motion } from "framer-motion";
 import moment from "moment/moment";
 import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
-import { getApi } from "libs/MultiversX/api";
+import { getMvxRpcApi } from "libs/MultiversX/api";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { convertToLocalString, createNftId, transformDescription } from "libs/utils";
 import NftMediaComponent from "./NftMediaComponent";
@@ -56,7 +56,7 @@ const ProfileCard = ({
   const ChainExplorer = CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER];
 
   const nftId = createNftId(collection, nonce);
-  const imageUrl = collection ? `https://${getApi(chainID)}/nfts/${nftId}/thumbnail` : DEFAULT_NFT_IMAGE;
+  const imageUrl = collection ? `https://${getMvxRpcApi(chainID)}/nfts/${nftId}/thumbnail` : DEFAULT_NFT_IMAGE;
   const parsedCreationTime = moment(creationTime);
   return (
     <Skeleton fitContent={true} isLoaded={hasLoaded} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>

@@ -5,6 +5,7 @@ import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks
 import { Link } from "react-router-dom";
 import NftMediaComponent from "components/NftMediaComponent";
 import { IS_DEVNET, getTopVolumes } from "libs/MultiversX";
+import { getMvxRpcApi } from "libs/MultiversX/api";
 import { NftMedia } from "libs/types";
 import { convertToLocalString } from "libs/utils";
 import { useMarketStore } from "store";
@@ -50,7 +51,7 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
 
   useEffect(() => {
     (async () => {
-      DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
+      DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet", `https://${getMvxRpcApi(chainID)}`);
 
       const dataNftsVolumes: DataNftVolume[] = await getTopVolumes(chainID, tokenLogin?.nativeAuthToken ?? "", 10);
       const _volumesData: { nonce: number; tokenIdentifier: string }[] = [];
@@ -62,6 +63,7 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
         _volumesData.push({ nonce: nonce, tokenIdentifier: tokenIdentifier });
       });
 
+      console.log("Debug ABOUT TO HIT VolumesDataNfts:createManyFromApi");
       const dataNfts: DataNft[] = await DataNft.createManyFromApi(_volumesData);
 
       const _volume = dataNftsVolumes.map((dataNft) => {

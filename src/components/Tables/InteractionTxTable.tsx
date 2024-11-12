@@ -9,7 +9,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import axios from "axios";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, contractsForChain, uxConfig } from "libs/config";
-import { getApi } from "libs/MultiversX/api";
+import { getMvxRpcApi } from "libs/MultiversX/api";
 import { convertWeiToEsdt } from "libs/utils";
 import { useMarketStore } from "store";
 import { DataTable } from "./Components/DataTable";
@@ -132,7 +132,7 @@ export const getInteractionTransactions = async (
   chainID: string,
   marketRequirements: MarketplaceRequirements
 ) => {
-  const api = getApi(chainID);
+  const api = getMvxRpcApi(chainID);
   try {
     const minterTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${minterSmartContractAddress}&withOperations=true`;
     const marketTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${marketSmartContractAddress}&withOperations=true`;
