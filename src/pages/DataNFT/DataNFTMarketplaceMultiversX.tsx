@@ -49,7 +49,7 @@ import ConditionalRender from "components/UtilComps/ApiWrapper";
 import UpperCardComponent from "components/UtilComps/UpperCardComponent";
 import useThrottle from "components/UtilComps/UseThrottle";
 import { getOfersAsCollectionFromBackendApi, getOffersCountFromBackendApi, getOffersFromBackendApi } from "libs/MultiversX";
-import { getApi, getNetworkProvider, getNftsByIds } from "libs/MultiversX/api";
+import { getMvxRpcApi, getNetworkProvider, getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftCollectionType } from "libs/MultiversX/types";
@@ -489,7 +489,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                           <UpperCardComponent
                             key={index}
                             nftImageLoading={oneNFTImgLoaded && !loadingOffers}
-                            imageUrl={`https://${getApi(chainID)}/nfts/${offer?.offeredTokenIdentifier}-${hexZero(offer?.offeredTokenNonce)}/thumbnail`}
+                            imageUrl={`https://${getMvxRpcApi(chainID)}/nfts/${offer?.offeredTokenIdentifier}-${hexZero(offer?.offeredTokenNonce)}/thumbnail`}
                             setNftImageLoaded={setOneNFTImgLoaded}
                             nftMetadata={nftMetadatas[index]}
                             offer={offer}
@@ -544,7 +544,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         <UpperCardComponent
                           key={index}
                           nftImageLoading={oneNFTImgLoaded && !loadingOffers}
-                          imageUrl={`https://${getApi(chainID)}/nfts/${offer?.offeredTokenIdentifier}-${hexZero(offer?.offeredTokenNonce)}/thumbnail`}
+                          imageUrl={`https://${getMvxRpcApi(chainID)}/nfts/${offer?.offeredTokenIdentifier}-${hexZero(offer?.offeredTokenNonce)}/thumbnail`}
                           setNftImageLoaded={setOneNFTImgLoaded}
                           nftMetadata={nftMetadatas[index]}
                           offer={offer}

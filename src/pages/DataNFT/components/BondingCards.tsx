@@ -31,7 +31,7 @@ import { ConfirmationDialog } from "components/UtilComps/ConfirmationDialog";
 import { IS_DEVNET } from "libs/config";
 import { contractsForChain } from "libs/config";
 import { labels } from "libs/language";
-import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
+import { getNftsOfACollectionForAnAddress, getMvxRpcApi } from "libs/MultiversX/api";
 import { formatNumberToShort } from "libs/utils";
 
 type CompensationNftsType = {
@@ -52,7 +52,8 @@ export const BondingCards: React.FC = () => {
   const [allInfoLoading, setAllInfoLoading] = useState<boolean>(true);
   const [withdrawBondConfirmationWorkflow, setWithdrawBondConfirmationWorkflow] = useState<any>(null);
 
-  DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
+  DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet", `https://${getMvxRpcApi(chainID)}`);
+
   const [bondingOffers, setBondingOffers] = useState<Array<DataNft>>([]);
   const [dataNftsWithNoBond, setDataNftsWithNoBond] = useState<Array<DataNft>>([]);
 

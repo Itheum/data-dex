@@ -5,6 +5,7 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { Link as ReactRouterLink } from "react-router-dom";
 import NftMediaComponent from "components/NftMediaComponent";
+import { getMvxRpcApi } from "libs/MultiversX/api";
 import { NftMedia } from "libs/types";
 import { Favourite } from "../../../components/Favourite/Favourite";
 import { IS_DEVNET, getFavoritesFromBackendApi, getTrendingFromBackendApi } from "../../../libs/MultiversX";
@@ -47,7 +48,8 @@ export const TrendingData: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-      DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
+      DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet", `https://${getMvxRpcApi(chainID)}`);
+
       const getTrendingData = await getTrendingFromBackendApi(chainID);
       const _trendingData: Array<TrendingDataCreationNftsType> = [];
 

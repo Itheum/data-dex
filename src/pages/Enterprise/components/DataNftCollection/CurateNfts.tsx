@@ -11,7 +11,7 @@ import { FaArrowRightLong } from "react-icons/fa6";
 import { MdInfo, MdNavigateBefore, MdOutlineNavigateNext } from "react-icons/md";
 import { IS_DEVNET } from "libs/config";
 import { ImageTooltip } from "../../../../components/UtilComps/ImageTooltip";
-import { getApi, getExplorer } from "../../../../libs/MultiversX/api";
+import { getMvxRpcApi, getExplorer } from "../../../../libs/MultiversX/api";
 
 type CurateNftsProp = {
   nftMinter: NftMinter;
@@ -36,10 +36,11 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
 
   const pageCount = Math.ceil(nftCount / paginationSizeNft);
 
-  DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
+  DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet", `https://${getMvxRpcApi(chainID)}`);
+
   const getCreatedDataNftsFromAPI = async () => {
     setHasRequestLoaded(false);
-    const apiLink = getApi(chainID);
+    const apiLink = getMvxRpcApi(chainID);
     const url = `https://${apiLink}/collections/${tokenIdentifier}/nfts?from=${paginationFromNft}&size=${paginationSizeNft}&withOwner=true&sort=nonce`;
     const urlForNftCount = `https://${apiLink}/collections/${tokenIdentifier}/nfts/count`;
     const { data: paginatedNfts } = await axios.get(url);
@@ -48,6 +49,7 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
     setNftCount(nftsCount);
     setHasRequestLoaded(true);
   };
+
   const freezeDataNft = async (creator: string, nonce: number, owner: string | undefined) => {
     const tx = await nftMinter.freezeSingleNFT(new Address(address), nonce, new Address(owner ?? ""));
     tx.setGasLimit(100000000);
@@ -55,6 +57,7 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
       transactions: [tx],
     });
   };
+
   const unFreezeDataNft = async (creator: string, nonce: number, owner: string | undefined) => {
     const tx = await nftMinter.unFreezeSingleNFT(new Address(address), nonce, new Address(owner ?? ""));
     tx.setGasLimit(100000000);
@@ -62,6 +65,7 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
       transactions: [tx],
     });
   };
+
   const wipeDataNft = async (creator: string, nonce: number, owner: string | undefined) => {
     const tx = await nftMinter.wipeSingleNFT(new Address(address), nonce, new Address(owner ?? ""));
     tx.setGasLimit(100000000);

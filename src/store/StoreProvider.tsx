@@ -14,6 +14,7 @@ import {
   getMarketRequirements,
 } from "libs/MultiversX";
 import { getAccountTokenFromApi, getItheumPriceFromApi } from "libs/MultiversX/api";
+import { getMvxRpcApi } from "libs/MultiversX/api";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { computeRemainingCooldown, convertWeiToEsdt, decodeNativeAuthToken, tokenDecimals } from "libs/utils";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
@@ -51,7 +52,8 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const bondingContract = new BondContract(import.meta.env.VITE_ENV_NETWORK);
   const marketContractSDK = new DataNftMarket(import.meta.env.VITE_ENV_NETWORK);
   const mintContract = new DataNftMintContract(chainID);
-  DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
+
+  DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet", `https://${getMvxRpcApi(chainID)}`);
 
   useEffect(() => {
     (async () => {
