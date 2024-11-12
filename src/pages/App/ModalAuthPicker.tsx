@@ -144,7 +144,7 @@ function ModalAuthPicker({
   };
 
   const nativeAuthProps: NativeAuthConfigType = {
-    apiAddress: `https://${getMvxRpcApi(chainID)}`,
+    apiAddress: IS_DEVNET ? `https://${getMvxRpcApi("D")}` : `https://${getMvxRpcApi(chainID)}`, // we have to do the IS_DEVNET check as if not, chainID is being cached to 1 always and we always go to Mainnet
     // origin: "https://test.datadex.itheum.io",
     expirySeconds: 3600,
   };
