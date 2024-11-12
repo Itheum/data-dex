@@ -14,7 +14,6 @@ function Launcher() {
   const [launchModeSession, setLaunchModeSession] = useLocalStorage("itm-launch-mode", null);
   const [launchMode, setLaunchMode] = useState(launchModeSession || "no-auth");
   const [redirectToRoute, setRedirectToRoute] = useState<null | string>(null);
-
   // hoisting launchModeControl here allows us to go multi-chain easier in future
   // ... have a look at git history on this component
   const handleLaunchMode = (chainOption: string, redirectToRouteStr?: string) => {
@@ -47,6 +46,7 @@ function Launcher() {
           walletConnectV2ProjectId,
           apiTimeout: uxConfig.mxAPITimeoutMs,
           apiAddress: mvxRpcApiToUse,
+          skipFetchFromServer: true, // these values are static until they change something at the core level, which should be be announced
         }}
         dappConfig={{
           shouldUseWebViewProvider: true,
