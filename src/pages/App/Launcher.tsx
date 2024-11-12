@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { TransactionsToastList, SignTransactionsModals, NotificationModal } from "@multiversx/sdk-dapp/UI";
 import { DappProvider } from "@multiversx/sdk-dapp/wrappers";
 import { TermsChangedNoticeModal } from "components/TermsChangedNoticeModal";
@@ -12,9 +11,6 @@ import AppMx from "./AppMultiversX";
 import ModalAuthPickerMx from "./ModalAuthPickerMultiversX";
 
 function Launcher() {
-  const {
-    network: { chainId: chainID },
-  } = useGetNetworkConfig();
   const [launchModeSession, setLaunchModeSession] = useLocalStorage("itm-launch-mode", null);
   const [launchMode, setLaunchMode] = useState(launchModeSession || "no-auth");
   const [redirectToRoute, setRedirectToRoute] = useState<null | string>(null);
@@ -34,9 +30,13 @@ function Launcher() {
     clearAppSessionsLaunchMode();
   };
 
-  console.log("DEBUG: import.meta.env.VITE_ENV_NETWORK :", import.meta.env.VITE_ENV_NETWORK);
-  console.log("DEBUG: chainID :", chainID);
-  console.log("DEBUG: https://${getMvxRpcApi(chainID)} :", `https://${getMvxRpcApi(chainID)}`);
+  let rpcToUse = "";
+
+  if (IS_DEVNET) {
+    rpcToUse = `https://${getMvxRpcApi("D")}`;
+  } else {
+    rpcToUse = `https://${getMvxRpcApi("1")}`;
+  }
 
   return (
     <>
@@ -46,7 +46,7 @@ function Launcher() {
           name: "itheumDataDEX",
           walletConnectV2ProjectId,
           apiTimeout: uxConfig.mxAPITimeoutMs,
-          apiAddress: `https://${getMvxRpcApi(chainID)}`,
+          apiAddress: rpcToUse,
         }}
         dappConfig={{
           shouldUseWebViewProvider: true,
