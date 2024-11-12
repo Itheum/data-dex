@@ -135,7 +135,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
       </Heading>
 
       {loadedOffers && latestOffers.length === 0 && (
-        <NoDataHere imgFromTop="5rem" customMsg={`${web2ApiDown ? "Web2 API is down, gracefully roll down to full Web3 Mode" : undefined}`} />
+        <NoDataHere imgFromTop="5rem" customMsg={`${web2ApiDown ? "Web2 API is down, gracefully roll down to full Web3 Mode" : ""}`} />
       )}
 
       <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(240px, 1fr))">
