@@ -124,13 +124,21 @@ export const LivelinessStaking: React.FC = () => {
   }, [globalTotalBond, combinedBondsStaked, maxApr]);
 
   async function handleClaimRewardsClick() {
-    const envNetwork = import.meta.env.VITE_ENV_NETWORK;
-    const liveContract = new LivelinessStake(envNetwork);
-    const tx = liveContract.claimRewards(new Address(mxAddress));
-    tx.setGasLimit(200000000);
-    await sendTransactions({
-      transactions: [tx],
-    });
+    try {
+      const envNetwork = import.meta.env.VITE_ENV_NETWORK;
+      const liveContract = new LivelinessStake(envNetwork);
+      const tx = liveContract.claimRewards(new Address(mxAddress));
+      tx.setGasLimit(200000000);
+
+      await sendTransactions({
+        transactions: [tx],
+      });
+    } catch (e: any) {
+      alert("handle claim reward failed");
+      if (e) {
+        alert(e.toString());
+      }
+    }
   }
 
   async function handleReinvestRewardsClick() {
