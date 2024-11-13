@@ -345,6 +345,7 @@ export default function WalletDataNFTMX(item: any) {
         position="relative">
         <NftMediaComponent
           nftMedia={item?.media}
+          imageUrls={[item?.nftImgUrl]}
           autoSlide
           imageHeight="236px"
           imageWidth="236px"

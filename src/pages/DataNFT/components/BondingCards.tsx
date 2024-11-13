@@ -242,7 +242,13 @@ export const BondingCards: React.FC = () => {
                     <Flex flexDirection={{ base: "column", md: "row" }}>
                       <Box minW="250px" textAlign="center">
                         <Box minH="263px">
-                          <NftMediaComponent nftMedia={dataNft?.media} imageHeight="220px" imageWidth="220px" borderRadius="10px" />
+                          <NftMediaComponent
+                            nftMedia={dataNft?.media}
+                            imageUrls={dataNft?.nftImgUrl ? [dataNft.nftImgUrl] : []}
+                            imageHeight="220px"
+                            imageWidth="220px"
+                            borderRadius="10px"
+                          />
                         </Box>
                         <Box>
                           {nfmeIdNonce !== dataNft.nonce ? (
@@ -406,7 +412,13 @@ export const BondingCards: React.FC = () => {
                             <Text fontFamily="Clash-Medium" pb={3}>
                               {dataNft.tokenName}
                             </Text>
-                            <NftMediaComponent nftMedia={dataNft?.media} imageHeight="180px" imageWidth="180px" borderRadius="5px" />
+                            <NftMediaComponent
+                              nftMedia={dataNft?.media}
+                              imageUrls={dataNft?.nftImgUrl ? [dataNft.nftImgUrl] : []}
+                              imageHeight="180px"
+                              imageWidth="180px"
+                              borderRadius="5px"
+                            />
 
                             <Box>
                               {nfmeIdNonce === dataNft.nonce && (

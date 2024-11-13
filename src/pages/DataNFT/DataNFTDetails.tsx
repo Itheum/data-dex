@@ -143,8 +143,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     if (tokenId && offerId && location.pathname === "/datanfts/marketplace/market") {
       setSearchParams({ tokenId: tokenId, offerId: String(offerId) });
     }
-
-    window.scrollTo(0, 0);
   }, []);
 
   useEffect(() => {
@@ -432,7 +430,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   alignItems={{ base: "initial", md: "initial" }}
                   justifyContent={{ xl: "space-between" }}>
                   <Box margin="auto" mb={{ base: "50px", md: "25px" }}>
-                    <NftMediaComponent nftMedia={nftData?.media} autoSlide marginTop="1rem" borderRadius="md" />
+                    <NftMediaComponent nftMedia={nftData?.media} autoSlide marginTop="1rem" borderRadius="md" imageUrls={[nftData?.nftImgUrl]} />
                   </Box>
 
                   <Flex mr={{ base: `${tokenIdParam ? "0" : "0"}`, md: `${tokenIdParam ? "75px" : "30px"}` }}>
@@ -890,7 +888,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                           <Link
                                             as={ReactRouterLink}
                                             to={`/datanfts/marketplace/${nftData.tokenIdentifier}/offer-${to.index}`}
-                                            style={{ textDecoration: "none" }}>
+                                            style={{ textDecoration: "none" }}
+                                            onClick={() => {
+                                              window.scrollTo({
+                                                top: 0,
+                                                behavior: "smooth",
+                                              });
+                                            }}>
                                             <Button w="full" colorScheme="teal" variant="outline" size="sm">
                                               {window.innerWidth > 500 ? "View Offer" : "View"}
                                             </Button>
@@ -899,7 +903,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                           <Link
                                             as={ReactRouterLink}
                                             to={`/datanfts/marketplace/${nftData.tokenIdentifier}/offer-${to.index}`}
-                                            style={{ textDecoration: "none" }}>
+                                            style={{ textDecoration: "none" }}
+                                            onClick={() => {
+                                              window.scrollTo({
+                                                top: 0,
+                                                behavior: "smooth",
+                                              });
+                                            }}>
                                             <Button w="full" colorScheme="teal" variant="outline" size="sm">
                                               {window.innerWidth > 500 ? "View Offer" : "View"}
                                             </Button>

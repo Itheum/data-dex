@@ -278,7 +278,13 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
                       </Flex>
                     </Box>
                     <Box flex="1">
-                      <NftMediaComponent nftMedia={nftMetadata.media} imageHeight={"120px"} imageWidth="120px" borderRadius="md" />
+                      <NftMediaComponent
+                        nftMedia={nftMetadata.media}
+                        imageUrls={nftMetadata?.nftImgUrl ? [nftMetadata.nftImgUrl] : []}
+                        imageHeight={"120px"}
+                        imageWidth="120px"
+                        borderRadius="md"
+                      />
                     </Box>
                   </HStack>
                   <Flex mt="40px" justifyContent="flex-start" alignItems="center">
@@ -349,7 +355,13 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
                       </Flex>
                     </Box>
                     <Box flex="1">
-                      <NftMediaComponent nftMedia={nftMetadata.media} imageHeight={"120px"} imageWidth="120px" borderRadius="md" />
+                      <NftMediaComponent
+                        nftMedia={nftMetadata.media}
+                        imageUrls={nftMetadata?.nftImgUrl ? [nftMetadata.nftImgUrl] : []}
+                        imageHeight={"120px"}
+                        imageWidth="120px"
+                        borderRadius="md"
+                      />
                     </Box>
                   </HStack>
                   <Text fontSize="md" mt="28px">
@@ -396,7 +408,13 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
                   </Flex>
                 </Box>
                 <Box flex="1">
-                  <NftMediaComponent nftMedia={nftMetadata.media} imageHeight={"120px"} imageWidth="120px" borderRadius="md" />
+                  <NftMediaComponent
+                    nftMedia={nftMetadata.media}
+                    imageUrls={nftMetadata?.nftImgUrl ? [nftMetadata.nftImgUrl] : []}
+                    imageHeight={"120px"}
+                    imageWidth="120px"
+                    borderRadius="md"
+                  />
                 </Box>
               </HStack>
               <Box mt="8">

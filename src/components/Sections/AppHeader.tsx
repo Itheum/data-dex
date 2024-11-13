@@ -290,7 +290,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 <Box display={{ base: "none", md: "block" }} zIndex="11">
                   {exploreRouterMenu.map((menu) => (
                     <Menu key={menu.sectionId} isLazy>
-                      <MenuButton as={Button} size={{ md: "md", "2xl": "lg" }} rightIcon={<TiArrowSortedDown size="18px" />}>
+                      <MenuButton as={Button} size="md" rightIcon={<TiArrowSortedDown size="18px" />}>
                         <ShortAddress address={mxAddress} fontSize="md" />
                       </MenuButton>
                       <MenuList maxW={"fit-content"} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
