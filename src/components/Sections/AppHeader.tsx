@@ -376,7 +376,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                             onClick={handleLogout}
                             fontSize="lg"
                             fontWeight="500"
-                            // isDisabled={hasPendingTransactions} // we did this as if a tx toast gets stuck on screen, then the user should be able to at least logout. Downside is that if it's during a valid TX and they try and logout, the may break some flows
+                            isDisabled={hasPendingTransactions} // we did this as if a tx toast gets stuck on screen, then the user should be able to at least logout. Downside is that if it's during a valid TX and they try and logout, the may break some flows
                             backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                             Logout
                           </MenuItem>

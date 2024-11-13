@@ -11,7 +11,7 @@ import AppHeader from "components/Sections/AppHeader";
 import AppSettings from "components/UtilComps/AppSettings";
 import { consoleNotice, dataCATDemoUserData, MENU, PATHS } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
-import { clearAppSessionsLaunchMode, gtagGo, sleep } from "libs/utils";
+import { gtagGo, sleep } from "libs/utils";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import DataNFTMarketplaceMultiversX from "pages/DataNFT/DataNFTMarketplaceMultiversX";
 import DataNFTs from "pages/DataNFT/DataNFTs";
@@ -73,8 +73,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   const { pathname } = useLocation();
   const [loggedInActiveMxWallet, setLoggedInActiveMxWallet] = useState("");
   const [dataCATAccount, setDataCATAccount] = useState<any>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [loadingDataCATAccount, setLoadingDataCATAccount] = useState(true);
+  const [, setLoadingDataCATAccount] = useState(true);
 
   let path = pathname?.split("/")[pathname?.split("/")?.length - 1]; // handling Route Path
 
@@ -127,16 +126,11 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   }, [mxAddress]);
 
   const handleLogout = () => {
-    clearAppSessionsLaunchMode();
-    // resetAppContexts();
-
-    gtagGo("auth", "logout", "el");
     if (mxLoginMethod === "wallet") {
       // if it's web wallet, we should not send redirect url of /, if you do redirects to web wallet and does not come back to data dex
       mxLogout(undefined, undefined, false);
     } else {
-      // sending in / will reload the data dex after logout is done so it cleans up data dex state
-      mxLogout("/", undefined, false);
+      mxLogout("/hardReload", undefined, false);
     }
   };
 
@@ -253,6 +247,9 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                     ) : (
                       <Route path="liveliness" element={<Navigate to={"/NFMeID"} />} />
                     )}
+
+                    {/* if user logs out of wallet, we redirect to this endpoint so the page does a hard reload. or else, it does a SPA reload and state can be messed up */}
+                    <Route path="/hardReload" element={<Navigate to={"/"} />} />
                   </Routes>
                 </AuthenticatedRoutesWrapper>
               </Box>

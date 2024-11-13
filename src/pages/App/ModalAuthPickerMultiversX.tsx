@@ -25,7 +25,7 @@ import { NativeAuthConfigType } from "@multiversx/sdk-dapp/types";
 import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from "@multiversx/sdk-dapp/UI";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
-import { IS_DEVNET, WALLETS, MVX_ENV_ENUM } from "libs/config";
+import { WALLETS, MVX_ENV_ENUM } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { getMvxRpcApi } from "libs/MultiversX/api";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
@@ -94,10 +94,7 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
   const handleProgressModalClose = () => {
     onProgressModalClose();
 
-    // only reset host page to mx vs evm wallet selector IF user did NOT just already log in successfully
-    if (!mxAddress) {
-      resetLaunchMode();
-    }
+    resetLaunchMode();
   };
 
   const goMxLogin = (wallet: any) => {
@@ -213,7 +210,7 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
                         <LedgerLoginButton loginButtonText={"Ledger"} buttonClassName="auth_button" {...commonProps}></LedgerLoginButton>
                       </WrapItem>
 
-                      <WrapItem
+                      {/* <WrapItem
                         onClick={() => {
                           goMxLogin(WALLETS.MX_XALIAS);
                         }}
@@ -223,7 +220,7 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
                           buttonClassName="auth_button"
                           customWalletAddress={IS_DEVNET ? "https://devnet.xalias.com" : "https://xalias.com"}
                           {...commonProps}></WebWalletLoginButton>
-                      </WrapItem>
+                      </WrapItem> */}
                     </Wrap>
                   </Stack>
                 </Box>

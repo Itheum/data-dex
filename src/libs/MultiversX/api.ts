@@ -237,7 +237,7 @@ export const getItheumPriceFromApi = async (): Promise<number | undefined> => {
 
 export const getAccountDetailFromApi = async (address: string, chainID: string): Promise<AccountType | undefined> => {
   try {
-    const api = getMvxRpcApi(chainID);
+    const api = getMvxRpcPublicOnlyApi(chainID);
     const url = `https://${api}/accounts/${address}`;
     const { data } = await axios.get<AccountType>(url, {
       timeout: uxConfig.mxAPITimeoutMs,

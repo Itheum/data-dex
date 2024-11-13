@@ -3,8 +3,8 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { Heading, Link } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useParams } from "react-router-dom";
+import { CHAIN_TX_VIEWER } from "libs/config";
 import { getAccountDetailFromApi } from "libs/MultiversX/api";
-import { CHAIN_TX_VIEWER } from "../../../libs/config";
 
 function processHerotag(value: string): string {
   return value.length > 7 ? value.slice(0, -7) : value;
@@ -16,7 +16,6 @@ export const DataCreatorInfo: React.FC = () => {
   } = useGetNetworkConfig();
   const ChainExplorer = CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER];
   const { profileAddress } = useParams();
-
   const [herotag, setHerotag] = useState<string>("");
 
   useEffect(() => {

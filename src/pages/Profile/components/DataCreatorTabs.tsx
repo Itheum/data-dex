@@ -28,22 +28,21 @@ import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import axios from "axios";
-import { BsClockHistory } from "react-icons/bs";
 import { FaBrush } from "react-icons/fa";
-import { MdFavoriteBorder, MdOutlineShoppingBag } from "react-icons/md";
+import { MdOutlineShoppingBag } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
 import { CustomPagination } from "components/CustomPagination";
 import ProfileCard from "components/ProfileCard";
+import { NoDataHere } from "components/Sections/NoDataHere";
+import useThrottle from "components/UtilComps/UseThrottle";
+import { labels } from "libs/language";
+import { contractsForChain, getOffersCountFromBackendApi } from "libs/MultiversX";
+import { getNftsByIds, getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
+import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
+import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
+import { backendApi, createNftId, sleep } from "libs/utils";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
-import { NoDataHere } from "../../../components/Sections/NoDataHere";
-import useThrottle from "../../../components/UtilComps/UseThrottle";
-import { labels } from "../../../libs/language";
-import { contractsForChain, getOffersCountFromBackendApi } from "../../../libs/MultiversX";
-import { getNftsByIds, getNftsOfACollectionForAnAddress } from "../../../libs/MultiversX/api";
-import { DataNftMarketContract } from "../../../libs/MultiversX/dataNftMarket";
-import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
-import { backendApi, createNftId, sleep } from "../../../libs/utils";
-import { useMarketStore } from "../../../store";
+import { useMarketStore } from "store";
 
 interface PropsType {
   tabState: number;
@@ -95,20 +94,6 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       icon: MdOutlineShoppingBag,
       isDisabled: false,
       pieces: myListedCount === 0 ? "" : myListedCount,
-    },
-    {
-      tabNumber: 3,
-      tabName: "Owned Data NFT(s)",
-      tabPath: "/profile/%s/owned",
-      icon: MdFavoriteBorder,
-      isDisabled: true,
-    },
-    {
-      tabNumber: 4,
-      tabName: "Other NFT(s)/Reputation",
-      tabPath: "/profile/%s/other",
-      icon: BsClockHistory,
-      isDisabled: true,
     },
   ];
 

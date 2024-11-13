@@ -3,7 +3,6 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
   Flex,
-  Image,
   Link,
   Popover,
   PopoverArrow,
@@ -20,7 +19,7 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { motion } from "framer-motion";
 import moment from "moment/moment";
 import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
-import { getMvxRpcApi } from "libs/MultiversX/api";
+import { getMvxRpcPublicOnlyApi } from "libs/MultiversX/api";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { convertToLocalString, createNftId, transformDescription } from "libs/utils";
 import NftMediaComponent from "./NftMediaComponent";
@@ -56,10 +55,10 @@ const ProfileCard = ({
     network: { chainId: chainID },
   } = useGetNetworkConfig();
   const ChainExplorer = CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER];
-
   const nftId = createNftId(collection, nonce);
-  const imageUrl = collection ? `https://${getMvxRpcApi(chainID)}/nfts/${nftId}/thumbnail` : DEFAULT_NFT_IMAGE;
+  const imageUrl = collection ? `https://${getMvxRpcPublicOnlyApi(chainID)}/nfts/${nftId}/thumbnail` : DEFAULT_NFT_IMAGE;
   const parsedCreationTime = moment(creationTime);
+
   return (
     <Skeleton fitContent={true} isLoaded={hasLoaded} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box w="275px" h="30rem" mx="3 !important" borderWidth="0.5px" borderRadius="xl" borderColor="#00C79740" position="relative" mb="1rem">

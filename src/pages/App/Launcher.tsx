@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { TransactionsToastList, SignTransactionsModals, NotificationModal } from "@multiversx/sdk-dapp/UI";
 import { DappProvider } from "@multiversx/sdk-dapp/wrappers";
 import { TermsChangedNoticeModal } from "components/TermsChangedNoticeModal";
+import DelayedRender from "components/UtilComps/DelayedRender";
 import { uxConfig, IS_DEVNET } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { getMvxRpcApi } from "libs/MultiversX/api";
@@ -55,7 +56,12 @@ function Launcher() {
         <NotificationModal />
         <SignTransactionsModals className="itheum-data-dex-elrond-modals" />
 
-        {launchMode === "mvx" && <ModalAuthPickerMx resetLaunchMode={() => handleLaunchMode("no-auth")} redirectToRoute={redirectToRoute} />}
+        {/* we delay the render a bit so that the ModalAuthPickerMx wont flicker on screen after the login is done as it takes some time to recognize user is logged in */}
+        {launchMode === "mvx" && (
+          <DelayedRender>
+            <ModalAuthPickerMx resetLaunchMode={() => handleLaunchMode("no-auth")} redirectToRoute={redirectToRoute} />
+          </DelayedRender>
+        )}
 
         <AppMx onShowConnectWalletModal={handleLaunchMode} />
       </DappProvider>
