@@ -38,7 +38,13 @@ export default function ProcureDataNFTSuccessCTAModel({ isOpen, onClose, nftData
                   {nftData.tokenName}
                 </Text>
                 <Box>
-                  <NftMediaComponent nftMedia={nftData?.media} imageHeight="140px" imageWidth="140px" borderRadius="md" />
+                  <NftMediaComponent
+                    nftMedia={nftData?.media}
+                    imageUrls={nftData?.nftImgUrl ? [nftData.nftImgUrl] : []}
+                    imageHeight="140px"
+                    imageWidth="140px"
+                    borderRadius="md"
+                  />
                 </Box>
               </Stack>
             )}

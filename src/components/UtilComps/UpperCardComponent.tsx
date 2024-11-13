@@ -1,5 +1,4 @@
 import React, { Dispatch, FC, SetStateAction } from "react";
-
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -55,7 +54,6 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
   openNftDetailsDrawer,
 }) => {
   const { colorMode } = useColorMode();
-  // Multiversx API
   const { address } = useGetAccountInfo();
   const {
     network: { chainId: chainID },
@@ -63,10 +61,8 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const ChainExplorer = CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER];
   const navigate = useNavigate();
-
   const userData = useMintStore((state) => state.userData);
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
-
   const feePrice = offer
     ? printPrice(
         convertWeiToEsdt(offer.wantedTokenAmount as BigNumber.Value, tokenDecimals(offer.wantedTokenIdentifier)).toNumber(),
@@ -75,6 +71,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
     : "";
   const fee = offer ? convertWeiToEsdt(offer.wantedTokenAmount as BigNumber.Value, tokenDecimals(offer.wantedTokenIdentifier)).toNumber() : 0;
   const parsedCreationTime = moment(nftMetadata?.creationTime);
+
   return (
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box
@@ -88,6 +85,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
         mb="1.5rem">
         <NftMediaComponent
           nftMedia={nftMetadata?.media}
+          imageUrls={[nftMetadata?.nftImgUrl]}
           autoSlide
           imageHeight="236px"
           imageWidth="236px"

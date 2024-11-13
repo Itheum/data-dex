@@ -56,43 +56,29 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
   const isApiUp = useMarketStore((state) => state.isApiUp);
-
   const { pageNumber, profileAddress } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
-
   const offers = useMarketStore((state) => state.offers);
   const updateOffers = useMarketStore((state) => state.updateOffers);
   const [isLoadingFirst, setIsLoadingFirst] = useState<boolean>(false);
-
-  // pagination
   const pageCount = useMarketStore((state) => state.pageCount);
   const updatePageCount = useMarketStore((state) => state.updatePageCount);
   const pageSize = 8;
   const pageIndex = pageNumber ? Number(pageNumber) : 0;
-
   const mintContract = new DataNftMintContract(chainID);
   const marketContract = new DataNftMarketContract(chainID);
-
   const [nftMetadatas, setNftMetadatas] = useState<DataNft[]>([]);
-  // const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
-  // const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
-  // const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const [isLoadingSecond, setIsLoadingSecond] = useState<boolean>(false);
-
   const [offerForDrawer, setOfferForDrawer] = useState<Offer | undefined>();
   const [dataNftForDrawer, setDataNftForDrawer] = useState<DataNft | undefined>();
   const [myListedCount, setMyListedCount] = useState<number>(0);
-
   const [oneCreatedNFTImgLoaded, setOneCreatedNFTImgLoaded] = useState(false);
   const [oneListedNFTImgLoaded, setOneListedNFTImgLoaded] = useState(false);
-
   const [dataNfts, setDataNft] = useState<Array<DataNft>>([]);
-
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
   const { isOpen: isOpenListingDetails, onOpen: onOpenListingDetails, onClose: onCloseListingDetails } = useDisclosure();
   const { colorMode } = useColorMode();
-
   const profileTabs = [
     {
       tabNumber: 1,
@@ -126,15 +112,6 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
     },
   ];
 
-  const getOnChainNFTs = async () => {
-    const dataNftsT: DataNft[] = await getNftsOfACollectionForAnAddress(
-      address,
-      contractsForChain(chainID).dataNftTokens.map((v) => v.id),
-      chainID
-    );
-    return dataNftsT;
-  };
-
   useEffect(() => {
     if (!profileAddress || hasPendingTransactions) return;
     if (tabState !== 1) return;
@@ -165,23 +142,6 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       }
     })();
   }, [profileAddress, hasPendingTransactions, tabState]);
-
-  const setPageIndex = (newPageIndex: number) => {
-    navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
-  };
-
-  const onGotoPage = useThrottle((newPageIndex: number) => {
-    if (0 <= newPageIndex && newPageIndex < pageCount) {
-      setPageIndex(newPageIndex);
-    }
-  });
-
-  // useEffect(() => {
-  //   (async () => {
-  //     const _marketFreezedNonces = await mintContract.getSftsFrozenForAddress(marketContract.dataNftMarketContractAddress);
-  //     setMarketFreezedNonces(_marketFreezedNonces);
-  //   })();
-  // }, []);
 
   useEffect(() => {
     (async () => {
@@ -232,6 +192,25 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       setIsLoadingSecond(false);
     })();
   }, [profileAddress, pageIndex, pageSize, tabState, hasPendingTransactions]);
+
+  const getOnChainNFTs = async () => {
+    const dataNftsT: DataNft[] = await getNftsOfACollectionForAnAddress(
+      address,
+      contractsForChain(chainID).dataNftTokens.map((v) => v.id),
+      chainID
+    );
+    return dataNftsT;
+  };
+
+  const setPageIndex = (newPageIndex: number) => {
+    navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
+  };
+
+  const onGotoPage = useThrottle((newPageIndex: number) => {
+    if (0 <= newPageIndex && newPageIndex < pageCount) {
+      setPageIndex(newPageIndex);
+    }
+  });
 
   function openNftDetailsModal(index: number) {
     if (tabState == 1) {

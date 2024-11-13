@@ -149,6 +149,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
                     as={ReactRouterLink}>
                     <NftMediaComponent
                       nftMedia={item?.media}
+                      imageUrls={item.nftImgUrl ? [item.nftImgUrl] : []}
                       imageHeight="210px"
                       imageWidth="210px"
                       borderRadius="md"

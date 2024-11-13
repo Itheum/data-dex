@@ -42,12 +42,26 @@ const NftMediaComponent: React.FC<NftMediaComponentProps> = (props) => {
     openNftDetailsDrawer,
   } = props;
 
-  const media = imageUrls || nftMedia?.map((mediaObj) => mediaObj.url) || [DEFAULT_NFT_IMAGE];
   const [imageIndex, setImageIndex] = useState(0);
   const [switchedImageManually, setSwitchedImageManually] = useState(false);
   const [nextImageIndex, setNextImageIndex] = useState(0);
   const makeFlip = nextImageIndex !== imageIndex;
   const isMobile = window.innerWidth <= 480;
+  let media: string[] = [];
+
+  // if they send both nftMedia and imageUrls, only use imageUrls first if nftMedia has a default issue (known issue in Private PRC)
+  if (nftMedia && imageUrls && nftMedia?.length > 0 && imageUrls?.length > 0) {
+    const nftMediaSentAndMainIsADefaultOne = Boolean(nftMedia?.find((mediaObj) => mediaObj.url.includes("default.png")));
+
+    if (nftMediaSentAndMainIsADefaultOne) {
+      media = imageUrls;
+    } else {
+      media = nftMedia?.map((mediaObj) => mediaObj.url);
+    }
+  } else {
+    // default to normal legacy logic
+    media = imageUrls || nftMedia?.map((mediaObj) => mediaObj.url) || [DEFAULT_NFT_IMAGE];
+  }
 
   useEffect(() => {
     if (autoSlide && media.length > 1 && !switchedImageManually) {

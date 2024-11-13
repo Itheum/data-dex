@@ -105,6 +105,7 @@ export default function BurnDataNFTModal(props: BurnDataNFTModalPropType) {
                   <Stack>
                     <NftMediaComponent
                       nftMedia={selectedDataNft?.media}
+                      imageUrls={selectedDataNft?.nftImgUrl ? [selectedDataNft.nftImgUrl] : []}
                       shouldDisplayArrows={false}
                       imageHeight="100px"
                       imageWidth="100px"

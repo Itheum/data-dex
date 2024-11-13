@@ -170,7 +170,6 @@ export default function ProcureDataNFTModal({
         const isOnOfferPage = window.location.pathname.includes("/offer-");
         const shouldUseCallbackRoute = isWebWallet && amount == offer.quantity && isOnOfferPage;
         const callbackRoute = "/datanfts/wallet";
-
         const { sessionId } = await marketContract.sendAcceptOfferEsdtTransaction(
           offer.index,
           paymentAmount.toFixed(),
@@ -243,7 +242,13 @@ export default function ProcureDataNFTModal({
                 </Flex>
               </Box>
               <Box flex="1">
-                <NftMediaComponent nftMedia={nftData?.media} imageHeight={"120px"} imageWidth="120px" borderRadius="md" />
+                <NftMediaComponent
+                  nftMedia={nftData?.media}
+                  imageUrls={nftData?.nftImgUrl ? [nftData.nftImgUrl] : []}
+                  imageHeight={"120px"}
+                  imageWidth="120px"
+                  borderRadius="md"
+                />
               </Box>
             </HStack>
 

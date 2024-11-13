@@ -49,7 +49,6 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ extendedOffer: of
     <>
       <HStack justifyContent="stretch" pb={2}>
         <PreviewDataButton previewDataURL={nftMetadata.dataPreview} tokenName={nftMetadata.tokenName} />
-
         <ExploreAppButton collection={offer.offeredTokenIdentifier} nonce={offer.offeredTokenNonce} />
       </HStack>
 
