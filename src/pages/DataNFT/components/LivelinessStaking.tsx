@@ -125,6 +125,8 @@ export const LivelinessStaking: React.FC = () => {
 
   async function handleClaimRewardsClick() {
     try {
+      alert("handle claim reward");
+
       const envNetwork = import.meta.env.VITE_ENV_NETWORK;
       const liveContract = new LivelinessStake(envNetwork);
       const tx = liveContract.claimRewards(new Address(mxAddress));
@@ -134,7 +136,7 @@ export const LivelinessStaking: React.FC = () => {
         transactions: [tx],
       });
     } catch (e: any) {
-      alert("handle claim reward failed");
+      alert("handle claim reward FAILED");
       if (e) {
         alert(e.toString());
       }
