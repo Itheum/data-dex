@@ -40,7 +40,7 @@ export const getMvxRpcApi = (chainID: string) => {
 
   // 30% of chance, default to the Public API
   // const defaultToPublic = Math.random() < 0.1; // math random gives you close to even distribution from 0 - 1
-  const defaultToPublic = false; // always do private
+  const defaultToPublic = true; // always do private
 
   if (!defaultToPublic) {
     const envKey = chainID === "1" ? "VITE_ENV_API_MAINNET_KEY" : "VITE_ENV_API_DEVNET_KEY";
