@@ -6,7 +6,7 @@
     "@chakra-ui/icons": "2.1.1",
     "@chakra-ui/react": "2.8.2",
     "@hookform/resolvers": "3.6.0",
-    "@itheum/sdk-mx-data-nft": "3.8.0-alpha.12",
+    "@itheum/sdk-mx-data-nft": "3.8.0-alpha.15",
     "@itheum/sdk-mx-enterprise": "0.3.0",
     "@multiversx/sdk-core": "13.14.2",
     "@multiversx/sdk-dapp": "2.33.3",

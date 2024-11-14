@@ -66,7 +66,7 @@ const VolumesDataNfts: React.FC<VolumesDataNftsProps> = () => {
       });
 
       console.log("Debug ABOUT TO HIT VolumesDataNfts:createManyFromApi");
-      const dataNfts: DataNft[] = await DataNft.createManyFromApi(_volumesData);
+      const dataNfts: DataNft[] = await DataNft.createManyFromApi(_volumesData, 5 * 60 * 1000);
 
       const _volume = dataNftsVolumes.map((dataNft) => {
         const nftDetails = dataNfts.find((nft) => nft.tokenIdentifier === dataNft.tokenIdentifier);

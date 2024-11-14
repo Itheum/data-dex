@@ -147,11 +147,14 @@ export const getClaimTransactions = async (address: string, chainID: string) => 
   }
 };
 
+// Non-Critical workflow, CAN cache -- use private RPC
+// Caching for 15 seconds (not too long as user wont see new Data NFTs), but short enough to prevent react design issues where we hit endpoint too much
+// Gets users Data NFTs, and shows in wallet etc
 export const getNftsOfACollectionForAnAddress = async (address: string, collectionTickers: string[], chainID: string): Promise<DataNft[]> => {
   DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet", `https://${getMvxRpcApi(chainID)}`);
 
   try {
-    const ownerByAddress = await DataNft.ownedByAddress(address, collectionTickers);
+    const ownerByAddress = await DataNft.ownedByAddress(address, collectionTickers, 15 * 1000);
     return ownerByAddress;
   } catch (error) {
     console.error(error);
@@ -159,9 +162,9 @@ export const getNftsOfACollectionForAnAddress = async (address: string, collecti
   }
 };
 
-/*
-Ideally this should be in the Data NFT SDK so it can be client caches, but for now we can keep it here @TODO
-*/
+// Non-Critical workflow, CAN cache -- use private RPC
+// Caching for 5 mins
+// gets NFTs using IDs, there is a method in the Data NFT SDK that does the same. Should move there @TODO
 export const getNftsByIds = async (nftIds: string[], chainID: string): Promise<NftType[]> => {
   const api = getMvxRpcApi(chainID);
   try {
@@ -185,6 +188,7 @@ export const getNftsByIds = async (nftIds: string[], chainID: string): Promise<N
 
     // match input and output order
     const sorted: NftType[] = [];
+
     for (const nftId of nftIds) {
       for (const nft of jsonDataPayload) {
         if (nftId === nft.identifier) {
@@ -206,6 +210,8 @@ export const getNftsByIds = async (nftIds: string[], chainID: string): Promise<N
   }
 };
 
+// Critical workflow, NO caching -- should use private RPC
+// Gets ITHEUM balance
 export const getAccountTokenFromApi = async (address: string, tokenId: string, chainID: string): Promise<TokenType | undefined> => {
   try {
     const api = getMvxRpcApi(chainID);
@@ -221,6 +227,7 @@ export const getAccountTokenFromApi = async (address: string, tokenId: string, c
   }
 };
 
+// Non-Critical workflow, NO caching -- use public RPC (but always mainnet as this is where the price is)
 export const getItheumPriceFromApi = async (): Promise<number | undefined> => {
   try {
     const url = "https://api.multiversx.com/tokens/ITHEUM-df6f26";
@@ -235,6 +242,7 @@ export const getItheumPriceFromApi = async (): Promise<number | undefined> => {
   }
 };
 
+// Non-Critical workflow, CAN cache -- use public RPC
 export const getAccountDetailFromApi = async (address: string, chainID: string): Promise<AccountType | undefined> => {
   try {
     const api = getMvxRpcPublicOnlyApi(chainID);
@@ -250,6 +258,7 @@ export const getAccountDetailFromApi = async (address: string, chainID: string):
   }
 };
 
+// Critical workflow, NO caching -- should use private RPC
 export const getTokenDecimalsRequest = async (tokenIdentifier: string | undefined, chainID: string) => {
   const tokenIdentifierUrl = `https://${getMvxRpcApi(chainID)}/tokens/${tokenIdentifier}`;
   try {

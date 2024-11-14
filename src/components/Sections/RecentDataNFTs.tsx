@@ -80,7 +80,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
         const recentNonces = offers.map((nft: any) => ({ nonce: nft.offeredTokenNonce }));
 
         console.log("Debug ABOUT TO HIT RecentDataNFTs:createManyFromApi");
-        const dataNfts: DataNft[] = await DataNft.createManyFromApi(recentNonces);
+        const dataNfts: DataNft[] = await DataNft.createManyFromApi(recentNonces, 5 * 60 * 1000);
         const _latestOffers: RecentDataNFTType[] = [];
 
         offers.forEach((offer: Offer) => {
