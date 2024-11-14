@@ -1,6 +1,6 @@
 {
   "name": "data-dex",
-  "version": "1.18.19",
+  "version": "1.18.20",
   "description": "The Itheum Data DEX enables you to trade your data using web3 tech",
   "dependencies": {
     "@chakra-ui/icons": "2.1.1",
@@ -9,7 +9,7 @@
     "@itheum/sdk-mx-data-nft": "3.8.0-alpha.12",
     "@itheum/sdk-mx-enterprise": "0.3.0",
     "@multiversx/sdk-core": "13.14.2",
-    "@multiversx/sdk-dapp": "3.0.0",
+    "@multiversx/sdk-dapp": "2.33.3",
     "@peerme/sdk": "0.2.1",
     "@sentry/react": "7.118.0",
     "@tanstack/match-sorter-utils": "8.15.1",

@@ -125,7 +125,7 @@ export const LivelinessStaking: React.FC = () => {
 
   async function handleClaimRewardsClick() {
     try {
-      alert("handle claim reward 2");
+      alert("handle claim reward 3");
 
       const envNetwork = import.meta.env.VITE_ENV_NETWORK;
       const liveContract = new LivelinessStake(envNetwork);
