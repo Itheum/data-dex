@@ -360,16 +360,16 @@ export function getDataFromClientSessionCache(cacheKey: string) {
   const cacheObject = sessionCache[cacheKey];
 
   if (!cacheObject) {
-    console.log("getDataFromClientSessionCache: not found");
+    console.log(`getDataFromClientSessionCache: ${cacheKey} not found`);
     return false;
   } else {
     // did it expire? is so, delete it from the cache
     if (Date.now() - cacheObject.addedOn > cacheObject.expireAfter) {
-      console.log("getDataFromClientSessionCache: expired");
+      console.log(`getDataFromClientSessionCache: ${cacheKey} expired`);
       delete sessionCache[cacheKey]; // remove it from cache as its expired
       return false;
     } else {
-      console.log("getDataFromClientSessionCache: available");
+      console.log(`getDataFromClientSessionCache: ${cacheKey} available`);
       return cacheObject.payload;
     }
   }
