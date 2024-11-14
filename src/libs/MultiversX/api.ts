@@ -270,8 +270,8 @@ export const getTokenDecimalsRequest = async (tokenIdentifier: string | undefine
 };
 
 // Non-Critical workflow, CAN cache -- use private RPC
-// Caching for 5 mins
-// gets NFTs using IDs, there is a method in the Data NFT SDK that does the same. Should move there @TODO
+// Caching for X mins as needed foe bespoke use case
+// gets any other bespoke data from the blockchain
 export const getBespokeOnChainDataData = async (urlToFetch: string, cacheForMS: number): Promise<any> => {
   try {
     const fetchUrl = urlToFetch;
