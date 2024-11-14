@@ -47,7 +47,7 @@ export const FavoriteCards: React.FC = () => {
         if (getFavourites.length === 0) {
           return;
         } else {
-          const dataNftsT: DataNft[] = await DataNft.createManyFromApi(_favoriteData);
+          const dataNftsT: DataNft[] = await DataNft.createManyFromApi(_favoriteData, 5 * 60 * 1000);
           setDataNfts(dataNftsT);
         }
       }

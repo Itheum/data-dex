@@ -124,7 +124,10 @@ export const BondingCards: React.FC = () => {
         });
 
       try {
-        bondedDataNfts = await DataNft.createManyFromApi(myBonds.map((bond) => ({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier })));
+        bondedDataNfts = await DataNft.createManyFromApi(
+          myBonds.map((bond) => ({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier })),
+          5 * 60 * 1000
+        );
       } catch (e) {
         console.error(e);
         setErrDataNFTStreamGeneric(new Error(labels.ERR_BONDING_STAKING_COULD_NOT_GET_DATA_NFTS));

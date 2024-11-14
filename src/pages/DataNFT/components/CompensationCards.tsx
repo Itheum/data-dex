@@ -49,7 +49,7 @@ export const CompensationCards: React.FC = () => {
       });
       const dataNftsInScT = [];
       for (let i = 0; i < nftsInScT.length; i += 50) {
-        const dataNftsInScTChunk = await DataNft.createManyFromApi(nftsInScT.slice(i, i + 50));
+        const dataNftsInScTChunk = await DataNft.createManyFromApi(nftsInScT.slice(i, i + 50), 5 * 60 * 1000);
         dataNftsInScT.push(...dataNftsInScTChunk);
       }
       for (const compT of compsInScT) {

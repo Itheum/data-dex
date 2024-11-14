@@ -101,8 +101,11 @@ export const Bonding: React.FC = () => {
           .toNumber();
       });
 
-      const dataNfts: DataNft[] = await DataNft.createManyFromApi(pagedBonds.map((bond) => ({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier })));
-      // setTotalAmountBondedForThisPage(_totalAmountBondedForThisPage);
+      const dataNfts: DataNft[] = await DataNft.createManyFromApi(
+        pagedBonds.map((bond) => ({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier })),
+        5 * 60 * 1000
+      );
+
       setContractBonds(pagedBonds);
       setBondingDataNfts(dataNfts);
     })();
@@ -120,7 +123,8 @@ export const Bonding: React.FC = () => {
       }
       const pagedCompensation = await bondContract.viewPagedCompensations(compensationPageIndex * pageSize, (compensationPageIndex + 1) * pageSize - 1);
       const dataNfts: DataNft[] = await DataNft.createManyFromApi(
-        pagedCompensation.map((bond) => ({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier }))
+        pagedCompensation.map((bond) => ({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier })),
+        5 * 60 * 1000
       );
       setCompensationDataNfts(dataNfts.reverse());
       setAllCompensation(pagedCompensation);
