@@ -9,6 +9,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import axios from "axios";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, contractsForChain, uxConfig } from "libs/config";
+import { getBespokeOnChainDataData } from "libs/MultiversX/api";
 import { getMvxRpcApi } from "libs/MultiversX/api";
 import { convertWeiToEsdt } from "libs/utils";
 import { useMarketStore } from "store";
@@ -136,19 +137,38 @@ export const getInteractionTransactions = async (
 ) => {
   const api = getMvxRpcApi(chainID);
   try {
-    const minterTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${minterSmartContractAddress}&withOperations=true`;
-    const marketTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${marketSmartContractAddress}&withOperations=true`;
-    const selfTxsAddOffer = `https://${api}/accounts/${address}/transactions?size=50&status=success&function=addOffer&senderOrReceiver=${address}&withOperations=true`;
-    const selfTxsBurn = `https://${api}/accounts/${address}/transactions?size=50&status=success&function=burn&senderOrReceiver=${address}&withOperations=true`;
+    const minterTxsData = await getBespokeOnChainDataData(
+      `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${minterSmartContractAddress}&withOperations=true`,
+      2 * 60 * 1000
+    );
+    const marketTxsData = await getBespokeOnChainDataData(
+      `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${marketSmartContractAddress}&withOperations=true`,
+      2 * 60 * 1000
+    );
+    const selfTxsAddOfferData = await getBespokeOnChainDataData(
+      `https://${api}/accounts/${address}/transactions?size=50&status=success&function=addOffer&senderOrReceiver=${address}&withOperations=true`,
+      2 * 60 * 1000
+    );
+    const selfTxsBurnData = await getBespokeOnChainDataData(
+      `https://${api}/accounts/${address}/transactions?size=50&status=success&function=burn&senderOrReceiver=${address}&withOperations=true`,
+      2 * 60 * 1000
+    );
 
-    const [minterResp, marketResp, selfResp, selfRespBurn] = await axios.all([
-      axios.get(minterTxs, { timeout: uxConfig.mxAPITimeoutMs }),
-      axios.get(marketTxs, { timeout: uxConfig.mxAPITimeoutMs }),
-      axios.get(selfTxsAddOffer, { timeout: uxConfig.mxAPITimeoutMs }),
-      axios.get(selfTxsBurn, { timeout: uxConfig.mxAPITimeoutMs }),
-    ]);
+    const allTransactions = [...minterTxsData, ...marketTxsData, ...selfTxsAddOfferData, ...selfTxsBurnData];
 
-    const allTransactions = [...minterResp.data, ...marketResp.data, ...selfResp.data, ...selfRespBurn.data];
+    // const minterTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${minterSmartContractAddress}&withOperations=true`;
+    // const marketTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${marketSmartContractAddress}&withOperations=true`;
+    // const selfTxsAddOffer = `https://${api}/accounts/${address}/transactions?size=50&status=success&function=addOffer&senderOrReceiver=${address}&withOperations=true`;
+    // const selfTxsBurn = `https://${api}/accounts/${address}/transactions?size=50&status=success&function=burn&senderOrReceiver=${address}&withOperations=true`;
+
+    // const [minterResp, marketResp, selfResp, selfRespBurn] = await axios.all([
+    //   axios.get(minterTxs, { timeout: uxConfig.mxAPITimeoutMs }),
+    //   axios.get(marketTxs, { timeout: uxConfig.mxAPITimeoutMs }),
+    //   axios.get(selfTxsAddOffer, { timeout: uxConfig.mxAPITimeoutMs }),
+    //   axios.get(selfTxsBurn, { timeout: uxConfig.mxAPITimeoutMs }),
+    // ]);
+
+    // const allTransactions = [...minterResp.data, ...marketResp.data, ...selfResp.data, ...selfRespBurn.data];
 
     const transactions: any[] = [];
 

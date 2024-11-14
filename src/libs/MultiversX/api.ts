@@ -84,9 +84,7 @@ export const getClaimTransactions = async (address: string, chainID: string) => 
   const claimsContractAddress = contractsForChain(chainID).claims;
   try {
     const allTxs = `https://${api}/accounts/${address}/transactions?size=25&receiver=${claimsContractAddress}&function=claim&withOperations=true`;
-
     const resp = await (await axios.get(allTxs, { timeout: uxConfig.mxAPITimeoutMs })).data;
-
     const transactions = [];
 
     for (const tx of resp) {
@@ -268,5 +266,35 @@ export const getTokenDecimalsRequest = async (tokenIdentifier: string | undefine
     }
   } catch (error) {
     console.error(error);
+  }
+};
+
+// Non-Critical workflow, CAN cache -- use private RPC
+// Caching for 5 mins
+// gets NFTs using IDs, there is a method in the Data NFT SDK that does the same. Should move there @TODO
+export const getBespokeOnChainDataData = async (urlToFetch: string, cacheForMS: number): Promise<any> => {
+  try {
+    const fetchUrl = urlToFetch;
+
+    // check if its in session cache
+    let jsonDataPayload = null;
+    const getFromSessionCache = getDataFromClientSessionCache(fetchUrl);
+
+    if (!getFromSessionCache) {
+      const { data } = await axios.get(fetchUrl, {
+        timeout: uxConfig.mxAPITimeoutMs,
+      });
+
+      jsonDataPayload = data;
+
+      setDataToClientSessionCache(fetchUrl, jsonDataPayload, cacheForMS);
+    } else {
+      jsonDataPayload = getFromSessionCache;
+    }
+
+    return jsonDataPayload;
+  } catch (error) {
+    console.error(error);
+    return [];
   }
 };

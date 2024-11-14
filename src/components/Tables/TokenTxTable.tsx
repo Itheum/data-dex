@@ -6,6 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import axios from "axios";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER } from "libs/config";
+import { getBespokeOnChainDataData } from "libs/MultiversX/api";
 import { getMvxRpcApi } from "libs/MultiversX/api";
 import { backendApi } from "libs/utils";
 import { useMarketStore } from "store";
@@ -89,8 +90,13 @@ export default function TokenTxTable(props: TokenTableProps) {
 
   useEffect(() => {
     async function getInteractions() {
-      const response = await axios.get(`https://${getMvxRpcApi(chainID)}/nfts/${props.tokenId}/transactions?size=50&status=success`);
-      const interactions = response.data;
+      // const response = await axios.get(`https://${getMvxRpcApi(chainID)}/nfts/${props.tokenId}/transactions?size=50&status=success`);
+      // const interactions = response.data;
+
+      const interactions = await getBespokeOnChainDataData(
+        `https://${getMvxRpcApi(chainID)}/nfts/${props.tokenId}/transactions?size=50&status=success`,
+        2 * 60 * 1000
+      );
       const dataTemp: TransactionInTable[] = [];
 
       for (const interaction of interactions) {
