@@ -382,16 +382,16 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                                   View Data NFT Interactions History
                                 </Text>
                               </MenuItem>
-                              <MenuItem
-                                onClick={handleGuardrails}
-                                fontSize="lg"
-                                fontWeight="500"
-                                isDisabled={hasPendingTransactions}
-                                backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                                CanaryNet Dashboard
-                              </MenuItem>
                             </ChainSupportedComponent>
                           )}
+                          <MenuItem
+                            onClick={handleGuardrails}
+                            fontSize="lg"
+                            fontWeight="500"
+                            isDisabled={hasPendingTransactions}
+                            backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                            CanaryNet Dashboard
+                          </MenuItem>
                           <MenuItem
                             onClick={handleLogout}
                             fontSize="lg"
