@@ -167,7 +167,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
     <>
       {["1", "D"].includes(chainID) && (
         <StoreProvider>
-          <Container maxW="97.5rem">
+          <Container maxW="100%">
             <Flex
               bgColor={colorMode === "dark" ? "bgDark" : "bgWhite"}
               flexDirection="column"
