@@ -59,6 +59,12 @@ import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU, EXPLORER_APP_FOR_TOKEN } from "libs/config";
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
+import { Aggregator, ChainId } from "@ashswap/ash-sdk-js/out";
+import { itheumTokenIdentifier } from "@itheum/sdk-mx-enterprise/out";
+import BigNumber from "bignumber.js";
+import { Address } from "@multiversx/sdk-core/out";
+import { sendTransactions } from "@multiversx/sdk-dapp/services";
+import TransactionModal from "components/BuyItheumModal";
 
 const exploreRouterMenu = [
   {
@@ -158,6 +164,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
   const cooldown = useAccountStore((state) => state.cooldown);
   const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet", md: "Connect MultiversX Wallet" });
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const navigateToDiscover = (menuEnum: number) => {
     setMenuItem(menuEnum);
@@ -282,10 +289,25 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                   </Link>
                 );
               })}
+              <Button
+                borderColor="teal.200"
+                fontSize="md"
+                variant="outline"
+                display="initial"
+                h={"12"}
+                isDisabled={hasPendingTransactions}
+                key={"buy_itheum"}
+                size={isMxLoggedIn ? "sm" : "md"}
+                onClick={() => setIsModalOpen(true)}>
+                <Text pl={2} fontSize={{ base: isMxLoggedIn ? "sm" : "md", "2xl": "lg" }} color={colorMode === "dark" ? "white" : "black"}>
+                  Buy $ITHEUM
+                </Text>
+              </Button>
             </HStack>
             {isMxLoggedIn && (
               <>
                 <ItheumTokenBalanceBadge displayParams={["none", null, "block"]} />
+                <TransactionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} address={mxAddress} />
                 <LoggedInChainBadge chain={chainFriendlyName} displayParams={["none", null, "block"]} />
                 <Box display={{ base: "none", md: "block" }} zIndex="11">
                   {exploreRouterMenu.map((menu) => (
@@ -362,7 +384,6 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                               </MenuItem>
                             </ChainSupportedComponent>
                           )}
-
                           <MenuItem
                             onClick={handleGuardrails}
                             fontSize="lg"
@@ -371,7 +392,6 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                             backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                             CanaryNet Dashboard
                           </MenuItem>
-
                           <MenuItem
                             onClick={handleLogout}
                             fontSize="lg"
