@@ -30,9 +30,11 @@ import {
   TransactionWatcher,
 } from "@multiversx/sdk-core";
 import BigNumber from "bignumber.js";
-import { getMvxRpcApi } from "libs/MultiversX/api";
+import { getAccountTokenFromApi, getMvxRpcApi } from "libs/MultiversX/api";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { useGetAccountInfo, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
+import { contractsForChain } from "libs/config";
+import { convertWeiToEsdt } from "libs/utils";
 
 interface TransactionModalProps {
   isOpen: boolean;
@@ -164,6 +166,15 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, ad
             console.log("Transaction successful!");
             handleClose();
             clearInterval(intervalId);
+            (async () => {
+              const _token = await getAccountTokenFromApi(
+                address,
+                contractsForChain(networkConfiguration.mainnet.chainID).itheumToken,
+                networkConfiguration.mainnet.chainID
+              );
+              const balance = _token ? convertWeiToEsdt(_token.balance, _token.decimals).toNumber() : 0;
+              updateItheumBalance(balance);
+            })();
           } else if (transactionDetails.status.isFailed()) {
             setIsLoading(false);
             console.error("Transaction failed!");
@@ -290,3 +301,6 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, ad
 };
 
 export default TransactionModal;
+function updateItheumBalance(balance: number) {
+  throw new Error("Function not implemented.");
+}
