@@ -35,6 +35,7 @@ import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { useGetAccountInfo, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { contractsForChain } from "libs/config";
 import { convertWeiToEsdt } from "libs/utils";
+import { useAccountStore } from "store";
 
 interface TransactionModalProps {
   isOpen: boolean;
@@ -57,6 +58,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, ad
   const [tx, setTx] = useState<any>();
   const [sessionId, setSessionId] = useState<string>();
   const { pendingTransactions } = useGetPendingTransactions();
+  const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
 
   const isError = Number(amount) <= 0 || amount === "" || Number(amount) > new BigNumber(account.balance).shiftedBy(-18).toNumber();
 
@@ -301,6 +303,3 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, ad
 };
 
 export default TransactionModal;
-function updateItheumBalance(balance: number) {
-  throw new Error("Function not implemented.");
-}
