@@ -300,7 +300,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 size={isMxLoggedIn ? "sm" : "md"}
                 onClick={() => setIsModalOpen(true)}>
                 <Text pl={2} fontSize={{ base: isMxLoggedIn ? "sm" : "md", "2xl": "lg" }} color={colorMode === "dark" ? "white" : "black"}>
-                  Buy Itheum
+                  Buy $ITHEUM
                 </Text>
               </Button>
             </HStack>

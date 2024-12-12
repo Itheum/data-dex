@@ -59,6 +59,11 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, ad
   const isError = Number(amount) <= 0 || amount === "" || Number(amount) > new BigNumber(account.balance).shiftedBy(-18).toNumber();
 
   useEffect(() => {
+    if (amount == "") {
+      setFeeAmount(BigNumber(0));
+      setSwapAmount(BigNumber(0));
+      return;
+    }
     const numericAmount = new BigNumber(amount).shiftedBy(18);
     setFeeAmount(numericAmount.multipliedBy(FEE_PERCENTAGE));
     setSwapAmount(numericAmount.multipliedBy(1 - FEE_PERCENTAGE));
@@ -188,13 +193,13 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, ad
         <ModalHeader>
           <Flex justifyContent="space-between" alignItems="center">
             <Text fontSize="large" fontWeight="bold">
-              Buy Itheum from{" "}
-              <Text as="a" href="https://app.ashswap.io/swap" target="_blank" rel="noopener noreferrer" color="teal.400" textDecoration="underline">
-                AshSwap
-              </Text>
+              Buy $ITHEUM
             </Text>
             {itheumTokenDetails?.assets?.svgUrl && <Image src={itheumTokenDetails.assets.svgUrl} alt="Itheum Token" boxSize="60px" ml="8px" />}
           </Flex>
+          <Text fontSize="xs" color="teal.400">
+            Powered by AshSwap Aggregator
+          </Text>
         </ModalHeader>
         <ModalBody py={6}>
           <Box>
@@ -250,7 +255,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, ad
               <b>{swapAmount.shiftedBy(-18).toNumber() < 0.1 ? swapAmount.shiftedBy(-18).toFixed(6) : swapAmount.shiftedBy(-18).toFixed(2)} EGLD</b>
             </Text>
             <Text fontSize="lg" mt={2}>
-              You will get:
+              You will get approximately:
             </Text>
             <Box
               mt={2}
