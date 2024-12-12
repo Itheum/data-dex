@@ -39,6 +39,8 @@ const FEE_ADDRESS = "erd1qs08anu7lpvsl8py6zg5kpvc0tx43gks2tvjyrqx4gajy3y9kpyqv8z
 
 const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, address }) => {
   const [amount, setAmount] = useState("1");
+  const [debouncedAmount, setDebouncedAmount] = useState(amount);
+
   const [isLoading, setIsLoading] = useState(false);
   const [feeAmount, setFeeAmount] = useState(BigNumber(0));
   const [swapAmount, setSwapAmount] = useState(BigNumber(0));
@@ -51,6 +53,15 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, ad
   const { pendingTransactions } = useGetPendingTransactions();
   const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
   const isError = Number(amount) <= 0 || amount === "" || Number(amount) > new BigNumber(account.balance).shiftedBy(-18).toNumber();
+
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setDebouncedAmount(amount);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [amount]);
 
   useEffect(() => {
     if (amount == "") {
@@ -86,7 +97,6 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, ad
     const fetchAggregatorResponse = async () => {
       if (!swapAmount) return;
 
-      setIsLoading(true);
       try {
         const agService = new Aggregator({ chainId: ChainId.Mainnet });
         const sorswap = await agService.getPaths("EGLD", itheumTokenIdentifier["mainnet"], swapAmount, 100);
@@ -110,7 +120,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, ad
     };
 
     fetchAggregatorResponse();
-  }, [swapAmount, address, amount]);
+  }, [debouncedAmount]);
 
   useEffect(() => {
     if (!pendingTransactions[sessionId]) return;
@@ -276,7 +286,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, ad
               alignItems="center"
               color="black"
               justifyContent="center">
-              {isNaN(Number(swapDetails?.minReturnAmount)) ? "0.00" : Number(swapDetails?.minReturnAmount).toFixed(2)} $ITHEUM
+              {isLoading ? "..." : isNaN(Number(swapDetails?.minReturnAmount)) ? "0.00" : Number(swapDetails?.minReturnAmount).toFixed(2)} $ITHEUM
             </Box>
           </Box>
         </ModalBody>
