@@ -3,7 +3,6 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Alert,
   AlertDescription,
-  AlertIcon,
   AlertTitle,
   Box,
   Button,
@@ -59,6 +58,7 @@ import * as Yup from "yup";
 import extraAssetDemo from "assets/img/extra-asset-demo.gif";
 import darkNFMeIDHero from "assets/img/nfme/dark-nfmeid-vault-mint-page-hero.png";
 import liteNFMeIDHero from "assets/img/nfme/lite-nfmeid-vault-mint-page-hero.png";
+import BuyItheumModal from "components/BuyItheumModal";
 import ChainSupportedInput from "components/UtilComps/ChainSupportedInput";
 import { PopoverTooltip } from "components/UtilComps/PopoverTooltip";
 import { IS_DEVNET, MENU, PRINT_UI_DEBUG_PANELS } from "libs/config";
@@ -149,6 +149,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const [bondVaultNonce, setBondVaultNonce] = useState<number | undefined>(0);
   const [maxApy, setMaxApy] = useState<number>(0);
   const [needsMoreITHEUMToProceed, setNeedsMoreITHEUMToProceed] = useState<boolean>(false);
+  const [buyItheumModalOpen, setIsBuyItheumModalOpen] = useState(false);
 
   // S: React hook form + yup integration ---->
   // Declaring a validation schema for the form with the validation needed
@@ -1243,9 +1244,26 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
             <Box>
               {itheumBalance < antiSpamTax + bondingAmount && (
-                <Text color="red.400" fontSize="md" mt="1 !important" mb="2">
-                  {labels.ERR_MINT_FORM_NOT_ENOUGH_BOND}
-                </Text>
+                <Box my="2">
+                  <Text color="red.400" fontSize="sm" my="1 !important">
+                    {labels.ERR_MINT_FORM_NOT_ENOUGH_BOND}
+                  </Text>
+                  <Button
+                    borderColor="teal.200"
+                    fontSize="md"
+                    variant="outline"
+                    h={"12"}
+                    title="Buy $ITHEUM using EGLD"
+                    key={"buy_itheum"}
+                    size={"md"}
+                    onClick={() => {
+                      setIsBuyItheumModalOpen(true);
+                    }}>
+                    <Text fontSize={"md"} color={colorMode === "dark" ? "white" : "black"}>
+                      Buy $ITHEUM with EGLD
+                    </Text>
+                  </Button>
+                </Box>
               )}
             </Box>
 
@@ -1385,9 +1403,26 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             </Box>
 
             {itheumBalance < antiSpamTax && (
-              <Text color="red.400" fontSize="sm" mt="1 !important">
-                {labels.ERR_MINT_FORM_NOT_ENOUGH_TAX}
-              </Text>
+              <Box my="2">
+                <Text color="red.400" fontSize="sm" my="1 !important">
+                  {labels.ERR_MINT_FORM_NOT_ENOUGH_TAX}
+                </Text>
+                <Button
+                  borderColor="teal.200"
+                  fontSize="md"
+                  variant="outline"
+                  h={"12"}
+                  title="Buy $ITHEUM using EGLD"
+                  key={"buy_itheum"}
+                  size={"md"}
+                  onClick={() => {
+                    setIsBuyItheumModalOpen(true);
+                  }}>
+                  <Text fontSize={"md"} color={colorMode === "dark" ? "white" : "black"}>
+                    Buy $ITHEUM with EGLD
+                  </Text>
+                </Button>
+              </Box>
             )}
 
             <Box minH={{ base: "5rem", md: "3.5rem" }}>
@@ -1409,6 +1444,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 </Button>
               </ChainSupportedInput>
             </Flex>
+
+            <BuyItheumModal isOpen={buyItheumModalOpen} onClose={() => setIsBuyItheumModalOpen(false)} address={mxAddress} />
 
             <MintingModal
               isOpen={isMintingModalOpen}

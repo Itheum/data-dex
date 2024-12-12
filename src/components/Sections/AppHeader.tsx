@@ -51,6 +51,7 @@ import { TiArrowSortedDown } from "react-icons/ti";
 import { Link as ReactRouterLink, useLocation, useNavigate } from "react-router-dom";
 import logoSmlL from "assets/img/logo-icon-b.png";
 import logoSmlD from "assets/img/logo-sml-d.png";
+import BuyItheumModal from "components/BuyItheumModal";
 import ClaimsHistory from "components/ClaimsHistory";
 import Countdown from "components/CountDown";
 import InteractionsHistory from "components/Tables/InteractionHistory";
@@ -59,12 +60,6 @@ import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU, EXPLORER_APP_FOR_TOKEN } from "libs/config";
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
-import { Aggregator, ChainId } from "@ashswap/ash-sdk-js/out";
-import { itheumTokenIdentifier } from "@itheum/sdk-mx-enterprise/out";
-import BigNumber from "bignumber.js";
-import { Address } from "@multiversx/sdk-core/out";
-import { sendTransactions } from "@multiversx/sdk-dapp/services";
-import TransactionModal from "components/BuyItheumModal";
 
 const exploreRouterMenu = [
   {
@@ -139,7 +134,7 @@ const exploreRouterMenu = [
         menuEnum: MENU.LIVELINESS,
         path: "/datanfts/wallet/liveliness",
         label: "Liveliness Staking",
-        shortLbl: "Liveliness",
+        shortLbl: "Staking",
         Icon: FaTachometerAlt,
         needToBeLoggedIn: true,
         isHidden: false,
@@ -162,9 +157,9 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
   const [mxShowInteractionsHistory, setMxInteractionsHistory] = useState(false);
   const bitzBalance = useAccountStore((state) => state.bitzBalance);
   const cooldown = useAccountStore((state) => state.cooldown);
-  const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet", md: "Connect MultiversX Wallet" });
+  const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet", md: "Login via Wallet" });
   const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [buyItheumModalOpen, setIsBuyItheumModalOpen] = useState(false);
 
   const navigateToDiscover = (menuEnum: number) => {
     setMenuItem(menuEnum);
@@ -262,9 +257,9 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 const { path, menuEnum, shortLbl, isHidden, Icon } = quickMenuItem;
                 return (
                   <Link
+                    ml={"3px"}
                     as={ReactRouterLink}
                     to={path}
-                    mx={"4px"}
                     style={{ textDecoration: "none" }}
                     key={path}
                     display={shouldDisplayQuickMenuItem(quickMenuItem, isMxLoggedIn)}>
@@ -294,12 +289,13 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 fontSize="md"
                 variant="outline"
                 h={"12"}
-                display={isMxLoggedIn ? "initial" : "none"}
-                isDisabled={hasPendingTransactions}
+                ml={"8px"}
+                isDisabled={hasPendingTransactions || !isMxLoggedIn}
+                title="Login via Wallet to Buy $ITHEUM using EGLD"
                 key={"buy_itheum"}
                 size={isMxLoggedIn ? "sm" : "md"}
-                onClick={() => setIsModalOpen(true)}>
-                <Text pl={2} fontSize={{ base: isMxLoggedIn ? "sm" : "md", "2xl": "lg" }} color={colorMode === "dark" ? "white" : "black"}>
+                onClick={() => setIsBuyItheumModalOpen(true)}>
+                <Text fontSize={{ base: isMxLoggedIn ? "sm" : "md", "2xl": "lg" }} color={colorMode === "dark" ? "white" : "black"}>
                   Buy $ITHEUM
                 </Text>
               </Button>
@@ -307,7 +303,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
             {isMxLoggedIn && (
               <>
                 <ItheumTokenBalanceBadge displayParams={["none", null, "block"]} />
-                <TransactionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} address={mxAddress} />
+                <BuyItheumModal isOpen={buyItheumModalOpen} onClose={() => setIsBuyItheumModalOpen(false)} address={mxAddress} />
                 <LoggedInChainBadge chain={chainFriendlyName} displayParams={["none", null, "block"]} />
                 <Box display={{ base: "none", md: "block" }} zIndex="11">
                   {exploreRouterMenu.map((menu) => (
@@ -362,6 +358,14 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                         </MenuGroup>
 
                         <MenuGroup>
+                          <MenuItem
+                            onClick={() => setIsBuyItheumModalOpen(true)}
+                            fontSize="lg"
+                            fontWeight="500"
+                            isDisabled={hasPendingTransactions}
+                            backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                            Buy $ITHEUM
+                          </MenuItem>
                           {isMxLoggedIn && (
                             <ChainSupportedComponent feature={MENU.CLAIMS}>
                               <MenuItem
@@ -691,9 +695,22 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                           display={"flex"}
                           justifyContent={"start"}
                           p={3}
+                          onClick={() => setIsBuyItheumModalOpen(true)}>
+                          Buy $ITHEUM
+                        </ListItem>
+
+                        <ListItem
+                          as={Button}
+                          variant={"ghost"}
+                          w={"full"}
+                          borderRadius={"0"}
+                          display={"flex"}
+                          justifyContent={"start"}
+                          p={3}
                           onClick={() => setMxShowClaimsHistory(true)}>
                           View Claims History
                         </ListItem>
+
                         <ListItem
                           as={Button}
                           variant={"ghost"}

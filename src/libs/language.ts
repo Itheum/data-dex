@@ -21,7 +21,7 @@ export const labels = {
     "The Data Marshal is unavailable to provide a status check on this Data Stream URL. This may mean that the Data Stream is unavailable. Do not proceed with the transaction. (ER-16)",
   "ERR_MARKET_REQ_FAIL": "Could not fetch marketplace requirements. (ER-17)",
   "ERR_MARKET_OFFERS_FAIL": "Could not fetch marketplace offers. (ER-18)",
-  "ERR_MINT_FORM_NOT_ENOUGH_TAX": "You have insufficient ITHEUM tokens for the Anti-Spam Tax. (ER-19)",
+  "ERR_MINT_FORM_NOT_ENOUGH_TAX": "You have insufficient $ITHEUM tokens for the Anti-Spam Tax. (ER-19)",
   "ERR_MINT_FORM_GEN_IMG_API_DOWN": "Generative image generation service is not responding. (ER-20)",
   "ERR_CONTRACT_PARAM_READ": "Could not fetch parameters from the smart contract. (ER-21)",
   "ERR_API_ISSUE_DATA_NFT_DETAILS": "Could not fetch Data NFT-FT details. (ER-22)",
@@ -49,5 +49,5 @@ export const labels = {
   "ADD_FAVORITE_FAILS": "Could not add to favorites. (ER-27)",
   "REMOVE_FAVORITE_FAILS": "Could not remove from favorites. (ER-28)",
   "ERR_MARKET_NR_OFFERS_FAIL": "Could not fetch number of marketplace offers. (ER-29)",
-  "ERR_MINT_FORM_NOT_ENOUGH_BOND": "You have insufficient ITHEUM tokens for the Liveness Bonding.",
+  "ERR_MINT_FORM_NOT_ENOUGH_BOND": "You have insufficient $ITHEUM tokens for the Liveness Bonding.",
 };

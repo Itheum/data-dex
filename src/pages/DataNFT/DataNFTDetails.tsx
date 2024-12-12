@@ -484,7 +484,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         </Text>
                         {showConnectWallet && (
                           <Button fontSize={{ base: "sm", md: "md" }} onClick={() => navigate("/")}>
-                            Connect MultiversX Wallet
+                            Login via Wallet
                           </Button>
                         )}
                       </Flex>
