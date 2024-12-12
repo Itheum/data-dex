@@ -1,6 +1,6 @@
 {
   "name": "data-dex",
-  "version": "1.18.24",
+  "version": "1.18.25",
   "description": "The Itheum Data DEX enables you to trade your data using web3 tech",
   "dependencies": {
     "@ashswap/ash-sdk-js": "2.2.0",

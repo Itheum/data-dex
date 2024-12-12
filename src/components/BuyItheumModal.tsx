@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Aggregator, ChainId, SorSwapResponse } from "@ashswap/ash-sdk-js/out";
 import {
   Modal,
   ModalOverlay,
@@ -15,25 +16,15 @@ import {
   Box,
   Text,
   Flex,
-  useToast,
   FormErrorMessage,
 } from "@chakra-ui/react";
-import { Aggregator, ChainId, SorSwapResponse } from "@ashswap/ash-sdk-js/out";
 import { itheumTokenIdentifier, networkConfiguration } from "@itheum/sdk-mx-data-nft/out";
-import {
-  Address,
-  ApiNetworkProvider,
-  DefinitionOfFungibleTokenOnNetwork,
-  ITransactionOnNetwork,
-  ProxyNetworkProvider,
-  Transaction,
-  TransactionWatcher,
-} from "@multiversx/sdk-core";
-import BigNumber from "bignumber.js";
-import { getAccountTokenFromApi, getMvxRpcApi } from "libs/MultiversX/api";
-import { sendTransactions } from "@multiversx/sdk-dapp/services";
+import { Address, ApiNetworkProvider, DefinitionOfFungibleTokenOnNetwork, ProxyNetworkProvider, Transaction } from "@multiversx/sdk-core";
 import { useGetAccountInfo, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
+import { sendTransactions } from "@multiversx/sdk-dapp/services";
+import BigNumber from "bignumber.js";
 import { contractsForChain } from "libs/config";
+import { getAccountTokenFromApi, getMvxRpcApi } from "libs/MultiversX/api";
 import { convertWeiToEsdt } from "libs/utils";
 import { useAccountStore } from "store";
 
@@ -59,7 +50,6 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, ad
   const [sessionId, setSessionId] = useState<string>();
   const { pendingTransactions } = useGetPendingTransactions();
   const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
-
   const isError = Number(amount) <= 0 || amount === "" || Number(amount) > new BigNumber(account.balance).shiftedBy(-18).toNumber();
 
   useEffect(() => {
@@ -68,7 +58,9 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, ad
       setSwapAmount(BigNumber(0));
       return;
     }
+
     const numericAmount = new BigNumber(amount).shiftedBy(18);
+
     setFeeAmount(numericAmount.multipliedBy(FEE_PERCENTAGE));
     setSwapAmount(numericAmount.multipliedBy(1 - FEE_PERCENTAGE));
   }, [amount]);
@@ -89,13 +81,6 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, ad
 
     fetchTokenDetails();
   }, [isOpen]);
-
-  const handleClose = () => {
-    setAmount("1");
-    onClose();
-    setIsLoading(false);
-    setTx(null);
-  };
 
   useEffect(() => {
     const fetchAggregatorResponse = async () => {
@@ -126,28 +111,6 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, ad
 
     fetchAggregatorResponse();
   }, [swapAmount, address, amount]);
-
-  const handleSwapTransaction = async () => {
-    try {
-      const feeTransaction = new Transaction({
-        sender: new Address(address),
-        receiver: new Address(FEE_ADDRESS),
-        value: feeAmount,
-        gasLimit: 60000,
-        chainID: networkConfiguration.mainnet.chainID,
-      });
-
-      const txSent = await sendTransactions({
-        transactions: [tx, feeTransaction],
-      });
-
-      setIsLoading(true);
-
-      setSessionId(txSent["sessionId"]);
-    } catch (error) {
-      console.error("Error executing transaction:", error);
-    }
-  };
 
   useEffect(() => {
     if (!pendingTransactions[sessionId]) return;
@@ -199,6 +162,35 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, ad
     handleTransactionCompletion();
   }, [pendingTransactions, sessionId, onClose]);
 
+  const handleClose = () => {
+    setAmount("1");
+    onClose();
+    setIsLoading(false);
+    setTx(null);
+  };
+
+  const handleSwapTransaction = async () => {
+    try {
+      const feeTransaction = new Transaction({
+        sender: new Address(address),
+        receiver: new Address(FEE_ADDRESS),
+        value: feeAmount,
+        gasLimit: 60000,
+        chainID: networkConfiguration.mainnet.chainID,
+      });
+
+      const txSent = await sendTransactions({
+        transactions: [tx, feeTransaction],
+      });
+
+      setIsLoading(true);
+
+      setSessionId(txSent["sessionId"]);
+    } catch (error) {
+      console.error("Error executing transaction:", error);
+    }
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={() => handleClose()}>
       <ModalOverlay backdropFilter="blur(10px)" />
@@ -206,11 +198,11 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, ad
         <ModalHeader>
           <Flex justifyContent="space-between" alignItems="center">
             <Text fontSize="large" fontWeight="bold">
-              Buy $ITHEUM
+              Buy $ITHEUM with EGLD
             </Text>
             {itheumTokenDetails?.assets?.svgUrl && <Image src={itheumTokenDetails.assets.svgUrl} alt="Itheum Token" boxSize="60px" ml="8px" />}
           </Flex>
-          <Text fontSize="xs" color="teal.400">
+          <Text fontSize="xs" color="teal.200" mt="-2">
             Powered by AshSwap Aggregator
           </Text>
         </ModalHeader>
@@ -227,8 +219,9 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, ad
                   borderRadius="md"
                   fontWeight="bold"
                   fontSize="md"
-                  backgroundColor={colorMode === "dark" ? "teal.400" : "teal.100"}
+                  backgroundColor={colorMode === "dark" ? "teal.200" : "teal.100"}
                   textAlign="center"
+                  color="black"
                   display="inline-block">
                   $EGLD
                 </Box>{" "}
@@ -267,20 +260,21 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, ad
               Swapped Amount:{" "}
               <b>{swapAmount.shiftedBy(-18).toNumber() < 0.1 ? swapAmount.shiftedBy(-18).toFixed(6) : swapAmount.shiftedBy(-18).toFixed(2)} EGLD</b>
             </Text>
-            <Text fontSize="lg" mt={2}>
+            <Text fontSize="lg" mt={5}>
               You will get approximately:
             </Text>
             <Box
               mt={2}
               px="40px"
-              py="5px"
+              py="8px"
               borderRadius="md"
               fontWeight="bold"
-              fontSize="md"
-              backgroundColor={colorMode === "dark" ? "teal.400" : "teal.100"}
+              fontSize="lg"
+              backgroundColor={colorMode === "dark" ? "teal.200" : "teal.100"}
               textAlign="center"
               display="flex"
               alignItems="center"
+              color="black"
               justifyContent="center">
               {isNaN(Number(swapDetails?.minReturnAmount)) ? "0.00" : Number(swapDetails?.minReturnAmount).toFixed(2)} $ITHEUM
             </Box>
