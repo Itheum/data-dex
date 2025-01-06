@@ -84,7 +84,7 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
         console.log("==== User JUST logged in with mxAddress = ", mxAddress);
 
         const chainId = import.meta.env.VITE_ENV_NETWORK === "devnet" ? MVX_ENV_ENUM.devnet : MVX_ENV_ENUM.mainnet;
-        logUserLoggedInInUserAccounts(mxAddress, chainId, true);
+        logUserLoggedInInUserAccounts(mxAddress, chainId);
       }
 
       mvxGotConnected = true;
@@ -116,7 +116,7 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
     callbackRoute: redirectToRoute || pathname,
   };
 
-  const logUserLoggedInInUserAccounts = async (addr: string, chainId: string, isMvx?: boolean) => {
+  const logUserLoggedInInUserAccounts = async (addr: string, chainId: string) => {
     try {
       const callRes = await axios.post(`${getApiDataDex()}/datadexapi/userAccounts/userLoggedIn`, {
         addr,
@@ -136,13 +136,7 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
             status: "success",
           });
         } else if (userLoggedInCallData?.existingUserAccountLastLoginUpdated) {
-          let userMessage = "";
-
-          if (isMvx) {
-            userMessage = "Welcome Back MultiversX Champion!";
-          } else {
-            userMessage = "Welcome Back Solana Legend!";
-          }
+          const userMessage = "Welcome Back MultiversX OG!";
 
           toast({
             title: `${celebrateEmojis[Math.floor(Math.random() * celebrateEmojis.length)]} ${userMessage}`,

@@ -151,7 +151,6 @@ export const tokenDecimals = (token_identifier: string) => {
 };
 
 export const getApiDataDex = (chainID?: string) => {
-  // we can call this without chainID (e.g. solana mode or no login mode), and we get the API endpoint based on ENV
   if (!chainID) {
     if (import.meta.env.VITE_ENV_NETWORK === "mainnet") {
       return "https://api.itheumcloud.com";

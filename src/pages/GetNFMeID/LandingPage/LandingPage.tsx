@@ -131,7 +131,7 @@ const ClaimCTAs = ({ onShowConnectWalletModal }: { onShowConnectWalletModal?: an
         <Box h="100px">
           <Image m="auto" mt="10px" boxSize="73px" height="auto" src={solIcon} alt="Solana " borderRadius="lg" />
         </Box>
-        <Text fontWeight="bold">Coming November 2024 to Solana</Text>
+        <Text fontWeight="bold">Live Now on Solana</Text>
         <Spacer />
         <Button
           as={Link}
@@ -144,9 +144,9 @@ const ClaimCTAs = ({ onShowConnectWalletModal }: { onShowConnectWalletModal?: an
           onClick={() => {
             gtagGo("nfm", "mint", "sol");
           }}
-          href="https://docs.google.com/forms/d/e/1FAIpQLScpguzOBjyQBj2iDzaI2E0wN9SIAQGoS92FPDM9qkk8B-rzFA/viewform"
+          href="https://ai-workforce.itheum.io/"
           isExternal>
-          Claim NFMe ID NFT Whitelist on Solana
+          Claim Your NFMe ID on Solana
         </Button>
       </Flex>
     </Flex>
