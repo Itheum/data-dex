@@ -111,7 +111,7 @@ export const LivelinessStaking = ({ onShowConnectWalletModal }: { onShowConnectW
                 onShowConnectWalletModal("mvx", "/liveliness");
               }
             }}>
-            Get Liveliness Staking Rewards Now!
+            Earn Liveliness Staking Rewards Now!
           </Button>
         </Box>
         <Box m="auto" mt="5">

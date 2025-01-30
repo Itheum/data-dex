@@ -16,13 +16,13 @@ const NFMeIdCTA = () => {
           <Text as="span" color="teal.200">
             NFMe ID{" "}
           </Text>{" "}
-          , stake your{" "}
+          , farm your{" "}
           <Text as="span" color="teal.200">
             Liveliness Reputation
           </Text>{" "}
           and{" "}
           <Text as="span" color="teal.200">
-            Farm Token Rewards.
+            Earn Staking Rewards.
           </Text>
         </Heading>
 
@@ -60,7 +60,7 @@ const NFMeIdCTA = () => {
               navigate("/NFMeID?view=staking");
             }
           }}>
-          Get Liveliness Staking Rewards
+          Earn Liveliness Staking Rewards
         </Button>
       </Box>
 
