@@ -109,11 +109,12 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
     expirySeconds: 3600,
   };
 
+  // if user coming from home or a non deep route like marketplace, then take them to liveliness page
   const commonProps = {
     nativeAuth: {
       ...nativeAuthProps,
     },
-    callbackRoute: redirectToRoute || pathname,
+    callbackRoute: redirectToRoute || pathname === "/" ? "/liveliness" : pathname,
   };
 
   const logUserLoggedInInUserAccounts = async (addr: string, chainId: string) => {
