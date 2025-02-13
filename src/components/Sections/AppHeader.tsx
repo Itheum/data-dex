@@ -38,6 +38,7 @@ import {
   useBreakpointValue,
   useColorMode,
   useDisclosure,
+  Tooltip,
 } from "@chakra-ui/react";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out/datanft";
 import { LivelinessStake } from "@itheum/sdk-mx-data-nft/out/liveliness-stake";
@@ -906,6 +907,7 @@ function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
     <Box
       display={displayParams}
       fontSize={{ md: "sm", "2xl": "md" }}
+      maxWidth="130px"
       minWidth="5.5rem"
       textAlign="center"
       color="black"
@@ -918,9 +920,9 @@ function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
       ) : itheumBalance === -2 ? (
         <WarningTwoIcon />
       ) : (
-        <>
-          {CHAIN_TOKEN_SYMBOL(chainID)} {formatNumberRoundFloor(itheumBalance)}
-        </>
+        <Tooltip label={`${CHAIN_TOKEN_SYMBOL(chainID)} ${formatNumberRoundFloor(itheumBalance)}`} hasArrow>
+          <Text noOfLines={1}>{formatNumberRoundFloor(itheumBalance)}</Text>
+        </Tooltip>
       )}
     </Box>
   );
