@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { WarningTwoIcon, SunIcon } from "@chakra-ui/icons";
 import {
   Accordion,
@@ -39,6 +39,9 @@ import {
   useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
+import { DataNft } from "@itheum/sdk-mx-data-nft/out/datanft";
+import { LivelinessStake } from "@itheum/sdk-mx-data-nft/out/liveliness-stake";
+import { Address } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -54,12 +57,13 @@ import logoSmlD from "assets/img/logo-sml-d.png";
 import BuyItheumModal from "components/BuyItheumModal";
 import ClaimsHistory from "components/ClaimsHistory";
 import Countdown from "components/CountDown";
+import NftMediaComponent from "components/NftMediaComponent";
 import InteractionsHistory from "components/Tables/InteractionHistory";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU, EXPLORER_APP_FOR_TOKEN } from "libs/config";
 import { formatNumberRoundFloor } from "libs/utils";
-import { useAccountStore } from "store";
+import { useAccountStore, useMintStore } from "store";
 
 const exploreRouterMenu = [
   {
@@ -143,6 +147,100 @@ const exploreRouterMenu = [
   },
 ];
 
+const NFMeIDPanel = ({ nfmeIdDataNft }: { nfmeIdDataNft: any }) => {
+  const navigate = useNavigate();
+  const [isVisible, setIsVisible] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout>();
+  const { colorMode } = useColorMode();
+
+  // Initial auto-hide after 5 seconds
+  useEffect(() => {
+    timeoutRef.current = setTimeout(() => {
+      setIsVisible(false);
+    }, 5000);
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Handle hover state
+  useEffect(() => {
+    if (isHovered) {
+      setIsVisible(true);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    } else {
+      timeoutRef.current = setTimeout(() => {
+        setIsVisible(false);
+      }, 3000);
+    }
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [isHovered]);
+
+  const backgroundColor = colorMode === "light" ? "bgWhite" : "bgDark";
+
+  return (
+    <Box
+      position="fixed"
+      top="6.2rem"
+      left={isVisible ? { base: "5px", md: "20px" } : { base: "-180px", md: "-160px" }}
+      transition="left 0.3s ease-in-out"
+      zIndex={1000}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={() => {
+        setIsVisible(!isVisible);
+        setIsHovered(false);
+      }}>
+      <Flex alignItems="center">
+        <Box
+          borderRadius="10px"
+          boxShadow="lg"
+          p="2"
+          border="1px solid"
+          borderColor="teal.200"
+          bg={backgroundColor}
+          cursor="pointer"
+          pt="5"
+          onClick={() => {
+            navigate("/liveliness");
+          }}>
+          <NftMediaComponent
+            nftMedia={nfmeIdDataNft?.media}
+            imageUrls={nfmeIdDataNft?.nftImgUrl ? [nfmeIdDataNft.nftImgUrl] : []}
+            imageHeight="160px"
+            imageWidth="160px"
+            borderRadius="10px"
+          />
+        </Box>
+        <Box
+          color="black"
+          bg="teal.200"
+          p="2"
+          borderRadius="0 10px 10px 0"
+          cursor="pointer"
+          _hover={{ bg: "teal.300" }}
+          sx={{
+            writingMode: "vertical-rl",
+            textOrientation: "mixed",
+          }}>
+          Your NFMe ID
+        </Box>
+      </Flex>
+    </Box>
+  );
+};
+
 const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { onShowConnectWalletModal?: any; setMenuItem: any; handleLogout: any }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -160,6 +258,29 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
   const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet", md: "Login via Wallet" });
   const navigate = useNavigate();
   const [buyItheumModalOpen, setIsBuyItheumModalOpen] = useState(false);
+  const nfmeIdDataNft = useMintStore((state) => state.nfmeIdDataNft);
+  const updateNfmeIdDataNft = useMintStore((state) => state.updateNfmeIdDataNft);
+
+  useEffect(() => {
+    async function fetchNfmeId() {
+      if (mxAddress && typeof nfmeIdDataNft === "undefined") {
+        const envNetwork = import.meta.env.VITE_ENV_NETWORK;
+        const liveContract = new LivelinessStake(envNetwork);
+        const data = await liveContract.getUserDataOut(new Address(mxAddress));
+
+        if (data.userData.vaultNonce !== 0) {
+          const dataNft = await DataNft.createFromApi({
+            nonce: data.userData.vaultNonce,
+          });
+          updateNfmeIdDataNft(dataNft);
+        } else {
+          // null means the user has not set a primary NFMe ID Vault yet (so we can check for this and not repeat this logic)
+          updateNfmeIdDataNft(null);
+        }
+      }
+    }
+    fetchNfmeId();
+  }, [mxAddress, nfmeIdDataNft]);
 
   const navigateToDiscover = (menuEnum: number) => {
     setMenuItem(menuEnum);
@@ -761,6 +882,8 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
           </DrawerBody>
         </DrawerContent>
       </Drawer>
+
+      {nfmeIdDataNft && <NFMeIDPanel nfmeIdDataNft={nfmeIdDataNft} />}
     </>
   );
 };
