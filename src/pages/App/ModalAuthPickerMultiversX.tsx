@@ -114,7 +114,7 @@ function ModalAuthPickerMx({ resetLaunchMode, redirectToRoute }: { resetLaunchMo
     nativeAuth: {
       ...nativeAuthProps,
     },
-    callbackRoute: redirectToRoute || pathname === "/" ? "/liveliness" : pathname,
+    callbackRoute: redirectToRoute || (pathname === "/" ? "/liveliness" : pathname),
   };
 
   const logUserLoggedInInUserAccounts = async (addr: string, chainId: string) => {

@@ -77,6 +77,7 @@ type DataNFTDetailsProps = {
   tokenIdProp?: string;
   offerIdProp?: number;
   closeDetailsView?: (meta?: any) => void;
+  onShowConnectWalletModal?: (walletType: string, path: string) => void;
 };
 
 interface DataNftVolume {
@@ -85,6 +86,7 @@ interface DataNftVolume {
 }
 
 export default function DataNFTDetails(props: DataNFTDetailsProps) {
+  const { onShowConnectWalletModal } = props;
   const toast = useToast();
   const navigate = useNavigate();
   const {
@@ -532,6 +534,21 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         </Box>
                       )}
 
+                      {/* show a button to scroll into view the offers section so there is a CTA to explore offers */}
+                      {!offer && totalOffers.length > 0 && (
+                        <Flex direction={{ base: "column", md: "row" }} gap={3} justifyContent={{ lg: "start" }} w="full">
+                          <Tooltip colorScheme="teal" hasArrow placement="top" label="Explore all available offers for this Data NFT">
+                            <Button
+                              color="teal.200"
+                              onClick={() => {
+                                document.getElementById("offer-section")?.scrollIntoView({ behavior: "smooth" });
+                              }}>
+                              Explore {totalOffers.length} Offers
+                            </Button>
+                          </Tooltip>
+                        </Flex>
+                      )}
+
                       <Flex direction={{ base: "column", md: "row" }} gap={3} justifyContent={{ lg: "start" }} w="full">
                         <Tooltip colorScheme="teal" hasArrow placement="top" label="Data Market is Paused" isDisabled={!isMarketPaused}>
                           <Button
@@ -557,13 +574,30 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           </Button>
                         </Tooltip>
 
+                        {/* if the user is not logged is, lets prompt them to do so first (only appears on the full screen route for details and not modal) */}
+                        {!isMxLoggedIn && onShowConnectWalletModal && (
+                          <Tooltip colorScheme="teal" hasArrow placement="top" label="Login with your wallet to mint or buy this Data NFT (if it's available)">
+                            <Button
+                              m="auto"
+                              variant="solid"
+                              colorScheme="teal"
+                              px={7}
+                              py={6}
+                              rounded="lg"
+                              onClick={() => {
+                                onShowConnectWalletModal("mvx", location.pathname);
+                              }}>
+                              Login to Mint / Buy
+                            </Button>
+                          </Tooltip>
+                        )}
+
                         <PreviewDataButton
                           previewDataURL={nftData.dataPreview}
                           buttonSize={{ base: "sm", md: "md", xl: "lg" }}
                           buttonWidth="unset"
                           tokenName={nftData.tokenName}
                         />
-
                         <ExploreAppButton
                           collection={nftData.collection}
                           nonce={nftData.nonce}
@@ -816,7 +850,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     </Box>
                   </GridItem>
 
-                  <GridItem colSpan={{ base: 8, xl: 3 }}>
+                  <GridItem id="offer-section" colSpan={{ base: 8, xl: 3 }}>
                     <ConditionalRender fallback={<></>} checkFunction={isApiUp}>
                       <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl" w="full">
                         <Heading
