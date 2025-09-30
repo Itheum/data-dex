@@ -61,7 +61,7 @@ import liteNFMeIDHero from "assets/img/nfme/lite-nfmeid-vault-mint-page-hero.png
 import BuyItheumModal from "components/BuyItheumModal";
 import ChainSupportedInput from "components/UtilComps/ChainSupportedInput";
 import { PopoverTooltip } from "components/UtilComps/PopoverTooltip";
-import { IS_DEVNET, MENU, PRINT_UI_DEBUG_PANELS } from "libs/config";
+import { IS_DEVNET, MENU, PRINT_UI_DEBUG_PANELS, DISABLE_BOND_RENEWS_FOR_TESTING } from "libs/config";
 import { labels } from "libs/language";
 import { getMvxRpcApi } from "libs/MultiversX/api";
 import { UserDataType } from "libs/MultiversX/types";
@@ -377,7 +377,14 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   }, [itheumBalance, antiSpamTax, bondingAmount]);
 
   function shouldMintYourDataNftBeDisabled(): boolean | undefined {
-    return !isValid || !readTermsChecked || !readAntiSpamFeeChecked || !readLivelinessBonding || itheumBalance < antiSpamTax + bondingAmount;
+    return (
+      DISABLE_BOND_RENEWS_FOR_TESTING ||
+      !isValid ||
+      !readTermsChecked ||
+      !readAntiSpamFeeChecked ||
+      !readLivelinessBonding ||
+      itheumBalance < antiSpamTax + bondingAmount
+    );
   }
 
   const closeProgressModal = () => {
@@ -1439,7 +1446,12 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
             <Flex>
               <ChainSupportedInput feature={MENU.SELL}>
-                <Button mt="10" colorScheme="teal" isLoading={isMintingModalOpen} onClick={dataNFTSellSubmit} isDisabled={shouldMintYourDataNftBeDisabled()}>
+                <Button
+                  mt="10"
+                  colorScheme={DISABLE_BOND_RENEWS_FOR_TESTING ? "gray" : "teal"}
+                  isLoading={isMintingModalOpen}
+                  onClick={dataNFTSellSubmit}
+                  isDisabled={shouldMintYourDataNftBeDisabled()}>
                   {isNFMeIDMint ? "Mint Your NFMe ID Vault" : "Mint Your Data NFT Collection"}
                 </Button>
               </ChainSupportedInput>

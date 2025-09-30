@@ -483,3 +483,5 @@ export enum MVX_ENV_ENUM {
   devnet = "ED",
   mainnet = "E1",
 }
+
+export const DISABLE_BOND_RENEWS_FOR_TESTING = true;

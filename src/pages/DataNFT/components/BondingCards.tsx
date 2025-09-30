@@ -28,7 +28,7 @@ import { LivelinessScore } from "components/Liveliness/LivelinessScore";
 import NftMediaComponent from "components/NftMediaComponent";
 import { NoDataHere } from "components/Sections/NoDataHere";
 import { ConfirmationDialog } from "components/UtilComps/ConfirmationDialog";
-import { IS_DEVNET } from "libs/config";
+import { IS_DEVNET, DISABLE_BOND_RENEWS_FOR_TESTING } from "libs/config";
 import { contractsForChain } from "libs/config";
 import { labels } from "libs/language";
 import { getNftsOfACollectionForAnAddress, getMvxRpcApi } from "libs/MultiversX/api";
@@ -289,9 +289,9 @@ export const BondingCards: React.FC = () => {
                           />
                           <Flex gap={4} pt={3} alignItems="center">
                             <Button
-                              colorScheme="teal"
+                              colorScheme={DISABLE_BOND_RENEWS_FOR_TESTING ? "gray" : "teal"}
                               px={6}
-                              isDisabled={mxAddress === "" || hasPendingTransactions}
+                              isDisabled={DISABLE_BOND_RENEWS_FOR_TESTING || mxAddress === "" || hasPendingTransactions}
                               onClick={() => renewBond(dataNft.collection, dataNft.nonce)}>
                               Renew Bond
                             </Button>

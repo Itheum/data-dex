@@ -28,6 +28,7 @@ import { ConfirmationDialog } from "components/UtilComps/ConfirmationDialog";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { formatNumberToShort, isValidNumericCharacter, sleep } from "libs/utils";
 import { useAccountStore } from "store";
+import { DISABLE_BOND_RENEWS_FOR_TESTING } from "libs/config";
 
 export const LivelinessStaking: React.FC = () => {
   const navigate = useNavigate();
@@ -219,10 +220,17 @@ export const LivelinessStaking: React.FC = () => {
                       }>
                       <Button
                         fontSize="lg"
-                        colorScheme="teal"
+                        colorScheme={DISABLE_BOND_RENEWS_FOR_TESTING ? "gray" : "teal"}
                         px={6}
                         width="180px"
-                        isDisabled={mxAddress === "" || hasPendingTransactions || nfmeId === undefined || accumulatedRewards < 1 || combinedLiveliness === 0}
+                        isDisabled={
+                          DISABLE_BOND_RENEWS_FOR_TESTING ||
+                          mxAddress === "" ||
+                          hasPendingTransactions ||
+                          nfmeId === undefined ||
+                          accumulatedRewards < 1 ||
+                          combinedLiveliness === 0
+                        }
                         onClick={() => {
                           if (combinedLiveliness >= 95) {
                             handleReinvestRewardsClick();
@@ -275,9 +283,9 @@ export const LivelinessStaking: React.FC = () => {
                         <LivelinessScore unbondTimestamp={nfmeIdBond?.unbondTimestamp} lockPeriod={nfmeIdBond?.lockPeriod} />
                         <Flex gap={4} pt={3} alignItems="center" w="100%">
                           <Button
-                            colorScheme="teal"
+                            colorScheme={DISABLE_BOND_RENEWS_FOR_TESTING ? "gray" : "teal"}
                             px={6}
-                            isDisabled={mxAddress === "" || hasPendingTransactions}
+                            isDisabled={DISABLE_BOND_RENEWS_FOR_TESTING || mxAddress === "" || hasPendingTransactions}
                             onClick={() => {
                               const bondContract = new BondContract(import.meta.env.VITE_ENV_NETWORK);
                               const tx = bondContract.renew(new Address(mxAddress), nfmeId.collection, nfmeId.nonce);
