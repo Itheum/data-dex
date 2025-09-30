@@ -1,6 +1,6 @@
 {
   "name": "data-dex",
-  "version": "1.18.34",
+  "version": "1.18.35",
   "description": "The Itheum Data DEX enables you to trade your data using web3 tech",
   "dependencies": {
     "@ashswap/ash-sdk-js": "2.2.0",
@@ -12,7 +12,6 @@
     "@multiversx/sdk-core": "13.14.2",
     "@multiversx/sdk-dapp": "2.33.3",
     "@peerme/sdk": "0.2.1",
-    "@sentry/react": "7.118.0",
     "@tanstack/match-sorter-utils": "8.15.1",
     "@tanstack/react-table": "8.19.3",
     "axios": "1.7.4",
