@@ -256,8 +256,8 @@ export const BondingCards: React.FC = () => {
                         <Box>
                           {nfmeIdNonce !== dataNft.nonce ? (
                             <Button
-                              colorScheme="teal"
-                              isDisabled={mxAddress === "" || hasPendingTransactions}
+                              colorScheme={DISABLE_BOND_RENEWS_FOR_TESTING ? "gray" : "teal"}
+                              isDisabled={DISABLE_BOND_RENEWS_FOR_TESTING || mxAddress === "" || hasPendingTransactions}
                               onClick={() => {
                                 const tx = bondContract.setVaultNonce(new Address(mxAddress), dataNft.nonce, dataNft.collection);
                                 sendTransactions({

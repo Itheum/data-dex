@@ -404,10 +404,10 @@ export const LivelinessStaking: React.FC = () => {
                           </Box>
                           <Box textAlign={{ base: "right", md: "initial" }} ml="10px">
                             <Button
-                              colorScheme="teal"
+                              colorScheme={DISABLE_BOND_RENEWS_FOR_TESTING ? "gray" : "teal"}
                               px={6}
                               size="sm"
-                              isDisabled={mxAddress === "" || hasPendingTransactions || topUpItheumValue < 1}
+                              isDisabled={DISABLE_BOND_RENEWS_FOR_TESTING || mxAddress === "" || hasPendingTransactions || topUpItheumValue < 1}
                               onClick={() => {
                                 const envNetwork = import.meta.env.VITE_ENV_NETWORK;
                                 const bondContract = new BondContract(envNetwork);
