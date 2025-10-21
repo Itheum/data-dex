@@ -884,7 +884,8 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
         </DrawerContent>
       </Drawer>
 
-      {nfmeIdDataNft && <NFMeIDPanel nfmeIdDataNft={nfmeIdDataNft} />}
+      {/* hide this as it blocks the burger menu on mobile as it is too wide and we are EOS */}
+      {/* {nfmeIdDataNft && <NFMeIDPanel nfmeIdDataNft={nfmeIdDataNft} />} */}
     </>
   );
 };
