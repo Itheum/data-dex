@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Container, Flex, useColorMode } from "@chakra-ui/react";
+import { Box, Container, Flex, useColorMode, Text, Link } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { RouteType } from "@multiversx/sdk-dapp/types";
@@ -168,6 +168,30 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
       {["1", "D"].includes(chainID) && (
         <StoreProvider>
           <Container maxW="100%">
+            {/* EOS Alert Banner */}
+            <Box
+              w="100%"
+              bgGradient="linear(to-r, orange.500, orange.600, orange.700)"
+              py={3}
+              px={4}
+              textAlign="center"
+              position="sticky"
+              top={0}
+              zIndex={10000}>
+              <Text color="white" fontSize={{ base: "md", md: "xl" }} fontWeight="medium">
+                ⚠️ Itheum announces an upgraded roadmap and product suite as part of <strong>Itheum Aithra</strong>. <br /> This app is set to reach{" "}
+                <strong>End-Of-Support (EOS)</strong> soon as part of this upgrade.{" "}
+                <Link
+                  href="https://docs.itheum.io/product-docs/itheum-aithra/sunsetting-earlier-versions-v0-v2"
+                  isExternal
+                  textDecoration="underline"
+                  fontWeight="bold"
+                  color="white"
+                  _hover={{ color: "orange.100" }}>
+                  Learn what you need to do →
+                </Link>
+              </Text>
+            </Box>
             <Flex
               bgColor={colorMode === "dark" ? "bgDark" : "bgWhite"}
               flexDirection="column"

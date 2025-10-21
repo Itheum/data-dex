@@ -61,13 +61,14 @@ import liteNFMeIDHero from "assets/img/nfme/lite-nfmeid-vault-mint-page-hero.png
 import BuyItheumModal from "components/BuyItheumModal";
 import ChainSupportedInput from "components/UtilComps/ChainSupportedInput";
 import { PopoverTooltip } from "components/UtilComps/PopoverTooltip";
-import { IS_DEVNET, MENU, PRINT_UI_DEBUG_PANELS, DISABLE_BOND_RENEWS_FOR_TESTING } from "libs/config";
+import { IS_DEVNET, MENU, PRINT_UI_DEBUG_PANELS, DISABLE_POST_AITHRA_SUNSET_FEATURES } from "libs/config";
 import { labels } from "libs/language";
 import { getMvxRpcApi } from "libs/MultiversX/api";
 import { UserDataType } from "libs/MultiversX/types";
 import { getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "libs/utils";
 import { useAccountStore, useMintStore } from "store";
 import { MintingModal } from "./MintingModal";
+import { DisabledFeaturedNote } from "components/DisabledFeaturedNote";
 
 type TradeDataFormType = {
   dataStreamUrlForm: string;
@@ -378,7 +379,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
   function shouldMintYourDataNftBeDisabled(): boolean | undefined {
     return (
-      DISABLE_BOND_RENEWS_FOR_TESTING ||
+      DISABLE_POST_AITHRA_SUNSET_FEATURES ||
       !isValid ||
       !readTermsChecked ||
       !readAntiSpamFeeChecked ||
@@ -475,6 +476,11 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
   // Step 1 of minting (user clicked on mint button on main form)
   const dataNFTSellSubmit = async () => {
+    if (DISABLE_POST_AITHRA_SUNSET_FEATURES) {
+      alert("This feature is disabled due to the EOS upgrade. See banner on top of the page for more details.");
+      return;
+    }
+
     if (!mxAddress) {
       toast({
         title: labels.ERR_MINT_FORM_NO_WALLET_CONN,
@@ -1448,7 +1454,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               <ChainSupportedInput feature={MENU.SELL}>
                 <Button
                   mt="10"
-                  colorScheme={DISABLE_BOND_RENEWS_FOR_TESTING ? "gray" : "teal"}
+                  colorScheme={DISABLE_POST_AITHRA_SUNSET_FEATURES ? "gray" : "teal"}
                   isLoading={isMintingModalOpen}
                   onClick={dataNFTSellSubmit}
                   isDisabled={shouldMintYourDataNftBeDisabled()}>
@@ -1456,6 +1462,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 </Button>
               </ChainSupportedInput>
             </Flex>
+            <DisabledFeaturedNote />
 
             <BuyItheumModal isOpen={buyItheumModalOpen} onClose={() => setIsBuyItheumModalOpen(false)} address={mxAddress} />
 
