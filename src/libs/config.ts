@@ -483,3 +483,5 @@ export enum MVX_ENV_ENUM {
   devnet = "ED",
   mainnet = "E1",
 }
+
+export const DISABLE_POST_AITHRA_SUNSET_FEATURES = true;

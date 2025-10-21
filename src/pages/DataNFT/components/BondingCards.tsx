@@ -28,11 +28,12 @@ import { LivelinessScore } from "components/Liveliness/LivelinessScore";
 import NftMediaComponent from "components/NftMediaComponent";
 import { NoDataHere } from "components/Sections/NoDataHere";
 import { ConfirmationDialog } from "components/UtilComps/ConfirmationDialog";
-import { IS_DEVNET } from "libs/config";
+import { IS_DEVNET, DISABLE_POST_AITHRA_SUNSET_FEATURES } from "libs/config";
 import { contractsForChain } from "libs/config";
 import { labels } from "libs/language";
 import { getNftsOfACollectionForAnAddress, getMvxRpcApi } from "libs/MultiversX/api";
 import { formatNumberToShort } from "libs/utils";
+import { DisabledFeaturedNote } from "components/DisabledFeaturedNote";
 
 type CompensationNftsType = {
   nonce: number;
@@ -256,8 +257,8 @@ export const BondingCards: React.FC = () => {
                         <Box>
                           {nfmeIdNonce !== dataNft.nonce ? (
                             <Button
-                              colorScheme="teal"
-                              isDisabled={mxAddress === "" || hasPendingTransactions}
+                              colorScheme={DISABLE_POST_AITHRA_SUNSET_FEATURES ? "gray" : "teal"}
+                              isDisabled={DISABLE_POST_AITHRA_SUNSET_FEATURES || mxAddress === "" || hasPendingTransactions}
                               onClick={() => {
                                 const tx = bondContract.setVaultNonce(new Address(mxAddress), dataNft.nonce, dataNft.collection);
                                 sendTransactions({
@@ -272,6 +273,7 @@ export const BondingCards: React.FC = () => {
                             </Text>
                           )}
                         </Box>
+                        <DisabledFeaturedNote />
                       </Box>
                       <Flex ml={{ md: "3" }} justifyContent="space-between" alignItems="center" w="full">
                         <Flex flexDirection="column" justifyContent="center" w="full">
@@ -289,12 +291,13 @@ export const BondingCards: React.FC = () => {
                           />
                           <Flex gap={4} pt={3} alignItems="center">
                             <Button
-                              colorScheme="teal"
+                              colorScheme={DISABLE_POST_AITHRA_SUNSET_FEATURES ? "gray" : "teal"}
                               px={6}
-                              isDisabled={mxAddress === "" || hasPendingTransactions}
+                              isDisabled={DISABLE_POST_AITHRA_SUNSET_FEATURES || mxAddress === "" || hasPendingTransactions}
                               onClick={() => renewBond(dataNft.collection, dataNft.nonce)}>
                               Renew Bond
                             </Button>
+                            <DisabledFeaturedNote />
                             <Text
                               fontSize={{
                                 base: "sm",

@@ -29,6 +29,8 @@ import { useMarketStore } from "store";
 import NftMediaComponent from "./NftMediaComponent";
 import { labels } from "../libs/language";
 import { getOffersByIdAndNoncesFromBackendApi } from "../libs/MultiversX";
+import { DisabledFeaturedNote } from "./DisabledFeaturedNote";
+import { DISABLE_POST_AITHRA_SUNSET_FEATURES } from "libs/config";
 
 export type ListModalProps = {
   isOpen: boolean;
@@ -420,8 +422,15 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
               </Checkbox>
             </Box>
 
+            <DisabledFeaturedNote />
+
             <Flex justifyContent="end" mt="4 !important">
-              <Button colorScheme="teal" size="sm" mx="3" onClick={onProcure} isDisabled={!readTermsChecked || liveUptimeFAIL || !isLiveUptimeSuccessful}>
+              <Button
+                colorScheme="teal"
+                size="sm"
+                mx="3"
+                onClick={onProcure}
+                isDisabled={DISABLE_POST_AITHRA_SUNSET_FEATURES || !readTermsChecked || liveUptimeFAIL || !isLiveUptimeSuccessful}>
                 Proceed
               </Button>
               <Button colorScheme="teal" size="sm" variant="outline" onClick={onClose}>
