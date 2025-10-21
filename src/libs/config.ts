@@ -484,4 +484,4 @@ export enum MVX_ENV_ENUM {
   mainnet = "E1",
 }
 
-export const DISABLE_BOND_RENEWS_FOR_TESTING = true;
+export const DISABLE_POST_AITHRA_SUNSET_FEATURES = true;

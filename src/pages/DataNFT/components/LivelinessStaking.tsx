@@ -28,7 +28,8 @@ import { ConfirmationDialog } from "components/UtilComps/ConfirmationDialog";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { formatNumberToShort, isValidNumericCharacter, sleep } from "libs/utils";
 import { useAccountStore } from "store";
-import { DISABLE_BOND_RENEWS_FOR_TESTING } from "libs/config";
+import { DISABLE_POST_AITHRA_SUNSET_FEATURES } from "libs/config";
+import { DisabledFeaturedNote } from "components/DisabledFeaturedNote";
 
 export const LivelinessStaking: React.FC = () => {
   const navigate = useNavigate();
@@ -220,11 +221,11 @@ export const LivelinessStaking: React.FC = () => {
                       }>
                       <Button
                         fontSize="lg"
-                        colorScheme={DISABLE_BOND_RENEWS_FOR_TESTING ? "gray" : "teal"}
+                        colorScheme={DISABLE_POST_AITHRA_SUNSET_FEATURES ? "gray" : "teal"}
                         px={6}
                         width="180px"
                         isDisabled={
-                          DISABLE_BOND_RENEWS_FOR_TESTING ||
+                          DISABLE_POST_AITHRA_SUNSET_FEATURES ||
                           mxAddress === "" ||
                           hasPendingTransactions ||
                           nfmeId === undefined ||
@@ -244,6 +245,7 @@ export const LivelinessStaking: React.FC = () => {
                     <Text fontSize="sm" color="grey" ml={{ md: "55px" }}>
                       Reinvesting rewards will also renew bond
                     </Text>
+                    <DisabledFeaturedNote />
                   </VStack>
                 </Flex>
               </HStack>
@@ -283,9 +285,9 @@ export const LivelinessStaking: React.FC = () => {
                         <LivelinessScore unbondTimestamp={nfmeIdBond?.unbondTimestamp} lockPeriod={nfmeIdBond?.lockPeriod} />
                         <Flex gap={4} pt={3} alignItems="center" w="100%">
                           <Button
-                            colorScheme={DISABLE_BOND_RENEWS_FOR_TESTING ? "gray" : "teal"}
+                            colorScheme={DISABLE_POST_AITHRA_SUNSET_FEATURES ? "gray" : "teal"}
                             px={6}
-                            isDisabled={DISABLE_BOND_RENEWS_FOR_TESTING || mxAddress === "" || hasPendingTransactions}
+                            isDisabled={DISABLE_POST_AITHRA_SUNSET_FEATURES || mxAddress === "" || hasPendingTransactions}
                             onClick={() => {
                               const bondContract = new BondContract(import.meta.env.VITE_ENV_NETWORK);
                               const tx = bondContract.renew(new Address(mxAddress), nfmeId.collection, nfmeId.nonce);
@@ -296,6 +298,7 @@ export const LivelinessStaking: React.FC = () => {
                             }}>
                             Renew Bond
                           </Button>
+                          <DisabledFeaturedNote />
                           <Text fontSize=".75rem">{`New expiry will be ${calculateNewPeriodAfterNewBond(nfmeIdBond?.lockPeriod ?? 0)}`}</Text>
                         </Flex>
                         <Flex gap={4} pt={3} alignItems="center" w="100%">
@@ -404,10 +407,10 @@ export const LivelinessStaking: React.FC = () => {
                           </Box>
                           <Box textAlign={{ base: "right", md: "initial" }} ml="10px">
                             <Button
-                              colorScheme={DISABLE_BOND_RENEWS_FOR_TESTING ? "gray" : "teal"}
+                              colorScheme={DISABLE_POST_AITHRA_SUNSET_FEATURES ? "gray" : "teal"}
                               px={6}
                               size="sm"
-                              isDisabled={DISABLE_BOND_RENEWS_FOR_TESTING || mxAddress === "" || hasPendingTransactions || topUpItheumValue < 1}
+                              isDisabled={DISABLE_POST_AITHRA_SUNSET_FEATURES || mxAddress === "" || hasPendingTransactions || topUpItheumValue < 1}
                               onClick={() => {
                                 const envNetwork = import.meta.env.VITE_ENV_NETWORK;
                                 const bondContract = new BondContract(envNetwork);
@@ -429,6 +432,7 @@ export const LivelinessStaking: React.FC = () => {
                             <Text mt={2} fontSize="sm" color="grey">
                               Top-up will also renew bond
                             </Text>
+                            <DisabledFeaturedNote />
                           </Box>
                         </Flex>
                         <Text m={{ base: "auto", md: "initial" }} mt={{ base: "10", md: "auto" }} fontSize="lg">
