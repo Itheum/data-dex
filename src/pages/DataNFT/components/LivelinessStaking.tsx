@@ -184,7 +184,7 @@ export const LivelinessStaking: React.FC = () => {
                 Current Accumulated Rewards:{" "}
                 {formatNumberToShort(combinedLiveliness >= 95 ? accumulatedRewards : (combinedLiveliness * accumulatedRewards) / 100)} $ITHEUM
               </Text>
-              <Text fontSize="xl">Potential Rewards If Combined Liveliness &gt;95%: {formatNumberToShort(accumulatedRewards)} $ITHEUM</Text>
+              {/* <Text fontSize="xl">Potential Rewards If Combined Liveliness &gt;95%: {formatNumberToShort(accumulatedRewards)} $ITHEUM</Text> */}
 
               <HStack mt={5} justifyContent="center" alignItems="flex-start" width="100%">
                 <Flex flexDirection={{ base: "column", md: "row" }}>
