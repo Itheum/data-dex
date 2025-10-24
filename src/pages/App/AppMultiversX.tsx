@@ -163,6 +163,15 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
     bodyMinHeightLg = "lg";
   }
 
+  const isMobile = window.innerWidth <= 480;
+
+  let eosMsg =
+    '⚠️ Itheum announces an upgraded roadmap and product suite as part of <strong>Itheum Aithra</strong>. <br /> This app is set to reach{" "} <strong>End-Of-Support (EOS)</strong> soon as part of this upgrade.';
+
+  if (isMobile) {
+    eosMsg = "⚠️ This app will reach <strong>End-Of-Support (EOS)</strong> soon.";
+  }
+
   return (
     <>
       {["1", "D"].includes(chainID) && (
@@ -179,8 +188,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
               top={0}
               zIndex={10000}>
               <Text color="white" fontSize={{ base: "md", md: "xl" }} fontWeight="medium">
-                ⚠️ Itheum announces an upgraded roadmap and product suite as part of <strong>Itheum Aithra</strong>. <br /> This app is set to reach{" "}
-                <strong>End-Of-Support (EOS)</strong> soon as part of this upgrade.{" "}
+                {eosMsg}{" "}
                 <Link
                   href="https://docs.itheum.io/product-docs/itheum-aithra/sunsetting-earlier-versions-v0-v2"
                   isExternal
@@ -188,7 +196,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                   fontWeight="bold"
                   color="white"
                   _hover={{ color: "orange.100" }}>
-                  Learn what you need to do →
+                  Take action →
                 </Link>
               </Text>
             </Box>
