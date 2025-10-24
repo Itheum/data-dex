@@ -169,7 +169,16 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
     if (isMobile) {
       return (
         <Text>
-          ⚠️ This app will reach <strong>End-Of-Support (EOS)</strong> soon.
+          ⚠️ This app will reach <strong>End-Of-Support (EOS)</strong> soon.{" "}
+          <Link
+            href="https://docs.itheum.io/product-docs/itheum-aithra/sunsetting-earlier-versions-v0-v2"
+            isExternal
+            textDecoration="underline"
+            fontWeight="bold"
+            color="white"
+            _hover={{ color: "orange.100" }}>
+            Take action →
+          </Link>
         </Text>
       );
     }
@@ -177,7 +186,16 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
     return (
       <Text>
         ⚠️ Itheum announces an upgraded roadmap and product suite as part of <strong>Itheum Aithra</strong>. <br /> This app is set to reach{" "}
-        <strong>End-Of-Support (EOS)</strong> soon as part of this upgrade.
+        <strong>End-Of-Support (EOS)</strong> soon as part of this upgrade.{" "}
+        <Link
+          href="https://docs.itheum.io/product-docs/itheum-aithra/sunsetting-earlier-versions-v0-v2"
+          isExternal
+          textDecoration="underline"
+          fontWeight="bold"
+          color="white"
+          _hover={{ color: "orange.100" }}>
+          Take action →
+        </Link>
       </Text>
     );
   }
@@ -198,16 +216,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
               top={0}
               zIndex={10000}>
               <Text color="white" fontSize={{ base: "md", md: "xl" }} fontWeight="medium">
-                <EosMsg />{" "}
-                <Link
-                  href="https://docs.itheum.io/product-docs/itheum-aithra/sunsetting-earlier-versions-v0-v2"
-                  isExternal
-                  textDecoration="underline"
-                  fontWeight="bold"
-                  color="white"
-                  _hover={{ color: "orange.100" }}>
-                  Take action →
-                </Link>
+                <EosMsg />
               </Text>
             </Box>
             <Flex
