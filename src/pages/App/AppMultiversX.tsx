@@ -165,11 +165,12 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
 
   const isMobile = window.innerWidth <= 480;
 
-  let eosMsg =
-    '⚠️ Itheum announces an upgraded roadmap and product suite as part of <strong>Itheum Aithra</strong>. <br /> This app is set to reach{" "} <strong>End-Of-Support (EOS)</strong> soon as part of this upgrade.';
+  function EosMsg() {
+    if (isMobile) {
+      return "⚠️ This app will reach <strong>End-Of-Support (EOS)</strong> soon.";
+    }
 
-  if (isMobile) {
-    eosMsg = "⚠️ This app will reach <strong>End-Of-Support (EOS)</strong> soon.";
+    return '⚠️ Itheum announces an upgraded roadmap and product suite as part of <strong>Itheum Aithra</strong>. <br /> This app is set to reach{" "} <strong>End-Of-Support (EOS)</strong> soon as part of this upgrade.';
   }
 
   return (
@@ -188,7 +189,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
               top={0}
               zIndex={10000}>
               <Text color="white" fontSize={{ base: "md", md: "xl" }} fontWeight="medium">
-                {eosMsg}{" "}
+                <EosMsg />{" "}
                 <Link
                   href="https://docs.itheum.io/product-docs/itheum-aithra/sunsetting-earlier-versions-v0-v2"
                   isExternal
