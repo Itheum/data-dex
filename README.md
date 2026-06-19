@@ -4,6 +4,14 @@ The Itheum Data DEX enables you to trade your data using web3 & blockchain techn
 
 ![Itheum Data DEX](https://raw.githubusercontent.com/Itheum/data-dex/main/itheum-dex-hero.png)
 
+> [!IMPORTANT]
+> **AI Agents**: Before making any changes to this repository, you must read the [AGENTS.md](AGENTS.md) contract and review the [docs/current-state.md](docs/current-state.md).
+
+## Documentation Index
+- **AI Agent Contract:** [AGENTS.md](AGENTS.md)
+- **Current State:** [docs/current-state.md](docs/current-state.md)
+- **Roadmap:** [docs/roadmap.md](docs/roadmap.md)
+
 ## What is Itheum?
 
 The Itheum Data DEX is a core product that is part of the Itheum Platform - **Itheum is the world's 1st decentralized Data Brokerage Platform** - https://itheum.io
