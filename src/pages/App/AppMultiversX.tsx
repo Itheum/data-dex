@@ -192,10 +192,12 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
           isExternal
           textDecoration="underline"
           fontWeight="bold"
+          ml={2}
           color="white"
           _hover={{ color: "orange.100" }}>
-          Learn more →
+          Learn more
         </Link>
+        <span> | </span>
         <Link
           href="https://docs.itheum.io/product-docs/itheum-aithra/sunsetting-earlier-versions-v0-v2/multiversx-liveliness-stacking-manual-withdraw-guide"
           isExternal
