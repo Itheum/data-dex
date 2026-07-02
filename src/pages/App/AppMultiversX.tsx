@@ -185,8 +185,8 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
 
     return (
       <Text>
-        ⚠️ Itheum announces an upgraded roadmap and product suite as part of <strong>Itheum Aithra</strong>. <br /> This app is set to reach{" "}
-        <strong>End-Of-Support (EOS)</strong> soon as part of this upgrade.{" "}
+        ⚠️ In Oct 2025, Itheum announced an upgraded roadmap as part of <strong>Itheum Aithra</strong> and provided notice that this app will be deprecated.{" "}
+        <br /> This app has now reached <strong>End-Of-Support (EOS)</strong>
         <Link
           href="https://docs.itheum.io/product-docs/itheum-aithra/sunsetting-earlier-versions-v0-v2"
           isExternal
@@ -194,7 +194,17 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
           fontWeight="bold"
           color="white"
           _hover={{ color: "orange.100" }}>
-          Take action →
+          Learn more →
+        </Link>
+        <Link
+          href="https://docs.itheum.io/product-docs/itheum-aithra/sunsetting-earlier-versions-v0-v2/multiversx-liveliness-stacking-manual-withdraw-guide"
+          isExternal
+          textDecoration="underline"
+          fontWeight="bold"
+          color="white"
+          ml={2}
+          _hover={{ color: "orange.100" }}>
+          Manually withdraw Liveliness bonds →
         </Link>
       </Text>
     );
