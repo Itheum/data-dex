@@ -13,7 +13,7 @@ export const GetVerified: React.FC = () => {
       <UseCases />
       <TrendingData />
       <Testimonials />
-      <FeaturedArticles />
+      {/* <FeaturedArticles /> */}
     </Flex>
   );
 };

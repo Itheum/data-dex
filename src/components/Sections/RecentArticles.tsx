@@ -5,45 +5,9 @@ const RecentArticles = () => {
   return (
     <Flex flexWrap="wrap" gap={5} backgroundColor="none" justifyContent="space-between">
       <ArticleCard
-        title="Data Ownership Redefined: An Introduction to Itheum"
-        link="https://cointelegraph.com/sponsored/itheum-data-ownership-redefined"
-        imgLink="https://images.cointelegraph.com/cdn-cgi/image/format=auto,onerror=redirect,quality=90,width=740/https://s3.cointelegraph.com/storage/uploads/view/52859d1f0670871bbf6d67b13a28a6f9.jpg"
-      />
-
-      <ArticleCard
-        title="Music NFTs can reshape the indie music industry"
-        link="https://cointelegraph.com/news/music-nfts-can-reshape-the-indie-music-industry-heres-how"
-        imgLink="https://images.cointelegraph.com/cdn-cgi/image/format=auto,onerror=redirect,quality=90,width=717/https://s3.cointelegraph.com/storage/uploads/view/3cb896c44fb3ff74551693bd59726f2e.jpg"
-      />
-
-      <ArticleCard
-        title="Data NFT platform launches XP system"
-        link="https://cointelegraph.com/news/data-nft-platform-enhances-security-and-user-participation-with-xp-system"
-        imgLink="https://images.cointelegraph.com/cdn-cgi/image/format=auto,onerror=redirect,quality=90,width=717/https://s3.cointelegraph.com/storage/uploads/view/681678727d24c2719165d24eb35a9d02.jpg"
-      />
-
-      <ArticleCard
-        title="Itheum's role in transparent data trading"
-        link="https://cointelegraph.com/news/empowering-users-blockchains-role-in-secure-and-transparent-data-trading"
-        imgLink="https://images.cointelegraph.com/cdn-cgi/image/format=auto,onerror=redirect,quality=90,width=717/https://s3.cointelegraph.com/storage/uploads/view/b4e76914189c7ee2e183fbf61a9dfa9e.jpg"
-      />
-
-      <ArticleCard
         title="Itheum Joins Sony X Astar Network Web3 Program"
         link="https://medium.com/itheum-newsletter/empowering-data-ownership-itheum-joins-sony-x-astar-network-web3-incubation-program-to-4768bb4fcba1"
         imgLink="https://miro.medium.com/v2/resize:fit:1400/format:webp/1*GlYf8bagyXMdA_5Bp1Aa_Q.jpeg"
-      />
-
-      <ArticleCard
-        title="Itheum launches Data NFT technology on CanaryNet"
-        link="https://cointelegraph.com/press-releases/itheum-launches-data-nft-technology-on-canarynet-redefining-data-ownership"
-        imgLink="https://miro.medium.com/v2/resize:fit:1400/format:webp/0*RAPWUjwCcQfp8--C"
-      />
-
-      <ArticleCard
-        title="How are Data NFTs helping build a data economy?"
-        link="https://cointelegraph.com/news/how-are-data-nfts-helping-build-a-decentralized-data-economy"
-        imgLink="https://images.cointelegraph.com/cdn-cgi/image/format=auto,onerror=redirect,quality=90,width=717/https://s3.cointelegraph.com/storage/uploads/view/b5be16069e046fac6b2af170cd41e789.jpg"
       />
 
       <ArticleCard

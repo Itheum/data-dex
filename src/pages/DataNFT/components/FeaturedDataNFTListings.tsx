@@ -58,7 +58,7 @@ export const FeaturedDataNFTListings: React.FC<FeaturedDataNFTListingsProps> = (
                             <Text>View Data NFT Collection</Text>
                           </Button>
                         </Link>
-                        <Button
+                        {/* <Button
                           size={{ base: "sm", md: "md" }}
                           mt={{ base: "10px", md: "20px" }}
                           bgGradient="linear(to-r, #ffce00, #ff7201)"
@@ -69,7 +69,7 @@ export const FeaturedDataNFTListings: React.FC<FeaturedDataNFTListingsProps> = (
                           ml={{ base: "0", md: "5" }}
                           onClick={() => openExplorerAppWithAuthToken("https://explorer.itheum.io/spreadsheetnfts")}>
                           <Text color="#0F0F0F">Open App: Download {isMobile ? "File" : "Spreadsheet"}</Text>
-                        </Button>
+                        </Button> */}
                       </Flex>
                     </Flex>
                   </Box>
@@ -100,7 +100,7 @@ export const FeaturedDataNFTListings: React.FC<FeaturedDataNFTListingsProps> = (
                             <Text>View Collection 2</Text>
                           </Button>
                         </Link>
-                        <Button
+                        {/* <Button
                           size={{ base: "sm", md: "md" }}
                           mt={{ base: "10px", md: "20px" }}
                           bgGradient="linear(to-r, #ffce00, #ff7201)"
@@ -111,7 +111,7 @@ export const FeaturedDataNFTListings: React.FC<FeaturedDataNFTListingsProps> = (
                           ml={{ base: "0", md: "5" }}
                           onClick={() => openExplorerAppWithAuthToken("https://explorer.itheum.io/nftunes/?artist-profile=two-week")}>
                           <Text color="#0F0F0F">Open App: Stream Music</Text>
-                        </Button>
+                        </Button> */}
                       </Flex>
                     </Flex>
                   </Box>
