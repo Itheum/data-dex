@@ -101,7 +101,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [collectionForDrawer, setCollectionForDrawer] = useState<DataNFTCollectionObject | undefined>();
   const [myListedCount, setMyListedCount] = useState<number>(0);
   const [publicMarketCount, setPublicMarketCount] = useState<number>(0);
-  const [showGroupedDataNfts, setShowGroupedDataNfts] = useState(true);
+  const [showGroupedDataNfts, setShowGroupedDataNfts] = useState(false);
   const [groupedCollections, setGroupedCollections] = useState<DataNFTCollectionObject[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const hasWebWalletTx = sessionStorage.getItem("web-wallet-tx");

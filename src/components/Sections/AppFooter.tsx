@@ -34,6 +34,9 @@ export default function () {
         </Text>
         <Text fontSize="xx-small">MVX API Provider: {isPublicApi ? "Public" : "Private"}</Text>
         <HStack>
+          <Link fontSize="xs" href="https://portal.itheum.io/" isExternal>
+            {`Solana <> MVX $ITHEUM Bridge`} <ExternalLinkIcon mx={1} />
+          </Link>
           <Link fontSize="xs" href="https://itheum.com/legal/datadex/termsofuse" isExternal>
             Terms of Use <ExternalLinkIcon mx={1} />
           </Link>

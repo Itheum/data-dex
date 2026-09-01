@@ -430,7 +430,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 title="Bridge $ITHEUM between Solana and MVX"
                 key={"bridge_itheum"}
                 size={isMxLoggedIn ? "sm" : "md"}
-                onClick={() => (window.location.href = "https://portal.itheum.io/")}>
+                onClick={() => window.open("https://portal.itheum.io/", "_blank")}>
                 <Text fontSize={{ base: isMxLoggedIn ? "sm" : "md", "2xl": "lg" }} color={colorMode === "dark" ? "white" : "black"}>
                   {`Solana <> MVX $ITHEUM Bridge`}
                 </Text>
@@ -843,7 +843,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                           display={"flex"}
                           justifyContent={"start"}
                           p={3}
-                          onClick={() => (window.location.href = "https://portal.itheum.io/")}>
+                          onClick={() => window.open("https://portal.itheum.io/", "_blank")}>
                           {`Solana <> MVX $ITHEUM Bridge`}
                         </ListItem>
 
