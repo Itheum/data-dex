@@ -62,7 +62,7 @@ export default function ProcureDataNFTSuccessCTAModel({ isOpen, onClose, nftData
                 }}>
                 Visit Your {"Wallet"} To See It or Re-List It for Sale
               </Button>
-              {nftData && nftData?.collection && nftData?.nonce && (
+              {/* {nftData && nftData?.collection && nftData?.nonce && (
                 <ExploreAppButton
                   collection={nftData.collection || ""}
                   nonce={nftData.nonce || 0}
@@ -71,7 +71,7 @@ export default function ProcureDataNFTSuccessCTAModel({ isOpen, onClose, nftData
                   customLabel="Experience It With a Custom App!"
                   customMargin={2}
                 />
-              )}
+              )} */}
               <Button colorScheme="teal" size={{ base: "sm", md: "md", xl: "lg" }} variant="outline" onClick={onClose} m={2}>
                 Close This
               </Button>

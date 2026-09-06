@@ -437,7 +437,7 @@ export default function WalletDataNFTMX(item: any) {
                   Burn
                 </Button>
 
-                <ExploreAppButton collection={item.collection} nonce={item.nonce} />
+                {/* <ExploreAppButton collection={item.collection} nonce={item.nonce} /> */}
               </HStack>
             </Stack>
 

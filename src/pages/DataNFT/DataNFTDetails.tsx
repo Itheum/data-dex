@@ -598,13 +598,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           buttonWidth="unset"
                           tokenName={nftData.tokenName}
                         />
-                        <ExploreAppButton
+                        {/* <ExploreAppButton
                           collection={nftData.collection}
                           nonce={nftData.nonce}
                           size={{ base: "sm", md: "md", xl: "lg" }}
                           w={{ base: "auto", xl: "5rem" }}
                           fontSize={{ base: "xs", md: "sm", xl: "md" }}
-                        />
+                        /> */}
                       </Flex>
                     </Flex>
                   </Flex>
